@@ -48,7 +48,7 @@ mod AMM {
         return ();
     }
 
-    #[view]
+    #[external(v0)]
     fn get_account_token_balance(
         self: @ContractState, account: ContractAddress, token_type: felt252
     ) -> u128 {
@@ -58,7 +58,7 @@ mod AMM {
     ////////////////////////////////
     // @dev function to return the pool's balance for a token type
     ////////////////////////////////
-    #[view]
+    #[external(v0)]
     fn get_pool_token_balance(self: @ContractState, token_type: felt252) -> u128 {
         self.pool_balance.read(token_type)
     }
