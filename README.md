@@ -3,6 +3,15 @@
 Fractal Swap is a Uniswap V3 implementation on StarkNet.
 
 ## Install dependencies
+Run the following command:
+
+```bash
+make deps
+```
+This will end up installing:
+- [Scarb](https://docs.swmansion.com/scarb) (Cairo/Starknet packet manager)
+  - Includes a specific version of the Cairo compiler.
+- [Starkli](https://github.com/xJonathanLEI/starkli) (Starknet CLI)
 
 
 ## Build Project
