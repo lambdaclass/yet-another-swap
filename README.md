@@ -6,7 +6,14 @@ Fractal Swap is a Uniswap V3 implementation on StarkNet.
 
 
 ## Build Project
+Run the following command:
 
+```bash
+make build   
+```
+
+This command executes the Scrab build process, resulting in the creation of a Sierra program.
+    
 ## Setting up a Testnet Smart Wallet
 
 **This guide will help you declare and deploy contracts on a testnet. Please note that you won't be able to use the commands in the Makefile unless you follow these instructions.**
@@ -73,8 +80,23 @@ Follow the steps below to set up a testnet smart wallet:
 
 ## Declare and Deploy Contracts
 
-Fractal Swap is a Uniswap V3 implementation on Starknet
+By following the previous two steps, you should now have a compiled program and an account funded on the Goerli testnet.
 
+Now we have to deploy the contract to the Testnet.
+
+On Starknet, the deployment process is in two steps:
+
+- Declaring the class of your contract, or sending your contract’s code to the network
+- Deploying a contract, or creating an instance of the code you previously declared
+
+1. Declare:
+    ```bash
+    starkli declare target/dev/contracts_Ownable.sierra.json --account $STARKNET_ACCOUNT --network=goerli-1 --compiler-version=2.0.1
+    ```
+2. Deploy:
+    ```bash
+    starkli deploy <CLASS_HASH> <CONSTRUCTOR_INPUTS> --network=goerli-1
+    ```
 ## Tooling
 - [Starkli](https://book.starkli.rs/)
 - [Scarb](https://book.starknet.io/chapter_2/scarb.html)
