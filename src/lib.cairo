@@ -109,7 +109,6 @@ mod AMM {
 
             // check user has enough funds
             let account_from_balance = get_account_token_balance(@self, account, token_from);
-            let account_from_balance = get_account_token_balance(@self, account, token_from);
             assert(account_from_balance > amount_from, 'Insufficient balance!');
 
             let token_to = get_opposite_token(token_from);
