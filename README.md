@@ -29,59 +29,47 @@ This command executes the Scrab build process, resulting in the creation of a Si
 
 A smart wallet consists of two parts: a Signer and an Account Descriptor. The Signer is a smart contract capable of signing transactions (for which we need its private key). The Account Descriptor is a JSON file containing information about the smart wallet, such as its address and public key.
 
-Follow the steps below to set up a testnet smart wallet:
+Follow the steps below to set up a testnet smart wallet using `starkli`:
 
-1. **Create a Smart Wallet**: You can do this on the Goerli Testnet using Argent X or Braavos Wallet.
-
-2. **Funding**: Fund the newly created account using the Goerli Testnet Faucet: [https://faucet.goerli.starknet.io](https://faucet.goerli.starknet.io).
-
-3. **Signer Creation:**
-    1. **Retrieve the Private Key**: Each wallet provides a specific path to do this:
-        - For Braavos:
-            Navigate to the "Settings" section → "Privacy and Security" → "Export Private Key".
-        - For Argent X:
-            Go to the "Settings" section → Select your Account → "Export Private Key".
-    2. **Create a Folder**: Use the following command:
+1. **Connect to a Provider**: to interact with the network you need an RPC Provider. For our project we will be using Alchemy's free tier in Goerli Testnet.
+   1. Go to [Alchemy website](https://www.alchemy.com/) and create an account.
+   2. It will ask which network you want to develop on and choose Starknet.
+   3. Select the Free version of the service (we will only need access to send some transactions to deploy the contracts)
+   4. Once the account creation process is done, go to *My apps* and create a new Application. Choose Starknet as a Chain and Goerli Starknet as a Network.
+   5. Click on *View key* on the new Starknet Application and copy the HTTPS url.
+   6. On your terminal run:
         ```bash
-        mkdir -p ~/.starkli-wallets/deployer
-        ```
-    3. **Store the Private Key**: Run the `starkli` command to store the private key encrypted:
-        ```bash
-        starkli signer keystore from-key ~/.starkli-wallets/deployer/keystore.json
+        export STARKNET_RPC="<ALCHEMY_API_HTTPS_URL>"
         ```
 
-4. **Account Descriptor:**
-    1. **Create a File**: For the descriptor:
+2. **Create a Keystore**: A Keystore is a encrypted `json` file that stores the private keys.
+   1. **Create a hidden folder**: Use the following command:
         ```bash
-        touch ~/.starkli-wallets/deployer/account.json
+        mkdir -p ~/.starkli-wallets
         ```
-    2. **Define the Structure**: The account descriptor should look like this:
-        ```json
-        {
-            "version": 1,
-            "variant": {
-                "type": "open_zeppelin",
-                "version": 1,
-                "public_key": "<SMART_WALLET_PUBLIC_KEY>"
-            },
-            "deployment": {
-                "status": "deployed",
-                "class_hash": "<SMART_WALLET_CLASS_HASH>",
-                "address": "<SMART_WALLET_ADDRESS>"
-            }
-        }        
-        ```
-    3. **Public Key**: This was returned in step 3.3 by the `starkli` signer. You can also find it with this command:
+   2. **Generate a new Keystore file**: Run the following command to create a new private key stored in the file. It will **ask for a password** to encrypt the file:
         ```bash
-        starkli signer keystore inspect ~/.starkli-wallets/deployer/keystore.json
+        starkli signer keystore new ~/.starkli-wallets/keystore.json
         ```
-    4. **Address**: This is the address of your smart wallet. 
-    5. **Class-hash**: This is related to the type of wallet. Retrieve it using the following command: 
+        The command will return the Public Key of your account, copy it to your clipboard to fund the account.
+    
+   3. **Set STARKNET_ACCOUNT**: To set the environment variable just run:
         ```bash
-        starkli class-hash-at <SMART_WALLET_ADDRESS>
+        export STARKNET_KEYSTORE="~/.starkli-wallets/keystore.json"
         ```
 
-5. **Setting Up Environment Variables**: There are two primary environment variables vital for effective usage of Starkli’s CLI. These are the location of the keystore file for the Signer, and the location of the Account Descriptor file:
+3. **Account Creation**: In Starknet every account is a smart contract, so to create one it will need to be deployed.
+   1. **Initiate the account with the Open Zeppelin Account contract**:
+        ```bash
+        starkli account oz init --keystore ~/.starkli-wallets/keystore.json ~/.starkli-wallets/account.json
+        ```
+   2. **Deploy the account by running**:
+        ```bash
+        starkli account deploy --keystore ~/.starkli-wallets/keystore.json ~/.starkli-wallets/account.json
+        ```
+        For the deployment `starkli` will ask you to fund an account. To do so you will need to fund  the address given by `starkli` with the [Goerli Starknet Faucet](https://faucet.goerli.starknet.io)
+
+4. **Setting Up Environment Variables**: There are two primary environment variables vital for effective usage of Starkli’s CLI. These are the location of the keystore file for the Signer, and the location of the Account Descriptor file:
     ```bash
     export STARKNET_ACCOUNT=~/.starkli-wallets/deployer/account.json
     export STARKNET_KEYSTORE=~/.starkli-wallets/deployer/keystore.json
@@ -89,23 +77,28 @@ Follow the steps below to set up a testnet smart wallet:
 
 ## Declare and Deploy Contracts
 
-By following the previous two steps, you should now have a compiled program and an account funded on the Goerli testnet.
+By following the previous two steps, you should now have a account funded on the Goerli testnet.
 
-Now we have to deploy the contract to the Testnet.
+Now we have to deploy the simple AMM contract to the Testnet.
 
 On Starknet, the deployment process is in two steps:
 
 - Declaring the class of your contract, or sending your contract’s code to the network
 - Deploying a contract, or creating an instance of the code you previously declared
 
-1. Declare:
+1. Build the project:
     ```bash
-    starkli declare target/dev/contracts_Ownable.sierra.json --account $STARKNET_ACCOUNT --network=goerli-1 --compiler-version=2.0.1
+    make build
     ```
-2. Deploy:
+2. Declare:
     ```bash
-    starkli deploy <CLASS_HASH> <CONSTRUCTOR_INPUTS> --network=goerli-1
+    make declare
     ```
+    Copy the declare Class Hash provided to use in the following step.
+3. Deploy:
+   ```bash
+   make deploy CLASS_HASH="<CLASS_HASH>"
+   ```
 ## Tooling
 - [Starkli](https://book.starkli.rs/)
 - [Scarb](https://book.starknet.io/chapter_2/scarb.html)

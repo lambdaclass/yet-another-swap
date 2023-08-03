@@ -6,6 +6,8 @@ build:
 	scarb build
 
 declare: 
-	starkli declare target/dev/contracts_Ownable.sierra.json --account $STARKNET_ACCOUNT --network=goerli-1 --compiler-version=2.0.1
+	starkli declare target/dev/fractal_swap_AMM.sierra.json --keystore ~/.starkli-wallets/keystore.json --account ~/.starkli-wallets/account.json
 
-
+CLASS_HASH:=
+deploy:
+	starkli deploy $(CLASS_HASH) --keystore ~/.starkli-wallets/keystore.json  --account ~/.starkli-wallets/account.json
