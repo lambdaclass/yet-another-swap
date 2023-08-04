@@ -15,6 +15,7 @@ tests = "tests"
 [dependencies]
 starknet = "2.0.1"
 liquidity_math = { path = "crates/liquidity_math" }
+orion = { git = "https://github.com/gizatechxyz/orion.git", rev = "5bd0544" }
 
 [[target.starknet-contract]]
 
