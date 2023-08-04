@@ -9,9 +9,6 @@ members = [
     "crates/**",
 ]
 
-[crate_roots]
-tests = "tests"
-
 [dependencies]
 starknet = "2.0.1"
 liquidity_math = { path = "crates/liquidity_math" }
