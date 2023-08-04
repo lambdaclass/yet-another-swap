@@ -1,11 +1,11 @@
 [package]
 name = "liquidity_math"
 version = "0.1.0"
-cairo-version = "2.1.0-rc4"
+cairo-version = "2.0.1"
 
 # See more keys and their definitions at https://docs.swmansion.com/scarb/docs/reference/manifest
 
 [dependencies]
-# foo = { path = "vendor/foo" }
-starknet = "2.1.0-rc4"
+orion = { git = "https://github.com/gizatechxyz/orion.git" }
+starknet = "2.0.1"
 

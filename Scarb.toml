@@ -13,7 +13,7 @@ members = [
 tests = "tests"
 
 [dependencies]
-starknet = "2.1.0-rc4"
+starknet = "2.0.1"
 liquidity_math = { path = "crates/liquidity_math" }
 
 [[target.starknet-contract]]
