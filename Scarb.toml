@@ -6,6 +6,7 @@ version = "0.1.0"
 
 [dependencies]
 starknet = "2.0.1"
+orion = { git = "https://github.com/gizatechxyz/orion.git", rev = "5bd0544" }
 
 [[target.starknet-contract]]
 
