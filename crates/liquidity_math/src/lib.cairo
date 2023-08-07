@@ -22,7 +22,7 @@ mod LiquidityMath {
             let y_abs_i128: i128 = y.abs();
             let y_felt252: felt252 = y_abs_i128.into();
             let y_u128: u128 = y_felt252.try_into().unwrap();
-            assert( x >= y_u128, 'LS');
+            assert(x >= y_u128, 'LS');
             x - y_u128
         } else {
             // require((z = x + uint128(y)) >= x, 'LA');

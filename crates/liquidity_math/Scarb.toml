@@ -6,4 +6,4 @@ version = "0.1.0"
 
 [dependencies]
 starknet = "2.0.1"
-orion = { git = "https://github.com/gizatechxyz/orion.git", branch = "main" }
+orion = { git = "https://github.com/gizatechxyz/orion.git" }
