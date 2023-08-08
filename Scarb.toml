@@ -10,11 +10,9 @@ members = [
 ]
 
 [dependencies]
-starknet = "2.0.1"
+starknet = "2.1.0"
 liquidity_math = { path = "crates/liquidity_math" }
 orion = { git = "https://github.com/gizatechxyz/orion.git" }
 
 [[target.starknet-contract]]
 
-[lib]
-casm = true
