@@ -1,18 +1,13 @@
 [package]
 name = "fractal_swap"
 version = "0.1.0"
-
+readme = "README.md"
+repository = "https://github.com/lambdaclass/fractal_swap/"
 # See more keys and their definitions at https://docs.swmansion.com/scarb/docs/reference/manifest
-
-[workspace]
-members = [
-    "crates/**",
-]
 
 [dependencies]
 starknet = "2.1.0"
-liquidity_math = { path = "crates/liquidity_math" }
-orion = { git = "https://github.com/gizatechxyz/orion.git" }
+orion = { git = "https://github.com/gizatechxyz/orion.git", rev = "5bd0544" }
 
 [[target.starknet-contract]]
 
