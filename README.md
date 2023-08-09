@@ -2,6 +2,15 @@
 
 Fractal Swap is a Uniswap V3 implementation on StarkNet.
 
+## Important Disclaimer
+This is the Development branch. Currently we are using Scarb 0.6.0-alpha.4 which is not compatible with the latest `starkli` release. Therefore, the project can not be deployed. This decision was made to include `signed integers` that were introduced in the latest corelib update in Cairo.
+
+The following commands will not work in this branch:
+- `make declare`
+- `make deploy`
+
+The main branch should always include contracts that can be deployed to Starknet.
+
 ## Install dependencies
 Run the following command:
 

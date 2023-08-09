@@ -1,0 +1,17 @@
+name: Tests
+on:
+    merge_group:
+    push:
+        branches: [ main ]
+    pull_request:
+        branches: [ '*' ]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "0.6.0"
+      - run: scarb fmt --check
+      - run: scarb test
