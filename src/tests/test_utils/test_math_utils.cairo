@@ -1,13 +1,45 @@
-use fractal_swap::utils::math_utils::MathUtils::{shift_left, shift_right};
+use fractal_swap::utils::math_utils::MathUtils::{BitShiftTrait};
 use integer::BoundedInt;
 
 #[test]
 #[available_gas(2000000)]
-fn test_shift_left_1() {
-    let result = shift_left(1, 1);
+fn test_shift_left_u256_1() {
+    let mut input: u256 = 1;
+    let result = input.shl(1);
     assert(result == 2, 'test_shift_left_1');
 }
 
+#[test]
+#[available_gas(2000000)]
+fn test_shift_left_u256_zero() {
+    let mut input: u256 = 0;
+    let result = input.shl(5);
+    assert(result == 0, 'test_shift_left_zero');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_shift_right_u256_1() {
+    let mut input: u256 = 4;
+    let result = input.shr(1);
+    assert(result == 2, 'test_shift_left_zero');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_shift_right_u256_max() {
+    let mut input: u256 = BoundedInt::max();
+    let result = input.shr(1);
+    assert(result == BoundedInt::max() / 2, 'test_shift_left_zero');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_shift_right_u256_zero() {
+    let mut input: u256 = 0;
+    let result = input.shr(5);
+    assert(result == 0, 'test_shift_left_zero');
+}
 
 // TODO: The current implementation does not support left shift overflow
 // input: 1111 (let's assume it's the max)
@@ -20,30 +52,43 @@ fn test_shift_left_1() {
 //     assert(result == BoundedInt::max() - 1, 'test_shift_left_max');
 // }
 
+
 #[test]
 #[available_gas(2000000)]
-fn test_shift_left_zero() {
-    let result = shift_left(0, 5);
+fn test_shift_left_u32_1() {
+    let mut input: u32 = 1;
+    let result = input.shl(1);
+    assert(result == 2, 'test_shift_left_1');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_shift_left_u32_zero() {
+    let mut input: u256 = 0;
+    let result = input.shl(5);
     assert(result == 0, 'test_shift_left_zero');
 }
 
 #[test]
 #[available_gas(2000000)]
-fn test_shift_right_1() {
-    let result = shift_right(4, 1);
-    assert(result == 2, 'test_shift_right_1');
+fn test_shift_right_u32_1() {
+    let mut input: u32 = 4;
+    let result = input.shr(1);
+    assert(result == 2, 'test_shift_left_zero');
 }
 
 #[test]
 #[available_gas(2000000)]
-fn test_shift_right_max() {
-    let result = shift_right(BoundedInt::max(), 1);
-    assert(result == BoundedInt::max() / 2, 'test_shift_right_max');
+fn test_shift_right_u32_max() {
+    let mut input: u32 = BoundedInt::max();
+    let result = input.shr(1);
+    assert(result == BoundedInt::max() / 2, 'test_shift_left_zero');
 }
 
 #[test]
 #[available_gas(2000000)]
-fn test_shift_right_zero() {
-    let result = shift_right(0, 5);
-    assert(result == 0, 'test_shift_right_zero');
+fn test_shift_right_u32_zero() {
+    let mut input: u32 = 0;
+    let result = input.shr(5);
+    assert(result == 0, 'test_shift_left_zero');
 }
