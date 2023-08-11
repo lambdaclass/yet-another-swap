@@ -6,7 +6,7 @@ mod MathUtils {
         fn shl(ref self: T, n: T) -> T;
         fn shr(ref self: T, n: T) -> T;
     }
-    
+
     impl U256BitShift of BitShiftTrait<u256> {
         #[inline(always)]
         fn shl(ref self: u256, n: u256) -> u256 {

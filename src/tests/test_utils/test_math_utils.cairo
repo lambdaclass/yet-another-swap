@@ -52,7 +52,6 @@ fn test_shift_right_u256_zero() {
 //     assert(result == BoundedInt::max() - 1, 'test_shift_left_max');
 // }
 
-
 #[test]
 #[available_gas(2000000)]
 fn test_shift_left_u32_1() {
