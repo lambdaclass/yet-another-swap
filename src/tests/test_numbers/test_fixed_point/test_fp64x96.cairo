@@ -168,10 +168,10 @@ fn test_mul_eq() {
 #[test]
 #[available_gas(2000000)]
 fn test_div_() {
-    // let a = FixedTrait::from_unscaled_felt(10);
-    // let b = FixedTrait::from_felt(229761671291366579021277455974); // 2.9
-    // let c = a / b;
-    // assert(c.into() == 273200560394014957219007789900, 'invalid pos decimal'); // 3.4482758620689653
+    let a = FixedTrait::from_felt(95073795017117205112252740403); // 1.2
+    let b = FixedTrait::from_unscaled_felt(3);
+    let c = a / b;
+    assert(c.into() == 31691265005705735037417580134, 'invalid pos decimal'); // 0.4
 
     let a = FixedTrait::from_unscaled_felt(10);
     let b = FixedTrait::from_unscaled_felt(5);
