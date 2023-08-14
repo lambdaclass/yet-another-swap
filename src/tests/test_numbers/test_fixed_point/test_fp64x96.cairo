@@ -4,7 +4,7 @@ use traits::Into;
 
 use fractal_swap::numbers::fixed_point::core::{FixedTrait, FixedType};
 use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
-    ONE_u128, _felt_abs, _felt_sign, FP64x96Impl, FP64x96Into, FP64x96Add, FP64x96AddEq, FP64x96Sub,
+    ONE_u128, ONE, _felt_abs, _felt_sign, FP64x96Impl, FP64x96Into, FP64x96Add, FP64x96AddEq, FP64x96Sub,
     FP64x96SubEq, FP64x96Mul, FP64x96MulEq, FP64x96Div, FP64x96DivEq, FP64x96PartialOrd,
     FP64x96PartialEq
 };
@@ -167,30 +167,58 @@ fn test_mul_eq() {
 
 #[test]
 #[available_gas(2000000)]
-fn test_div_() {
-    let a = FixedTrait::from_felt(95073795017117205112252740403); // 1.2
+fn test_div_integer_division() {
+    let a = FixedTrait::from_felt((10 * ONE_u128).into()); 
+    let b = FixedTrait::from_unscaled_felt(2);
+
+    let actual = a / b;
+    let expected = FixedTrait::from_unscaled_felt(5);
+    assert(actual == expected, 'test_div_integer_division'); 
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_div_integer_division_neg() {
+    let a = FixedTrait::from_felt((2 * ONE_u128).into()); 
+    let b = FixedTrait::from_unscaled_felt(-2);
+
+    let actual = a / b;
+    let expected = FixedTrait::from_unscaled_felt(-1);
+    assert(actual == expected, 'test_div_integer_division_neg'); 
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_div_decimal_part_dividend() {
+    let a = FixedTrait::from_felt((ONE_u128 / 2).into()); // 0.5 
     let b = FixedTrait::from_unscaled_felt(3);
-    let c = a / b;
-    assert(c.into() == 31691265005705735037417580134, 'invalid pos decimal'); // 0.4
 
-    let a = FixedTrait::from_unscaled_felt(10);
-    let b = FixedTrait::from_unscaled_felt(5);
-    let c = a / b;
-    assert(c.into() == 158456325028528675187087900672, 'invalid pos integer'); // 2
-// let a = FixedTrait::from_unscaled_felt(-2);
-// let b = FixedTrait::from_unscaled_felt(5);
-// let c = a / b;
-// assert(c.into() == -3355443, 'invalid neg decimal'); // -0.4
+    let actual = a / b;
+    // expected = 0.16666666666666666666 = 13,204,693,752,377,389,598,923,991,722.66666666666666666666
+    let expected = FixedTrait::from_felt(13204693752377389598923991722); 
+    assert(actual == expected, 'test_div_decimal_part_dividend'); 
+}
 
-// let a = FixedTrait::from_unscaled_felt(-1);
-// let b = FixedTrait::from_unscaled_felt(12);
-// let c = a / b;
-// assert(c.into() == -699050, 'invalid neg decimal'); // -0.08333333333333333
+#[test]
+#[available_gas(2000000)]
+fn test_div_decimal_part_divisor() {
+    let a = FixedTrait::from_unscaled_felt(3);
+    let b = FixedTrait::from_felt((ONE_u128 / 2).into()); // 0.5 
+    
+    let actual = a / b;
+    let expected = FixedTrait::from_unscaled_felt(6); 
+    assert(actual == expected, 'test_div_decimal_part_divisor'); 
+}
 
-// let a = FixedTrait::from_unscaled_felt(12);
-// let b = FixedTrait::from_unscaled_felt(-10);
-// let c = a / b;
-// assert(c.into() == -10066329, 'invalid neg decimal'); // -1.2
+#[test]
+#[available_gas(2000000)]
+fn test_div_decimal() {
+    let a = FixedTrait::from_felt(((ONE_u128 * 2) + (ONE_u128 / 4)).into()); // 2.25 
+    let b = FixedTrait::from_felt((ONE_u128 / 2).into()); // 0.5 
+    
+    let actual = a / b;
+    let expected = FixedTrait::from_felt(356526731314189519170947776512); // 4.5
+    assert(actual == expected, 'test_div_decimal'); 
 }
 
 #[test]
