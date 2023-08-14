@@ -122,69 +122,90 @@ fn test_sub_eq() {
 
 #[test]
 #[available_gas(2000000)]
-fn test_mul_pos() {
+fn test_mul_integer() {
     let a = FixedTrait::from_unscaled_felt(5);
     let b = FixedTrait::from_unscaled_felt(2);
-    let c = a * b;
-    assert(c.into() == 10 * ONE_u128.into(), 'invalid result');
 
-    let a = FixedTrait::from_unscaled_felt(9);
-    let b = FixedTrait::from_unscaled_felt(9);
-    let c = a * b;
-    assert(c.into() == 81 * ONE_u128.into(), 'invalid result');
+    let actual = a * b;
+    let expected = FixedTrait::from_unscaled_felt(10);
+    assert(actual == expected, 'test_mul_integer');
+}
 
-    let a = FixedTrait::from_felt(99035203142830421991929937920); // 1.25
-    let b = FixedTrait::from_felt(198070406285660843983859875840); // 2.5
-    let c = a * b;
-    assert(c.into() == 247588007857076054979824844800, 'invalid result'); // 3.125
+#[test]
+#[available_gas(2000000)]
+fn test_mul_integer_swap_sign() {
+    let a = FixedTrait::from_unscaled_felt(100);
+    let b = FixedTrait::from_unscaled_felt(-1);
 
+    let actual = a * b;
+    let expected = FixedTrait::from_unscaled_felt(-100);
+    assert(actual == expected, 'test_mul_integer_swap_sign');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_mul_integer_neg() {
+    let a = FixedTrait::from_unscaled_felt(-5);
+    let b = FixedTrait::from_unscaled_felt(10);
+
+    let actual = a * b;
+    let expected = FixedTrait::from_unscaled_felt(-50);
+    assert(actual == expected, 'test_mul_integer_neg');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_mul_decimal_x_integer() {
+    let a = FixedTrait::from_felt(((ONE_u128 * 2) + (ONE_u128 / 4)).into()); // 2.25
+    let b = FixedTrait::from_unscaled_felt(2);
+
+    let actual = a * b;
+    let expected = FixedTrait::from_felt(356526731314189519170947776512); // 4.5
+    assert(actual == expected, 'test_mul_decimal_x_integer');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_mul_decimal_x_decimal() {
+    let a = FixedTrait::from_felt((ONE_u128 / 4).into()); // 0.25
+    let b = FixedTrait::from_felt((ONE_u128 / 2).into()); // 0.50
+
+    let actual = a * b;
+    let expected = FixedTrait::from_felt(9903520314283042199192993792); // 0.125
+    assert(actual == expected, 'test_mul_decimal_x_decimal');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_mul_zero() {
     let a = FixedTrait::from_unscaled_felt(0);
-    let b = FixedTrait::from_felt(198070406285660843983859875840); // 2.5
-    let c = a * b;
-    assert(c.into() == 0, 'invalid result 4');
+    let b = FixedTrait::from_felt((ONE_u128 / 2).into()); // 0.5
+
+    let actual = a * b;
+    let expected = FixedTrait::from_felt(0);
+    assert(actual == expected, 'test_mul_decimal_x_decimal');
 }
 
 #[test]
 #[available_gas(2000000)]
-fn test_mul_neg() {
-    let a = FixedTrait::from_unscaled_felt(5);
-    let b = FixedTrait::from_unscaled_felt(-2);
-    let c = a * b;
-    assert(c.into() == -10 * ONE_u128.into(), 'true result invalid');
-}
-
-#[test]
-#[available_gas(2000000)]
-fn test_mul_eq() {
-    let mut a = FixedTrait::from_unscaled_felt(5);
-    let b = FixedTrait::from_unscaled_felt(-2);
-    a *= b;
-
-    let result: felt252 = a.into();
-    let expected: felt252 = -10 * ONE_u128.into();
-    assert(result == expected, 'invalid result');
-}
-
-#[test]
-#[available_gas(2000000)]
-fn test_div_integer_division() {
+fn test_div_integer() {
     let a = FixedTrait::from_felt((10 * ONE_u128).into());
     let b = FixedTrait::from_unscaled_felt(2);
 
     let actual = a / b;
     let expected = FixedTrait::from_unscaled_felt(5);
-    assert(actual == expected, 'test_div_integer_division');
+    assert(actual == expected, 'test_div_integer');
 }
 
 #[test]
 #[available_gas(2000000)]
-fn test_div_integer_division_neg() {
+fn test_div_integer_neg() {
     let a = FixedTrait::from_felt((2 * ONE_u128).into());
     let b = FixedTrait::from_unscaled_felt(-2);
 
     let actual = a / b;
     let expected = FixedTrait::from_unscaled_felt(-1);
-    assert(actual == expected, 'test_div_integer_division_neg');
+    assert(actual == expected, 'test_div_integer_neg');
 }
 
 #[test]
