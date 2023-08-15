@@ -36,19 +36,32 @@ fn test_abs() {
 #[test]
 fn test_ceil() {
     let a = FixedTrait::from_felt(229761671291366579021277455974); // 2.9
-    assert(a.ceil().into() == 3 * ONE_u128.into(), 'invalid pos decimal');
+    assert(a.ceil().into() == 3 * ONE_u128.into(), 'test_ceil');
 }
 
 #[test]
 fn test_floor() {
     let a = FixedTrait::from_felt(229761671291366579021277455974); // 2.9
-    assert(a.floor().into() == 2 * ONE_u128.into(), 'invalid pos decimal');
+    assert(a.floor().into() == 2 * ONE_u128.into(), 'test_floor');
 }
 
 #[test]
-fn test_round() {
+fn test_round_up() {
     let a = FixedTrait::from_felt(229761671291366579021277455974); // 2.9
-    assert(a.round().into() == 3 * ONE_u128.into(), 'invalid pos decimal');
+    assert(a.round().into() == 3 * ONE_u128.into(), 'test_round_up');
+}
+
+#[test]
+fn test_round_middle() {
+    let a = FixedTrait::from_felt(198070406285660843983859875840); // 2.5
+    assert(a.round().into() == 3 * ONE_u128.into(), 'test_round_middle');
+}
+
+#[test]
+fn test_round_down() {
+    let a = FixedTrait::from_felt(190147590034234410224505480806); // 2.4
+    let jeje: felt252 = a.round().into();
+    assert(a.round().into() == 2 * ONE_u128.into(), 'test_round_down');
 }
 
 #[test]
@@ -59,38 +72,78 @@ fn test_sqrt_fail() {
 }
 
 #[test]
-fn test_sqrt() {
+fn test_sqrt_integer() {
+    let a = FixedTrait::from_unscaled_felt(81);
+
+    let actual = a.sqrt();
+    let expected = FixedTrait::from_unscaled_felt(9);
+    assert(actual == expected, 'test_sqrt_integer');
+}
+
+#[test]
+fn test_sqrt_decimal() {
+    let a = FixedTrait::from_felt(5 * ONE_u128.into());
+
+    let actual = a.sqrt();
+    // cairo output =    2.23606797749978625233 = 177159557114295437428655128576      
+    // with calculator = 2.23606797749978969639 = 177159557114295710295374903243
+    let expected = FixedTrait::from_felt(177159557114295437428655128576);
+    assert(actual == expected, 'test_sqrt_decimal');
+}
+
+#[test]
+fn test_sqrt_zero() {
     let a = FixedTrait::from_unscaled_felt(0);
-    assert(a.sqrt().into() == 0, 'invalid zero root');
+    assert(a.sqrt().into() == 0, 'test_sqrt_zero');
 }
 
 #[test]
-fn test_eq() {
+fn test_equals() {
+    let a = FixedTrait::from_felt(ONE_u128.into() * 5);
+    let b = FixedTrait::from_felt(ONE_u128.into() * 5);
+
+    let actual = a == b;
+    assert(actual == true, 'test_equals');
+}
+
+fn test_ne_integer() {
     let a = FixedTrait::from_unscaled_felt(25);
     let b = FixedTrait::from_unscaled_felt(25);
-    let c = a == b;
-    assert(c == true, 'invalid result');
+
+    let actual = a != b;
+    assert(actual == false, 'test_ne_integer');
 }
 
 #[test]
-fn test_ne_() {
-    let a = FixedTrait::from_unscaled_felt(25);
-    let b = FixedTrait::from_unscaled_felt(25);
-    let c = a != b;
-    assert(c == false, 'invalid result');
-
+fn test_ne_sign() {
     let a = FixedTrait::from_unscaled_felt(25);
     let b = FixedTrait::from_unscaled_felt(-25);
-    let c = a != b;
-    assert(c == true, 'invalid result');
+
+    let actual = a != b;
+    assert(actual == true, 'test_ne_sign');
 }
 
 #[test]
 #[available_gas(2000000)]
-fn test_add() {
-    let a = FixedTrait::from_unscaled_felt(1);
-    let b = FixedTrait::from_unscaled_felt(2);
-    assert(a + b == FixedTrait::from_unscaled_felt(3), 'invalid result');
+fn test_add_integer() {
+    let a = FixedTrait::from_unscaled_felt(100);
+    let b = FixedTrait::from_unscaled_felt(20);
+
+    let actual = a + b;
+    let expected = FixedTrait::from_unscaled_felt(120);
+    assert(actual == expected, 'test_add_integer');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_add_decimal() {
+    let a = FixedTrait::from_felt((ONE_u128 / 100).into()); // 0.01
+    let b = FixedTrait::from_felt((ONE_u128 / 5).into()); // 0.2
+
+    let actual = a + b;
+    //  expected = 16,637,914,127,995,510,894,644,229,570.56 = 0.21
+    let expected = FixedTrait::from_felt(16637914127995510894644229570);
+    assert(actual == expected, 'test_add_decimal');
 }
 
 #[test]
@@ -98,17 +151,43 @@ fn test_add() {
 fn test_add_eq() {
     let mut a = FixedTrait::from_unscaled_felt(1);
     let b = FixedTrait::from_unscaled_felt(2);
+
     a += b;
-    assert(a.into() == 3 * ONE_u128.into(), 'invalid result');
+    let expected = 3 * ONE_u128.into();
+    assert(a.into() == expected, 'invalid result');
 }
 
 #[test]
 #[available_gas(2000000)]
-fn test_sub() {
-    let a = FixedTrait::from_unscaled_felt(5);
-    let b = FixedTrait::from_unscaled_felt(2);
-    let c = a - b;
-    assert(c.into() == 3 * ONE_u128.into(), 'false result invalid');
+fn test_sub_integer() {
+    let a = FixedTrait::from_unscaled_felt(6);
+    let b = FixedTrait::from_unscaled_felt(4);
+
+    let actual = a - b;
+    let expected = FixedTrait::from_unscaled_felt(2);
+    assert(actual == expected, 'test_sub_integer');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_sub_integer_neg() {
+    let a = FixedTrait::from_unscaled_felt(6);
+    let b = FixedTrait::from_unscaled_felt(9);
+
+    let actual = a - b;
+    let expected = FixedTrait::from_unscaled_felt(-3);
+    assert(actual == expected, 'test_sub_integer_neg');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn test_sub_decimal() {
+    let a = FixedTrait::from_felt((ONE_u128 / 100).into()); // 0.01
+    let b = FixedTrait::from_felt((ONE_u128 / 1000).into()); // 0.001
+
+    let actual = a - b;
+    let expected = FixedTrait::from_felt(713053462628379038341895553); // 0.009
+    assert(actual == expected, 'test_sub_decimal');
 }
 
 #[test]
@@ -117,7 +196,7 @@ fn test_sub_eq() {
     let mut a = FixedTrait::from_unscaled_felt(5);
     let b = FixedTrait::from_unscaled_felt(2);
     a -= b;
-    assert(a.into() == 3 * ONE_u128.into(), 'invalid result');
+    assert(a.into() == 3 * ONE_u128.into(), 'test_sub_eq');
 }
 
 #[test]

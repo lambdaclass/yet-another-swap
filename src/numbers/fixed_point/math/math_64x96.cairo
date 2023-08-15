@@ -238,8 +238,8 @@ fn sqrt(a: FixedType) -> FixedType {
     assert(a.sign == false, 'must be positive');
     let root = integer::u256_sqrt(a.mag);
     let scale_root = integer::u256_sqrt(ONE);
-    let res_u128 = root * ONE_u128 / scale_root;
-    return FixedTrait::new(res_u128.into(), false);
+    let res_u256 = root.into() * ONE / scale_root.into();
+    return FixedTrait::new(res_u256, false);
 }
 
 /// Subtracts one fixed point number from another.
