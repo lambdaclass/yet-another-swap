@@ -60,7 +60,8 @@ trait FixedTrait {
     /// fn new_unscaled(mag: u256, sign: bool) -> FixedType;
     /// ```
     ///
-    /// Creates a new fixed point instance with the specified unscaled magnitude and sign.
+    /// Creates a new fixed point instance with the specified unscaled magnitude and sign. 
+    /// This function is only useful when you want a number with only an integer part.
     /// 
     /// ## Args
     ///
@@ -82,7 +83,7 @@ trait FixedTrait {
     /// ```
     ///
     fn new_unscaled(mag: u256, sign: bool) -> FixedType;
-    /// # FixedTrait::from\_felt
+    /// # FixedTrait::from_felt
     ///
     /// 
     /// ```rust
@@ -90,6 +91,7 @@ trait FixedTrait {
     /// ```
     /// 
     /// Creates a new fixed point instance from a felt252 value.
+    /// This function is only useful when you want a number with only an integer part.
     ///
     /// ## Args
     /// 
@@ -117,6 +119,7 @@ trait FixedTrait {
     ///```
     ///
     ///Creates a new fixed point instance from an unscaled felt252 value.
+    /// This function is only useful when you want a number with only an integer part.
     ///
     /// ## Args
     /// 

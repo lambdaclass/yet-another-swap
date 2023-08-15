@@ -19,7 +19,7 @@ const MIN_MAG: u256 = 1461501637330902918203684832716283019655932542976; // 2 **
 
 impl FP64x96Impl of FixedTrait {
     fn new(mag: u256, sign: bool) -> FixedType {
-        // TODO: check range
+        assert(mag > MAX, 'fp overflow');
         return FixedType { mag: mag, sign: sign };
     }
 
