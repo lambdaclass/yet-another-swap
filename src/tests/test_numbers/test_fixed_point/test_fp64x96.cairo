@@ -163,7 +163,7 @@ fn test_new_small_add_decimal() {
     let actual = a + b;
     // calculator = 0.00000000000000000011 = 8,715,097,876.56907713528983453696
     // cairo result = 0.00000000000000000109 = 87150978765
-    let expected = FixedTrait::from_felt(1);
+    let expected = FixedTrait::from_felt(87150978765);
     assert(actual == expected, 'test_new_small_add_decimal');
 }
 
