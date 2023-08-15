@@ -233,7 +233,8 @@ fn round(a: FixedType) -> FixedType {
     }
 }
 
-/// Cf: FixedTrait::sqrt docstring
+/// Important! It is advised that the current function 
+/// has a precision error of at least 3 points
 fn sqrt(a: FixedType) -> FixedType {
     assert(a.sign == false, 'must be positive');
     let root = integer::u256_sqrt(a.mag);

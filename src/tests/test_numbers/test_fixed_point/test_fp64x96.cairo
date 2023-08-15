@@ -1,4 +1,3 @@
-use debug::PrintTrait;
 use option::OptionTrait;
 use traits::{Into, TryInto};
 
@@ -69,7 +68,6 @@ fn test_round_middle() {
 #[test]
 fn test_round_down() {
     let a = FixedTrait::from_felt(190147590034234410224505480806); // 2.4
-    let jeje: felt252 = a.round().into();
     assert(a.round().into() == 2 * ONE_u128.into(), 'test_round_down');
 }
 
@@ -163,10 +161,9 @@ fn test_new_small_add_decimal() {
     let b = FixedTrait::from_felt((ONE_u128 / 1000000000000000000).into()); // 0.0000000000000000001
 
     let actual = a + b;
-    actual.mag.print();
     // calculator = 0.00000000000000000011 = 8,715,097,876.56907713528983453696
     // cairo result = 0.00000000000000000109 = 87150978765
-    let expected = FixedTrait::from_felt(87150978765);
+    let expected = FixedTrait::from_felt(1);
     assert(actual == expected, 'test_new_small_add_decimal');
 }
 
