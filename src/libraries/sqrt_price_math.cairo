@@ -1,11 +1,15 @@
 // Functions based on Q64.96 sqrt price and liquidity
 // Contains the math that uses square root of price as a Q64.96 and liquidity to compute deltas
 mod SqrtPriceMath {
+    use fractal_swap::numbers::fixed_point::implementations::fullmath::FullMath;
     use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
-        FP64x96Impl, FixedType, FixedTrait, FP64x96Add, FP64x96Sub, FP64x96Mul, FP64x96Div, FP64x96PartialEq,
-        FP64x96PartialOrd, Q96_RESOLUTION, ONE, MAX
+        FP64x96Impl, FixedType, FixedTrait, FP64x96Add, FP64x96Sub, FP64x96Mul, FP64x96Div,
+        FP64x96PartialEq, FP64x96PartialOrd, Q96_RESOLUTION, ONE, MAX
     };
-    use fractal_swap::utils::math_utils::MathUtils::{BitShiftTrait};
+    use orion::numbers::signed_integer::i128::{i128};
+    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+
+    use fractal_swap::utils::math_utils::MathUtils::{pow};
     use traits::{Into, TryInto};
     use option::OptionTrait;
 
@@ -21,37 +25,27 @@ mod SqrtPriceMath {
     /// @param add Whether to add or remove the amount of token0
     /// @return The price after adding or removing amount, depending on add
     fn get_next_sqrt_price_from_amount0_rounding_up(
-        sqrtPX96: u256, liquidity: u128, amount: u256, add: bool
-    ) -> u256 {
+        sqrtPX96: FixedType, liquidity: u128, amount: u256, add: bool
+    ) -> FixedType {
+        // TODO: check FP::new() signs
         if amount == 0 {
             return sqrtPX96;
         }
-
-        // TODO: remove unwrap
-        let sqrtPX96_fp = FP64x96Impl::from_felt(sqrtPX96.try_into().unwrap());
-        let amount_fp = FP64x96Impl::from_felt(amount.try_into().unwrap());
-        let mut mutable_liquidity = liquidity;
-        let numerator_fp = FP64x96Impl::from_felt(mutable_liquidity.shl(Q96_RESOLUTION).into());
-        let product = amount_fp * sqrtPX96_fp;
+        let numerator = liquidity.into() * pow(2, Q96_RESOLUTION.into());
+        let product = amount * sqrtPX96.mag;
 
         if add {
-            if product / amount_fp == sqrtPX96_fp {
-                let denominator = numerator_fp + product;
-                if denominator >= numerator_fp {
-                    // return uint160(FullMath.mulDivRoundingUp(numerator1, sqrtPX96, denominator));
-                    // mulDivRoundingUp = ceil(a×b÷denominator)
-                    return (numerator_fp * sqrtPX96_fp / denominator).ceil().mag;
+            if product / amount == sqrtPX96.mag {
+                let denominator = numerator + product;
+                if denominator >= numerator {
+                    return FP64x96Impl::new(FullMath::mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false);
                 }
-            // return uint160(UnsafeMath.divRoundingUp(numerator1, (numerator1 / sqrtPX96).add(amount)));
-            // divRoundingUp =  ceil(x / y)
             }
-            return (numerator_fp / ((numerator_fp / sqrtPX96_fp) + amount_fp).ceil()).mag;
+            return FP64x96Impl::new(FullMath::div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false);
         } else {
-            // require((product = amount * sqrtPX96) / amount == sqrtPX96 && numerator1 > product);
-            assert(product / amount_fp == sqrtPX96_fp && numerator_fp > product, '!');
-            let denominator = numerator_fp - product;
-            // return FullMath.mulDivRoundingUp(numerator1, sqrtPX96, denominator).toUint160();
-            return (numerator_fp * sqrtPX96_fp / denominator).ceil().mag;
+            assert(FP64x96Impl::new(product / amount, false) == sqrtPX96 && numerator > product, '!');
+            let denominator = numerator - product;
+            return FP64x96Impl::new(FullMath::mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false);
         }
     }
 
@@ -66,36 +60,26 @@ mod SqrtPriceMath {
     /// @param add Whether to add, or remove, the amount of token1
     /// @return The price after adding or removing `amount`
     fn get_next_sqrt_price_from_amount1_rounding_down(
-        sqrtPX96: u256, liquidity: u128, amount: u256, add: bool
-    ) -> u256 {
+        sqrtPX96: FixedType, liquidity: u128, amount: u256, add: bool
+    ) -> FixedType {
         // if we're adding (subtracting), rounding down requires rounding the quotient down (up)
         // in both cases, avoid a mulDiv for most inputs
-        // TODO: Fix shift mutable error
-        // TODO: remove unwrap()
-        let amount_fp = FP64x96Impl::from_felt(amount.try_into().unwrap());
-        let mut mutable_amount = amount;
-        let shifted_amount = mutable_amount.shl(Q96_RESOLUTION.into());
-        let liquidity_fp = FP64x96Impl::from_felt(liquidity.into());
-        let sqrtPX96_fp = FP64x96Impl::from_felt(sqrtPX96.try_into().unwrap());
-
+        // TODO: check FP::new() signs
         if add {
             let mut quotient = if amount <= MAX {
-                // TODO: remove unwrap()
-                FP64x96Impl::from_felt((shifted_amount.try_into().unwrap() / liquidity).into())
+                amount * pow(2, Q96_RESOLUTION.into()) / liquidity.into()
             } else {
-                // floor(a×b÷denominator)
-                (amount_fp * FP64x96Impl::from_felt(ONE.try_into().unwrap()) / liquidity_fp).floor()
+                FullMath::mul_div(amount, ONE, liquidity.into())
             };
-            return (sqrtPX96_fp + quotient).mag;
+            return (sqrtPX96 + FP64x96Impl::new(quotient, false));
         } else {
             let mut quotient = if amount <= MAX {
-                (FP64x96Impl::from_felt(shifted_amount.try_into().unwrap()) / liquidity_fp).ceil()
-            // ceil(x / y) 
+                FullMath::div_rounding_up(amount * pow(2, Q96_RESOLUTION.into()), liquidity.into())
             } else {
-                // ceil(a×b÷denominator)
-                (amount_fp * FP64x96Impl::from_felt(ONE.try_into().unwrap()) / liquidity_fp).ceil()
+                FullMath::mul_div_rounding_up(amount, ONE, liquidity.into())
             };
-            return (sqrtPX96_fp - quotient).mag;
+            assert(sqrtPX96 > FP64x96Impl::new(quotient, false), 'sqrtPX96_fp < quotient');
+            return (sqrtPX96 - FP64x96Impl::new(quotient, false));
         }
     }
 
@@ -107,9 +91,9 @@ mod SqrtPriceMath {
     /// @param zeroForOne Whether the amount in is token0 or token1
     /// @return sqrtQX96 The price after adding the input amount to token0 or token1
     fn get_next_sqrt_price_from_input(
-        sqrtPX96: u256, liquidity: u128, amount_in: u256, zero_for_one: bool
-    ) -> u256 {
-        assert(sqrtPX96 > 0 && liquidity > 0, '!');
+        sqrtPX96: FixedType, liquidity: u128, amount_in: u256, zero_for_one: bool
+    ) -> FixedType {
+        assert(sqrtPX96.sign == false && liquidity > 0, '!');
         if zero_for_one {
             return get_next_sqrt_price_from_amount0_rounding_up(
                 sqrtPX96, liquidity, amount_in, true
@@ -129,17 +113,17 @@ mod SqrtPriceMath {
     /// @param zeroForOne Whether the amount out is token0 or token1
     /// @return sqrtQX96 The price after removing the output amount of token0 or token1
     fn get_next_sqrt_price_from_output(
-        sqrtPX96: u256, liquidity: u128, amount_out: u256, zero_for_one: bool
-    ) -> u256 {
-        assert(sqrtPX96 > 0 && liquidity > 0, '!');
+        sqrtPX96: FixedType, liquidity: u128, amount_out: u256, zero_for_one: bool
+    ) -> FixedType {
+        assert(sqrtPX96.sign == false && liquidity > 0, 'sqrtPX96 & liquidity must be >0');
 
         if zero_for_one {
             return get_next_sqrt_price_from_amount1_rounding_down(
-                sqrtPX96, liquidity, amount_out, true
+                sqrtPX96, liquidity, amount_out, false
             );
         } else {
             return get_next_sqrt_price_from_amount0_rounding_up(
-                sqrtPX96, liquidity, amount_out, true
+                sqrtPX96, liquidity, amount_out, false
             );
         }
     }
@@ -153,40 +137,24 @@ mod SqrtPriceMath {
     /// @param roundUp Whether to round the amount up or down
     /// @return amount0 Amount of token0 required to cover a position of size liquidity between the two passed prices
     fn get_amount_0_delta(
-        sqrt_ratio_AX96: u256, sqrt_ratio_BX96: u256, liquidity: u128, round_up: bool
+        sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: u128, round_up: bool
     ) -> u256 {
-        // TODO: Search for an alternative to declare a variable without assignment? btw its safe
-        let mut sqrt_ratio_AX96_fp = FP64x96Impl::from_felt(1);
-        let mut sqrt_ratio_BX96_fp = FP64x96Impl::from_felt(1);
+        let mut sqrt_ratio_AX96_1 = sqrt_ratio_AX96;
+        let mut sqrt_ratio_BX96_1 = sqrt_ratio_BX96;
 
         if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
-            sqrt_ratio_AX96_fp = FP64x96Impl::from_felt(sqrt_ratio_BX96.try_into().unwrap());
-            sqrt_ratio_BX96_fp = FP64x96Impl::from_felt(sqrt_ratio_AX96.try_into().unwrap());
-        } else {
-            sqrt_ratio_AX96_fp = FP64x96Impl::from_felt(sqrt_ratio_AX96.try_into().unwrap());
-            sqrt_ratio_BX96_fp = FP64x96Impl::from_felt(sqrt_ratio_BX96.try_into().unwrap());
+            sqrt_ratio_AX96_1 = sqrt_ratio_BX96;   
+            sqrt_ratio_BX96_1 = sqrt_ratio_AX96;
         }
 
-        let mut mutable_liquidity = liquidity;
-        let numerator1_fp = FP64x96Impl::from_felt(
-            mutable_liquidity.shl(Q96_RESOLUTION.into()).into()
-        );
-        let numerator2_fp = sqrt_ratio_BX96_fp - sqrt_ratio_AX96_fp;
-
-        assert(sqrt_ratio_AX96_fp.sign == false, '!');
+        let numerator1 = FP64x96Impl::new(liquidity.into() * pow(2, Q96_RESOLUTION.into()), false);
+        let numerator2 = sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1;
+        assert(sqrt_ratio_AX96_1.sign == false, 'sqrt_ratio_AX96 cannot be neg');
 
         if round_up {
-            // divRoundingUp(mulDivRoundingUp(numerator1, numerator2, sqrtRatioBX96), sqrtRatioAX96)
-            // divRoundingUp =  ceil(x / y)
-            // mulDivRoundingUp = ceil(a×b÷denominator)
-            return ((numerator1_fp * numerator2_fp / sqrt_ratio_BX96_fp).ceil()
-                / sqrt_ratio_AX96_fp)
-                .ceil()
-                .mag;
+            return FullMath::div_rounding_up(FullMath::mul_div_rounding_up(numerator1.mag, numerator2.mag, sqrt_ratio_BX96_1.mag), sqrt_ratio_AX96_1.mag);
         } else {
-            // return mulDiv(numerator1, numerator2, sqrtRatioBX96) / sqrtRatioAX96;
-            // muldiv = floor(a×b÷denominator)
-            return (numerator1_fp * numerator2_fp / sqrt_ratio_BX96_fp).floor().mag;
+            return FullMath::mul_div(numerator1.mag, numerator2.mag, sqrt_ratio_BX96_1.mag) / sqrt_ratio_AX96_1.mag;
         }
     }
 
@@ -198,66 +166,40 @@ mod SqrtPriceMath {
     /// @param roundUp Whether to round the amount up, or down
     /// @return amount1 Amount of token1 required to cover a position of size liquidity between the two passed prices
     fn get_amount_1_delta(
-        sqrt_ratio_AX96: u256, sqrt_ratio_BX96: u256, liquidity: u128, round_up: bool
+        sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: u128, round_up: bool
     ) -> u256 {
-        // TODO: Search for an alternative to declare a variable without assignment? 
-        let mut sqrt_ratio_AX96_fp = FP64x96Impl::from_felt(1);
-        let mut sqrt_ratio_BX96_fp = FP64x96Impl::from_felt(1);
+        let mut sqrt_ratio_AX96_1 = sqrt_ratio_AX96;
+        let mut sqrt_ratio_BX96_1 = sqrt_ratio_BX96;
 
         if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
-            sqrt_ratio_AX96_fp = FP64x96Impl::from_felt(sqrt_ratio_BX96.try_into().unwrap());
-            sqrt_ratio_BX96_fp = FP64x96Impl::from_felt(sqrt_ratio_AX96.try_into().unwrap());
-        } else {
-            sqrt_ratio_AX96_fp = FP64x96Impl::from_felt(sqrt_ratio_AX96.try_into().unwrap());
-            sqrt_ratio_BX96_fp = FP64x96Impl::from_felt(sqrt_ratio_BX96.try_into().unwrap());
+            sqrt_ratio_AX96_1 = sqrt_ratio_BX96;   
+            sqrt_ratio_BX96_1 = sqrt_ratio_AX96;
         }
 
         let liquidity_fp = FP64x96Impl::from_felt(liquidity.into());
 
         if round_up {
-            // mulDivRoundingUp(liquidity, sqrtRatioBX96 - sqrtRatioAX96, FixedPoint96.Q96)
-            // mulDivRoundingUp = ceil(a×b÷denominator)
-            return (liquidity_fp * (sqrt_ratio_BX96_fp - sqrt_ratio_AX96_fp) / FP64x96Impl::from_felt(ONE.try_into().unwrap())).ceil().mag;
+            return FullMath::mul_div_rounding_up(liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE);
         } else {
-            // FullMath.mulDiv(liquidity, sqrtRatioBX96 - sqrtRatioAX96, FixedPoint96.Q96);
-            // floor(a×b÷denominator)
-            return (liquidity_fp * (sqrt_ratio_BX96_fp - sqrt_ratio_AX96_fp) / FP64x96Impl::from_felt(ONE.try_into().unwrap())).floor().mag;
+            return FullMath::mul_div_rounding_up(liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE);
         }
-    }  
+    }
 
-    /// @notice Helper that gets signed token0 delta
-    /// @param sqrtRatioAX96 A sqrt price
-    /// @param sqrtRatioBX96 Another sqrt price
-    /// @param liquidity The change in liquidity for which to compute the amount0 delta
-    /// @return amount0 Amount of token0 corresponding to the passed liquidityDelta between the two prices
-    // fn get_amount_0_delta_wo_round(sqrt_ratio_AX96: u256, sqrt_ratio_BX96: u256, liquidity: u128) -> FixedType {
-    //     if liquidity < 0 {
-    //         return FP64x96Impl::from_felt(-get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, -liquidity, false).try_into().unwrap());
+    // TODO: block by i256 PR
+    // fn get_amount_0_delta_signed_token(sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128) -> i256 {
+    //     if liquidity < IntegerTrait::<i128>::new(0, false) {
+    //         return FP64x96Impl::new(get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false), true);
     //     } else {
-    //         return FP64x96Impl::from_felt(get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity, true).try_into().unwrap());
+    //         return FP64x96Impl::new(get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false);
     //     } 
     // }
 
-    /// @notice Helper that gets signed token1 delta
-    /// @param sqrtRatioAX96 A sqrt price
-    /// @param sqrtRatioBX96 Another sqrt price
-    /// @param liquidity The change in liquidity for which to compute the amount1 delta
-    /// @return amount1 Amount of token1 corresponding to the passed liquidityDelta between the two prices
-    // function getAmount1Delta(
-    //     uint160 sqrtRatioAX96,
-    //     uint160 sqrtRatioBX96,
-    //     int128 liquidity
-    // ) internal pure returns (int256 amount1) {
-    //     return
-    //         liquidity < 0
-    //             ? -getAmount1Delta(sqrtRatioAX96, sqrtRatioBX96, uint128(-liquidity), false).toInt256()
-    //             : getAmount1Delta(sqrtRatioAX96, sqrtRatioBX96, uint128(liquidity), true).toInt256();
-    // }
-    //     fn get_amount_1_delta_wo_round(sqrt_ratio_AX96: u256, sqrt_ratio_BX96: u256, liquidity: u128) -> FixedType {
-    //     if liquidity < 0 {
-    //         return FP64x96Impl::from_felt(-get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, -liquidity, false).try_into().unwrap());
+    // // TODO: this should return i256
+    // fn get_amount_1_delta_signed_token(sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128) -> i256 {
+    //     if liquidity < IntegerTrait::<i128>::new(0, false) {
+    //         return FP64x96Impl::new(get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false), true);
     //     } else {
-    //         return FP64x96Impl::from_felt(get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity, true).try_into().unwrap());
+    //         return FP64x96Impl::new(get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false);
     //     } 
     // }
 }
