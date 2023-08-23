@@ -2,7 +2,9 @@ mod TestSqrtPriceMath {
     use fractal_swap::libraries::sqrt_price_math::SqrtPriceMath;
     use fractal_swap::utils::math_utils::MathUtils::{pow};
     use integer::{BoundedInt};
-    use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION};
+    use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
+        FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
+    };
     use traits::{Into, TryInto};
     use option::OptionTrait;
 
@@ -12,7 +14,9 @@ mod TestSqrtPriceMath {
     #[test]
     #[should_panic]
     fn test_fail_if_price_is_zero() {
-        SqrtPriceMath::get_next_sqrt_price_from_output(FP64x96Impl::from_felt(0), 0, expand_to_18_decimals(1) / 10, false);     
+        SqrtPriceMath::get_next_sqrt_price_from_output(
+            FP64x96Impl::from_felt(0), 0, expand_to_18_decimals(1) / 10, false
+        );
     }
 
     // it('fails if liquidity is zero', async () => {
@@ -21,7 +25,9 @@ mod TestSqrtPriceMath {
     #[test]
     #[should_panic]
     fn test_fail_if_liquidity_is_zero() {
-        SqrtPriceMath::get_next_sqrt_price_from_output(FP64x96Impl::from_felt(1), 0, expand_to_18_decimals(1) / 10, true);     
+        SqrtPriceMath::get_next_sqrt_price_from_output(
+            FP64x96Impl::from_felt(1), 0, expand_to_18_decimals(1) / 10, true
+        );
     }
 
     // it('fails if output amount is exactly the virtual reserves of token0', async () => {
@@ -36,7 +42,7 @@ mod TestSqrtPriceMath {
         let price = FP64x96Impl::from_felt(20282409603651670423947251286016);
         let liquidity = 1024;
         let amount_out = 4;
-        SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, false);     
+        SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, false);
     }
 
     // it('fails if output amount is greater than virtual reserves of token0', async () => {
@@ -51,7 +57,7 @@ mod TestSqrtPriceMath {
         let price = FP64x96Impl::from_felt(20282409603651670423947251286016);
         let liquidity = 1024;
         let amount_out = 5;
-        SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, false);     
+        SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, false);
     }
 
     // it('fails if output amount is exactly the virtual reserves of token1', async () => {
@@ -66,7 +72,7 @@ mod TestSqrtPriceMath {
         let price = FP64x96Impl::from_felt(20282409603651670423947251286016);
         let liquidity = 1024;
         let amount_out = 262144;
-        SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, true);     
+        SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, true);
     }
 
     // it('fails if output amount is greater than virtual reserves of token1', async () => {
@@ -78,10 +84,10 @@ mod TestSqrtPriceMath {
     #[test]
     #[should_panic]
     fn test_fail_output_amount_gt_virtual_reserves_of_token_1() {
-        let price =  FP64x96Impl::from_felt(20282409603651670423947251286016);
+        let price = FP64x96Impl::from_felt(20282409603651670423947251286016);
         let liquidity = 1024;
         let amount_out = 262145;
-        SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, true);     
+        SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, true);
     }
 
     // it('succeeds if output amount is just less than the virtual reserves of token1', async () => {
@@ -117,10 +123,10 @@ mod TestSqrtPriceMath {
     #[test]
     #[should_panic]
     fn test_puzzling_edhidna() {
-        let price =  FP64x96Impl::from_felt(20282409603651670423947251286016);
+        let price = FP64x96Impl::from_felt(20282409603651670423947251286016);
         let liquidity = 1024;
         let amount_out = 4;
-        SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, false);     
+        SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, false);
     }
 
     //  it('returns input price if amount in is zero and zeroForOne = true', async () => {
@@ -130,11 +136,11 @@ mod TestSqrtPriceMath {
     #[test]
     #[available_gas(20000000)]
     fn test_input_price_if_amount_is_in_zero_and_zero_for_one_true() {
-        let price =  encode_price_sqrt(1, 1);
+        let price = encode_price_sqrt(1, 1);
         let liquidity: u128 = expand_to_18_decimals(1).try_into().unwrap() / 10;
-        let actual = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, 0, true);  
+        let actual = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, 0, true);
 
-        assert(actual == price, 'actual not eq to price')   
+        assert(actual == price, 'actual not eq to price')
     }
 
     // it('returns input price if amount in is zero and zeroForOne = false', async () => {
@@ -146,11 +152,11 @@ mod TestSqrtPriceMath {
     #[test]
     #[available_gas(20000000)]
     fn test_input_price_if_amount_is_in_zero_and_zero_for_one_false() {
-        let price =  encode_price_sqrt(1, 1);
+        let price = encode_price_sqrt(1, 1);
         let liquidity: u128 = expand_to_18_decimals(1).try_into().unwrap() / 10;
-        let actual = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, 0, false);  
+        let actual = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, 0, false);
 
-        assert(actual == price, 'actual not eq to price')   
+        assert(actual == price, 'actual not eq to price')
     }
 
     // it('output amount of 0.1 token1', async () => {
@@ -209,7 +215,7 @@ mod TestSqrtPriceMath {
         let price = encode_price_sqrt(1, 1);
         let liquidity = 1;
         let amount_out: u256 = BoundedInt::max();
-        SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, true);     
+        SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, true);
     }
 
     // it('reverts if amountOut is impossible in one for zero direction', async () => {
@@ -222,7 +228,7 @@ mod TestSqrtPriceMath {
         let price = encode_price_sqrt(1, 1);
         let liquidity = 1;
         let amount_out: u256 = BoundedInt::max();
-        SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, false);     
+        SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, false);
     }
 
     // it('returns 0 if liquidity is 0', async () => {
@@ -232,11 +238,13 @@ mod TestSqrtPriceMath {
     #[test]
     #[available_gas(20000000)]
     fn test_amount_0_delta_returns_0_if_liquidity_is_0() {
-        let actual = SqrtPriceMath::get_amount_0_delta(encode_price_sqrt(1, 1), encode_price_sqrt(2, 1), 0, true);
+        let actual = SqrtPriceMath::get_amount_0_delta(
+            encode_price_sqrt(1, 1), encode_price_sqrt(2, 1), 0, true
+        );
         let expected = 0;
         assert(actual == expected, 'delta_returns_0_if_liq_is_0')
     }
-    
+
     // it('returns 0 if prices are equal', async () => {
     //   const amount0 = await sqrtPriceMath.getAmount0Delta(encodePriceSqrt(1, 1), encodePriceSqrt(1, 1), 0, true)
     //   expect(amount0).to.eq(0)
@@ -244,7 +252,9 @@ mod TestSqrtPriceMath {
     #[test]
     #[available_gas(20000000)]
     fn test_amount_0_delta_returns_0_if_prices_are_eq() {
-        let actual = SqrtPriceMath::get_amount_0_delta(encode_price_sqrt(1, 1), encode_price_sqrt(1, 1), 0, true);
+        let actual = SqrtPriceMath::get_amount_0_delta(
+            encode_price_sqrt(1, 1), encode_price_sqrt(1, 1), 0, true
+        );
         let expected = 0;
         assert(actual == expected, 'delta_return_0_if_prices_are_eq')
     }
@@ -272,7 +282,7 @@ mod TestSqrtPriceMath {
     fn test_amount_0_delta_returns_0_dot_1_amount1_for_price_of_1_to_1_dot_21() {
         let amount0 = SqrtPriceMath::get_amount_0_delta(
             encode_price_sqrt(1, 1),
-            encode_price_sqrt(121, 100), 
+            encode_price_sqrt(121, 100),
             expand_to_18_decimals(1).try_into().unwrap(),
             true
         );

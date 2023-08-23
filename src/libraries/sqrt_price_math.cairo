@@ -38,14 +38,22 @@ mod SqrtPriceMath {
             if product / amount == sqrtPX96.mag {
                 let denominator = numerator + product;
                 if denominator >= numerator {
-                    return FP64x96Impl::new(FullMath::mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false);
+                    return FP64x96Impl::new(
+                        FullMath::mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false
+                    );
                 }
             }
-            return FP64x96Impl::new(FullMath::div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false);
+            return FP64x96Impl::new(
+                FullMath::div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false
+            );
         } else {
-            assert(FP64x96Impl::new(product / amount, false) == sqrtPX96 && numerator > product, '!');
+            assert(
+                FP64x96Impl::new(product / amount, false) == sqrtPX96 && numerator > product, '!'
+            );
             let denominator = numerator - product;
-            return FP64x96Impl::new(FullMath::mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false);
+            return FP64x96Impl::new(
+                FullMath::mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false
+            );
         }
     }
 
@@ -143,7 +151,7 @@ mod SqrtPriceMath {
         let mut sqrt_ratio_BX96_1 = sqrt_ratio_BX96;
 
         if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
-            sqrt_ratio_AX96_1 = sqrt_ratio_BX96;   
+            sqrt_ratio_AX96_1 = sqrt_ratio_BX96;
             sqrt_ratio_BX96_1 = sqrt_ratio_AX96;
         }
 
@@ -152,9 +160,15 @@ mod SqrtPriceMath {
         assert(sqrt_ratio_AX96_1.sign == false, 'sqrt_ratio_AX96 cannot be neg');
 
         if round_up {
-            return FullMath::div_rounding_up(FullMath::mul_div_rounding_up(numerator1.mag, numerator2.mag, sqrt_ratio_BX96_1.mag), sqrt_ratio_AX96_1.mag);
+            return FullMath::div_rounding_up(
+                FullMath::mul_div_rounding_up(
+                    numerator1.mag, numerator2.mag, sqrt_ratio_BX96_1.mag
+                ),
+                sqrt_ratio_AX96_1.mag
+            );
         } else {
-            return FullMath::mul_div(numerator1.mag, numerator2.mag, sqrt_ratio_BX96_1.mag) / sqrt_ratio_AX96_1.mag;
+            return FullMath::mul_div(numerator1.mag, numerator2.mag, sqrt_ratio_BX96_1.mag)
+                / sqrt_ratio_AX96_1.mag;
         }
     }
 
@@ -172,34 +186,37 @@ mod SqrtPriceMath {
         let mut sqrt_ratio_BX96_1 = sqrt_ratio_BX96;
 
         if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
-            sqrt_ratio_AX96_1 = sqrt_ratio_BX96;   
+            sqrt_ratio_AX96_1 = sqrt_ratio_BX96;
             sqrt_ratio_BX96_1 = sqrt_ratio_AX96;
         }
 
         let liquidity_fp = FP64x96Impl::from_felt(liquidity.into());
 
         if round_up {
-            return FullMath::mul_div_rounding_up(liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE);
+            return FullMath::mul_div_rounding_up(
+                liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE
+            );
         } else {
-            return FullMath::mul_div_rounding_up(liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE);
+            return FullMath::mul_div_rounding_up(
+                liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE
+            );
         }
     }
+// TODO: block by i256 PR
+// fn get_amount_0_delta_signed_token(sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128) -> i256 {
+//     if liquidity < IntegerTrait::<i128>::new(0, false) {
+//         return FP64x96Impl::new(get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false), true);
+//     } else {
+//         return FP64x96Impl::new(get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false);
+//     } 
+// }
 
-    // TODO: block by i256 PR
-    // fn get_amount_0_delta_signed_token(sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128) -> i256 {
-    //     if liquidity < IntegerTrait::<i128>::new(0, false) {
-    //         return FP64x96Impl::new(get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false), true);
-    //     } else {
-    //         return FP64x96Impl::new(get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false);
-    //     } 
-    // }
-
-    // // TODO: this should return i256
-    // fn get_amount_1_delta_signed_token(sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128) -> i256 {
-    //     if liquidity < IntegerTrait::<i128>::new(0, false) {
-    //         return FP64x96Impl::new(get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false), true);
-    //     } else {
-    //         return FP64x96Impl::new(get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false);
-    //     } 
-    // }
+// // TODO: this should return i256
+// fn get_amount_1_delta_signed_token(sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128) -> i256 {
+//     if liquidity < IntegerTrait::<i128>::new(0, false) {
+//         return FP64x96Impl::new(get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false), true);
+//     } else {
+//         return FP64x96Impl::new(get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false);
+//     } 
+// }
 }
