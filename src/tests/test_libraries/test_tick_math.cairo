@@ -9,17 +9,18 @@ use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
 };
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(200000000)]
+#[should_panic(expected: ('T', ))]
 fn test_get_sqrt_ratio_at_tick_reverts_minus1() {
     let value = MIN_TICK() - IntegerTrait::<i32>::new(1, false);
     get_sqrt_ratio_at_tick(value);
 }
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(200000000)]
+#[should_panic(expected: ('T', ))]
 fn test_get_sqrt_ratio_at_tick_reverts_plus1() {
     let value = MAX_TICK() + IntegerTrait::<i32>::new(1, false);
-    // reverts with "T"
     get_sqrt_ratio_at_tick(value);
 }
 
