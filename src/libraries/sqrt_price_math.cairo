@@ -14,6 +14,7 @@ mod SqrtPriceMath {
     use fractal_swap::utils::math_utils::MathUtils::{pow};
     use traits::{Into, TryInto};
     use option::OptionTrait;
+    use debug::PrintTrait;
 
     /// @notice Gets the next sqrt price given a delta of token0
     /// @dev Always rounds up, because in the exact output case (increasing price) we need to move the price at least
@@ -29,12 +30,12 @@ mod SqrtPriceMath {
     fn get_next_sqrt_price_from_amount0_rounding_up(
         sqrtPX96: FixedType, liquidity: u128, amount: u256, add: bool
     ) -> FixedType {
-        // TODO: check FP::new() signs
         if amount == 0 {
             return sqrtPX96;
         }
         let numerator = liquidity.into() * pow(2, Q96_RESOLUTION.into());
         let product = amount * sqrtPX96.mag;
+        'price_rounding'.print();
 
         if add {
             if product / amount == sqrtPX96.mag {

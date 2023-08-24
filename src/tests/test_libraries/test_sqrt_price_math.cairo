@@ -19,9 +19,6 @@ mod TestSqrtPriceMath {
         use traits::{Into, TryInto};
         use option::OptionTrait;
 
-        // it('fails if price is zero', async () => {
-        //     await expect(sqrtPriceMath.getNextSqrtPriceFromInput(0, 0, expandTo18Decimals(1).div(10), false)).to.be.reverted
-        // })
         #[test]
         #[should_panic]
         fn test_fail_if_price_is_zero() {
@@ -30,9 +27,6 @@ mod TestSqrtPriceMath {
             );
         }
 
-        // it('fails if liquidity is zero', async () => {
-        //     await expect(sqrtPriceMath.getNextSqrtPriceFromInput(1, 0, expandTo18Decimals(1).div(10), true)).to.be.reverted
-        // })
         #[test]
         #[should_panic]
         fn test_fail_if_liquidity_is_zero() {
@@ -41,12 +35,6 @@ mod TestSqrtPriceMath {
             );
         }
 
-        // it('fails if input amount overflows the price', async () => {
-        //     const price = BigNumber.from(2).pow(160).sub(1)
-        //     const liquidity = 1024
-        //     const amountIn = 1024
-        //     await expect(sqrtPriceMath.getNextSqrtPriceFromInput(price, liquidity, amountIn, false)).to.be.reverted
-        // })
         #[test]
         #[should_panic]
         fn test_fail_if_input_amount_overflows_price() {
@@ -56,12 +44,6 @@ mod TestSqrtPriceMath {
             SqrtPriceMath::get_next_sqrt_price_from_input(price, liquidity, amount_in, false);
         }
 
-        // it('any input amount cannot underflow the price', async () => {
-        //     const price = 1
-        //     const liquidity = 1
-        //     const amountIn = BigNumber.from(2).pow(255)
-        //     expect(await sqrtPriceMath.getNextSqrtPriceFromInput(price, liquidity, amountIn, true)).to.eq(1)
-        // })
         #[test]
         #[should_panic]
         fn test_fail_if_input_amount_cannot_underflow_the_price() {
@@ -71,10 +53,6 @@ mod TestSqrtPriceMath {
             SqrtPriceMath::get_next_sqrt_price_from_input(price, liquidity, amount_in, false);
         }
 
-        // it('returns input price if amount in is zero and zeroForOne = true', async () => {
-        //   const price = encodePriceSqrt(1, 1)
-        //   expect(await sqrtPriceMath.getNextSqrtPriceFromInput(price, expandTo18Decimals(1).div(10), 0, true)).to.eq(price)
-        // })
         #[test]
         #[available_gas(20000000)]
         fn test_returns_input_price_if_amount_in_is_zero_and_zero_for_one_true() {
@@ -89,10 +67,6 @@ mod TestSqrtPriceMath {
             assert(actual == price, 'assert error');
         }
 
-        // it('returns input price if amount in is zero and zeroForOne = false', async () => {
-        //     const price = encodePriceSqrt(1, 1)
-        //     expect(await sqrtPriceMath.getNextSqrtPriceFromInput(price, expandTo18Decimals(1).div(10), 0, false)).to.eq(price)
-        // })
         #[test]
         #[available_gas(20000000)]
         fn test_returns_input_price_if_amount_in_is_zero_and_zero_for_one_false() {
@@ -106,25 +80,18 @@ mod TestSqrtPriceMath {
 
             assert(actual == price, 'assert error');
         }
+    // #[test]
+    // #[available_gas(200000000)]
+    // fn test_returns_the_minumum_price_for_max_inputs() {
+    //     let price = FP64x96Impl::from_felt((pow(2, 96) - 1).try_into().unwrap());
+    //     let liquidity: u128 = BoundedInt::max();
+    //     let max_liquidity: u256 = mul_div(liquidity.into(), pow(2, 96), price.mag);
+    //     let max_amount_no_overflow: u256 = BoundedInt::max() - max_liquidity;
 
-        // it('returns the minimum price for max inputs', async () => {
-        //     const sqrtP = BigNumber.from(2).pow(160).sub(1)
-        //     const liquidity = MaxUint128
-        //     const maxAmountNoOverflow = MaxUint256.sub(liquidity.shl(96).div(sqrtP))
-        //     expect(await sqrtPriceMath.getNextSqrtPriceFromInput(sqrtP, liquidity, maxAmountNoOverflow, true)).to.eq('1')
-        // })
-        #[test]
-        #[available_gas(200000000)]
-        fn test_returns_the_minumum_price_for_max_inputs() {
-            let price = FP64x96Impl::from_felt((pow(2, 96) - 1).try_into().unwrap());
-            let liquidity: u128 = BoundedInt::max();
-        // let max_liquidity: u256 = mul_div(liquidity.into(), pow(2, 96), price.mag);
-        // let max_amount_no_overflow: u256 = BoundedInt::max() - max_liquidity;
+    //     let actual = SqrtPriceMath::get_next_sqrt_price_from_input(price, liquidity, max_amount_no_overflow, true);
 
-        // let actual = SqrtPriceMath::get_next_sqrt_price_from_input(price, liquidity, max_amount_no_overflow, true);
-
-        // assert(actual == FP64x96Impl::from_felt(1), 'assert error');
-        }
+    // // assert(actual == FP64x96Impl::from_felt(1), 'assert error');
+    // }
     }
 
     mod GetNextSqrtPriceFromOutput {
@@ -139,9 +106,6 @@ mod TestSqrtPriceMath {
         use option::OptionTrait;
         use traits::{Into, TryInto};
 
-        // it('fails if price is zero', async () => {
-        //   await expect(sqrtPriceMath.getNextSqrtPriceFromOutput(0, 0, expandTo18Decimals(1).div(10), false)).to.be.reverted
-        // })
         #[test]
         #[should_panic]
         fn test_fail_if_price_is_zero() {
@@ -150,9 +114,6 @@ mod TestSqrtPriceMath {
             );
         }
 
-        // it('fails if liquidity is zero', async () => {
-        //   await expect(sqrtPriceMath.getNextSqrtPriceFromOutput(1, 0, expandTo18Decimals(1).div(10), true)).to.be.reverted
-        // })
         #[test]
         #[should_panic]
         fn test_fail_if_liquidity_is_zero() {
@@ -161,12 +122,6 @@ mod TestSqrtPriceMath {
             );
         }
 
-        // it('fails if output amount is exactly the virtual reserves of token0', async () => {
-        //   const price = '20282409603651670423947251286016'
-        //   const liquidity = 1024
-        //   const amountOut = 4
-        //   await expect(sqrtPriceMath.getNextSqrtPriceFromOutput(price, liquidity, amountOut, false)).to.be.reverted
-        // })
         #[test]
         #[should_panic]
         fn test_fail_output_amount_eq_virtual_reserves_of_token_0() {
@@ -176,12 +131,6 @@ mod TestSqrtPriceMath {
             SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, false);
         }
 
-        // it('fails if output amount is greater than virtual reserves of token0', async () => {
-        //   const price = '20282409603651670423947251286016'
-        //   const liquidity = 1024
-        //   const amountOut = 5
-        //   await expect(sqrtPriceMath.getNextSqrtPriceFromOutput(price, liquidity, amountOut, false)).to.be.reverted
-        // })
         #[test]
         #[should_panic]
         fn test_fail_output_amount_gt_virtual_reserves_of_token_0() {
@@ -191,12 +140,6 @@ mod TestSqrtPriceMath {
             SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, false);
         }
 
-        // it('fails if output amount is exactly the virtual reserves of token1', async () => {
-        //   const price = '20282409603651670423947251286016'
-        //   const liquidity = 1024
-        //   const amountOut = 262144
-        //   await expect(sqrtPriceMath.getNextSqrtPriceFromOutput(price, liquidity, amountOut, true)).to.be.reverted
-        // })
         #[test]
         #[should_panic]
         fn test_fail_output_amount_eq_virtual_reserves_of_token_1() {
@@ -206,12 +149,6 @@ mod TestSqrtPriceMath {
             SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, true);
         }
 
-        // it('fails if output amount is greater than virtual reserves of token1', async () => {
-        //   const price = '20282409603651670423947251286016'
-        //   const liquidity = 1024
-        //   const amountOut = 262145
-        //   await expect(sqrtPriceMath.getNextSqrtPriceFromOutput(price, liquidity, amountOut, true)).to.be.reverted
-        // })
         #[test]
         #[should_panic]
         fn test_fail_output_amount_gt_virtual_reserves_of_token_1() {
@@ -221,13 +158,6 @@ mod TestSqrtPriceMath {
             SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, true);
         }
 
-        // it('succeeds if output amount is just less than the virtual reserves of token1', async () => {
-        //   const price = '20282409603651670423947251286016'
-        //   const liquidity = 1024
-        //   const amountOut = 262143
-        //   const sqrtQ = await sqrtPriceMath.getNextSqrtPriceFromOutput(price, liquidity, amountOut, true)
-        //   expect(sqrtQ).to.eq('77371252455336267181195264')
-        // })
         #[test]
         #[available_gas(20000000)]
         fn test_output_amount_is_lt_virtual_reservers_of_token_1() {
@@ -243,12 +173,6 @@ mod TestSqrtPriceMath {
             assert(actual == expected, 'amount_lt_reservers_of_token_1')
         }
 
-        // it('puzzling echidna test', async () => {
-        //   const price = '20282409603651670423947251286016'
-        //   const liquidity = 1024
-        //   const amountOut = 4
-        //   await expect(sqrtPriceMath.getNextSqrtPriceFromOutput(price, liquidity, amountOut, false)).to.be.reverted
-        // })
         #[test]
         #[should_panic]
         fn test_puzzling_edhidna() {
@@ -258,10 +182,6 @@ mod TestSqrtPriceMath {
             SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, false);
         }
 
-        //  it('returns input price if amount in is zero and zeroForOne = true', async () => {
-        //   const price = encodePriceSqrt(1, 1)
-        //   expect(await sqrtPriceMath.getNextSqrtPriceFromOutput(price, expandTo18Decimals(1).div(10), 0, true)).to.eq(price)
-        // })
         #[test]
         #[available_gas(20000000)]
         fn test_input_price_if_amount_is_in_zero_and_zero_for_one_true() {
@@ -272,12 +192,6 @@ mod TestSqrtPriceMath {
             assert(actual == price, 'actual not eq to price')
         }
 
-        // it('returns input price if amount in is zero and zeroForOne = false', async () => {
-        //   const price = encodePriceSqrt(1, 1)
-        //   expect(await sqrtPriceMath.getNextSqrtPriceFromOutput(price, expandTo18Decimals(1).div(10), 0, false)).to.eq(
-        //     price
-        //   )
-        // })
         #[test]
         #[available_gas(20000000)]
         fn test_input_price_if_amount_is_in_zero_and_zero_for_one_false() {
@@ -288,15 +202,6 @@ mod TestSqrtPriceMath {
             assert(actual == price, 'actual not eq to price')
         }
 
-        // it('output amount of 0.1 token1', async () => {
-        //   const sqrtQ = await sqrtPriceMath.getNextSqrtPriceFromOutput(
-        //     encodePriceSqrt(1, 1),
-        //     expandTo18Decimals(1),
-        //     expandTo18Decimals(1).div(10),
-        //     false
-        //   )
-        //   expect(sqrtQ).to.eq('88031291682515930659493278152')
-        // })
         #[test]
         #[available_gas(20000000)]
         fn test_output_amount_of_0_dot_1_token_1_zero_for_one_false() {
@@ -311,15 +216,6 @@ mod TestSqrtPriceMath {
             assert(actual == expected, 'output_amount_0_dot_1_token_1')
         }
 
-        //  it('output amount of 0.1 token1', async () => {
-        //   const sqrtQ = await sqrtPriceMath.getNextSqrtPriceFromOutput(
-        //     encodePriceSqrt(1, 1),
-        //     expandTo18Decimals(1),
-        //     expandTo18Decimals(1).div(10),
-        //     true
-        //   )
-        //   expect(sqrtQ).to.eq('71305346262837903834189555302')
-        // })
         #[test]
         #[available_gas(20000000)]
         fn test_output_amount_of_0_dot_1_token_1_zero_for_one_true() {
@@ -334,10 +230,6 @@ mod TestSqrtPriceMath {
             assert(actual == expected, 'output_amount_0_dot_1_token_1')
         }
 
-        // it('reverts if amountOut is impossible in zero for one direction', async () => {
-        //   await expect(sqrtPriceMath.getNextSqrtPriceFromOutput(encodePriceSqrt(1, 1), 1, constants.MaxUint256, true)).to.be
-        //     .reverted
-        // })
         #[test]
         #[should_panic]
         fn test_fail_if_amount_out_is_impossible_in_zero_for_one_direction_true() {
@@ -347,10 +239,6 @@ mod TestSqrtPriceMath {
             SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, true);
         }
 
-        // it('reverts if amountOut is impossible in one for zero direction', async () => {
-        //   await expect(sqrtPriceMath.getNextSqrtPriceFromOutput(encodePriceSqrt(1, 1), 1, constants.MaxUint256, false)).to
-        //     .be.reverted
-        // })
         #[test]
         #[should_panic]
         fn test_fail_if_amount_out_is_impossible_in_zero_for_one_direction_false() {
@@ -372,10 +260,6 @@ mod TestSqrtPriceMath {
         use option::OptionTrait;
         use traits::{Into, TryInto};
 
-        // it('returns 0 if liquidity is 0', async () => {
-        //   const amount0 = await sqrtPriceMath.getAmount0Delta(encodePriceSqrt(1, 1), encodePriceSqrt(2, 1), 0, true)
-        //   expect(amount0).to.eq(0)
-        // })
         #[test]
         #[available_gas(20000000)]
         fn test_amount_0_delta_returns_0_if_liquidity_is_0() {
@@ -386,10 +270,6 @@ mod TestSqrtPriceMath {
             assert(actual == expected, 'delta_returns_0_if_liq_is_0')
         }
 
-        // it('returns 0 if prices are equal', async () => {
-        //   const amount0 = await sqrtPriceMath.getAmount0Delta(encodePriceSqrt(1, 1), encodePriceSqrt(1, 1), 0, true)
-        //   expect(amount0).to.eq(0)
-        // })
         #[test]
         #[available_gas(20000000)]
         fn test_amount_0_delta_returns_0_if_prices_are_eq() {
@@ -400,24 +280,6 @@ mod TestSqrtPriceMath {
             assert(actual == expected, 'delta_return_0_if_prices_are_eq')
         }
 
-        // it('returns 0.1 amount1 for price of 1 to 1.21', async () => {
-        //   const amount0 = await sqrtPriceMath.getAmount0Delta(
-        //     encodePriceSqrt(1, 1),
-        //     encodePriceSqrt(121, 100),
-        //     expandTo18Decimals(1),
-        //     true
-        //   )
-        //   expect(amount0).to.eq('90909090909090910')
-
-        //   const amount0RoundedDown = await sqrtPriceMath.getAmount0Delta(
-        //     encodePriceSqrt(1, 1),
-        //     encodePriceSqrt(121, 100),
-        //     expandTo18Decimals(1),
-        //     false
-        //   )
-
-        //   expect(amount0RoundedDown).to.eq(amount0.sub(1))
-        // })
         #[test]
         #[available_gas(200000000)]
         fn test_amount_0_delta_returns_0_dot_1_amount1_for_price_of_1_to_1_dot_21() {
