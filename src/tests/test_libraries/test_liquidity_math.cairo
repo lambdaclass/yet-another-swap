@@ -33,7 +33,7 @@ fn test_add_delta_1_1() {
 }
 #[test]
 #[available_gas(2000000)]
-#[should_panic(expected: ('LA', ))]
+#[should_panic(expected: ('LA',))]
 // Should panic with 'LA'.
 fn test_add_delta_overflows() {
     let x: u128 = 340282366920938463463374607431768211455; // 2 ** 128 - 1
@@ -43,7 +43,7 @@ fn test_add_delta_overflows() {
 }
 #[test]
 #[available_gas(2000000)]
-#[should_panic(expected: ('LS', ))]
+#[should_panic(expected: ('LS',))]
 // Should panic with 'LS'.
 fn test_add_delta_0_minus1_underflows() {
     let y = IntegerTrait::<i128>::new(1, true);
@@ -52,7 +52,7 @@ fn test_add_delta_0_minus1_underflows() {
 
 #[test]
 #[available_gas(2000000)]
-#[should_panic(expected: ('LS', ))]
+#[should_panic(expected: ('LS',))]
 // Should panic with 'LS'.
 fn test_add_delta_3_minus4_underflows() {
     let y = IntegerTrait::<i128>::new(4, true);
