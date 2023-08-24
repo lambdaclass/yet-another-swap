@@ -1,6 +1,5 @@
 mod TestInteger256 {
-
-    mod New { 
+    mod New {
         use fractal_swap::numbers::signed_integer::i256::i256;
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
@@ -114,7 +113,7 @@ mod TestInteger256 {
             assert(result.mag == 29, '42 - 13 = 29');
             assert(result.sign == false, '42 - 13 -> positive');
         }
-    
+
         // Test subtraction of two positive integers with larger second
         #[test]
         fn test_positive_x_positive_larger_second() {
@@ -168,11 +167,11 @@ mod TestInteger256 {
         // Test subtraction of a positive integer and a negative integer with different magnitudes
         #[test]
         fn test_positive_x_negative_diff_mag() {
-        let a = IntegerTrait::<i256>::new(100, false);
-        let b = IntegerTrait::<i256>::new(42, true);
-        let result = a - b;
-        assert(result.mag == 142, '100 - - 42 = 142');
-        assert(result.sign == false, '100 - - 42 -> postive');
+            let a = IntegerTrait::<i256>::new(100, false);
+            let b = IntegerTrait::<i256>::new(42, true);
+            let result = a - b;
+            assert(result.mag == 142, '100 - - 42 = 142');
+            assert(result.sign == false, '100 - - 42 -> postive');
         }
 
         // Test subtraction of a negative integer and a positive integer with different magnitudes
@@ -184,7 +183,7 @@ mod TestInteger256 {
             assert(result.mag == 142, '-42 - 100 = -142');
             assert(result.sign == true, '-42 - 100 -> negative');
         }
- 
+
         // Test subtraction resulting in zero
         #[test]
         fn test_result_in_zero() {
@@ -250,7 +249,7 @@ mod TestInteger256 {
             assert(result.mag == 50, '10 * -5 = -50');
             assert(result.sign == true, '10 * -5 -> negative');
         }
-        
+
         // Test multiplication by zero
         #[test]
         fn test_by_zero() {
@@ -272,7 +271,7 @@ mod TestInteger256 {
         }
     }
 
-    mod DivRem { 
+    mod DivRem {
         use fractal_swap::numbers::signed_integer::i256::i256;
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
@@ -316,7 +315,7 @@ mod TestInteger256 {
             assert(q.mag == 3 && r.mag == 2, '-13 // 5 = -3 r 2');
             assert(q.sign == true && r.sign == false, '-13 // 5 -> negative');
         }
-        
+
         // Test division with a = zero
         #[test]
         fn test_rem_z_eq_zero() {
