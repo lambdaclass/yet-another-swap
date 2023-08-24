@@ -3,7 +3,7 @@
 Fractal Swap is a Uniswap V3 implementation on StarkNet.
 
 ## Important Disclaimer
-This is the Development branch. Currently we are using Scarb 0.6.0-alpha.4 which is not compatible with the latest `starkli` release. Therefore, the project can not be deployed. This decision was made to include `signed integers` that were introduced in the latest corelib update in Cairo.
+ Currently the project is using the `signed integer` implementation from [Giza](https://github.com/gizatechxyz/orion/tree/main/src/numbers/signed_integer) until all the features are implemented and supported in the latest release of Cairo.
 
 The following commands will not work in this branch:
 - `make declare`
@@ -108,6 +108,13 @@ On Starknet, the deployment process is in two steps:
    ```bash
    make deploy CLASS_HASH="<CLASS_HASH>"
    ```
+
+## Version Specifications
+- Cairo 2.1.0
+- Scarb v0.6.0
+- Starkli 0.1.9
+- Orion `main` branch (library from Giza)
+
 ## Tooling
 - [Starkli](https://book.starkli.rs/)
 - [Scarb](https://book.starknet.io/chapter_2/scarb.html)

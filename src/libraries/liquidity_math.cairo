@@ -15,7 +15,7 @@ mod LiquidityMath {
     /// Parameters:
     /// - x: The liquidity before change.
     /// - y: The delta by which liquidity should be changed.
-    fn addDelta(x: u128, y: i128) -> u128 {
+    fn add_delta(x: u128, y: i128) -> u128 {
         let zero = IntegerTrait::<i128>::new(0, true);
         if (y < zero) {
             // require((z = x - uint128(-y)) < x, 'LS');
