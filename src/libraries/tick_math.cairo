@@ -40,76 +40,125 @@ mod TickMath {
         let abs_tick = tick.abs();
         assert(abs_tick <= MAX_TICK(), 'T');
 
+        let zero: i32 = IntegerTrait::<i32>::new(0, false);
         // Initialize ratio with a base value
-        let ratio = if (i32::rem(abs_tick, 2)) != 0 {
-            0xfffcb933bd6fad37aa2d162d1a594001
+        let mut ratio = if abs_tick % IntegerTrait::<i32>::new(2, false) != zero {
+            FixedTrait::from_felt(0xfffcb933bd6fad37aa2d162d1a594001)
         } else {
-            0x100000000000000000000000000000000
+            FixedTrait::from_felt(0x100000000000000000000000000000000)
         };
 
+        let two_pow = 2 ^ 128_u8;
         // Perform conditional ratio adjustments
-        if (i32::rem(abs_tick, 4)) >= 2 {
-            ratio = (ratio * 0xfff97272373d413259a46990580e213a) / 2.pow(128);
+        if (abs_tick % IntegerTrait::<i32>::new(4, false)) >= IntegerTrait::<i32>::new(2, false) {
+            ratio = (ratio * FixedTrait::from_felt(0xfff97272373d413259a46990580e213a))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 8)) >= 4 {
-            ratio = (ratio * 0xfff2e50f5f656932ef12357cf3c7fdcc) / 2.pow(128);
+        if (abs_tick % IntegerTrait::<i32>::new(8, false)) >= IntegerTrait::<i32>::new(4, false) {
+            ratio = (ratio * FixedTrait::from_felt(0xfff2e50f5f656932ef12357cf3c7fdcc))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 16)) >= 8 {
-            ratio = (ratio * 0xffe5caca7e10e4e61c3624eaa0941cd0) / 2.pow(128);
+        if (abs_tick % IntegerTrait::<i32>::new(16, false)) >= IntegerTrait::<i32>::new(8, false) {
+            ratio = (ratio * FixedTrait::from_felt(0xffe5caca7e10e4e61c3624eaa0941cd0))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 32)) >= 16 {
-            ratio = (ratio * 0xffcb9843d60f6159c9db58835c926644) / 2.pow(128);
+        if (abs_tick % IntegerTrait::<i32>::new(32, false)) >= IntegerTrait::<i32>::new(16, false) {
+            ratio = (ratio * FixedTrait::from_felt(0xffcb9843d60f6159c9db58835c926644))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 64)) >= 32 {
-            ratio = (ratio * 0xff973b41fa98c081472e6896dfb254c0) / 2.pow(128);
+        if (abs_tick % IntegerTrait::<i32>::new(64, false)) >= IntegerTrait::<i32>::new(32, false) {
+            ratio = (ratio * FixedTrait::from_felt(0xff973b41fa98c081472e6896dfb254c0))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 128)) >= 64 {
-            ratio = (ratio * 0xff2ea16466c96a3843ec78b326b52861) / 2.pow(128);
+        if (abs_tick % IntegerTrait::<i32>::new(
+            128, false
+        )) >= IntegerTrait::<i32>::new(64, false) {
+            ratio = (ratio * FixedTrait::from_felt(0xff2ea16466c96a3843ec78b326b52861))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 256)) >= 128 {
-            ratio = (ratio * 0xfe5dee046a99a2a811c461f1969c3053) / 2.pow(128);
+        if (abs_tick % IntegerTrait::<i32>::new(
+            256, false
+        )) >= IntegerTrait::<i32>::new(128, false) {
+            ratio = (ratio * FixedTrait::from_felt(0xfe5dee046a99a2a811c461f1969c3053))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 512)) >= 256 {
-            ratio = (ratio * 0xfcbe86c7900a88aedcffc83b479aa3a4) / 2.pow(128);
+        if (abs_tick % IntegerTrait::<i32>::new(
+            512, false
+        )) >= IntegerTrait::<i32>::new(256, false) {
+            ratio = (ratio * FixedTrait::from_felt(0xfcbe86c7900a88aedcffc83b479aa3a4))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 1024)) >= 512 {
-            ratio = (ratio * 0xf987a7253ac413176f2b074cf7815e54) / 2.pow(128);
+        if (abs_tick % IntegerTrait::<i32>::new(
+            1024, false
+        )) >= IntegerTrait::<i32>::new(512, false) {
+            ratio = (ratio * FixedTrait::from_felt(0xf987a7253ac413176f2b074cf7815e54))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 2048)) >= 1024 {
-            ratio = (ratio * 0xf3392b0822b70005940c7a398e4b70f3) / 2.pow(128);
+        if (abs_tick % IntegerTrait::<i32>::new(
+            2048, false
+        )) >= IntegerTrait::<i32>::new(1024, false) {
+            ratio = (ratio * FixedTrait::from_felt(0xf3392b0822b70005940c7a398e4b70f3))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 4096)) >= 2048 {
-            ratio = (ratio * 0xe7159475a2c29b7443b29c7fa6e889d9) / 2.pow(128);
+        if abs_tick % IntegerTrait::<i32>::new(
+            4096, false
+        ) >= IntegerTrait::<i32>::new(2048, false) {
+            ratio = (ratio * FixedTrait::from_felt(0xe7159475a2c29b7443b29c7fa6e889d9))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 8192)) >= 4096 {
-            ratio = (ratio * 0xd097f3bdfd2022b8845ad8f792aa5825) / 2.pow(128);
+        if abs_tick % IntegerTrait::<i32>::new(
+            8192, false
+        ) >= IntegerTrait::<i32>::new(4096, false) {
+            ratio = (ratio * FixedTrait::from_felt(0xd097f3bdfd2022b8845ad8f792aa5825))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 16384)) >= 8192 {
-            ratio = (ratio * 0xa9f746462d870fdf8a65dc1f90e061e5) / 2.pow(128);
+        if abs_tick % IntegerTrait::<i32>::new(
+            16384, false
+        ) >= IntegerTrait::<i32>::new(8192, false) {
+            ratio = (ratio * FixedTrait::from_felt(0xa9f746462d870fdf8a65dc1f90e061e5))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 32768)) >= 16384 {
-            ratio = (ratio * 0x70d869a156d2a1b890bb3df62baf32f7) / 2.pow(128);
+        if abs_tick % IntegerTrait::<i32>::new(
+            32768, false
+        ) >= IntegerTrait::<i32>::new(16384, false) {
+            ratio = (ratio * FixedTrait::from_felt(0x70d869a156d2a1b890bb3df62baf32f7))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 65536)) >= 32768 {
-            ratio = (ratio * 0x31be135f97d08fd981231505542fcfa6) / 2.pow(128);
+        if abs_tick % IntegerTrait::<i32>::new(
+            65536, false
+        ) >= IntegerTrait::<i32>::new(32768, false) {
+            ratio = (ratio * FixedTrait::from_felt(0x31be135f97d08fd981231505542fcfa6))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 131072)) >= 65536 {
-            ratio = (ratio * 0x9aa508b5b7a84e1c677de54f3e99bc9) / 2.pow(128);
+        if abs_tick % IntegerTrait::<i32>::new(
+            131072, false
+        ) >= IntegerTrait::<i32>::new(65536, false) {
+            ratio = (ratio * FixedTrait::from_felt(0x9aa508b5b7a84e1c677de54f3e99bc9))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 262144)) >= 131072 {
-            ratio = (ratio * 0x5d6af8dedb81196699c329225ee604) / 2.pow(128);
+        if abs_tick % IntegerTrait::<i32>::new(
+            262144, false
+        ) >= IntegerTrait::<i32>::new(131072, false) {
+            ratio = (ratio * FixedTrait::from_felt(0x5d6af8dedb81196699c329225ee604))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 524288)) >= 262144 {
-            ratio = (ratio * 0x2216e584f5fa1ea926041bedfe98) / 2.pow(128);
+        if abs_tick % IntegerTrait::<i32>::new(
+            524288, false
+        ) >= IntegerTrait::<i32>::new(262144, false) {
+            ratio = (ratio * FixedTrait::from_felt(0x2216e584f5fa1ea926041bedfe98))
+                / FixedTrait::from_felt(two_pow.into());
         }
-        if (i32::rem(abs_tick, 1048576)) >= 524288 {
-            ratio = (ratio * 0x48a170391f7dc42444e8fa2) / 2.pow(128);
+        if abs_tick % IntegerTrait::<i32>::new(
+            1048576, false
+        ) >= IntegerTrait::<i32>::new(524288, false) {
+            ratio = (ratio * FixedTrait::from_felt(0x48a170391f7dc42444e8fa2))
+                / FixedTrait::from_felt(two_pow.into());
         }
 
-        // Adjust ratio for positive ticks
-        if tick > 0 {
-            ratio = max_uint256_value / ratio;
-        }
+        // // Adjust ratio for positive ticks
+        // if tick > zero {
+        //     ratio = max_uint256_value / ratio;
+        // }
 
         // Calculate square root
         return ratio.sqrt();
