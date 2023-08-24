@@ -1,7 +1,9 @@
 // Functions based on Q64.96 sqrt price and liquidity
 // Contains the math that uses square root of price as a Q64.96 and liquidity to compute deltas
 mod SqrtPriceMath {
-    use fractal_swap::numbers::fixed_point::implementations::fullmath::FullMath;
+    use fractal_swap::numbers::fixed_point::implementations::fullmath::FullMath::{
+        div_rounding_up, mul_div, mul_div_rounding_up
+    };
     use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FixedType, FixedTrait, FP64x96Add, FP64x96Sub, FP64x96Mul, FP64x96Div,
         FP64x96PartialEq, FP64x96PartialOrd, Q96_RESOLUTION, ONE, MAX
@@ -39,12 +41,12 @@ mod SqrtPriceMath {
                 let denominator = numerator + product;
                 if denominator >= numerator {
                     return FP64x96Impl::new(
-                        FullMath::mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false
+                        mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false
                     );
                 }
             }
             return FP64x96Impl::new(
-                FullMath::div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false
+                div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false
             );
         } else {
             assert(
@@ -52,7 +54,7 @@ mod SqrtPriceMath {
             );
             let denominator = numerator - product;
             return FP64x96Impl::new(
-                FullMath::mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false
+                mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false
             );
         }
     }
@@ -77,14 +79,14 @@ mod SqrtPriceMath {
             let mut quotient = if amount <= MAX {
                 amount * pow(2, Q96_RESOLUTION.into()) / liquidity.into()
             } else {
-                FullMath::mul_div(amount, ONE, liquidity.into())
+                mul_div(amount, ONE, liquidity.into())
             };
             return (sqrtPX96 + FP64x96Impl::new(quotient, false));
         } else {
             let mut quotient = if amount <= MAX {
-                FullMath::div_rounding_up(amount * pow(2, Q96_RESOLUTION.into()), liquidity.into())
+                div_rounding_up(amount * pow(2, Q96_RESOLUTION.into()), liquidity.into())
             } else {
-                FullMath::mul_div_rounding_up(amount, ONE, liquidity.into())
+                mul_div_rounding_up(amount, ONE, liquidity.into())
             };
             assert(sqrtPX96 > FP64x96Impl::new(quotient, false), 'sqrtPX96_fp < quotient');
             return (sqrtPX96 - FP64x96Impl::new(quotient, false));
@@ -160,14 +162,12 @@ mod SqrtPriceMath {
         assert(sqrt_ratio_AX96_1.sign == false, 'sqrt_ratio_AX96 cannot be neg');
 
         if round_up {
-            return FullMath::div_rounding_up(
-                FullMath::mul_div_rounding_up(
-                    numerator1.mag, numerator2.mag, sqrt_ratio_BX96_1.mag
-                ),
+            return div_rounding_up(
+                mul_div_rounding_up(numerator1.mag, numerator2.mag, sqrt_ratio_BX96_1.mag),
                 sqrt_ratio_AX96_1.mag
             );
         } else {
-            return FullMath::mul_div(numerator1.mag, numerator2.mag, sqrt_ratio_BX96_1.mag)
+            return mul_div(numerator1.mag, numerator2.mag, sqrt_ratio_BX96_1.mag)
                 / sqrt_ratio_AX96_1.mag;
         }
     }
@@ -193,11 +193,11 @@ mod SqrtPriceMath {
         let liquidity_fp = FP64x96Impl::from_felt(liquidity.into());
 
         if round_up {
-            return FullMath::mul_div_rounding_up(
+            return mul_div_rounding_up(
                 liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE
             );
         } else {
-            return FullMath::mul_div_rounding_up(
+            return mul_div_rounding_up(
                 liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE
             );
         }
