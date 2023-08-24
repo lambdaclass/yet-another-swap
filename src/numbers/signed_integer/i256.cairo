@@ -184,7 +184,7 @@ fn i256_add(a: i256, b: i256) -> i256 {
         if (sum == 0_u256) {
             return IntegerTrait::new(sum, false);
         }
-        return IntegerTrait::new(sum, a.sign);
+        return ensure_non_negative_zero(sum, a.sign);
     } else {
         // If the integers have different signs, 
         // the larger absolute value is subtracted from the smaller one.
@@ -198,7 +198,7 @@ fn i256_add(a: i256, b: i256) -> i256 {
         if (difference == 0_u256) {
             return IntegerTrait::new(difference, false);
         }
-        return IntegerTrait::new(difference, larger.sign);
+        return ensure_non_negative_zero(difference, larger.sign);
     }
 }
 
@@ -217,7 +217,7 @@ fn i256_sub(a: i256, b: i256) -> i256 {
     }
 
     // The subtraction of `a` to `b` is achieved by negating `b` sign and adding it to `a`.
-    let neg_b = IntegerTrait::new(b.mag, !b.sign);
+    let neg_b = ensure_non_negative_zero(b.mag, !b.sign);
     return a + neg_b;
 }
 
@@ -247,7 +247,7 @@ fn i256_mul(a: i256, b: i256) -> i256 {
         return IntegerTrait::new(result, false);
     }
 
-    return IntegerTrait::new(result, sign);
+    return ensure_non_negative_zero(result, sign);
 }
 
 // Divides the first i256 by the second i256.
@@ -266,7 +266,7 @@ fn i256_div(a: i256, b: i256) -> i256 {
 
     if (sign == false) {
         // If the operands are positive, the quotient is simply their absolute value quotient.
-        return IntegerTrait::new(a.mag / b.mag, sign);
+        return ensure_non_negative_zero(a.mag / b.mag, sign);
     }
 
     // If the operands have different signs, rounding is necessary.
@@ -276,7 +276,7 @@ fn i256_div(a: i256, b: i256) -> i256 {
         if (quotient == 0) {
             return IntegerTrait::new(quotient, false);
         }
-        return IntegerTrait::new(quotient, sign);
+        return ensure_non_negative_zero(quotient, sign);
     }
 
     // If the quotient is not an integer, multiply the dividend by 10 to move the decimal point over.
@@ -289,9 +289,9 @@ fn i256_div(a: i256, b: i256) -> i256 {
 
     // Check the last digit to determine rounding direction.
     if (last_digit <= 5_u256) {
-        return IntegerTrait::new(quotient / 10_u256, sign);
+        return ensure_non_negative_zero(quotient / 10_u256, sign);
     } else {
-        return IntegerTrait::new((quotient / 10_u256) + 1_u256, sign);
+        return ensure_non_negative_zero((quotient / 10_u256) + 1_u256, sign);
     }
 }
 
@@ -415,7 +415,7 @@ fn i256_ge(a: i256, b: i256) -> bool {
 // * `i256` - The negation of `x`.
 fn i256_neg(x: i256) -> i256 {
     // The negation of an integer is obtained by flipping its sign.
-    return IntegerTrait::new(x.mag, !x.sign);
+    return ensure_non_negative_zero(x.mag, !x.sign);
 }
 
 /// Cf: IntegerTrait::abs docstring
@@ -438,5 +438,13 @@ fn i256_min(a: i256, b: i256) -> i256 {
         return a;
     } else {
         return b;
+    }
+}
+
+fn ensure_non_negative_zero(mag: u256, sign: bool) -> i256 {
+    if mag == 0 {
+        IntegerTrait::<i256>::new(mag, false)
+    } else {
+        IntegerTrait::<i256>::new(mag, sign)
     }
 }
