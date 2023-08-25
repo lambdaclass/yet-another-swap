@@ -35,7 +35,6 @@ mod SqrtPriceMath {
         }
         let numerator = liquidity.into() * pow(2, Q96_RESOLUTION.into());
         let product = amount * sqrtPX96.mag;
-        'price_rounding'.print();
 
         if add {
             if product / amount == sqrtPX96.mag {
@@ -47,7 +46,7 @@ mod SqrtPriceMath {
                 }
             }
             return FP64x96Impl::new(
-                div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false
+                div_rounding_up(numerator, (numerator / sqrtPX96.mag + amount)), false
             );
         } else {
             assert(
@@ -198,7 +197,8 @@ mod SqrtPriceMath {
                 liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE
             );
         } else {
-            return mul_div_rounding_up(
+            // FullMath.mulDiv(numerator1, numerator2, sqrtRatioBX96) / sqrtRatioAX96;
+            return mul_div(
                 liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE
             );
         }
