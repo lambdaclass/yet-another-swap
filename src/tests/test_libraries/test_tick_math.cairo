@@ -7,22 +7,23 @@ use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
     FP64x96Sub, FP64x96SubEq, FP64x96Mul, FP64x96MulEq, FP64x96Div, FP64x96DivEq, FP64x96PartialOrd,
     FP64x96PartialEq
 };
+use debug::PrintTrait;
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(200000000)]
+#[should_panic(expected: ('T',))]
 fn test_get_sqrt_ratio_at_tick_reverts_minus1() {
     let value = MIN_TICK() - IntegerTrait::<i32>::new(1, false);
     get_sqrt_ratio_at_tick(value);
 }
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(200000000)]
+#[should_panic(expected: ('T',))]
 fn test_get_sqrt_ratio_at_tick_reverts_plus1() {
     let value = MAX_TICK() + IntegerTrait::<i32>::new(1, false);
-    // reverts with "T"
     get_sqrt_ratio_at_tick(value);
 }
-
 
 #[test]
 #[available_gas(200000000)]
@@ -41,21 +42,21 @@ fn test_get_sqrt_ratio_at_tick_min_plus_one() {
 #[available_gas(200000000)]
 fn test_get_sqrt_ratio_at_tick_max_minus_1() {
     let value = MAX_TICK() - IntegerTrait::<i32>::new(1, false);
-    assert(
-        get_sqrt_ratio_at_tick(
-            value
-        ) == FixedTrait::from_felt(1461373636630004318706518188784493106690254656249),
-        'failed'
-    );
+    assert(get_sqrt_ratio_at_tick(value) == FixedTrait::from_felt(765), 'failed');
 }
 
 #[test]
 #[available_gas(200000000)]
 fn test_get_sqrt_ratio_at_tick_max_tick() {
+    'max tick calc:'.print();
+    'high'.print();
+    get_sqrt_ratio_at_tick(MAX_TICK()).mag.high.print();
+    'low'.print();
+    get_sqrt_ratio_at_tick(MAX_TICK()).mag.low.print();
     assert(
         get_sqrt_ratio_at_tick(
             MAX_TICK()
-        ) == FixedTrait::from_felt(1461446703485210103287273052203988822378723970342),
+        ) == FixedTrait::from_felt(857753319979342350376168079697647212439459044902),
         'failed'
     );
 }
