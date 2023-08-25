@@ -33,7 +33,7 @@ mod TickBitmap {
 
     #[storage]
     struct Storage {
-        bitmap: LegacyMap<felt252, u256>, 
+        bitmap: LegacyMap<felt252, u256>,
     }
 
     #[external(v0)]
