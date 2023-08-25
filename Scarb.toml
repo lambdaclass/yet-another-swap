@@ -7,7 +7,7 @@ repository = "https://github.com/lambdaclass/fractal_swap/"
 
 [dependencies]
 starknet = ">=2.2.0"
-orion = { git = "https://github.com/gizatechxyz/orion.git", rev = "5bd0544" }
+orion = { git = "https://github.com/gizatechxyz/orion.git" }
 
 [[target.starknet-contract]]
 
