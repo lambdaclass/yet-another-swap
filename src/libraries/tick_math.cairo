@@ -13,6 +13,8 @@ mod TickMath {
         FP64x96AddEq, FP64x96Sub, FP64x96SubEq, FP64x96Mul, FP64x96MulEq, FP64x96Div, FP64x96DivEq,
         FP64x96PartialOrd, FP64x96PartialEq
     };
+    use fractal_swap::utils::math_utils::MathUtils::{BitShiftTrait};
+    use integer::BoundedInt;
     /// The minimum tick that may be passed to #getSqrtRatioAtTick computed from log base 1.0001 of 2**-128
     // const MIN_TICK: i32 = -887272;
     fn MIN_TICK() -> i32 {
@@ -48,11 +50,12 @@ mod TickMath {
             FixedTrait::from_felt(0x100000000000000000000000000000000)
         };
 
-        let two_pow = 2 ^ 128_u8;
+        let mut aux_ratio = ratio.mag;
+        let two_pow: u256 = 2_u256 ^ 128_u256;
         // Perform conditional ratio adjustments
         if (abs_tick % IntegerTrait::<i32>::new(4, false)) >= IntegerTrait::<i32>::new(2, false) {
-            ratio = (ratio * FixedTrait::from_felt(0xfff97272373d413259a46990580e213a))
-                / FixedTrait::from_felt(two_pow.into());
+            let mut aux = (aux_ratio * 0xfff97272373d413259a46990580e213a_u256);
+            aux_ratio = aux.shr(two_pow);
         }
         if (abs_tick % IntegerTrait::<i32>::new(8, false)) >= IntegerTrait::<i32>::new(4, false) {
             ratio = (ratio * FixedTrait::from_felt(0xfff2e50f5f656932ef12357cf3c7fdcc))
