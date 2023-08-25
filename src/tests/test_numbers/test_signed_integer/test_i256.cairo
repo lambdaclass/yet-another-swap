@@ -102,8 +102,6 @@ mod TestInteger256 {
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
 
-        use debug::PrintTrait;
-
         // Test subtraction of two positive integers with larger first
         #[test]
         fn test_positive_x_positive_larger_first() {
