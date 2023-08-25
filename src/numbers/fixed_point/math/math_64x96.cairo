@@ -58,11 +58,8 @@ fn div(a: FixedType, b: FixedType) -> FixedType {
     // TODO: replace if / when there is a felt div_rem supported
     let mul_res = integer::u256_wide_mul(a.mag, ONE);
     let b_inv = MAX / b.mag;
-    let res = u256 {
-        high: mul_res.limb1, low: mul_res.limb0
-        } / b.mag + u256 {
-        high: mul_res.limb3, low: mul_res.limb2
-    } * b_inv;
+    let res = u256 { high: mul_res.limb1, low: mul_res.limb0 } / b.mag
+        + u256 { high: mul_res.limb3, low: mul_res.limb2 } * b_inv;
 
     // Re-apply sign
     return FixedType { mag: res, sign: res_sign };
@@ -183,9 +180,8 @@ fn mul(a: FixedType, b: FixedType) -> FixedType {
     // Use u128 to multiply and shift back down
     // TODO: replace if / when there is a felt div_rem supported
     let mul_res = integer::u256_wide_mul(a.mag, b.mag);
-    let res_u256 = u256 {
-        high: mul_res.limb3, low: mul_res.limb2
-    } + (u256 { high: mul_res.limb1, low: mul_res.limb0 } / ONE);
+    let res_u256 = u256 { high: mul_res.limb3, low: mul_res.limb2 }
+        + (u256 { high: mul_res.limb1, low: mul_res.limb0 } / ONE);
 
     // Re-apply sign
     return FixedType { mag: res_u256, sign: res_sign };

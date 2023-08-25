@@ -46,8 +46,12 @@ mod MathUtils {
     fn pow(x: u256, n: u256) -> u256 {
         if n == 0 {
             1
+        } else if n == 1 {
+            x
+        } else if (n & 1) == 1 {
+            x * pow(x * x, n / 2)
         } else {
-            x * pow(x, n - 1)
+            pow(x * x, n / 2)
         }
     }
 }

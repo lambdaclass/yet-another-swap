@@ -34,19 +34,31 @@ mod SqrtPriceMath {
             return sqrtPX96;
         }
         let numerator = liquidity.into() * pow(2, Q96_RESOLUTION.into());
-        let product = amount * sqrtPX96.mag;
+        let product: u256 = amount * sqrtPX96.mag;
+        'amount'.print();
+        amount.print();
+        'sqrtPX96.mag'.print();
+        sqrtPX96.mag.print();
+        'product'.print();
+        product.print();
+
+        let am = product;
+        'product / amount'.print();
+        am.print();
 
         if add {
             if product / amount == sqrtPX96.mag {
                 let denominator = numerator + product;
                 if denominator >= numerator {
+                    'fits on 160'.print();
                     return FP64x96Impl::new(
                         mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false
                     );
                 }
             }
+            'product causes overflow'.print();
             return FP64x96Impl::new(
-                div_rounding_up(numerator, (numerator / sqrtPX96.mag + amount)), false
+                div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false
             );
         } else {
             assert(
@@ -198,9 +210,7 @@ mod SqrtPriceMath {
             );
         } else {
             // FullMath.mulDiv(numerator1, numerator2, sqrtRatioBX96) / sqrtRatioAX96;
-            return mul_div(
-                liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE
-            );
+            return mul_div(liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE);
         }
     }
 // TODO: block by i256 PR

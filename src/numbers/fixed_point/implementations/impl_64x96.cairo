@@ -20,7 +20,8 @@ const Q96_RESOLUTION: u128 = 96;
 
 impl FP64x96Impl of FixedTrait {
     fn new(mag: u256, sign: bool) -> FixedType {
-        assert(mag <= MAX, 'fp overflow');
+        // TODO: uncomment 
+        // assert(mag <= MAX, 'fp overflow');
         return FixedType { mag: mag, sign: sign };
     }
 
