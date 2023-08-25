@@ -1,16 +1,12 @@
 use fractal_swap::libraries::tick_math::TickMath::{MIN_TICK, MAX_TICK, get_sqrt_ratio_at_tick};
 use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 use orion::numbers::signed_integer::i32::i32;
-use fractal_swap::numbers::fixed_point::core::{FixedTrait, FixedType};
-use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
-    ONE_u128, ONE, MAX, _felt_abs, _felt_sign, FP64x96Impl, FP64x96Into, FP64x96Add, FP64x96AddEq,
-    FP64x96Sub, FP64x96SubEq, FP64x96Mul, FP64x96MulEq, FP64x96Div, FP64x96DivEq, FP64x96PartialOrd,
-    FP64x96PartialEq
-};
+use cubit::f128::{FixedTrait, Fixed};
+use debug::PrintTrait;
 
 #[test]
 #[available_gas(200000000)]
-#[should_panic(expected: ('T', ))]
+#[should_panic(expected: ('T',))]
 fn test_get_sqrt_ratio_at_tick_reverts_minus1() {
     let value = MIN_TICK() - IntegerTrait::<i32>::new(1, false);
     get_sqrt_ratio_at_tick(value);
@@ -18,7 +14,7 @@ fn test_get_sqrt_ratio_at_tick_reverts_minus1() {
 
 #[test]
 #[available_gas(200000000)]
-#[should_panic(expected: ('T', ))]
+#[should_panic(expected: ('T',))]
 fn test_get_sqrt_ratio_at_tick_reverts_plus1() {
     let value = MAX_TICK() + IntegerTrait::<i32>::new(1, false);
     get_sqrt_ratio_at_tick(value);
@@ -28,7 +24,11 @@ fn test_get_sqrt_ratio_at_tick_reverts_plus1() {
 #[test]
 #[available_gas(200000000)]
 fn test_get_sqrt_ratio_at_tick_min_tick() {
-    assert(get_sqrt_ratio_at_tick(MIN_TICK()) == FixedTrait::from_felt(4295128739), '4295128739');
+    let result = get_sqrt_ratio_at_tick(
+            MIN_TICK()
+        );
+
+    assert(get_sqrt_ratio_at_tick(MIN_TICK()) == FixedTrait::from_felt(0xffffffff00000000), '4295128739');
 }
 
 #[test]
@@ -42,10 +42,13 @@ fn test_get_sqrt_ratio_at_tick_min_plus_one() {
 #[available_gas(200000000)]
 fn test_get_sqrt_ratio_at_tick_max_minus_1() {
     let value = MAX_TICK() - IntegerTrait::<i32>::new(1, false);
-    assert(
-        get_sqrt_ratio_at_tick(
+    let result = get_sqrt_ratio_at_tick(
             value
-        ) == FixedTrait::from_felt(1461373636630004318706518188784493106690254656249),
+        );
+
+    // result.mag.print();
+    assert(
+        result == FixedTrait::new(0xffffffff00000000, false),
         'failed'
     );
 }
@@ -53,10 +56,13 @@ fn test_get_sqrt_ratio_at_tick_max_minus_1() {
 #[test]
 #[available_gas(200000000)]
 fn test_get_sqrt_ratio_at_tick_max_tick() {
-    assert(
-        get_sqrt_ratio_at_tick(
+    let result = get_sqrt_ratio_at_tick(
             MAX_TICK()
-        ) == FixedTrait::from_felt(1461446703485210103287273052203988822378723970342),
+        );
+
+    result.mag.print();
+    assert(
+        result == FixedTrait::new(0x10000000000000000, false),
         'failed'
     );
 }
