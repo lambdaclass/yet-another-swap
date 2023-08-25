@@ -1,4 +1,3 @@
-
 mod BitShift {
     use fractal_swap::utils::math_utils::MathUtils::{BitShiftTrait, pow};
     use integer::BoundedInt;
@@ -101,7 +100,7 @@ mod Pow {
         let result = pow(120, 0);
         assert(result == 1, 'pow_by_0_should_return_1');
     }
-    
+
     #[test]
     #[available_gas(2000000)]
     fn test_pow_by_1_should_return_same_number() {
@@ -116,13 +115,15 @@ mod Pow {
         let result = pow(2, 64);
         assert(result == 18446744073709551616, 'test_pow_by_64');
     }
-    
+
     #[test]
     #[available_gas(2000000)]
     fn test_pow_by_255() {
         let result = pow(2, 255);
-        assert(result == 57896044618658097711785492504343953926634992332820282019728792003956564819968, 'test_pow_by_255');
+        assert(
+            result == 57896044618658097711785492504343953926634992332820282019728792003956564819968,
+            'test_pow_by_255'
+        );
     }
 }
-
 
