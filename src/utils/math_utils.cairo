@@ -3,31 +3,31 @@ mod MathUtils {
     use option::OptionTrait;
 
     trait BitShiftTrait<T> {
-        fn shl(ref self: T, n: T) -> T;
-        fn shr(ref self: T, n: T) -> T;
+        fn shl(self: @T, n: T) -> T;
+        fn shr(self: @T, n: T) -> T;
     }
 
     impl U256BitShift of BitShiftTrait<u256> {
         #[inline(always)]
-        fn shl(ref self: u256, n: u256) -> u256 {
-            self * pow(2, n)
+        fn shl(self: @u256, n: u256) -> u256 {
+            *self * pow(2, n)
         }
 
         #[inline(always)]
-        fn shr(ref self: u256, n: u256) -> u256 {
-            self / pow(2, n)
+        fn shr(self: @u256, n: u256) -> u256 {
+            *self / pow(2, n)
         }
     }
 
     impl U32BitShift of BitShiftTrait<u32> {
         #[inline(always)]
-        fn shl(ref self: u32, n: u32) -> u32 {
-            self * pow(2, n.into()).try_into().unwrap()
+        fn shl(self: @u32, n: u32) -> u32 {
+            *self * pow(2, n.into()).try_into().unwrap()
         }
 
         #[inline(always)]
-        fn shr(ref self: u32, n: u32) -> u32 {
-            self / pow(2, n.into()).try_into().unwrap()
+        fn shr(self: @u32, n: u32) -> u32 {
+            *self / pow(2, n.into()).try_into().unwrap()
         }
     }
 

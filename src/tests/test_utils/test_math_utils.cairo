@@ -4,7 +4,7 @@ mod BitShift {
     #[test]
     #[available_gas(2000000)]
     fn test_shift_left_u256_1() {
-        let mut input: u256 = 1;
+        let input: u256 = 1;
         let result = input.shl(1);
         assert(result == 2, 'test_shift_left_1');
     }
@@ -12,7 +12,7 @@ mod BitShift {
     #[test]
     #[available_gas(2000000)]
     fn test_shift_left_u256_zero() {
-        let mut input: u256 = 0;
+        let input: u256 = 0;
         let result = input.shl(5);
         assert(result == 0, 'test_shift_left_zero');
     }
@@ -20,7 +20,7 @@ mod BitShift {
     #[test]
     #[available_gas(2000000)]
     fn test_shift_right_u256_1() {
-        let mut input: u256 = 4;
+        let input: u256 = 4;
         let result = input.shr(1);
         assert(result == 2, 'test_shift_left_zero');
     }
@@ -28,7 +28,7 @@ mod BitShift {
     #[test]
     #[available_gas(2000000)]
     fn test_shift_right_u256_max() {
-        let mut input: u256 = BoundedInt::max();
+        let input: u256 = BoundedInt::max();
         let result = input.shr(1);
         assert(result == BoundedInt::max() / 2, 'test_shift_left_zero');
     }
@@ -36,7 +36,7 @@ mod BitShift {
     #[test]
     #[available_gas(2000000)]
     fn test_shift_right_u256_zero() {
-        let mut input: u256 = 0;
+        let input: u256 = 0;
         let result = input.shr(5);
         assert(result == 0, 'test_shift_left_zero');
     }
@@ -55,7 +55,7 @@ mod BitShift {
     #[test]
     #[available_gas(2000000)]
     fn test_shift_left_u32_1() {
-        let mut input: u32 = 1;
+        let input: u32 = 1;
         let result = input.shl(1);
         assert(result == 2, 'test_shift_left_1');
     }
@@ -63,7 +63,7 @@ mod BitShift {
     #[test]
     #[available_gas(2000000)]
     fn test_shift_left_u32_zero() {
-        let mut input: u256 = 0;
+        let input: u256 = 0;
         let result = input.shl(5);
         assert(result == 0, 'test_shift_left_zero');
     }
@@ -71,7 +71,7 @@ mod BitShift {
     #[test]
     #[available_gas(2000000)]
     fn test_shift_right_u32_1() {
-        let mut input: u32 = 4;
+        let input: u32 = 4;
         let result = input.shr(1);
         assert(result == 2, 'test_shift_left_zero');
     }
@@ -79,7 +79,7 @@ mod BitShift {
     #[test]
     #[available_gas(2000000)]
     fn test_shift_right_u32_max() {
-        let mut input: u32 = BoundedInt::max();
+        let input: u32 = BoundedInt::max();
         let result = input.shr(1);
         assert(result == BoundedInt::max() / 2, 'test_shift_left_zero');
     }
@@ -87,7 +87,7 @@ mod BitShift {
     #[test]
     #[available_gas(2000000)]
     fn test_shift_right_u32_zero() {
-        let mut input: u32 = 0;
+        let input: u32 = 0;
         let result = input.shr(5);
         assert(result == 0, 'test_shift_left_zero');
     }
@@ -108,7 +108,7 @@ mod Pow {
         assert(result == 120, 'pow_by_1_should_return_same_num');
     }
 
-    // before impl panic with 2^n for n ≥ 64 
+    // before impl panic with 2^n for n ≥ 64
     #[test]
     #[available_gas(2000000)]
     fn test_pow() {
@@ -126,4 +126,3 @@ mod Pow {
         );
     }
 }
-
