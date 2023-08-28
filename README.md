@@ -110,8 +110,8 @@ On Starknet, the deployment process is in two steps:
    ```
 
 ## Version Specifications
-- Cairo 2.1.0
-- Scarb v0.6.0
+- Cairo 2.2.0
+- Scarb v0.7.0
 - Starkli 0.1.9
 - Orion `main` branch (library from Giza)
 
