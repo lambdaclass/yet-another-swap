@@ -332,5 +332,73 @@ mod TestInteger256 {
             let b = IntegerTrait::<i256>::new(0, false);
             let (q, r) = a.div_rem(b);
         }
+
+        // Test to ensure that the results do not produce invalid 'negative' zeros
+        #[test]
+        fn test_denominator_gt_numerator_result_should_be_zero() {
+            // -65 / 256 = 0   
+            let a = IntegerTrait::<i256>::new(65, true);
+            let b = IntegerTrait::<i256>::new(256, false);
+            let result = a / b;
+            assert(result == IntegerTrait::<i256>::new(0, false), '');
+
+            // -55 / 256 = 0
+            let a = IntegerTrait::<i256>::new(55, true);
+            let b = IntegerTrait::<i256>::new(256, false);
+            let result = a / b;
+            assert(result == IntegerTrait::<i256>::new(0, false), '');
+        }
+
+        // Test to evaluate rounding behavior and zeros
+        #[test]
+        fn test_division_round_with_negative_result() {
+            // -6 / 10 = -1
+            let a = IntegerTrait::<i256>::new(6, true);
+            let b = IntegerTrait::<i256>::new(10, false);
+            let result = a / b;
+            assert(result == IntegerTrait::<i256>::new(1, true), '');
+
+            // -5 / 10 = 0
+            let a = IntegerTrait::<i256>::new(5, true);
+            let b = IntegerTrait::<i256>::new(10, false);
+            let result = a / b;
+            assert(result == IntegerTrait::<i256>::new(0, false), '');
+
+            // 5 / 10 = 0
+            let a = IntegerTrait::<i256>::new(5, false);
+            let b = IntegerTrait::<i256>::new(10, false);
+            let result = a / b;
+            assert(result == IntegerTrait::<i256>::new(0, false), '');
+
+            // 5 / -10 = 0
+            let a = IntegerTrait::<i256>::new(5, false);
+            let b = IntegerTrait::<i256>::new(10, true);
+            let result = a / b;
+            assert(result == IntegerTrait::<i256>::new(0, false), '');
+
+            // -4 / 10 = 0
+            let a = IntegerTrait::<i256>::new(4, true);
+            let b = IntegerTrait::<i256>::new(10, false);
+            let result = a / b;
+            assert(result == IntegerTrait::<i256>::new(0, false), '');
+
+            // -3 / 10 = 0
+            let a = IntegerTrait::<i256>::new(3, true);
+            let b = IntegerTrait::<i256>::new(10, false);
+            let result = a / b;
+            assert(result == IntegerTrait::<i256>::new(0, false), '');
+
+            // -2 / 10 = 0
+            let a = IntegerTrait::<i256>::new(2, true);
+            let b = IntegerTrait::<i256>::new(10, false);
+            let result = a / b;
+            assert(result == IntegerTrait::<i256>::new(0, false), '');
+
+            // -1 / 10 = 0
+            let a = IntegerTrait::<i256>::new(1, true);
+            let b = IntegerTrait::<i256>::new(10, false);
+            let result = a / b;
+            assert(result == IntegerTrait::<i256>::new(0, false), '');
+        }
     }
 }
