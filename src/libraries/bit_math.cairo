@@ -4,7 +4,7 @@ mod BitMath {
     use option::OptionTrait;
 
     fn most_significant_bit(x: u256) -> u8 {
-        assert(x > 0, 'most_significant_bit');
+        assert(x > 0, 'x must be greater than 0');
         let mut x: u256 = x;
         let mut r: u8 = 0;
 
@@ -43,7 +43,7 @@ mod BitMath {
     }
 
     fn least_significant_bit(x: u256) -> u8 {
-        assert(x > 0, 'least_significant_bit');
+        assert(x > 0, 'x must be greater than 0');
         let mut x = x;
         let mut r: u8 = 255;
 
