@@ -117,10 +117,12 @@ mod TestSqrtPriceMath {
         #[available_gas(200000000)]
         fn test_input_amount_of_0_dot_1_token_1() {
             let price = encode_price_sqrt(1, 1);
-            let liquidity : u128 = expand_to_18_decimals(1).try_into().unwrap();
+            let liquidity: u128 = expand_to_18_decimals(1).try_into().unwrap();
             let amount = expand_to_18_decimals(1) / 10;
 
-            let actual = SqrtPriceMath::get_next_sqrt_price_from_input(price, liquidity, amount, false);
+            let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
+                price, liquidity, amount, false
+            );
             assert(actual == FP64x96Impl::from_felt(87150978765690771352898345369), 'assert error');
         }
 
@@ -129,10 +131,12 @@ mod TestSqrtPriceMath {
         #[available_gas(200000000)]
         fn test_input_amount_of_0_dot_1_token_0() {
             let price = encode_price_sqrt(1, 1);
-            let liquidity : u128 = expand_to_18_decimals(1).try_into().unwrap();
+            let liquidity: u128 = expand_to_18_decimals(1).try_into().unwrap();
             let amount = expand_to_18_decimals(1) / 10;
 
-            let actual = SqrtPriceMath::get_next_sqrt_price_from_input(price, liquidity, amount, true);
+            let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
+                price, liquidity, amount, true
+            );
             assert(actual == FP64x96Impl::from_felt(72025602285694852357767227579), 'assert error');
         }
 
@@ -158,7 +162,9 @@ mod TestSqrtPriceMath {
             let liquidity: u128 = 1;
             let amount = BoundedInt::max() / 2;
 
-            let actual = SqrtPriceMath::get_next_sqrt_price_from_input(price, liquidity, amount, true);
+            let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
+                price, liquidity, amount, true
+            );
             assert(actual == FP64x96Impl::from_felt(1), 'assert error');
         }
     }
@@ -440,7 +446,10 @@ mod TestSqrtPriceMath {
         #[available_gas(20000000)]
         fn test_returns_0_if_prices_are_eq() {
             let actual = SqrtPriceMath::get_amount_1_delta(
-                encode_price_sqrt(1, 1), encode_price_sqrt(1, 1), expand_to_18_decimals(1).try_into().unwrap(), true
+                encode_price_sqrt(1, 1),
+                encode_price_sqrt(1, 1),
+                expand_to_18_decimals(1).try_into().unwrap(),
+                true
             );
             assert(actual == 0, 'returns_0_if_prices_are_eq')
         }
@@ -453,15 +462,16 @@ mod TestSqrtPriceMath {
             let price_b = encode_price_sqrt(121, 100);
             let liquidity: u128 = expand_to_18_decimals(1).try_into().unwrap();
 
-            let actual = SqrtPriceMath::get_amount_1_delta(
-                price_a, price_b, liquidity, true
-            );
+            let actual = SqrtPriceMath::get_amount_1_delta(price_a, price_b, liquidity, true);
 
             // TODO: Check original result should be 100000000000000000 but we get 99999999999997869 
             assert(actual == 99999999999997869, 'wrong 1delta amount price');
 
             let actual_rounded_down = SqrtPriceMath::get_amount_1_delta(
-                encode_price_sqrt(1, 1), encode_price_sqrt(121, 100), expand_to_18_decimals(1).try_into().unwrap(), false
+                encode_price_sqrt(1, 1),
+                encode_price_sqrt(121, 100),
+                expand_to_18_decimals(1).try_into().unwrap(),
+                false
             );
             assert(actual_rounded_down == actual - 1, 'wrong 1delta round amount price')
         }
