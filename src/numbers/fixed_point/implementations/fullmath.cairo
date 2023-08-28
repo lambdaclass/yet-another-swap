@@ -1,5 +1,7 @@
 mod FullMath {
-    use integer::{BoundedInt, u256_wide_mul, u512_safe_div_rem_by_u256, u256_try_as_non_zero};
+    use integer::{
+        BoundedInt, u256_wide_mul, u256_safe_divmod, u512_safe_div_rem_by_u256, u256_try_as_non_zero
+    };
     use option::OptionTrait;
 
     // Multiplies two u256 numbers and divides the result by a third.
@@ -41,12 +43,19 @@ mod FullMath {
 
     fn mul_mod_n(a: u256, b: u256, n: u256) -> u256 {
         let (_, r) = u512_safe_div_rem_by_u256(
-            u256_wide_mul(a, b), u256_try_as_non_zero(n).expect('mul_div by zero')
+            u256_wide_mul(a, b), u256_try_as_non_zero(n).expect('mul_mod_n by zero')
         );
         r
     }
 
     fn div_rounding_up(a: u256, denominator: u256) -> u256 {
-        (a + denominator - 1) / denominator
+        let (quotient, remainder, _) = u256_safe_divmod(
+            a, u256_try_as_non_zero(denominator).expect('div_rounding_up by zero')
+        );
+        if remainder != 0 {
+            return quotient + 1;
+        } else {
+            return quotient;
+        }
     }
 }

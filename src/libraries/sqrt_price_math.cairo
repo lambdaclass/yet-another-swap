@@ -8,6 +8,7 @@ mod SqrtPriceMath {
         FP64x96Impl, FixedType, FixedTrait, FP64x96Add, FP64x96Sub, FP64x96Mul, FP64x96Div,
         FP64x96PartialEq, FP64x96PartialOrd, Q96_RESOLUTION, ONE, MAX
     };
+    use integer::{u256_overflowing_add, u256_overflow_mul};
     use orion::numbers::signed_integer::i128::{i128};
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
@@ -16,17 +17,12 @@ mod SqrtPriceMath {
     use option::OptionTrait;
     use debug::PrintTrait;
 
-    /// @notice Gets the next sqrt price given a delta of token0
-    /// @dev Always rounds up, because in the exact output case (increasing price) we need to move the price at least
-    /// far enough to get the desired output amount, and in the exact input case (decreasing price) we need to move the
-    /// price less in order to not send too much output.
-    /// The most precise formula for this is liquidity * sqrtPX96 / (liquidity +- amount * sqrtPX96),
-    /// if this is impossible because of overflow, we calculate liquidity / (liquidity / sqrtPX96 +- amount).
-    /// @param sqrtPX96 The starting price, i.e. before accounting for the token0 delta
-    /// @param liquidity The amount of usable liquidity
-    /// @param amount How much of token0 to add or remove from virtual reserves
-    /// @param add Whether to add or remove the amount of token0
-    /// @return The price after adding or removing amount, depending on add
+    /// Returns the next square root price given a token0 delta.
+    /// @param sqrtPX96 The initial price (prior to considering the token0 delta).
+    /// @param liquidity The quantity of available liquidity.
+    /// @param amount The quantity of token0 to be added or removed from virtual reserves.
+    /// @param add Indicates whether to add or subtract the token0 amount.
+    /// @return The resulting price after adding or removing the amount, based on the 'add' parameter.
     fn get_next_sqrt_price_from_amount0_rounding_up(
         sqrtPX96: FixedType, liquidity: u128, amount: u256, add: bool
     ) -> FixedType {
@@ -34,29 +30,19 @@ mod SqrtPriceMath {
             return sqrtPX96;
         }
         let numerator = liquidity.into() * pow(2, Q96_RESOLUTION.into());
-        let product: u256 = amount * sqrtPX96.mag;
-        'amount'.print();
-        amount.print();
-        'sqrtPX96.mag'.print();
-        sqrtPX96.mag.print();
-        'product'.print();
-        product.print();
-
-        let am = product;
-        'product / amount'.print();
-        am.print();
+        let (product, product_has_overflow) = u256_overflow_mul(amount, sqrtPX96.mag);
 
         if add {
-            if product / amount == sqrtPX96.mag {
-                let denominator = numerator + product;
-                if denominator >= numerator {
-                    'fits on 160'.print();
+            if !product_has_overflow && product / amount == sqrtPX96.mag {
+                let (denominator, denominator_has_overflow) = u256_overflowing_add(
+                    numerator, product
+                );
+                if !denominator_has_overflow && denominator >= numerator {
                     return FP64x96Impl::new(
                         mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false
                     );
                 }
             }
-            'product causes overflow'.print();
             return FP64x96Impl::new(
                 div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false
             );
@@ -71,16 +57,12 @@ mod SqrtPriceMath {
         }
     }
 
-    /// @notice Gets the next sqrt price given a delta of token1
-    /// @dev Always rounds down, because in the exact output case (decreasing price) we need to move the price at least
-    /// far enough to get the desired output amount, and in the exact input case (increasing price) we need to move the
-    /// price less in order to not send too much output.
-    /// The formula we compute is within <1 wei of the lossless version: sqrtPX96 +- amount / liquidity
-    /// @param sqrtPX96 The starting price, i.e., before accounting for the token1 delta
-    /// @param liquidity The amount of usable liquidity
-    /// @param amount How much of token1 to add, or remove, from virtual reserves
-    /// @param add Whether to add, or remove, the amount of token1
-    /// @return The price after adding or removing `amount`
+    /// Returns the next square root price given a token1 delta.
+    /// @param sqrtPX96 The initial price (prior to considering the token1 delta).
+    /// @param liquidity The quantity of available liquidity.
+    /// @param amount The quantity of token1 to be added or removed from virtual reserves.
+    /// @param add Indicates whether to add or subtract the token1 amount.
+    /// @return The resulting price after adding or removing the `amount`, based on the 'add' parameter.
     fn get_next_sqrt_price_from_amount1_rounding_down(
         sqrtPX96: FixedType, liquidity: u128, amount: u256, add: bool
     ) -> FixedType {
@@ -105,13 +87,13 @@ mod SqrtPriceMath {
         }
     }
 
-    /// @notice Gets the next sqrt price given an input amount of token0 or token1
-    /// @dev Throws if price or liquidity are 0, or if the next price is out of bounds
-    /// @param sqrtPX96 The starting price, i.e., before accounting for the input amount
-    /// @param liquidity The amount of usable liquidity
-    /// @param amountIn How much of token0, or token1, is being swapped in
-    /// @param zeroForOne Whether the amount in is token0 or token1
-    /// @return sqrtQX96 The price after adding the input amount to token0 or token1
+    /// Returns the next square root price given an input amount of token0 or token1.
+    /// @dev Throws if the price or liquidity is 0, or if the next price is out of bounds.
+    /// @param sqrtPX96 The starting price, i.e., before accounting for the input amount.
+    /// @param liquidity The amount of usable liquidity.
+    /// @param amountIn How much of token0 or token1 is being swapped in.
+    /// @param zeroForOne Indicates whether the amount in is token0 or token1.
+    /// @return sqrtQX96 The price after adding the input amount to token0 or token1.
     fn get_next_sqrt_price_from_input(
         sqrtPX96: FixedType, liquidity: u128, amount_in: u256, zero_for_one: bool
     ) -> FixedType {
@@ -127,13 +109,13 @@ mod SqrtPriceMath {
         }
     }
 
-    /// @notice Gets the next sqrt price given an output amount of token0 or token1
-    /// @dev Throws if price or liquidity are 0 or the next price is out of bounds
-    /// @param sqrtPX96 The starting price before accounting for the output amount
-    /// @param liquidity The amount of usable liquidity
-    /// @param amountOut How much of token0, or token1, is being swapped out
-    /// @param zeroForOne Whether the amount out is token0 or token1
-    /// @return sqrtQX96 The price after removing the output amount of token0 or token1
+    /// Returns the next square root price given an output amount of token0 or token1.
+    /// @dev Throws if the price or liquidity is 0, or if the next price is out of bounds.
+    /// @param sqrtPX96 The starting price before accounting for the output amount.
+    /// @param liquidity The amount of usable liquidity.
+    /// @param amountOut How much of token0 or token1 is being swapped out.
+    /// @param zeroForOne Indicates whether the amount out is token0 or token1.
+    /// @return sqrtQX96 The price after removing the output amount of token0 or token1.
     fn get_next_sqrt_price_from_output(
         sqrtPX96: FixedType, liquidity: u128, amount_out: u256, zero_for_one: bool
     ) -> FixedType {
@@ -150,14 +132,14 @@ mod SqrtPriceMath {
         }
     }
 
-    /// @notice Gets the amount0 delta between two prices
-    /// @dev Calculates liquidity / sqrt(lower) - liquidity / sqrt(upper),
-    /// i.e. liquidity * (sqrt(upper) - sqrt(lower)) / (sqrt(upper) * sqrt(lower))
-    /// @param sqrtRatioAX96 A sqrt price
-    /// @param sqrtRatioBX96 Another sqrt price
-    /// @param liquidity The amount of usable liquidity
-    /// @param roundUp Whether to round the amount up or down
-    /// @return amount0 Amount of token0 required to cover a position of size liquidity between the two passed prices
+    /// Returns the amount0 delta between two prices.
+    /// @dev Calculates `liquidity / sqrt(lower) - liquidity / sqrt(upper)`,
+    /// i.e., `liquidity * (sqrt(upper) - sqrt(lower)) / (sqrt(upper) * sqrt(lower))`.
+    /// @param sqrtRatioAX96 A sqrt price.
+    /// @param sqrtRatioBX96 Another sqrt price.
+    /// @param liquidity The amount of usable liquidity.
+    /// @param roundUp Indicates whether to round the amount up or down.
+    /// @return amount0 Amount of token0 required to cover a position of size liquidity between the two passed prices.
     fn get_amount_0_delta(
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: u128, round_up: bool
     ) -> u256 {
@@ -184,13 +166,13 @@ mod SqrtPriceMath {
         }
     }
 
-    /// @notice Gets the amount1 delta between two prices
-    /// @dev Calculates liquidity * (sqrt(upper) - sqrt(lower))
-    /// @param sqrtRatioAX96 A sqrt price
-    /// @param sqrtRatioBX96 Another sqrt price
-    /// @param liquidity The amount of usable liquidity
-    /// @param roundUp Whether to round the amount up, or down
-    /// @return amount1 Amount of token1 required to cover a position of size liquidity between the two passed prices
+    /// Returns the amount1 delta between two prices.
+    /// @dev Calculates `liquidity * (sqrt(upper) - sqrt(lower))`.
+    /// @param sqrtRatioAX96 A sqrt price.
+    /// @param sqrtRatioBX96 Another sqrt price.
+    /// @param liquidity The amount of usable liquidity.
+    /// @param roundUp Indicates whether to round the amount up or down.
+    /// @return amount1 Amount of token1 required to cover a position of size liquidity between the two passed prices.
     fn get_amount_1_delta(
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: u128, round_up: bool
     ) -> u256 {
@@ -201,8 +183,6 @@ mod SqrtPriceMath {
             sqrt_ratio_AX96_1 = sqrt_ratio_BX96;
             sqrt_ratio_BX96_1 = sqrt_ratio_AX96;
         }
-
-        let liquidity_fp = FP64x96Impl::from_felt(liquidity.into());
 
         if round_up {
             return mul_div_rounding_up(
