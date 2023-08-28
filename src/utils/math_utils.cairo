@@ -21,13 +21,13 @@ mod MathUtils {
 
     impl U128BitShift of BitShiftTrait<u128> {
         #[inline(always)]
-        fn shl(ref self: u128, n: u128) -> u128 {
-            self * pow(2, n.into()).try_into().unwrap()
+        fn shl(self: @u128, n: u128) -> u128 {
+            *self * pow(2, n.into()).try_into().unwrap()
         }
 
         #[inline(always)]
-        fn shr(ref self: u128, n: u128) -> u128 {
-            self / pow(2, n.into()).try_into().unwrap()
+        fn shr(self: @u128, n: u128) -> u128 {
+            *self / pow(2, n.into()).try_into().unwrap()
         }
     }
 

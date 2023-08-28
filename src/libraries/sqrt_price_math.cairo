@@ -8,6 +8,7 @@ mod SqrtPriceMath {
         FP64x96Impl, FixedType, FixedTrait, FP64x96Add, FP64x96Sub, FP64x96Mul, FP64x96Div,
         FP64x96PartialEq, FP64x96PartialOrd, Q96_RESOLUTION, ONE, MAX
     };
+    use fractal_swap::numbers::signed_integer::i256::i256;
     use integer::{u256_overflowing_add, u256_overflow_mul};
     use orion::numbers::signed_integer::i128::{i128};
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
@@ -193,21 +194,34 @@ mod SqrtPriceMath {
             return mul_div(liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE);
         }
     }
-// TODO: block by i256 PR
-// fn get_amount_0_delta_signed_token(sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128) -> i256 {
-//     if liquidity < IntegerTrait::<i128>::new(0, false) {
-//         return FP64x96Impl::new(get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false), true);
-//     } else {
-//         return FP64x96Impl::new(get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false);
-//     } 
-// }
 
-// // TODO: this should return i256
-// fn get_amount_1_delta_signed_token(sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128) -> i256 {
-//     if liquidity < IntegerTrait::<i128>::new(0, false) {
-//         return FP64x96Impl::new(get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false), true);
-//     } else {
-//         return FP64x96Impl::new(get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false);
-//     } 
-// }
+    fn get_amount_0_delta_signed_token(
+        sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128
+    ) -> i256 {
+        if liquidity < IntegerTrait::<i128>::new(0, false) {
+            return IntegerTrait::<i256>::new(
+                get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false),
+                true
+            );
+        } else {
+            return IntegerTrait::<i256>::new(
+                get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false
+            );
+        }
+    }
+
+    fn get_amount_1_delta_signed_token(
+        sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128
+    ) -> i256 {
+        if liquidity < IntegerTrait::<i128>::new(0, false) {
+            return IntegerTrait::<i256>::new(
+                get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false),
+                true
+            );
+        } else {
+            return IntegerTrait::<i256>::new(
+                get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false
+            );
+        }
+    }
 }
