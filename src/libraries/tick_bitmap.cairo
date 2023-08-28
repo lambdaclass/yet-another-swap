@@ -1,4 +1,5 @@
 use orion::numbers::signed_integer::i32::i32;
+use orion::numbers::signed_integer::i16::i16;
 
 #[starknet::interface]
 trait ITickBitmap<TStorage> {
@@ -7,6 +8,7 @@ trait ITickBitmap<TStorage> {
         self: @TStorage, tick: i32, tick_spacing: i32, lte: bool
     ) -> (i32, bool);
     fn is_initialized(self: @TStorage, tick: i32) -> bool;
+    fn position(self: @TStorage, tick: i32) -> (i16, u8);
 }
 
 #[starknet::contract]
@@ -51,6 +53,9 @@ mod TickBitmap {
         fn is_initialized(self: @ContractState, tick: i32) -> bool {
             self._is_initialized(tick)
         }
+        fn position(self: @ContractState, tick: i32) -> (i16, u8) {
+            self._position(tick)
+        }
     }
 
     #[generate_trait]
@@ -61,14 +66,29 @@ mod TickBitmap {
             poseidon_hash_span(serialized.span())
         }
 
+        fn _mod_i32(self: @ContractState, n: i32) -> i32 {
+            let m = IntegerTrait::<i32>::new(256, false);
+            ((n % m) + m) % m
+        }
+
         /// @notice Computes the position in the mapping where the initialized bit for a tick lives
         /// @param tick The tick for which to compute the position
         /// @return word_pos The key in the mapping containing the word in which the bit is stored
         /// @return bit_pos The bit position in the word where the flag is stored
         fn _position(self: @ContractState, tick: i32) -> (i16, u8) {
-            let word_pos: i16 = convert_i32_to_i16(tick / IntegerTrait::<i32>::new(256, false));
-            let tick_mod = tick % IntegerTrait::<i32>::new(256, false);
-            let bit_pos: u8 = convert_i32_to_u8(tick_mod);
+            let result = if tick >= IntegerTrait::<i32>::new(0, false)
+                && tick <= IntegerTrait::<i32>::new(255, false) {
+                IntegerTrait::<i32>::new(0, false)
+            } else if tick > IntegerTrait::<i32>::new(255, false) {
+                tick / IntegerTrait::<i32>::new(256, false)
+            } else if tick >= IntegerTrait::<i32>::new(256, true) {
+                IntegerTrait::<i32>::new(1, true)
+            } else {
+                tick / IntegerTrait::<i32>::new(256, false) - IntegerTrait::<i32>::new(1, false)
+            };
+
+            let word_pos: i16 = convert_i32_to_i16(result);
+            let bit_pos: u8 = convert_i32_to_u8(self._mod_i32(tick));
             (word_pos, bit_pos)
         }
 
@@ -85,7 +105,7 @@ mod TickBitmap {
             let (word_pos, bit_pos) = self._position(tick / tick_spacing);
             let mask: u256 = 1_u256.shl(bit_pos.into());
             let hashed_word_pos = self._generate_hashed_word_pos(@word_pos);
-            let mut word = self.bitmap.read(hashed_word_pos);
+            let word = self.bitmap.read(hashed_word_pos);
             self.bitmap.write(hashed_word_pos, word ^ mask);
         }
 
@@ -108,7 +128,7 @@ mod TickBitmap {
 
             if lte {
                 let (word_pos, bit_pos) = self._position(compressed);
-                let mut word = self.bitmap.read(self._generate_hashed_word_pos(@word_pos));
+                let word: u256 = self.bitmap.read(self._generate_hashed_word_pos(@word_pos));
                 // all the 1s at or to the right of the current bitPos
                 let mask: u256 = 1_u256.shl(bit_pos.into()) - 1 + 1_u256.shl(bit_pos.into());
                 let masked: u256 = word & mask;
@@ -130,8 +150,7 @@ mod TickBitmap {
                 // start from the word of the next tick, since the current tick state doesn't matter
                 let (word_pos, bit_pos) = self
                     ._position(compressed + IntegerTrait::<i32>::new(1, false));
-                let mut word = self.bitmap.read(self._generate_hashed_word_pos(@word_pos));
-
+                let word = self.bitmap.read(self._generate_hashed_word_pos(@word_pos));
                 // all the 1s at or to the left of the bitPos
                 let mask: u256 = ~(1_u256.shl(bit_pos.into()) - 1);
                 let masked: u256 = word & mask;
