@@ -8,7 +8,7 @@ struct FixedType {
 /// A struct listing fixed point implementations.
 #[derive(Serde, Copy, Drop)]
 enum FixedImpl {
-    FP64x96: (), 
+    FP64x96: (),
 }
 
 /// Trait
