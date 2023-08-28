@@ -42,36 +42,21 @@ fn test_get_sqrt_ratio_at_tick_min_plus_one() {
 #[available_gas(200000000)]
 fn test_get_sqrt_ratio_at_tick_max_minus_1() {
     let value = MAX_TICK() - IntegerTrait::<i32>::new(1, false);
-    assert(get_sqrt_ratio_at_tick(value) == FixedTrait::from_felt(765), 'failed');
+    assert(get_sqrt_ratio_at_tick(value) == FixedTrait::from_felt(1461373636630004318706518188784493106690254656249), 'failed');
 }
 
 #[test]
 #[available_gas(200000000)]
 fn test_get_sqrt_ratio_at_tick_max_tick() {
-    'max tick calc:'.print();
-    'high'.print();
-    get_sqrt_ratio_at_tick(MAX_TICK()).mag.high.print();
-    'low'.print();
-    get_sqrt_ratio_at_tick(MAX_TICK()).mag.low.print();
     assert(
         get_sqrt_ratio_at_tick(
             MAX_TICK()
-        ) == FixedTrait::from_felt(857753319979342350376168079697647212439459044902),
+        ) == FixedTrait::from_felt(1461446703485210103287273052203988822378723970342),
         'failed'
     );
 }
-// #[test]
-// #[available_gas(200000000)]
-// fn test_get_sqrt_ratio_at_tick_min_less_than_js_impl() {
-//     assert(get_sqrt_ratio_at_tick(MIN_TICK) < encodePriceSqrt(1, BigNumber.from(2).pow(127))
-// }
 
-// #[test]
-// #[available_gas(200000000)]
-// fn test_get_sqrt_ratio_at_tick_max_tick_greater_than_js_impl() {
-//     assert(get_sqrt_ratio_at_tick(MAX_TICK) > encodePriceSqrt(BigNumber.from(2).pow(127), 1))
-// }
-
+// TODO: check this tests.
 //     for (const absTick of [
 //       50,
 //       100,
