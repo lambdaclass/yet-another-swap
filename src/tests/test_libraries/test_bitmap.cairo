@@ -179,6 +179,18 @@ fn test_reverts_only_itself() {
     );
 }
 
+#[test]
+#[available_gas(3000000)]
+#[should_panic]
+fn test_tick_is_spaced() {
+    let tick_bitmap = deploy();
+
+    let n = IntegerTrait::<i32>::new(3, true);
+    let m = IntegerTrait::<i32>::new(2, false);
+
+    tick_bitmap.flip_tick(n, m);
+}
+
 // #nextInitializedTickWithinOneWord
 
 // lte = false
