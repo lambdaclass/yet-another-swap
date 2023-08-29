@@ -14,3 +14,4 @@ deploy:
 
 test:
 	scarb test
+		
