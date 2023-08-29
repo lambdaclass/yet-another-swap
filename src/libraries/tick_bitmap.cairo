@@ -30,7 +30,7 @@ mod TickBitmap {
     use fractal_swap::utils::math_utils::MathUtils::{BitShiftTrait, pow};
 
     use fractal_swap::utils::orion_utils::OrionUtils::{
-        convert_u8_to_i32, convert_i32_to_i16, convert_i32_to_u8
+        convert_u8_to_i32, convert_i32_to_i16, convert_i32_to_u8, mod_i32
     };
 
     #[storage]
@@ -53,6 +53,7 @@ mod TickBitmap {
         fn is_initialized(self: @ContractState, tick: i32) -> bool {
             self._is_initialized(tick)
         }
+
         fn position(self: @ContractState, tick: i32) -> (i16, u8) {
             self._position(tick)
         }
@@ -64,11 +65,6 @@ mod TickBitmap {
             let mut serialized: Array<felt252> = ArrayTrait::new();
             Serde::<i16>::serialize(word_pos, ref serialized);
             poseidon_hash_span(serialized.span())
-        }
-
-        fn _mod_i32(self: @ContractState, n: i32) -> i32 {
-            let m = IntegerTrait::<i32>::new(256, false);
-            ((n % m) + m) % m
         }
 
         /// @notice Computes the position in the mapping where the initialized bit for a tick lives
@@ -88,7 +84,9 @@ mod TickBitmap {
             };
 
             let word_pos: i16 = convert_i32_to_i16(result);
-            let bit_pos: u8 = convert_i32_to_u8(self._mod_i32(tick));
+            let bit_pos: u8 = convert_i32_to_u8(
+                mod_i32(tick, IntegerTrait::<i32>::new(256, false))
+            );
             (word_pos, bit_pos)
         }
 
