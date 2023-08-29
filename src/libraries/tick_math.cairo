@@ -127,4 +127,174 @@ mod TickMath {
         let sqrtPriceX96_mag = ((aux_ratio.shr(32)) + aux_add) & ((1.shl(160)) - 1);
         return FixedTrait::new(sqrtPriceX96_mag, false);
     }
+
+    fn _gt(a: u256, b: u256) -> u256 {
+        let val = if (a > b) {
+            1
+        } else {
+            0
+        };
+
+        return val;
+    }
+
+    /// Calculates the greatest tick value such that `getRatioAtTick(tick) <= ratio`.
+    /// Throws in case sqrtPriceX96 < MIN_SQRT_RATIO, as MIN_SQRT_RATIO is the lowest value getRatioAtTick may
+    /// ever return.
+    /// params:
+    ///     - sqrtPriceX96 The sqrt ratio for which to compute the tick as a Q64.96.
+    /// return:
+    ///     - tick The greatest tick for which the ratio is less than or equal to the input ratio.
+    fn get_tick_at_sqrt_ratio(sqrtPriceX96: FixedType) -> i32 {
+        // second inequality must be < because the price can never reach the price at the max tick
+        assert(
+            sqrtPriceX96 >= FixedTrait::new(MIN_SQRT_RATIO, false)
+                && sqrtPriceX96 < FixedTrait::new(MAX_SQRT_RATIO, false),
+            'R'
+        );
+        let ratio = sqrtPriceX96.mag.shl(32);
+        let mut r = ratio;
+        let mut msb = 0;
+        // UNTIL HERE EVERYTHING MATCHES THE PYTHON VERSION.
+
+        let f: u256 = 7.shl(_gt(r, 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF));
+        msb = msb | f;
+        r = f / (2 ^ r); // u256 mul overflow here.
+
+        // let f: u256 = 6.shl(_gt(r, 0xFFFFFFFFFFFFFFFF));
+        let f: u256 = 6 * (2 ^ _gt(r, 0xFFFFFFFFFFFFFFFF));
+        msb = msb | f;
+        r = f / (2 ^ r);
+
+        // let f: u256 = 5.shl(_gt(r, 0xFFFFFFFF));
+        let f: u256 = 5 * (2 ^ _gt(r, 0xFFFFFFFF));
+        msb = msb | f;
+        r = f / (2 ^ r);
+
+        // let f: u256 = 4.shl(_gt(r, 0xFFFF));
+        let f: u256 = 4 * (2 ^ _gt(r, 0xFFFF));
+        msb = msb | f;
+        r = f / (2 ^ r); // `u256 is zero` error here.
+
+        // let f: u256 = 3.shl(_gt(r, 0xFF));
+        let f: u256 = 3 * (2 ^ _gt(r, 0xFF));
+        msb = msb | f;
+        r = f / (2 ^ r);
+
+        // let f: u256 = 2.shl(_gt(r, 0xF));
+        let f: u256 = 2 * (2 ^ _gt(r, 0xF));
+        msb = msb | f;
+        r = f / (2 ^ r);
+
+        // let f: u256 = 1.shl(_gt(r, 0x3));
+        let f: u256 = 1 * (2 ^ _gt(r, 0x3));
+        msb = msb | f;
+        r = f / (2 ^ r);
+
+        let f: u256 = _gt(r, 0x1);
+        msb = msb | f;
+        if (msb >= 128) {
+            r = ratio.shr(msb - 127);
+        } else {
+            r = ratio.shl(127 - msb);
+        };
+
+        let mut log_2: u256 = (msb - 128).shl(64);
+        r = (r * r).shr(127);
+        let f = 128.shr(r);
+        log_2 = log_2 | 63.shl(f);
+        r = f.shr(r);
+
+        r = (r * r).shr(127);
+        let f = 128.shr(r);
+        log_2 = log_2 | 62.shl(f);
+        r = f.shr(r);
+
+        r = (r * r).shr(127);
+        let f = 128.shr(r);
+        log_2 = log_2 | 61.shl(f);
+        r = f.shr(r);
+
+        r = (r * r).shr(127);
+        let f = 128.shr(r);
+        log_2 = log_2 | 60.shl(f);
+        r = f.shr(r);
+
+        r = (r * r).shr(127);
+        let f = 128.shr(r);
+        log_2 = log_2 | 59.shl(f);
+        r = f.shr(r);
+
+        r = (r * r).shr(127);
+        let f = 128.shr(r);
+        log_2 = log_2 | 58.shl(f);
+        r = f.shr(r);
+
+        r = (r * r).shr(127);
+        let f = 128.shr(r);
+        log_2 = log_2 | 57.shl(f);
+        r = f.shr(r);
+
+        r = (r * r).shr(127);
+        let f = 128.shr(r);
+        log_2 = log_2 | 56.shl(f);
+        r = f.shr(r);
+
+        r = (r * r).shr(127);
+        let f = 128.shr(r);
+        log_2 = log_2 | 55.shl(f);
+        r = f.shr(r);
+
+        r = (r * r).shr(127);
+        let f = 128.shr(r);
+        log_2 = log_2 | 54.shl(f);
+        r = f.shr(r);
+
+        r = (r * r).shr(127);
+        let f = 128.shr(r);
+        log_2 = log_2 | 53.shl(f);
+        r = f.shr(r);
+
+        r = 127.shr(r * r);
+        let f = 128.shr(r);
+        log_2 = log_2 | 52.shl(f);
+        r = f.shr(r);
+
+        r = 127.shr(r * r);
+        let f = 128.shr(r);
+        log_2 = log_2 | 51.shl(f);
+        r = f.shr(r);
+
+        r = 127.shr(r * r);
+        let f = 128.shr(r);
+        log_2 = log_2 | 50.shl(f);
+        r = f.shr(r);
+        '4'.print();
+        let log_sqrt10001 = log_2 * 255738958999603826347141; // 128.128 number
+
+        let tickLow_felt: felt252 = ((log_sqrt10001 - 3402992956809132418596140100660247210)
+            .shr(128))
+            .try_into()
+            .unwrap();
+        let tickLow_u32: u32 = tickLow_felt.try_into().unwrap();
+        let tickLow = i32 { mag: tickLow_u32, sign: false };
+        let tickHi_felt: felt252 = ((log_sqrt10001 + 291339464771989622907027621153398088495)
+            .shr(128))
+            .try_into()
+            .unwrap();
+        let tickHi_u32: u32 = tickHi_felt.try_into().unwrap();
+        let tickHi = i32 { mag: tickHi_u32, sign: false };
+        '5'.print();
+        let tick = if (tickLow == tickHi) {
+            tickLow
+        } else {
+            if (get_sqrt_ratio_at_tick(tickHi) <= sqrtPriceX96) {
+                tickHi
+            } else {
+                tickLow
+            }
+        };
+
+        return tick;
+    }
 }

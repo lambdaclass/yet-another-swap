@@ -1,4 +1,7 @@
-use fractal_swap::libraries::tick_math::TickMath::{MIN_TICK, MAX_TICK, get_sqrt_ratio_at_tick};
+use fractal_swap::libraries::tick_math::TickMath::{
+    MIN_TICK, MAX_TICK, get_sqrt_ratio_at_tick, MAX_SQRT_RATIO, MIN_SQRT_RATIO,
+    get_tick_at_sqrt_ratio,
+};
 use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 use orion::numbers::signed_integer::i32::i32;
 use fractal_swap::numbers::fixed_point::core::{FixedTrait, FixedType};
@@ -42,7 +45,12 @@ fn test_get_sqrt_ratio_at_tick_min_plus_one() {
 #[available_gas(200000000)]
 fn test_get_sqrt_ratio_at_tick_max_minus_1() {
     let value = MAX_TICK() - IntegerTrait::<i32>::new(1, false);
-    assert(get_sqrt_ratio_at_tick(value) == FixedTrait::from_felt(1461373636630004318706518188784493106690254656249), 'failed');
+    assert(
+        get_sqrt_ratio_at_tick(
+            value
+        ) == FixedTrait::from_felt(1461373636630004318706518188784493106690254656249),
+        'failed'
+    );
 }
 
 #[test]
@@ -56,79 +64,64 @@ fn test_get_sqrt_ratio_at_tick_max_tick() {
     );
 }
 
-// TODO: check this tests.
-//     for (const absTick of [
-//       50,
-//       100,
-//       250,
-//       500,
-//       1_000,
-//       2_500,
-//       3_000,
-//       4_000,
-//       5_000,
-//       50_000,
-//       150_000,
-//       250_000,
-//       500_000,
-//       738_203,
-//     ]) {
-//       for (const tick of [-absTick, absTick]) {
-//         describe(`tick ${tick}`, () => {
-//           it('is at most off by 1/100th of a bips', async () => {
-//             const jsResult = new Decimal(1.0001).pow(tick).sqrt().mul(new Decimal(2).pow(96))
-//             const result = await tickMath.getSqrtRatioAtTick(tick)
-//             const absDiff = new Decimal(result.toString()).sub(jsResult).abs()
-//             expect(absDiff.div(jsResult).toNumber()).to.be.lt(0.000001)
-//           })
-//           it('result', async () => {
-//             expect((await tickMath.getSqrtRatioAtTick(tick)).toString()).to.matchSnapshot()
-//           })
-//           it('gas', async () => {
-//             await snapshotGasCost(tickMath.getGasCostOfGetSqrtRatioAtTick(tick))
-//           })
-//         })
-//       }
-//     }
-//   })
+#[test]
+#[available_gas(200000000)]
+fn test_get_sqrt_ratio_at_tick_min_sqrt_ratio() {
+    assert(get_sqrt_ratio_at_tick(MIN_TICK()) == FixedTrait::new(MIN_SQRT_RATIO, false), 'failed');
+}
 
-//   describe('#MIN_SQRT_RATIO', async () => {
-//     it('equals #getSqrtRatioAtTick(MIN_TICK)', async () => {
-//       const min = await tickMath.getSqrtRatioAtTick(MIN_TICK)
-//       expect(min).to.eq(await tickMath.MIN_SQRT_RATIO())
-//       expect(min).to.eq(MIN_SQRT_RATIO)
-//     })
-//   })
+#[test]
+#[available_gas(200000000)]
+fn test_get_sqrt_ratio_at_tick_max_sqrt_ratio() {
+    assert(get_sqrt_ratio_at_tick(MAX_TICK()) == FixedTrait::new(MAX_SQRT_RATIO, false), 'failed');
+}
 
-//   describe('#MAX_SQRT_RATIO', async () => {
-//     it('equals #getSqrtRatioAtTick(MAX_TICK)', async () => {
-//       const max = await tickMath.getSqrtRatioAtTick(MAX_TICK)
-//       expect(max).to.eq(await tickMath.MAX_SQRT_RATIO())
-//       expect(max).to.eq(MAX_SQRT_RATIO)
-//     })
-//   })
+#[test]
+#[available_gas(2000000000)]
+#[should_panic(expected: ('R',))]
+fn test_panics_too_low() {
+    let input = FixedTrait::new(MIN_SQRT_RATIO - 1, false);
+    get_tick_at_sqrt_ratio(input);
+}
 
-//   describe('#getTickAtSqrtRatio', () => {
-//     it('throws for too low', async () => {
-//       await expect(tickMath.getTickAtSqrtRatio(MIN_SQRT_RATIO.sub(1))).to.be.revertedWith('R')
-//     })
+#[test]
+#[available_gas(2000000000)]
+#[should_panic(expected: ('R',))]
+fn test_panics_too_high() {
+    let input = FixedTrait::new(MAX_SQRT_RATIO + 1, false);
+    get_tick_at_sqrt_ratio(input);
+}
 
-//     it('throws for too high', async () => {
-//       await expect(tickMath.getTickAtSqrtRatio(BigNumber.from(MAX_SQRT_RATIO))).to.be.revertedWith('R')
-//     })
+#[test]
+#[available_gas(2000000000)]
+fn test_ratio_min_tick() {
+    let input = FixedTrait::new(MIN_SQRT_RATIO, false);
+    let res = get_tick_at_sqrt_ratio(input);
+    assert(res == MIN_TICK(), 'failed');
+}
+// #[test]
+// #[available_gas(2000000000)]
+// fn test_min_plus_one() {
+//     let input = FixedTrait::new(4295343490, false);
+//     let res = get_tick_at_sqrt_ratio(input);
+//     assert(res == MIN_TICK() + IntegerTrait::<i32>::new(1, false), 'failed');
+// }
 
-//     it('ratio of min tick', async () => {
-//       expect(await tickMath.getTickAtSqrtRatio(MIN_SQRT_RATIO)).to.eq(MIN_TICK)
-//     })
-//     it('ratio of min tick + 1', async () => {
-//       expect(await tickMath.getTickAtSqrtRatio('4295343490')).to.eq(MIN_TICK + 1)
-//     })
-//     it('ratio of max tick - 1', async () => {
-//       expect(await tickMath.getTickAtSqrtRatio('1461373636630004318706518188784493106690254656249')).to.eq(MAX_TICK - 1)
-//     })
-//     it('ratio closest to max tick', async () => {
-//       expect(await tickMath.getTickAtSqrtRatio(MAX_SQRT_RATIO.sub(1))).to.eq(MAX_TICK - 1)
-//     })
+// #[test]
+// #[available_gas(2000000000)]
+// fn test_max_minus_one() {
+//     let input = FixedTrait::new(1461373636630004318706518188784493106690254656249, false);
+//     let res = get_tick_at_sqrt_ratio(input);
+//     assert(res == MAX_TICK() - IntegerTrait::<i32>::new(1, false), 'failed');
+// }
+
+// #[test]
+// #[available_gas(2000000000)]
+// fn test_ratio_closest_to_max_tick() {
+//     let input = FixedTrait::new(MAX_SQRT_RATIO - 1, false);
+//     let res = get_tick_at_sqrt_ratio(input);
+//     assert(res == MAX_TICK() - IntegerTrait::<i32>::new(1, false), 'failed');
+// }
 
 //     for (const ratio of [
 //       MIN_SQRT_RATIO,
@@ -169,5 +162,42 @@ fn test_get_sqrt_ratio_at_tick_max_tick() {
 //     }
 //   })
 // })
+
+// TODO: check this tests.
+// In Orion seems like they implemented a function that check if the result is whitin a range.
+//     for (const absTick of [
+//       50,
+//       100,
+//       250,
+//       500,
+//       1_000,
+//       2_500,
+//       3_000,
+//       4_000,
+//       5_000,
+//       50_000,
+//       150_000,
+//       250_000,
+//       500_000,
+//       738_203,
+//     ]) {
+//       for (const tick of [-absTick, absTick]) {
+//         describe(`tick ${tick}`, () => {
+//           it('is at most off by 1/100th of a bips', async () => {
+//             const jsResult = new Decimal(1.0001).pow(tick).sqrt().mul(new Decimal(2).pow(96))
+//             const result = await tickMath.getSqrtRatioAtTick(tick)
+//             const absDiff = new Decimal(result.toString()).sub(jsResult).abs()
+//             expect(absDiff.div(jsResult).toNumber()).to.be.lt(0.000001)
+//           })
+//           it('result', async () => {
+//             expect((await tickMath.getSqrtRatioAtTick(tick)).toString()).to.matchSnapshot()
+//           })
+//           it('gas', async () => {
+//             await snapshotGasCost(tickMath.getGasCostOfGetSqrtRatioAtTick(tick))
+//           })
+//         })
+//       }
+//     }
+//   })
 
 

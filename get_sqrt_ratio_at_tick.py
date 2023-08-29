@@ -6,7 +6,7 @@ def get_sqrt_ratio_at_tick(tick):
         raise ValueError('T')
 
     ratio = 0xfffcb933bd6fad37aa2d162d1a594001 if abs_tick & 0x1 != 0 else 0x100000000000000000000000000000000
-    print(f'ratio before: {ratio}')
+    print(f'aux ratio: {ratio}')
     if abs_tick & 0x2 != 0:
         ratio = (ratio * 0xfff97272373d413259a46990580e213a) >> 128
     if abs_tick & 0x4 != 0:
@@ -48,25 +48,61 @@ def get_sqrt_ratio_at_tick(tick):
     print(f'ratio after: {ratio}')
     if tick > 0:
         ratio = 2**256 // ratio
-    print(f'ratio after tick > 0: {ratio}')
+    print(f'adjusted ratio: {ratio}')
     # Dividir por 2^32 redondeando hacia arriba de Q128.128 a Q128.96
     sqrt_price_x96 = (ratio >> 32) + (1 if ratio % (1 << 32) != 0 else 0)
-    print(f'sqrt_price_x96: {sqrt_price_x96}')
+    print(f'result: {sqrt_price_x96}')
     
     return sqrt_price_x96
 
-# Llamada de ejemplo con un valor de tick
-tick_value = 887272  # Valor de tick
-sqrt_result = get_sqrt_ratio_at_tick(tick_value)
-print(sqrt_result)
-# # Supongamos que tienes los valores de high y low en formato u128
-# high = 0x963efd37  # valor del componente high en u128
-# low = 0x16422c5ab4ac44e64f727e3136cf9e26   # valor del componente low en u128
+import math
 
-# # Combina high y low para obtener el valor en u256
-# value_u256 = (high << 128) + low
+def getTickAtSqrtRatio(sqrtPriceX96):
+    MIN_SQRT_RATIO = 4295128739
+    MAX_SQRT_RATIO = 1461446703485210103287273052203988822378723970342
 
-# # Convierte el valor de u256 a decimal
-# value_decimal = int(value_u256)
+    if not (MIN_SQRT_RATIO <= sqrtPriceX96 < MAX_SQRT_RATIO):
+        raise ValueError("Invalid sqrtPriceX96 value")
 
-# print(value_decimal)
+    ratio = sqrtPriceX96 << 32
+    print(f'ratio: {ratio}')
+    r = ratio
+    msb = 0
+
+    for shift in range(7, -1, -1):
+        if r > 2**256 - 1:
+            f = 1 << shift
+            msb |= f
+            r >>= f
+
+    if msb >= 128:
+        r = ratio >> (msb - 127)
+    else:
+        r = ratio << (127 - msb)
+
+    log_2 = (msb - 128) << 64
+
+    for _ in range(13):
+        r = (r * r) >> 127
+        f = r >> 128
+        log_2 |= f << (63 - _)
+        r >>= f
+
+    log_sqrt10001 = log_2 * 255738958999603826347141
+
+    tickLow = int((log_sqrt10001 - 3402992956809132418596140100660247210) >> 128) & 0xFFFFFF
+    tickHi = (log_sqrt10001 + 291339464771989622907027621153398088495) >> 128  & 0xFFFFFF
+
+    print(f'tickHi: {tickHi}')
+    if tickLow == tickHi:
+        return tickLow
+    else:
+        # Aquí tendrías que reemplazar esta parte con la llamada a la función getSqrtRatioAtTick(tickHi)
+        # y luego comparar si es menor o igual a sqrtPriceX96
+        return tickHi if get_sqrt_ratio_at_tick(tickHi) <= sqrtPriceX96 else tickLow
+
+# Ejemplo de uso
+sqrtPriceX96 = 4295128739
+tick = getTickAtSqrtRatio(sqrtPriceX96)
+print("Tick:", tick)
+assert(tick == -887272)
