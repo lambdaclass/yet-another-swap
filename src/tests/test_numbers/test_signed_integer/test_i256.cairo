@@ -273,9 +273,6 @@ mod TestInteger256 {
         use fractal_swap::numbers::signed_integer::i256::i256;
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
-        use integer::{
-            u256_safe_div_rem, u256_try_as_non_zero, u32_safe_divmod, u32_try_as_non_zero
-        };
 
         // Test division and remainder of positive integers
         #[test]
