@@ -13,15 +13,13 @@ const ONE: u256 = 79228162514264337593543950336; // 2 ** 96
 const ONE_u128: u128 = 79228162514264337593543950336; // 2 ** 96
 const HALF: u128 = 39614081257132168796771975168; // 2 ** 95
 const MAX: u256 = 730750818665451459101842416358141509827966271488; // 2 ** (160 - 1)
-
 const Q96_RESOLUTION: u128 = 96;
 
 /// IMPLS
 
 impl FP64x96Impl of FixedTrait {
     fn new(mag: u256, sign: bool) -> FixedType {
-        // TODO: uncomment 
-        // assert(mag <= MAX, 'fp overflow');
+        assert(mag <= MAX, 'fp overflow');
         return FixedType { mag: mag, sign: sign };
     }
 

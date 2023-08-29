@@ -30,6 +30,8 @@ mod SqrtPriceMath {
         if amount == 0 {
             return sqrtPX96;
         }
+        assert(sqrtPX96.sign == false, 'sqrtPX96 cannot be negative');
+
         let numerator = liquidity.into() * pow(2, Q96_RESOLUTION.into());
         let (product, product_has_overflow) = u256_overflow_mul(amount, sqrtPX96.mag);
 
@@ -67,6 +69,8 @@ mod SqrtPriceMath {
     fn get_next_sqrt_price_from_amount1_rounding_down(
         sqrtPX96: FixedType, liquidity: u128, amount: u256, add: bool
     ) -> FixedType {
+        assert(sqrtPX96.sign == false, 'sqrtPX96 cannot be negative');
+
         // if we're adding (subtracting), rounding down requires rounding the quotient down (up)
         // in both cases, avoid a mulDiv for most inputs
         if add {
@@ -97,7 +101,7 @@ mod SqrtPriceMath {
     fn get_next_sqrt_price_from_input(
         sqrtPX96: FixedType, liquidity: u128, amount_in: u256, zero_for_one: bool
     ) -> FixedType {
-        assert(sqrtPX96.sign == false && liquidity > 0, '!');
+        assert(sqrtPX96.sign == false && liquidity > 0, 'sqrtPX96 & liquidity must be >0');
         if zero_for_one {
             return get_next_sqrt_price_from_amount0_rounding_up(
                 sqrtPX96, liquidity, amount_in, true
@@ -151,6 +155,7 @@ mod SqrtPriceMath {
             sqrt_ratio_BX96_1 = sqrt_ratio_AX96;
         }
 
+        // TODO: modify numerator, remove FP95
         let numerator1 = FP64x96Impl::new(liquidity.into() * pow(2, Q96_RESOLUTION.into()), false);
         let numerator2 = sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1;
         assert(sqrt_ratio_AX96_1.sign == false, 'sqrt_ratio_AX96 cannot be neg');

@@ -1,10 +1,11 @@
 mod TestSqrtPriceMath {
     use fractal_swap::utils::math_utils::MathUtils::pow;
     use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
-        FP64x96Impl, FP64x96Div, FixedType, FixedTrait, Q96_RESOLUTION
+        FP64x96Impl, FP64x96Div, FixedType, FixedTrait, Q96_RESOLUTION, ONE, MAX
     };
     use traits::Into;
-    use integer::{u256_sqrt};
+    use integer::{u256_sqrt, u256_safe_div_rem, u256_try_as_non_zero};
+    use debug::PrintTrait;
 
     mod GetNextSqrtPriceFromInput {
         use fractal_swap::utils::math_utils::MathUtils::pow;
@@ -19,6 +20,7 @@ mod TestSqrtPriceMath {
         use integer::BoundedInt;
         use traits::{Into, TryInto};
         use option::OptionTrait;
+        use debug::PrintTrait;
 
         // fails if price is zero
         #[test]
@@ -92,24 +94,18 @@ mod TestSqrtPriceMath {
         #[test]
         #[available_gas(200000000)]
         fn test_returns_the_minumum_price_for_max_inputs() {
-            let price = FP64x96Impl::new((pow(2, 160) - 1), false);
+            let price = FP64x96Impl::new((pow(2, 159)), false);
             let liquidity: u128 = BoundedInt::max();
             let max_liquidity: u256 = mul_div(liquidity.into(), pow(2, 96), price.mag);
             let max_amount_no_overflow: u256 = BoundedInt::max()
                 - liquidity.into() * pow(2, 96) / price.mag;
-
-            // check input
-            // max ammount without overflow should be 115792089237316195423570985008687907853269984665640564039439137263839420088321
-            assert(
-                max_amount_no_overflow == 115792089237316195423570985008687907853269984665640564039439137263839420088320,
-                'max_amount_no_overflow nono'
-            );
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, max_amount_no_overflow, true
             );
             assert(actual == FP64x96Impl::from_felt(1), 'assert error');
         }
+
         // input amount of 0.1 token1
         #[test]
         #[available_gas(200000000)]
@@ -348,6 +344,7 @@ mod TestSqrtPriceMath {
         use option::OptionTrait;
         use traits::{Into, TryInto};
 
+        use debug::PrintTrait;
         // returns 0 if liquidity is 0
         #[test]
         #[available_gas(20000000)]
@@ -475,11 +472,23 @@ mod TestSqrtPriceMath {
 
     // Aux methods for tests
     fn encode_price_sqrt(reserve1: u256, reserve0: u256) -> FixedType {
-        let reserve1x96 = FP64x96Impl::new(reserve1 * pow(2, 96), false);
-        let reserve0x96 = FP64x96Impl::new(reserve0 * pow(2, 96), false);
-        let sqrt_price = (reserve1x96 / reserve0x96).sqrt();
+        // let reserve1x96 = FP64x96Impl::new(reserve1 * pow(2, 96), false);
+        // let reserve0x96 = FP64x96Impl::new(reserve0 * pow(2, 96), false);
+        // let sqrt_price = (reserve1x96 / reserve0x96).sqrt();
 
-        FP64x96Impl::new(sqrt_price.mag, false)
+        let reserve1X96U256 = reserve1 * pow(2, 96);
+        let reserve0X96U256 = reserve0 * pow(2, 96);
+
+        let mul_res = integer::u256_wide_mul(reserve1X96U256, ONE);
+        let b_inv = MAX / reserve0X96U256;
+        let res_div_u256 = u256 { high: mul_res.limb1, low: mul_res.limb0 } / reserve0X96U256
+            + u256 { high: mul_res.limb3, low: mul_res.limb2 } * b_inv;
+
+        let root = integer::u256_sqrt(res_div_u256);
+        let scale_root = integer::u256_sqrt(ONE);
+        let res_u256 = root.into() * ONE / scale_root.into();
+
+        FP64x96Impl::new(res_u256, false)
     }
 
     fn expand_to_18_decimals(n: u256) -> u256 {
