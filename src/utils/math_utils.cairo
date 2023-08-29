@@ -1,6 +1,8 @@
 mod MathUtils {
+    use core::clone::Clone;
     use traits::{Into, TryInto};
     use option::OptionTrait;
+    use fractal_swap::numbers::signed_integer::i256::i256;
 
     trait BitShiftTrait<T> {
         fn shl(self: @T, n: T) -> T;
@@ -16,6 +18,20 @@ mod MathUtils {
         #[inline(always)]
         fn shr(self: @u256, n: u256) -> u256 {
             *self / pow(2, n)
+        }
+    }
+
+    impl I256BitShift of BitShiftTrait<i256> {
+        #[inline(always)]
+        fn shl(self: @i256, n: i256) -> i256 {
+            // Left shift operation: mag << n
+            i256 { mag: self.mag.shl(n.mag), sign: self.sign.clone(), }
+        }
+
+        #[inline(always)]
+        fn shr(self: @i256, n: i256) -> i256 {
+            // Right shift operation: mag >> n
+            i256 { mag: self.mag.shr(n.mag), sign: self.sign.clone(), }
         }
     }
 

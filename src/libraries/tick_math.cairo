@@ -17,6 +17,8 @@ mod TickMath {
     };
     use fractal_swap::utils::math_utils::MathUtils::{BitShiftTrait};
     use integer::BoundedInt;
+    use fractal_swap::numbers::signed_integer::i256::{i256, bitwise_or};
+
     /// The minimum tick that may be passed to #getSqrtRatioAtTick computed from log base 1.0001 of 2**-128
     // const MIN_TICK: i32 = -887272;
     fn MIN_TICK() -> i32 {
@@ -195,95 +197,98 @@ mod TickMath {
         };
 
         // here we need log_2 as i256, and cast msb into i256 before the substraction.
-        let mut log_2: u256 = (msb - 128).shl(64);
+        // let mut log_2: u256 = (msb - 128).shl(64); // -> OLD IMPLEMENTATION.
+        let a = IntegerTrait::<i256>::new(128, false);
+        let b = IntegerTrait::<i256>::new(64, false);
+
+        let mut log_2: i256 = (IntegerTrait::<i256>::new(msb, false) - a).shl(b);
 
         r = (r * r).shr(127);
         let f = r.shr(128);
-        log_2 = log_2 | (f.shl(63));
+        log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(63), false));
         r = r.shr(f);
 
         r = (r * r).shr(127);
         let f = r.shr(128);
-        log_2 = log_2 | (f.shl(62));
+        log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(62), false));
         r = r.shr(f);
 
         r = (r * r).shr(127);
         let f = r.shr(128);
-        log_2 = log_2 | (f.shl(61));
+        log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(61), false));
         r = r.shr(f);
 
         r = (r * r).shr(127);
         let f = r.shr(128);
-        log_2 = log_2 | (f.shl(60));
+        log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(60), false));
         r = r.shr(f);
 
         r = (r * r).shr(127);
         let f = r.shr(128);
-        log_2 = log_2 | (f.shl(59));
+        log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(59), false));
         r = r.shr(f);
 
         r = (r * r).shr(127);
         let f = r.shr(128);
-        log_2 = log_2 | (f.shl(58));
+        log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(58), false));
         r = r.shr(f);
 
         r = (r * r).shr(127);
         let f = r.shr(128);
-        log_2 = log_2 | (f.shl(57));
+        log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(57), false));
         r = r.shr(f);
 
         r = (r * r).shr(127);
         let f = r.shr(128);
-        log_2 = log_2 | (f.shl(56));
+        log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(56), false));
         r = r.shr(f);
 
         r = (r * r).shr(127);
         let f = r.shr(128);
-        log_2 = log_2 | (f.shl(55));
+        log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(55), false));
         r = r.shr(f);
 
         r = (r * r).shr(127);
         let f = r.shr(128);
-        log_2 = log_2 | (f.shl(54));
+        log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(54), false));
         r = r.shr(f);
 
         r = (r * r).shr(127);
         let f = r.shr(128);
-        log_2 = log_2 | (f.shl(53));
+        log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(53), false));
         r = r.shr(f);
 
         r = (r * r).shr(127);
         let f = r.shr(128);
-        log_2 = log_2 | (f.shl(52));
+        log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(52), false));
         r = r.shr(f);
 
         r = (r * r).shr(127);
         let f = r.shr(128);
-        log_2 = log_2 | (f.shl(51));
+        log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(51), false));
         r = r.shr(f);
 
         r = (r * r).shr(127);
         let f = r.shr(128);
-        log_2 = log_2 | (f.shl(50));
+        log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(50), false));
 
-        let log_sqrt10001 = log_2 * 255738958999603826347141; // 128.128 number
+        let log_sqrt10001 = log_2
+            * IntegerTrait::<i256>::new(255738958999603826347141, false); // 128.128 number
 
         'log_sqrt10001'.print();
-        log_sqrt10001.high.print();
-        log_sqrt10001.low.print();
+        log_sqrt10001.mag.high.print();
+        log_sqrt10001.mag.low.print();
 
-        let tickLow_felt: felt252 = ((log_sqrt10001 - 3402992956809132418596140100660247210)
-            .shr(128))
-            .try_into()
-            .unwrap();
-        let tickLow_u32: u32 = tickLow_felt.try_into().unwrap();
-        let tickLow = i32 { mag: tickLow_u32, sign: false };
-        let tickHi_felt: felt252 = ((log_sqrt10001 + 291339464771989622907027621153398088495)
-            .shr(128))
-            .try_into()
-            .unwrap();
-        let tickHi_u32: u32 = tickHi_felt.try_into().unwrap();
-        let tickHi = i32 { mag: tickHi_u32, sign: false };
+        let tickLow = as_i32(
+            log_sqrt10001
+                - IntegerTrait::<i256>::new(3402992956809132418596140100660247210, false)
+                    .shr(IntegerTrait::<i256>::new(128, false))
+        );
+        let tickHi = as_i32(
+            log_sqrt10001
+                + IntegerTrait::<i256>::new(291339464771989622907027621153398088495, false)
+                    .shr(IntegerTrait::<i256>::new(128, false))
+        );
 
         let tick = if (tickLow == tickHi) {
             tickLow
@@ -294,7 +299,13 @@ mod TickMath {
                 tickLow
             }
         };
-
+        'tick'.print();
+        tick.mag.print();
         return tick;
+    }
+
+    fn as_i32(x: i256) -> i32 {
+        let mask: u256 = 0xFFFF_FFFF / 2; // Mask for the least significant 32 bits
+        return IntegerTrait::<i32>::new((x.mag & mask).try_into().unwrap(), x.sign);
     }
 }
