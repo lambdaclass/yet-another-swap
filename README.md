@@ -80,8 +80,8 @@ Follow the steps below to set up a testnet smart wallet using `starkli`:
 
 4. **Setting Up Environment Variables**: There are two primary environment variables vital for effective usage of Starkli’s CLI. These are the location of the keystore file for the Signer, and the location of the Account Descriptor file:
     ```bash
-    export STARKNET_ACCOUNT=~/.starkli-wallets/deployer/account.json
-    export STARKNET_KEYSTORE=~/.starkli-wallets/deployer/keystore.json
+    export STARKNET_ACCOUNT=~/.starkli-wallets/account.json
+    export STARKNET_KEYSTORE=~/.starkli-wallets/keystore.json
     ```
 
 ## Declare and Deploy Contracts
