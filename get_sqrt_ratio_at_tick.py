@@ -74,10 +74,12 @@ def getTickAtSqrtRatio(sqrtPriceX96):
             f = 1 << shift
             msb |= f
             r >>= f
-
+    
+    print(f'msb: {msb}')
     if msb >= 128:
         r = ratio >> (msb - 127)
     else:
+        'overflow'.print();
         r = ratio << (127 - msb)
 
     log_2 = (msb - 128) << 64

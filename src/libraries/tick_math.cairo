@@ -153,124 +153,124 @@ mod TickMath {
             'R'
         );
         let ratio = sqrtPriceX96.mag.shl(32);
-        let mut r = ratio;
+        let mut r = ratio.clone();
         let mut msb = 0;
         // UNTIL HERE EVERYTHING MATCHES THE PYTHON VERSION.
 
-        let f: u256 = 7.shl(_gt(r, 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF));
+        let f: u256 = _gt(r, 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF).shl(7);
         msb = msb | f;
-        r = f / (2 ^ r); // u256 mul overflow here.
+        r = r.shr(f);
 
-        // let f: u256 = 6.shl(_gt(r, 0xFFFFFFFFFFFFFFFF));
-        let f: u256 = 6 * (2 ^ _gt(r, 0xFFFFFFFFFFFFFFFF));
+        let f: u256 = _gt(r, 0xFFFFFFFFFFFFFFFF).shl(6);
         msb = msb | f;
-        r = f / (2 ^ r);
+        r = r.shr(f);
 
-        // let f: u256 = 5.shl(_gt(r, 0xFFFFFFFF));
-        let f: u256 = 5 * (2 ^ _gt(r, 0xFFFFFFFF));
+        let f: u256 = _gt(r, 0xFFFFFFFF).shl(5);
         msb = msb | f;
-        r = f / (2 ^ r);
+        r = r.shr(f);
 
-        // let f: u256 = 4.shl(_gt(r, 0xFFFF));
-        let f: u256 = 4 * (2 ^ _gt(r, 0xFFFF));
+        let f: u256 = _gt(r, 0xFFFF).shl(4);
         msb = msb | f;
-        r = f / (2 ^ r); // `u256 is zero` error here.
+        r = r.shr(f);
 
-        // let f: u256 = 3.shl(_gt(r, 0xFF));
-        let f: u256 = 3 * (2 ^ _gt(r, 0xFF));
+        let f: u256 = _gt(r, 0xFF).shl(3);
         msb = msb | f;
-        r = f / (2 ^ r);
+        r = r.shr(f);
 
-        // let f: u256 = 2.shl(_gt(r, 0xF));
-        let f: u256 = 2 * (2 ^ _gt(r, 0xF));
+        let f: u256 = _gt(r, 0xF).shl(2);
         msb = msb | f;
-        r = f / (2 ^ r);
+        r = r.shr(f);
 
-        // let f: u256 = 1.shl(_gt(r, 0x3));
-        let f: u256 = 1 * (2 ^ _gt(r, 0x3));
+        let f: u256 = _gt(r, 0x3).shl(1);
         msb = msb | f;
-        r = f / (2 ^ r);
+        r = r.shr(f);
 
         let f: u256 = _gt(r, 0x1);
         msb = msb | f;
-        if (msb >= 128) {
-            r = ratio.shr(msb - 127);
+
+        let mut r = if (msb >= 128) {
+            ratio.shr(msb - 127)
         } else {
-            r = ratio.shl(127 - msb);
+            ratio.shl(127 - msb)
         };
 
+        // here we need log_2 as i256, and cast msb into i256 before the substraction.
         let mut log_2: u256 = (msb - 128).shl(64);
-        r = (r * r).shr(127);
-        let f = 128.shr(r);
-        log_2 = log_2 | 63.shl(f);
-        r = f.shr(r);
 
         r = (r * r).shr(127);
-        let f = 128.shr(r);
-        log_2 = log_2 | 62.shl(f);
-        r = f.shr(r);
+        let f = r.shr(128);
+        log_2 = log_2 | (f.shl(63));
+        r = r.shr(f);
 
         r = (r * r).shr(127);
-        let f = 128.shr(r);
-        log_2 = log_2 | 61.shl(f);
-        r = f.shr(r);
+        let f = r.shr(128);
+        log_2 = log_2 | (f.shl(62));
+        r = r.shr(f);
 
         r = (r * r).shr(127);
-        let f = 128.shr(r);
-        log_2 = log_2 | 60.shl(f);
-        r = f.shr(r);
+        let f = r.shr(128);
+        log_2 = log_2 | (f.shl(61));
+        r = r.shr(f);
 
         r = (r * r).shr(127);
-        let f = 128.shr(r);
-        log_2 = log_2 | 59.shl(f);
-        r = f.shr(r);
+        let f = r.shr(128);
+        log_2 = log_2 | (f.shl(60));
+        r = r.shr(f);
 
         r = (r * r).shr(127);
-        let f = 128.shr(r);
-        log_2 = log_2 | 58.shl(f);
-        r = f.shr(r);
+        let f = r.shr(128);
+        log_2 = log_2 | (f.shl(59));
+        r = r.shr(f);
 
         r = (r * r).shr(127);
-        let f = 128.shr(r);
-        log_2 = log_2 | 57.shl(f);
-        r = f.shr(r);
+        let f = r.shr(128);
+        log_2 = log_2 | (f.shl(58));
+        r = r.shr(f);
 
         r = (r * r).shr(127);
-        let f = 128.shr(r);
-        log_2 = log_2 | 56.shl(f);
-        r = f.shr(r);
+        let f = r.shr(128);
+        log_2 = log_2 | (f.shl(57));
+        r = r.shr(f);
 
         r = (r * r).shr(127);
-        let f = 128.shr(r);
-        log_2 = log_2 | 55.shl(f);
-        r = f.shr(r);
+        let f = r.shr(128);
+        log_2 = log_2 | (f.shl(56));
+        r = r.shr(f);
 
         r = (r * r).shr(127);
-        let f = 128.shr(r);
-        log_2 = log_2 | 54.shl(f);
-        r = f.shr(r);
+        let f = r.shr(128);
+        log_2 = log_2 | (f.shl(55));
+        r = r.shr(f);
 
         r = (r * r).shr(127);
-        let f = 128.shr(r);
-        log_2 = log_2 | 53.shl(f);
-        r = f.shr(r);
+        let f = r.shr(128);
+        log_2 = log_2 | (f.shl(54));
+        r = r.shr(f);
 
-        r = 127.shr(r * r);
-        let f = 128.shr(r);
-        log_2 = log_2 | 52.shl(f);
-        r = f.shr(r);
+        r = (r * r).shr(127);
+        let f = r.shr(128);
+        log_2 = log_2 | (f.shl(53));
+        r = r.shr(f);
 
-        r = 127.shr(r * r);
-        let f = 128.shr(r);
-        log_2 = log_2 | 51.shl(f);
-        r = f.shr(r);
+        r = (r * r).shr(127);
+        let f = r.shr(128);
+        log_2 = log_2 | (f.shl(52));
+        r = r.shr(f);
 
-        r = 127.shr(r * r);
-        let f = 128.shr(r);
-        log_2 = log_2 | 50.shl(f);
-        r = f.shr(r);
-        '4'.print();
+        r = (r * r).shr(127);
+        let f = r.shr(128);
+        log_2 = log_2 | (f.shl(51));
+        r = r.shr(f);
+
+        r = (r * r).shr(127);
+        let f = r.shr(128);
+        log_2 = log_2 | (f.shl(50));
+
         let log_sqrt10001 = log_2 * 255738958999603826347141; // 128.128 number
+
+        'log_sqrt10001'.print();
+        log_sqrt10001.high.print();
+        log_sqrt10001.low.print();
 
         let tickLow_felt: felt252 = ((log_sqrt10001 - 3402992956809132418596140100660247210)
             .shr(128))
@@ -284,7 +284,7 @@ mod TickMath {
             .unwrap();
         let tickHi_u32: u32 = tickHi_felt.try_into().unwrap();
         let tickHi = i32 { mag: tickHi_u32, sign: false };
-        '5'.print();
+
         let tick = if (tickLow == tickHi) {
             tickLow
         } else {
