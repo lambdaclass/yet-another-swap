@@ -99,30 +99,30 @@ fn test_ratio_min_tick() {
     let res = get_tick_at_sqrt_ratio(input);
     assert(res == MIN_TICK(), 'failed');
 }
-// #[test]
-// #[available_gas(2000000000)]
-// fn test_min_plus_one() {
-//     let input = FixedTrait::new(4295343490, false);
-//     let res = get_tick_at_sqrt_ratio(input);
-//     assert(res == MIN_TICK() + IntegerTrait::<i32>::new(1, false), 'failed');
-// }
 
-// #[test]
-// #[available_gas(2000000000)]
-// fn test_max_minus_one() {
-//     let input = FixedTrait::new(1461373636630004318706518188784493106690254656249, false);
-//     let res = get_tick_at_sqrt_ratio(input);
-//     assert(res == MAX_TICK() - IntegerTrait::<i32>::new(1, false), 'failed');
-// }
+#[test]
+#[available_gas(2000000000)]
+fn test_min_plus_one() {
+    let input = FixedTrait::new(4295343490, false);
+    let res = get_tick_at_sqrt_ratio(input);
+    assert(res == MIN_TICK() + IntegerTrait::<i32>::new(1, false), 'failed');
+}
 
-// #[test]
-// #[available_gas(2000000000)]
-// fn test_ratio_closest_to_max_tick() {
-//     let input = FixedTrait::new(MAX_SQRT_RATIO - 1, false);
-//     let res = get_tick_at_sqrt_ratio(input);
-//     assert(res == MAX_TICK() - IntegerTrait::<i32>::new(1, false), 'failed');
-// }
+#[test]
+#[available_gas(2000000000)]
+fn test_max_minus_one() {
+    let input = FixedTrait::new(1461373636630004318706518188784493106690254656249, false);
+    let res = get_tick_at_sqrt_ratio(input);
+    assert(res == MAX_TICK() - IntegerTrait::<i32>::new(1, false), 'failed');
+}
 
+#[test]
+#[available_gas(2000000000)]
+fn test_ratio_closest_to_max_tick() {
+    let input = FixedTrait::new(MAX_SQRT_RATIO - 1, false);
+    let res = get_tick_at_sqrt_ratio(input);
+    assert(res == MAX_TICK() - IntegerTrait::<i32>::new(1, false), 'failed');
+}
 //     for (const ratio of [
 //       MIN_SQRT_RATIO,
 //       encodePriceSqrt(BigNumber.from(10).pow(12), 1),

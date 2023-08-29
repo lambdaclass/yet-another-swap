@@ -280,14 +280,15 @@ mod TickMath {
         log_sqrt10001.mag.low.print();
 
         let tickLow = as_i32(
-            log_sqrt10001
-                - IntegerTrait::<i256>::new(3402992956809132418596140100660247210, false)
-                    .shr(IntegerTrait::<i256>::new(128, false))
+            (log_sqrt10001
+                - IntegerTrait::<i256>::new(3402992956809132418596140100660247210, false))
+                .shr(IntegerTrait::<i256>::new(128, false))
         );
+
         let tickHi = as_i32(
-            log_sqrt10001
-                + IntegerTrait::<i256>::new(291339464771989622907027621153398088495, false)
-                    .shr(IntegerTrait::<i256>::new(128, false))
+            (log_sqrt10001
+                + IntegerTrait::<i256>::new(291339464771989622907027621153398088495, false))
+                .shr(IntegerTrait::<i256>::new(128, false))
         );
 
         let tick = if (tickLow == tickHi) {
