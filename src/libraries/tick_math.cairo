@@ -275,10 +275,6 @@ mod TickMath {
         let log_sqrt10001 = log_2
             * IntegerTrait::<i256>::new(255738958999603826347141, false); // 128.128 number
 
-        'log_sqrt10001'.print();
-        log_sqrt10001.mag.high.print();
-        log_sqrt10001.mag.low.print();
-
         let tickLow = as_i32(
             (log_sqrt10001
                 - IntegerTrait::<i256>::new(3402992956809132418596140100660247210, false))
@@ -300,8 +296,7 @@ mod TickMath {
                 tickLow
             }
         };
-        'tick'.print();
-        tick.mag.print();
+
         return tick;
     }
 
