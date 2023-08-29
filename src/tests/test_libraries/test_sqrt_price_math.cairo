@@ -5,7 +5,6 @@ mod TestSqrtPriceMath {
     };
     use traits::Into;
     use integer::{u256_sqrt};
-    use debug::PrintTrait;
 
     mod GetNextSqrtPriceFromInput {
         use fractal_swap::utils::math_utils::MathUtils::pow;
@@ -20,7 +19,6 @@ mod TestSqrtPriceMath {
         use integer::BoundedInt;
         use traits::{Into, TryInto};
         use option::OptionTrait;
-        use debug::PrintTrait;
 
         // fails if price is zero
         #[test]
@@ -428,8 +426,6 @@ mod TestSqrtPriceMath {
         use fractal_swap::utils::math_utils::MathUtils::pow;
         use option::OptionTrait;
         use traits::{Into, TryInto};
-        use debug::PrintTrait;
-        use integer::{u256_sqrt};
 
         // returns 0 if liquidity is 0
         #[test]

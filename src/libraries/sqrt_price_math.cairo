@@ -69,7 +69,6 @@ mod SqrtPriceMath {
     ) -> FixedType {
         // if we're adding (subtracting), rounding down requires rounding the quotient down (up)
         // in both cases, avoid a mulDiv for most inputs
-        // TODO: check FP::new() signs
         if add {
             let mut quotient = if amount <= MAX {
                 amount * pow(2, Q96_RESOLUTION.into()) / liquidity.into()
@@ -190,7 +189,6 @@ mod SqrtPriceMath {
                 liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE
             );
         } else {
-            // FullMath.mulDiv(numerator1, numerator2, sqrtRatioBX96) / sqrtRatioAX96;
             return mul_div(liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE);
         }
     }
