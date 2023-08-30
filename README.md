@@ -3,7 +3,8 @@
 Fractal Swap is a Uniswap V3 implementation on StarkNet.
 
 ## Important Disclaimer
- Currently the project is using the `signed integer` implementation from [Giza](https://github.com/gizatechxyz/orion/tree/main/src/numbers/signed_integer) until all the features are implemented and supported in the latest release of Cairo.
+ Currently, the project is using our [fork](https://github.com/dpinones/orion) of [Orion](https://github.com/gizatechxyz/orion/tree/main/src/numbers/signed_integer) `signed integer` implementation until all features are implemented and supported in the latest version of Cairo. 
+ > Note: In our Orion fork, we've added the capability for signed integers to be stored in a smart contract.
 
 The following commands will not work in this branch:
 - `make declare`
