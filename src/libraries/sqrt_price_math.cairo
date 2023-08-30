@@ -155,18 +155,17 @@ mod SqrtPriceMath {
             sqrt_ratio_BX96_1 = sqrt_ratio_AX96;
         }
 
-        // TODO: modify numerator, remove FP95
-        let numerator1 = FP64x96Impl::new(liquidity.into() * pow(2, Q96_RESOLUTION.into()), false);
+        let numerator1 = liquidity.into() * pow(2, Q96_RESOLUTION.into());
         let numerator2 = sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1;
         assert(sqrt_ratio_AX96_1.sign == false, 'sqrt_ratio_AX96 cannot be neg');
 
         if round_up {
             return div_rounding_up(
-                mul_div_rounding_up(numerator1.mag, numerator2.mag, sqrt_ratio_BX96_1.mag),
+                mul_div_rounding_up(numerator1, numerator2.mag, sqrt_ratio_BX96_1.mag),
                 sqrt_ratio_AX96_1.mag
             );
         } else {
-            return mul_div(numerator1.mag, numerator2.mag, sqrt_ratio_BX96_1.mag)
+            return mul_div(numerator1, numerator2.mag, sqrt_ratio_BX96_1.mag)
                 / sqrt_ratio_AX96_1.mag;
         }
     }
