@@ -11,3 +11,7 @@ declare:
 CLASS_HASH:=
 deploy:
 	starkli deploy $(CLASS_HASH) --keystore ~/.starkli-wallets/keystore.json  --account ~/.starkli-wallets/account.json
+
+test:
+	scarb test
+		
