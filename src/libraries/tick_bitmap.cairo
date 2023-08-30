@@ -13,7 +13,7 @@ trait ITickBitmap<TStorage> {
 
 #[starknet::contract]
 mod TickBitmap {
-    use super::{ITickBitmap};
+    use super::ITickBitmap;
 
     use array::ArrayTrait;
     use integer::BoundedInt;
