@@ -24,9 +24,9 @@ fn deploy() -> ITickDispatcher {
 #[available_gas(30000000)]
 fn test_save_info() {
     let tick = deploy();
-    
+
     tick.set_tick();
-    
+
     let result = tick.get_tick(1);
     assert(result.liquidity_gross == 1, 'liquidity_gross should be 1');
     assert(
