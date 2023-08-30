@@ -105,7 +105,7 @@ fn test_ratio_min_tick() {
 fn test_min_plus_one() {
     let input = FixedTrait::new(4295343490, false);
     let res = get_tick_at_sqrt_ratio(input);
-    assert(res == MIN_TICK() + IntegerTrait::<i32>::new(1, false), 'failed');
+    assert(res == (MIN_TICK() + IntegerTrait::<i32>::new(1, false)), 'failed');
 }
 
 #[test]
@@ -122,6 +122,153 @@ fn test_ratio_closest_to_max_tick() {
     let input = FixedTrait::new(MAX_SQRT_RATIO - 1, false);
     let res = get_tick_at_sqrt_ratio(input);
     assert(res == MAX_TICK() - IntegerTrait::<i32>::new(1, false), 'failed');
+}
+
+// TODO: check this tests.
+// RETURN VALUES WHERE CALCULATED IN PYTHON USING:
+// format(math.sqrt((1.0001 ** tick)) * (2**96), '.96f')
+#[test]
+#[available_gas(2000000000)]
+fn test_check_within_ranges() {
+    let res = get_sqrt_ratio_at_tick(
+        IntegerTrait::<i32>::new(50, false)
+    ); // 79426470787362564183332749312
+    let expected = FixedTrait::from_felt(79426470787362564183332749312);
+    let diff = (res - expected).abs();
+    assert(
+        (diff / expected) * FixedTrait::new((10 ^ 6) * ONE, false) < FixedTrait::new(ONE, false),
+        '50'
+    );
+
+    let res = get_sqrt_ratio_at_tick(
+        IntegerTrait::<i32>::new(100, false)
+    ); // 79625275426524698543654961152
+    let expected = FixedTrait::from_felt(79625275426524698543654961152);
+    let diff = (res - expected).abs();
+    assert(
+        (diff / expected) * FixedTrait::new((10 ^ 6) * ONE, false) < FixedTrait::new(ONE, false),
+        '100'
+    );
+
+    let res = get_sqrt_ratio_at_tick(
+        IntegerTrait::<i32>::new(250, false)
+    ); // 80224679980005204522633789440
+    let expected = FixedTrait::from_felt(80224679980005204522633789440);
+    let diff = (res - expected).abs();
+    assert(
+        (diff / expected) * FixedTrait::new((10 ^ 6) * ONE, false) < FixedTrait::new(ONE, false),
+        '250'
+    );
+
+    let res = get_sqrt_ratio_at_tick(
+        IntegerTrait::<i32>::new(500, false)
+    ); // 81233731461782943452224290816
+    let expected = FixedTrait::from_felt(81233731461782943452224290816);
+    let diff = (res - expected).abs();
+    assert(
+        (diff / expected) * FixedTrait::new((10 ^ 6) * ONE, false) < FixedTrait::new(ONE, false),
+        '500'
+    );
+
+    let res = get_sqrt_ratio_at_tick(
+        IntegerTrait::<i32>::new(1000, false)
+    ); // 83290069058675764276559347712
+    let expected = FixedTrait::from_felt(83290069058675764276559347712);
+    let diff = (res - expected).abs();
+    assert(
+        (diff / expected) * FixedTrait::new((10 ^ 6) * ONE, false) < FixedTrait::new(ONE, false),
+        '1000'
+    );
+
+    let res = get_sqrt_ratio_at_tick(
+        IntegerTrait::<i32>::new(2500, false)
+    ); // 89776708723585931833226821632
+    let expected = FixedTrait::from_felt(89776708723585931833226821632);
+    let diff = (res - expected).abs();
+    assert(
+        (diff / expected) * FixedTrait::new((10 ^ 6) * ONE, false) < FixedTrait::new(ONE, false),
+        '2500'
+    );
+
+    let res = get_sqrt_ratio_at_tick(
+        IntegerTrait::<i32>::new(3000, false)
+    ); // 92049301871180761616552558592
+    let expected = FixedTrait::from_felt(92049301871180761616552558592);
+    let diff = (res - expected).abs();
+    assert(
+        (diff / expected) * FixedTrait::new((10 ^ 6) * ONE, false) < FixedTrait::new(ONE, false),
+        '3000'
+    );
+
+    let res = get_sqrt_ratio_at_tick(
+        IntegerTrait::<i32>::new(4000, false)
+    ); // 96768528593266295136749355008
+    let expected = FixedTrait::from_felt(96768528593266295136749355008);
+    let diff = (res - expected).abs();
+    assert(
+        (diff / expected) * FixedTrait::new((10 ^ 6) * ONE, false) < FixedTrait::new(ONE, false),
+        '4000'
+    );
+
+    let res = get_sqrt_ratio_at_tick(
+        IntegerTrait::<i32>::new(5000, false)
+    ); // 101729702841315830865122557952
+    let expected = FixedTrait::from_felt(101729702841315830865122557952);
+    let diff = (res - expected).abs();
+    assert(
+        (diff / expected) * FixedTrait::new((10 ^ 6) * ONE, false) < FixedTrait::new(ONE, false),
+        '5000'
+    );
+
+    let res = get_sqrt_ratio_at_tick(
+        IntegerTrait::<i32>::new(50000, false)
+    ); // 965075977352955512569221611520
+    let expected = FixedTrait::from_felt(965075977352955512569221611520);
+    let diff = (res - expected).abs();
+    assert(
+        (diff / expected) * FixedTrait::new((10 ^ 6) * ONE, false) < FixedTrait::new(ONE, false),
+        '50000'
+    );
+
+    let res = get_sqrt_ratio_at_tick(
+        IntegerTrait::<i32>::new(150000, false)
+    ); // 143194173941191013896776541274112
+    let expected = FixedTrait::from_felt(143194173941191013896776541274112);
+    let diff = (res - expected).abs();
+    assert(
+        (diff / expected) * FixedTrait::new((10 ^ 6) * ONE, false) < FixedTrait::new(ONE, false),
+        '150000'
+    );
+
+    let res = get_sqrt_ratio_at_tick(
+        IntegerTrait::<i32>::new(250000, false)
+    ); // 21246587762904151822324099702587392
+    let expected = FixedTrait::from_felt(21246587762904151822324099702587392);
+    let diff = (res - expected).abs();
+    assert(
+        (diff / expected) * FixedTrait::new((10 ^ 6) * ONE, false) < FixedTrait::new(ONE, false),
+        '250000'
+    );
+
+    let res = get_sqrt_ratio_at_tick(
+        IntegerTrait::<i32>::new(500000, false)
+    ); // 5697689776479602583788423076217614237696
+    let expected = FixedTrait::from_felt(5697689776479602583788423076217614237696);
+    let diff = (res - expected).abs();
+    assert(
+        (diff / expected) * FixedTrait::new((10 ^ 6) * ONE, false) < FixedTrait::new(ONE, false),
+        '500000'
+    );
+
+    let res = get_sqrt_ratio_at_tick(
+        IntegerTrait::<i32>::new(738203, false)
+    ); // 847134979249810736670455374604595862878289920
+    let expected = FixedTrait::from_felt(847134979249810736670455374604595862878289920);
+    let diff = (res - expected).abs();
+    assert(
+        (diff / expected) * FixedTrait::new((10 ^ 6) * ONE, false) < FixedTrait::new(ONE, false),
+        '738203'
+    );
 }
 //     for (const ratio of [
 //       MIN_SQRT_RATIO,
@@ -162,42 +309,4 @@ fn test_ratio_closest_to_max_tick() {
 //     }
 //   })
 // })
-
-// TODO: check this tests.
-// In Orion seems like they implemented a function that check if the result is whitin a range.
-//     for (const absTick of [
-//       50,
-//       100,
-//       250,
-//       500,
-//       1_000,
-//       2_500,
-//       3_000,
-//       4_000,
-//       5_000,
-//       50_000,
-//       150_000,
-//       250_000,
-//       500_000,
-//       738_203,
-//     ]) {
-//       for (const tick of [-absTick, absTick]) {
-//         describe(`tick ${tick}`, () => {
-//           it('is at most off by 1/100th of a bips', async () => {
-//             const jsResult = new Decimal(1.0001).pow(tick).sqrt().mul(new Decimal(2).pow(96))
-//             const result = await tickMath.getSqrtRatioAtTick(tick)
-//             const absDiff = new Decimal(result.toString()).sub(jsResult).abs()
-//             expect(absDiff.div(jsResult).toNumber()).to.be.lt(0.000001)
-//           })
-//           it('result', async () => {
-//             expect((await tickMath.getSqrtRatioAtTick(tick)).toString()).to.matchSnapshot()
-//           })
-//           it('gas', async () => {
-//             await snapshotGasCost(tickMath.getGasCostOfGetSqrtRatioAtTick(tick))
-//           })
-//         })
-//       }
-//     }
-//   })
-
 

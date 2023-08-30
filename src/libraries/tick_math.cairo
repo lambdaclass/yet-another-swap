@@ -157,7 +157,6 @@ mod TickMath {
         let ratio = sqrtPriceX96.mag.shl(32);
         let mut r = ratio.clone();
         let mut msb = 0;
-        // UNTIL HERE EVERYTHING MATCHES THE PYTHON VERSION.
 
         let f: u256 = _gt(r, 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF).shl(7);
         msb = msb | f;
@@ -271,9 +270,15 @@ mod TickMath {
         r = (r * r).shr(127);
         let f = r.shr(128);
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(50), false));
+        'log_2'.print();
+        log_2.mag.print();
+        log_2.sign.print();
 
         let log_sqrt10001 = log_2
             * IntegerTrait::<i256>::new(255738958999603826347141, false); // 128.128 number
+        'log_sqrt10001'.print();
+        log_sqrt10001.mag.print();
+        log_sqrt10001.sign.print();
 
         let tickLow = as_i32(
             (log_sqrt10001
@@ -286,6 +291,11 @@ mod TickMath {
                 + IntegerTrait::<i256>::new(291339464771989622907027621153398088495, false))
                 .shr(IntegerTrait::<i256>::new(128, false))
         );
+
+        'tickHi'.print();
+        tickHi.mag.print();
+        'tickLow'.print();
+        tickLow.mag.print();
 
         let tick = if (tickLow == tickHi) {
             tickLow
@@ -301,7 +311,7 @@ mod TickMath {
     }
 
     fn as_i32(x: i256) -> i32 {
-        let mask: u256 = 0xFFFF_FFFF / 2; // Mask for the least significant 32 bits
+        let mask: u256 = (1.shl(31)) - 1; // Mask for the least significant 31 bits
         return IntegerTrait::<i32>::new((x.mag & mask).try_into().unwrap(), x.sign);
     }
 }
