@@ -41,7 +41,6 @@ trait ITick<TStorage> {
 
 #[starknet::contract]
 mod Tick {
-    use debug::PrintTrait;
     use super::{ITick, Info};
 
     use array::ArrayTrait;
