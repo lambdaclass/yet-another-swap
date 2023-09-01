@@ -263,55 +263,55 @@ fn test_check_within_ranges_get_tick_at_sqrt_ratio() {
         'ratio >= ratio_of_tick 4',
         'ratio < r(tick + 1) 4'
     );
-    // _test_check_within_ranges_get_tick_at_sqrt_ratio(
-    //     FixedTrait::new(28011385487393069959365969113, false),
-    //     IntegerTrait::<i32>::new(20796, true),
-    //     'diff 5',
-    //     'ratio >= ratio_of_tick 5',
-    //     'ratio < r(tick + 1) 5'
-    // );
-    // _test_check_within_ranges_get_tick_at_sqrt_ratio(
-    //     FixedTrait::new(56022770974786139918731938230, false),
-    //     IntegerTrait::<i32>::new(6932, true),
-    //     'diff 6',
-    //     'ratio >= ratio_of_tick 6',
-    //     'ratio < r(tick + 1) 6'
-    // );
-    // _test_check_within_ranges_get_tick_at_sqrt_ratio(
-    //     FixedTrait::new(79228162514264337593543950340, false),
-    //     IntegerTrait::<i32>::new(0, false),
-    //     'diff 7',
-    //     'ratio >= ratio_of_tick 7',
-    //     'ratio < r(tick + 1) 7'
-    // );
-    // _test_check_within_ranges_get_tick_at_sqrt_ratio(
-    //     FixedTrait::new(112045541949572279837463876400, false),
-    //     IntegerTrait::<i32>::new(6931, false),
-    //     'diff 8',
-    //     'ratio >= ratio_of_tick 8',
-    //     'ratio < r(tick + 1) 8'
-    // );
-    // _test_check_within_ranges_get_tick_at_sqrt_ratio(
-    //     FixedTrait::new(224091083899144559674927752900, false),
-    //     IntegerTrait::<i32>::new(20795, false),
-    //     'diff 9',
-    //     'ratio >= ratio_of_tick 9',
-    //     'ratio < r(tick + 1) 9'
-    // );
-    // _test_check_within_ranges_get_tick_at_sqrt_ratio(
-    //     FixedTrait::new(633825300114114700748351602700, false),
-    //     IntegerTrait::<i32>::new(41590, false),
-    //     'diff 10',
-    //     'ratio >= ratio_of_tick 10',
-    //     'ratio < r(tick + 1) 10'
-    // );
-    // _test_check_within_ranges_get_tick_at_sqrt_ratio(
-    //     FixedTrait::new(79228162514264337593543950, false),
-    //     IntegerTrait::<i32>::new(138163, true),
-    //     'diff 11',
-    //     'ratio >= ratio_of_tick 11',
-    //     'ratio < r(tick + 1) 11'
-    // );
+    _test_check_within_ranges_get_tick_at_sqrt_ratio(
+        FixedTrait::new(28011385487393069959365969113, false),
+        IntegerTrait::<i32>::new(20796, true),
+        'diff 5',
+        'ratio >= ratio_of_tick 5',
+        'ratio < r(tick + 1) 5'
+    );
+    _test_check_within_ranges_get_tick_at_sqrt_ratio(
+        FixedTrait::new(56022770974786139918731938230, false),
+        IntegerTrait::<i32>::new(6932, true),
+        'diff 6',
+        'ratio >= ratio_of_tick 6',
+        'ratio < r(tick + 1) 6'
+    );
+    _test_check_within_ranges_get_tick_at_sqrt_ratio(
+        FixedTrait::new(79228162514264337593543950340, false),
+        IntegerTrait::<i32>::new(0, false),
+        'diff 7',
+        'ratio >= ratio_of_tick 7',
+        'ratio < r(tick + 1) 7'
+    );
+    _test_check_within_ranges_get_tick_at_sqrt_ratio(
+        FixedTrait::new(112045541949572279837463876400, false),
+        IntegerTrait::<i32>::new(6931, false),
+        'diff 8',
+        'ratio >= ratio_of_tick 8',
+        'ratio < r(tick + 1) 8'
+    );
+    _test_check_within_ranges_get_tick_at_sqrt_ratio(
+        FixedTrait::new(224091083899144559674927752900, false),
+        IntegerTrait::<i32>::new(20795, false),
+        'diff 9',
+        'ratio >= ratio_of_tick 9',
+        'ratio < r(tick + 1) 9'
+    );
+    _test_check_within_ranges_get_tick_at_sqrt_ratio(
+        FixedTrait::new(633825300114114700748351602700, false),
+        IntegerTrait::<i32>::new(41590, false),
+        'diff 10',
+        'ratio >= ratio_of_tick 10',
+        'ratio < r(tick + 1) 10'
+    );
+    _test_check_within_ranges_get_tick_at_sqrt_ratio(
+        FixedTrait::new(79228162514264337593543950, false),
+        IntegerTrait::<i32>::new(138163, true),
+        'diff 11',
+        'ratio >= ratio_of_tick 11',
+        'ratio < r(tick + 1) 11'
+    );
     _test_check_within_ranges_get_tick_at_sqrt_ratio(
         FixedTrait::new(79228162514264337593543, false),
         IntegerTrait::<i32>::new(276325, true),

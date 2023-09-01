@@ -280,22 +280,17 @@ mod TickMath {
         log_sqrt10001.mag.print();
         log_sqrt10001.sign.print();
 
-        let tickLow = as_i32(
+        let tickLow = as_i24(
             (log_sqrt10001
                 - IntegerTrait::<i256>::new(3402992956809132418596140100660247210, false))
                 .shr(IntegerTrait::<i256>::new(128, false))
         );
 
-        let tickHi = as_i32(
+        let tickHi = as_i24(
             (log_sqrt10001
                 + IntegerTrait::<i256>::new(291339464771989622907027621153398088495, false))
                 .shr(IntegerTrait::<i256>::new(128, false))
         );
-
-        'tickHi'.print();
-        tickHi.mag.print();
-        'tickLow'.print();
-        tickLow.mag.print();
 
         let tick = if (tickLow == tickHi) {
             tickLow
@@ -310,8 +305,10 @@ mod TickMath {
         return tick;
     }
 
-    fn as_i32(x: i256) -> i32 {
-        let mask: u256 = (1.shl(31)) - 1; // Mask for the least significant 31 bits
+    // We don't have an impl of the i24 type, but I'm using only the 23 LSB bits
+    // and keeping the sign.
+    fn as_i24(x: i256) -> i32 {
+        let mask: u256 = (1.shl(23)) - 1; // Mask for the least significant 23 bits
         return IntegerTrait::<i32>::new((x.mag & mask).try_into().unwrap(), x.sign);
     }
 }
