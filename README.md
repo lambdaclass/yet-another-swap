@@ -3,7 +3,8 @@
 Fractal Swap is a Uniswap V3 implementation on StarkNet.
 
 ## Important Disclaimer
- Currently the project is using the `signed integer` implementation from [Giza](https://github.com/gizatechxyz/orion/tree/main/src/numbers/signed_integer) until all the features are implemented and supported in the latest release of Cairo.
+ Currently, the project is using our [fork](https://github.com/dpinones/orion) of [Orion](https://github.com/gizatechxyz/orion/tree/main/src/numbers/signed_integer) `signed integer` implementation until all features are implemented and supported in the latest version of Cairo. 
+ > Note: In our Orion fork, we've added the capability for signed integers to be stored in a smart contract.
 
 The following commands will not work in this branch:
 - `make declare`
@@ -80,8 +81,8 @@ Follow the steps below to set up a testnet smart wallet using `starkli`:
 
 4. **Setting Up Environment Variables**: There are two primary environment variables vital for effective usage of Starkli’s CLI. These are the location of the keystore file for the Signer, and the location of the Account Descriptor file:
     ```bash
-    export STARKNET_ACCOUNT=~/.starkli-wallets/deployer/account.json
-    export STARKNET_KEYSTORE=~/.starkli-wallets/deployer/keystore.json
+    export STARKNET_ACCOUNT=~/.starkli-wallets/account.json
+    export STARKNET_KEYSTORE=~/.starkli-wallets/keystore.json
     ```
 
 ## Declare and Deploy Contracts
@@ -110,8 +111,8 @@ On Starknet, the deployment process is in two steps:
    ```
 
 ## Version Specifications
-- Cairo 2.1.0
-- Scarb v0.6.0
+- Cairo 2.2.0
+- Scarb v0.7.0
 - Starkli 0.1.9
 - Orion `main` branch (library from Giza)
 
@@ -125,6 +126,6 @@ On Starknet, the deployment process is in two steps:
 - [Cairo by example](https://cairo-by-example.com/)
 - [Starknet Book](https://book.starknet.io/index.html)
 - [Uniswap Protocol](https://docs.uniswap.org/concepts/uniswap-protocol)
-- [Uniswap V3](https://uniswapv3book.com/docs/introduction/uniswap-v3/)
+- [Uniswap V3 Development Book](https://uniswapv3book.com/docs/introduction/uniswap-v3/)
 - [UNISWAP V3 - New Era Of AMMs? Architecture Explained](https://www.youtube.com/watch?v=Ehm-OYBmlPM)
 - [ZK Podcast: Exploring Uniswap V3 and a Multi-L2 Future with Noah and Moody](https://zeroknowledge.fm/185-2/)

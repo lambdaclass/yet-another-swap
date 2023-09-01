@@ -2,8 +2,6 @@ use traits::Into;
 
 use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 use integer::{BoundedInt, u256_wide_mul};
-use fractal_swap::utils::math_utils::MathUtils::{BitShiftTrait};
-
 // ====================== INT 256 ======================
 
 // i256 represents a 256-bit integer.
