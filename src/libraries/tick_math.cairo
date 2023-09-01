@@ -158,6 +158,10 @@ mod TickMath {
         let mut r = ratio.clone();
         let mut msb = 0;
 
+        'ratio'.print();
+        ratio.high.print();
+        ratio.low.print();
+
         let f: u256 = solidity_assembly_gt(r, 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF).shl(7);
         msb = msb | f;
         r = r.shr(f);
@@ -202,82 +206,159 @@ mod TickMath {
 
         let mut log_2: i256 = (IntegerTrait::<i256>::new(msb, false) - a).shl(b);
 
+        'log_2'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
+        log_2.sign.print();
+
         r = (r * r).shr(127);
         let f = r.shr(128);
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(63), false));
         r = r.shr(f);
+
+        'log_2 first shift'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
+        log_2.sign.print();
 
         r = (r * r).shr(127);
         let f = r.shr(128);
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(62), false));
         r = r.shr(f);
 
+        'log_2 2 shift'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
+        log_2.sign.print();
+
         r = (r * r).shr(127);
         let f = r.shr(128);
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(61), false));
         r = r.shr(f);
 
+        'log_2 3 shift'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
+        log_2.sign.print();
+
         r = (r * r).shr(127);
         let f = r.shr(128);
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(60), false));
         r = r.shr(f);
+        'log_2 4 shift'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
+        log_2.sign.print();
 
         r = (r * r).shr(127);
         let f = r.shr(128);
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(59), false));
         r = r.shr(f);
+        'log_2 5 shift'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
+        log_2.sign.print();
 
         r = (r * r).shr(127);
         let f = r.shr(128);
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(58), false));
         r = r.shr(f);
+        'log_2 6 shift'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
+        log_2.sign.print();
 
         r = (r * r).shr(127);
         let f = r.shr(128);
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(57), false));
         r = r.shr(f);
+        'log_2 7 shift'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
+        log_2.sign.print();
 
         r = (r * r).shr(127);
         let f = r.shr(128);
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(56), false));
         r = r.shr(f);
+        'log_2 8 shift'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
+        log_2.sign.print();
 
         r = (r * r).shr(127);
         let f = r.shr(128);
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(55), false));
         r = r.shr(f);
+        'log_2 9 shift'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
+        log_2.sign.print();
 
         r = (r * r).shr(127);
         let f = r.shr(128);
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(54), false));
         r = r.shr(f);
+        'log_2 10 shift'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
+        log_2.sign.print();
 
         r = (r * r).shr(127);
         let f = r.shr(128);
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(53), false));
         r = r.shr(f);
+        'log_2 11 shift'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
+        log_2.sign.print();
 
         r = (r * r).shr(127);
         let f = r.shr(128);
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(52), false));
         r = r.shr(f);
+        'log_2 12 shift'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
+        log_2.sign.print();
+
+        'r'.print();
+        r.high.print();
+        r.low.print();
 
         r = (r * r).shr(127);
         let f = r.shr(128);
+        'f'.print();
+        f.high.print();
+        f.low.print();
+
+        'f << 51'.print();
+        IntegerTrait::<i256>::new(f.shl(51), false).mag.high.print();
+        IntegerTrait::<i256>::new(f.shl(51), false).mag.low.print();
+        IntegerTrait::<i256>::new(f.shl(51), false).sign.print();
+
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(51), false));
         r = r.shr(f);
+
+        'log_2 13 shift'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
+        log_2.sign.print();
 
         r = (r * r).shr(127);
         let f = r.shr(128);
         log_2 = bitwise_or(log_2, IntegerTrait::<i256>::new(f.shl(50), false));
-        'log_2'.print();
-        log_2.mag.print();
+
+        'log_2 after shift'.print();
+        log_2.mag.high.print();
+        log_2.mag.low.print();
         log_2.sign.print();
 
         let log_sqrt10001 = log_2
             * IntegerTrait::<i256>::new(255738958999603826347141, false); // 128.128 number
         'log_sqrt10001'.print();
-        log_sqrt10001.mag.print();
+        log_sqrt10001.mag.high.print();
+        log_sqrt10001.mag.low.print();
         log_sqrt10001.sign.print();
 
         let tickLow = as_i24(

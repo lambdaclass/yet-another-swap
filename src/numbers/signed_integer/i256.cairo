@@ -449,6 +449,28 @@ fn ensure_non_negative_zero(mag: u256, sign: bool) -> i256 {
     }
 }
 
+fn two_complement_if_nec(x: i256) -> i256 {
+    let mag = if x.sign {
+        ~(x.mag) + 1
+    } else {
+        x.mag
+    };
+
+    return i256 { mag: mag, sign: x.sign };
+}
+
 fn bitwise_or(x: i256, y: i256) -> i256 {
-    i256 { mag: x.mag | y.mag, sign: x.sign || y.sign, }
+    let x = two_complement_if_nec(x);
+    let y = two_complement_if_nec(y);
+    let sign = x.sign || y.sign;
+    let mag = if sign {
+        ~(x.mag | y.mag) +1
+    } else {
+        x.mag | y.mag
+    };
+
+    i256 {
+        mag: mag,
+        sign: sign,
+    }
 }
