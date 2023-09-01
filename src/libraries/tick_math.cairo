@@ -130,7 +130,7 @@ mod TickMath {
         return FixedTrait::new(sqrtPriceX96_mag, false);
     }
 
-    fn _gt(a: u256, b: u256) -> u256 {
+    fn solidity_assembly_gt(a: u256, b: u256) -> u256 {
         let val = if (a > b) {
             1
         } else {
@@ -158,35 +158,35 @@ mod TickMath {
         let mut r = ratio.clone();
         let mut msb = 0;
 
-        let f: u256 = _gt(r, 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF).shl(7);
+        let f: u256 = solidity_assembly_gt(r, 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF).shl(7);
         msb = msb | f;
         r = r.shr(f);
 
-        let f: u256 = _gt(r, 0xFFFFFFFFFFFFFFFF).shl(6);
+        let f: u256 = solidity_assembly_gt(r, 0xFFFFFFFFFFFFFFFF).shl(6);
         msb = msb | f;
         r = r.shr(f);
 
-        let f: u256 = _gt(r, 0xFFFFFFFF).shl(5);
+        let f: u256 = solidity_assembly_gt(r, 0xFFFFFFFF).shl(5);
         msb = msb | f;
         r = r.shr(f);
 
-        let f: u256 = _gt(r, 0xFFFF).shl(4);
+        let f: u256 = solidity_assembly_gt(r, 0xFFFF).shl(4);
         msb = msb | f;
         r = r.shr(f);
 
-        let f: u256 = _gt(r, 0xFF).shl(3);
+        let f: u256 = solidity_assembly_gt(r, 0xFF).shl(3);
         msb = msb | f;
         r = r.shr(f);
 
-        let f: u256 = _gt(r, 0xF).shl(2);
+        let f: u256 = solidity_assembly_gt(r, 0xF).shl(2);
         msb = msb | f;
         r = r.shr(f);
 
-        let f: u256 = _gt(r, 0x3).shl(1);
+        let f: u256 = solidity_assembly_gt(r, 0x3).shl(1);
         msb = msb | f;
         r = r.shr(f);
 
-        let f: u256 = _gt(r, 0x1);
+        let f: u256 = solidity_assembly_gt(r, 0x1);
         msb = msb | f;
 
         let mut r = if (msb >= 128) {
