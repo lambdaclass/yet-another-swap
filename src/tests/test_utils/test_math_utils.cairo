@@ -92,6 +92,7 @@ mod BitShift {
         assert(result == 0, 'test_shift_left_zero');
     }
 }
+
 mod Pow {
     use fractal_swap::utils::math_utils::MathUtils::pow;
     #[test]

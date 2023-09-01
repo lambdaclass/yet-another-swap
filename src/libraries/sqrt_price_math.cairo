@@ -1,9 +1,7 @@
 // Functions based on Q64.96 sqrt price and liquidity
 // Contains the math that uses square root of price as a Q64.96 and liquidity to compute deltas
 mod SqrtPriceMath {
-    use fractal_swap::utils::fullmath::FullMath::{
-        div_rounding_up, mul_div, mul_div_rounding_up
-    };
+    use fractal_swap::utils::fullmath::FullMath::{div_rounding_up, mul_div, mul_div_rounding_up};
     use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FixedType, FixedTrait, FP64x96Add, FP64x96Sub, FP64x96Mul, FP64x96Div,
         FP64x96PartialEq, FP64x96PartialOrd, Q96_RESOLUTION, ONE, MAX
@@ -146,26 +144,23 @@ mod SqrtPriceMath {
     fn get_amount_0_delta(
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: u128, round_up: bool
     ) -> u256 {
-        let mut sqrt_ratio_AX96_1 = sqrt_ratio_AX96;
-        let mut sqrt_ratio_BX96_1 = sqrt_ratio_BX96;
-
-        if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
-            sqrt_ratio_AX96_1 = sqrt_ratio_BX96;
-            sqrt_ratio_BX96_1 = sqrt_ratio_AX96;
-        }
+        let (sqrt_ratio_AX96_1, sqrt_ratio_BX96_1) = if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
+            (sqrt_ratio_BX96, sqrt_ratio_AX96)
+        } else {
+            (sqrt_ratio_AX96, sqrt_ratio_BX96)
+        };
 
         let numerator1 = liquidity.into() * pow(2, Q96_RESOLUTION.into());
         let numerator2 = sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1;
         assert(sqrt_ratio_AX96_1.sign == false, 'sqrt_ratio_AX96 cannot be neg');
 
         if round_up {
-            return div_rounding_up(
+            div_rounding_up(
                 mul_div_rounding_up(numerator1, numerator2.mag, sqrt_ratio_BX96_1.mag),
                 sqrt_ratio_AX96_1.mag
-            );
+            )
         } else {
-            return mul_div(numerator1, numerator2.mag, sqrt_ratio_BX96_1.mag)
-                / sqrt_ratio_AX96_1.mag;
+            mul_div(numerator1, numerator2.mag, sqrt_ratio_BX96_1.mag) / sqrt_ratio_AX96_1.mag
         }
     }
 
