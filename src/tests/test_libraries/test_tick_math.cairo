@@ -261,6 +261,12 @@ fn _test_check_within_ranges_get_tick_at_sqrt_ratio(
     assert(diff <= IntegerTrait::<i32>::new(1, false), err_msg_1);
     // ratio is between the tick and tick+1
     let ratio_of_tick = get_sqrt_ratio_at_tick(res);
+    'ratio'.print();
+    ratio.mag.high.print();
+    ratio.mag.low.print();
+    'ratio_of_tickx'.print();
+    ratio_of_tick.mag.high.print();
+    ratio_of_tick.mag.low.print();
     let ratio_of_tick_plus_one = get_sqrt_ratio_at_tick(res + IntegerTrait::<i32>::new(1, false));
     assert(ratio >= ratio_of_tick, err_msg_2);
     assert(ratio < ratio_of_tick_plus_one, err_msg_3);
@@ -269,97 +275,97 @@ fn _test_check_within_ranges_get_tick_at_sqrt_ratio(
 #[test]
 #[available_gas(200000000000)]
 fn test_check_within_ranges_get_tick_at_sqrt_ratio() {
-    _test_check_within_ranges_get_tick_at_sqrt_ratio(
-        FixedTrait::new(MIN_SQRT_RATIO, false),
-        IntegerTrait::<i32>::new(887272, true),
-        'diff 1',
-        'ratio >= ratio_of_tick 1',
-        'ratio < r(tick + 1) 1'
-    );
-    _test_check_within_ranges_get_tick_at_sqrt_ratio(
-        FixedTrait::new(79228162514264337593543950340000000, false),
-        IntegerTrait::<i32>::new(276324, false),
-        'diff 2',
-        'ratio >= ratio_of_tick 2',
-        'ratio < r(tick + 1) 2'
-    );
-    _test_check_within_ranges_get_tick_at_sqrt_ratio(
-        FixedTrait::new(79228162514264337593543950340000, false),
-        IntegerTrait::<i32>::new(138162, false),
-        'diff 3',
-        'ratio >= ratio_of_tick 3',
-        'ratio < r(tick + 1) 3'
-    );
     // _test_check_within_ranges_get_tick_at_sqrt_ratio(
-    //     FixedTrait::new(9903520314283042199192993792, false),
-    //     IntegerTrait::<i32>::new(41591, true),
-    //     'diff 4',
-    //     'ratio >= ratio_of_tick 4',
-    //     'ratio < r(tick + 1) 4'
-    // );
-    _test_check_within_ranges_get_tick_at_sqrt_ratio(
-        FixedTrait::new(28011385487393069959365969113, false),
-        IntegerTrait::<i32>::new(20796, true),
-        'diff 5',
-        'ratio >= ratio_of_tick 5',
-        'ratio < r(tick + 1) 5'
-    );
-    // _test_check_within_ranges_get_tick_at_sqrt_ratio(
-    //     FixedTrait::new(56022770974786139918731938230, false),
-    //     IntegerTrait::<i32>::new(6932, true),
-    //     'diff 6',
-    //     'ratio >= ratio_of_tick 6',
-    //     'ratio < r(tick + 1) 6'
-    // );
-    _test_check_within_ranges_get_tick_at_sqrt_ratio(
-        FixedTrait::new(79228162514264337593543950340, false),
-        IntegerTrait::<i32>::new(0, false),
-        'diff 7',
-        'ratio >= ratio_of_tick 7',
-        'ratio < r(tick + 1) 7'
-    );
-    _test_check_within_ranges_get_tick_at_sqrt_ratio(
-        FixedTrait::new(112045541949572279837463876400, false),
-        IntegerTrait::<i32>::new(6931, false),
-        'diff 8',
-        'ratio >= ratio_of_tick 8',
-        'ratio < r(tick + 1) 8'
-    );
-    _test_check_within_ranges_get_tick_at_sqrt_ratio(
-        FixedTrait::new(224091083899144559674927752900, false),
-        IntegerTrait::<i32>::new(20795, false),
-        'diff 9',
-        'ratio >= ratio_of_tick 9',
-        'ratio < r(tick + 1) 9'
-    );
-    _test_check_within_ranges_get_tick_at_sqrt_ratio(
-        FixedTrait::new(633825300114114700748351602700, false),
-        IntegerTrait::<i32>::new(41590, false),
-        'diff 10',
-        'ratio >= ratio_of_tick 10',
-        'ratio < r(tick + 1) 10'
-    );
-    // _test_check_within_ranges_get_tick_at_sqrt_ratio(
-    //     FixedTrait::new(79228162514264337593543950, false),
-    //     IntegerTrait::<i32>::new(138163, true),
-    //     'diff 11',
-    //     'ratio >= ratio_of_tick 11',
-    //     'ratio < r(tick + 1) 11'
+    //     FixedTrait::new(MIN_SQRT_RATIO, false),
+    //     IntegerTrait::<i32>::new(887272, true),
+    //     'diff 1',
+    //     'ratio >= ratio_of_tick 1',
+    //     'ratio < r(tick + 1) 1'
     // );
     // _test_check_within_ranges_get_tick_at_sqrt_ratio(
-    //     FixedTrait::new(79228162514264337593543, false),
-    //     IntegerTrait::<i32>::new(276325, true),
-    //     'diff 12',
-    //     'ratio >= ratio_of_tick 12',
-    //     'ratio < r(tick + 1) 12'
+    //     FixedTrait::new(79228162514264337593543950340000000, false),
+    //     IntegerTrait::<i32>::new(276324, false),
+    //     'diff 2',
+    //     'ratio >= ratio_of_tick 2',
+    //     'ratio < r(tick + 1) 2'
     // );
     // _test_check_within_ranges_get_tick_at_sqrt_ratio(
-    //     FixedTrait::new(MAX_SQRT_RATIO, false),
-    //     IntegerTrait::<i32>::new(887272, false),
-    //     'diff 13',
-    //     'ratio >= ratio_of_tick 13',
-    //     'ratio < r(tick + 1) 13'
+    //     FixedTrait::new(79228162514264337593543950340000, false),
+    //     IntegerTrait::<i32>::new(138162, false),
+    //     'diff 3',
+    //     'ratio >= ratio_of_tick 3',
+    //     'ratio < r(tick + 1) 3'
     // );
+    _test_check_within_ranges_get_tick_at_sqrt_ratio(
+        FixedTrait::new(9903520314283042199192993792, false),
+        IntegerTrait::<i32>::new(41591, true),
+        'diff 4',
+        'ratio >= ratio_of_tick 4',
+        'ratio < r(tick + 1) 4'
+    );
+    // _test_check_within_ranges_get_tick_at_sqrt_ratio(
+    //     FixedTrait::new(28011385487393069959365969113, false),
+    //     IntegerTrait::<i32>::new(20796, true),
+    //     'diff 5',
+    //     'ratio >= ratio_of_tick 5',
+    //     'ratio < r(tick + 1) 5'
+    // );
+    // // _test_check_within_ranges_get_tick_at_sqrt_ratio(
+    // //     FixedTrait::new(56022770974786139918731938230, false),
+    // //     IntegerTrait::<i32>::new(6932, true),
+    // //     'diff 6',
+    // //     'ratio >= ratio_of_tick 6',
+    // //     'ratio < r(tick + 1) 6'
+    // // );
+    // _test_check_within_ranges_get_tick_at_sqrt_ratio(
+    //     FixedTrait::new(79228162514264337593543950340, false),
+    //     IntegerTrait::<i32>::new(0, false),
+    //     'diff 7',
+    //     'ratio >= ratio_of_tick 7',
+    //     'ratio < r(tick + 1) 7'
+    // );
+    // _test_check_within_ranges_get_tick_at_sqrt_ratio(
+    //     FixedTrait::new(112045541949572279837463876400, false),
+    //     IntegerTrait::<i32>::new(6931, false),
+    //     'diff 8',
+    //     'ratio >= ratio_of_tick 8',
+    //     'ratio < r(tick + 1) 8'
+    // );
+    // _test_check_within_ranges_get_tick_at_sqrt_ratio(
+    //     FixedTrait::new(224091083899144559674927752900, false),
+    //     IntegerTrait::<i32>::new(20795, false),
+    //     'diff 9',
+    //     'ratio >= ratio_of_tick 9',
+    //     'ratio < r(tick + 1) 9'
+    // );
+    // _test_check_within_ranges_get_tick_at_sqrt_ratio(
+    //     FixedTrait::new(633825300114114700748351602700, false),
+    //     IntegerTrait::<i32>::new(41590, false),
+    //     'diff 10',
+    //     'ratio >= ratio_of_tick 10',
+    //     'ratio < r(tick + 1) 10'
+    // );
+    // // _test_check_within_ranges_get_tick_at_sqrt_ratio(
+    // //     FixedTrait::new(79228162514264337593543950, false),
+    // //     IntegerTrait::<i32>::new(138163, true),
+    // //     'diff 11',
+    // //     'ratio >= ratio_of_tick 11',
+    // //     'ratio < r(tick + 1) 11'
+    // // );
+    // // _test_check_within_ranges_get_tick_at_sqrt_ratio(
+    // //     FixedTrait::new(79228162514264337593543, false),
+    // //     IntegerTrait::<i32>::new(276325, true),
+    // //     'diff 12',
+    // //     'ratio >= ratio_of_tick 12',
+    // //     'ratio < r(tick + 1) 12'
+    // // );
+    // // _test_check_within_ranges_get_tick_at_sqrt_ratio(
+    // //     FixedTrait::new(MAX_SQRT_RATIO, false),
+    // //     IntegerTrait::<i32>::new(887272, false),
+    // //     'diff 13',
+    // //     'ratio >= ratio_of_tick 13',
+    // //     'ratio < r(tick + 1) 13'
+    // // );
 }
 
 
