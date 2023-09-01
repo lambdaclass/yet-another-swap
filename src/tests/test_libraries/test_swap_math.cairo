@@ -1,305 +1,252 @@
-mod SwapMathTest { //   describe('#computeSwapStep', () => {
-//     it('exact amount in that gets capped at price target in one for zero', async () => {
-//       const price = encodePriceSqrt(1, 1)
-//       const priceTarget = encodePriceSqrt(101, 100)
-//       const liquidity = expandTo18Decimals(2)
-//       const amount = expandTo18Decimals(1)
-//       const fee = 600
-//       const zeroForOne = false
+mod TestSwapMath { 
+    use fractal_swap::utils::math_utils::MathUtils::pow;
+    use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
+        FP64x96Impl, FP64x96Div, FixedType, FixedTrait, Q96_RESOLUTION, ONE, MAX
+    };
+    use traits::Into;
+    use integer::{u256_sqrt, u256_safe_div_rem, u256_try_as_non_zero};
+    use debug::PrintTrait;
 
-//       const { amountIn, amountOut, sqrtQ, feeAmount } = await swapMath.computeSwapStep(
-//         price,
-//         priceTarget,
-//         liquidity,
-//         amount,
-//         fee
-//       )
+    // Aux methods for tests
+    fn encode_price_sqrt(reserve1: u256, reserve0: u256) -> FixedType {
+        let reserve1X96U256 = reserve1 * pow(2, 96);
+        let reserve0X96U256 = reserve0 * pow(2, 96);
 
-//       expect(amountIn).to.eq('9975124224178055')
-//       expect(feeAmount).to.eq('5988667735148')
-//       expect(amountOut).to.eq('9925619580021728')
-//       expect(amountIn.add(feeAmount), 'entire amount is not used').to.lt(amount)
+        let mul_res = integer::u256_wide_mul(reserve1X96U256, ONE);
+        let b_inv = MAX / reserve0X96U256;
+        let res_div_u256 = u256 { high: mul_res.limb1, low: mul_res.limb0 } / reserve0X96U256
+            + u256 { high: mul_res.limb3, low: mul_res.limb2 } * b_inv;
 
-//       const priceAfterWholeInputAmount = await sqrtPriceMath.getNextSqrtPriceFromInput(
-//         price,
-//         liquidity,
-//         amount,
-//         zeroForOne
-//       )
+        let root = integer::u256_sqrt(res_div_u256);
+        let scale_root = integer::u256_sqrt(ONE);
+        let res_u256 = root.into() * ONE / scale_root.into();
 
-//       expect(sqrtQ, 'price is capped at price target').to.eq(priceTarget)
-//       expect(sqrtQ, 'price is less than price after whole input amount').to.lt(priceAfterWholeInputAmount)
-//     })
+        FP64x96Impl::new(res_u256, false)
+    }
 
-//     it('exact amount out that gets capped at price target in one for zero', async () => {
-//       const price = encodePriceSqrt(1, 1)
-//       const priceTarget = encodePriceSqrt(101, 100)
-//       const liquidity = expandTo18Decimals(2)
-//       const amount = expandTo18Decimals(1).mul(-1)
-//       const fee = 600
-//       const zeroForOne = false
+    fn expand_to_18_decimals(n: u256) -> u256 {
+        n * pow(10, 18)
+    }
 
-//       const { amountIn, amountOut, sqrtQ, feeAmount } = await swapMath.computeSwapStep(
-//         price,
-//         priceTarget,
-//         liquidity,
-//         amount,
-//         fee
-//       )
+    mod ComputeSwapStep {
+        use fractal_swap::libraries::sqrt_price_math::SqrtPriceMath;
+        use fractal_swap::libraries::swap_math::SwapMath;
+        use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
+            FP64x96Impl, FP64x96Div, FixedType, FixedTrait, Q96_RESOLUTION, ONE, MAX
+        };
+        use fractal_swap::numbers::signed_integer::i256::i256;
+        use fractal_swap::tests::test_libraries::test_swap_math::TestSwapMath::{
+            encode_price_sqrt, expand_to_18_decimals
+        };
+        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-//       expect(amountIn).to.eq('9975124224178055')
-//       expect(feeAmount).to.eq('5988667735148')
-//       expect(amountOut).to.eq('9925619580021728')
-//       expect(amountOut, 'entire amount out is not returned').to.lt(amount.mul(-1))
+        use debug::PrintTrait;
 
-//       const priceAfterWholeOutputAmount = await sqrtPriceMath.getNextSqrtPriceFromOutput(
-//         price,
-//         liquidity,
-//         amount.mul(-1),
-//         zeroForOne
-//       )
+        // exact amount in that gets capped at price target in one for zero
+        #[test]
+        #[available_gas(200000000)]
+        fn test_amount_in_gets_capped_at_price_target_in_one_for_zero() {
+            let price = encode_price_sqrt(1, 1);
+            let price_target = encode_price_sqrt(101, 100);
+            let liquidity: u128 = expand_to_18_decimals(2).try_into().unwrap();
+            let amount = IntegerTrait::<i256>::new(expand_to_18_decimals(1), false);
+            let fee = 600;
+            let zero_for_one = false;
 
-//       expect(sqrtQ, 'price is capped at price target').to.eq(priceTarget)
-//       expect(sqrtQ, 'price is less than price after whole output amount').to.lt(priceAfterWholeOutputAmount)
-//     })
+            let (amount_in, amount_out, sqrtQ, fee_amount) = SwapMath::compute_swap_step(
+                price, price_target, liquidity, amount, fee
+            );
 
-//     it('exact amount in that is fully spent in one for zero', async () => {
-//       const price = encodePriceSqrt(1, 1)
-//       const priceTarget = encodePriceSqrt(1000, 100)
-//       const liquidity = expandTo18Decimals(2)
-//       const amount = expandTo18Decimals(1)
-//       const fee = 600
-//       const zeroForOne = false
+            'amount_in.mag'.print(); // 79623317895830855645443129344
+            amount_in.mag.print();
+            // assert(amount_in.mag == 9975124224178055, 'incorrect amount_in');
+            assert(fee_amount == 5988667735148, 'incorrect fee_amount');
+            assert(amount_out == 9925619580021728, 'incorrect amount_out');
+            assert(amount_in.mag + fee_amount < SwapMath::i256_into_u256(amount), 'entire amount is not used');
 
-//       const { amountIn, amountOut, sqrtQ, feeAmount } = await swapMath.computeSwapStep(
-//         price,
-//         priceTarget,
-//         liquidity,
-//         amount,
-//         fee
-//       )
+            let price_after_whole_input_amount = SqrtPriceMath::get_next_sqrt_price_from_input(price, liquidity, SwapMath::i256_into_u256(amount), zero_for_one);
 
-//       expect(amountIn).to.eq('999400000000000000')
-//       expect(feeAmount).to.eq('600000000000000')
-//       expect(amountOut).to.eq('666399946655997866')
-//       expect(amountIn.add(feeAmount), 'entire amount is used').to.eq(amount)
+            assert(sqrtQ == price_target.mag, 'price is capped at price target');
+            assert(sqrtQ < price_after_whole_input_amount.mag, 'price < price after whole input'); // price is less than price after whole input amount
+        }    
 
-//       const priceAfterWholeInputAmountLessFee = await sqrtPriceMath.getNextSqrtPriceFromInput(
-//         price,
-//         liquidity,
-//         amount.sub(feeAmount),
-//         zeroForOne
-//       )
+        exact amount out that gets capped at price target in one for zero
+        #[test]
+        #[available_gas(200000000)]
+        fn test_amount_out_gets_capped_at_price_target_in_one_for_zero() {
+            let price = encode_price_sqrt(1, 1);
+            let price_target = encode_price_sqrt(101, 100);
+            let liquidity: u128 = expand_to_18_decimals(2).try_into().unwrap();
+            let amount = IntegerTrait::<i256>::new(expand_to_18_decimals(1), true);
+            let fee = 600;
+            let zero_for_one = false;
 
-//       expect(sqrtQ, 'price does not reach price target').to.be.lt(priceTarget)
-//       expect(sqrtQ, 'price is equal to price after whole input amount').to.eq(priceAfterWholeInputAmountLessFee)
-//     })
+            let (amount_in, amount_out, sqrtQ, fee_amount) = SwapMath::compute_swap_step(
+                price, price_target, liquidity, amount, fee
+            );
 
-//     it('exact amount out that is fully received in one for zero', async () => {
-//       const price = encodePriceSqrt(1, 1)
-//       const priceTarget = encodePriceSqrt(10000, 100)
-//       const liquidity = expandTo18Decimals(2)
-//       const amount = expandTo18Decimals(1).mul(-1)
-//       const fee = 600
-//       const zeroForOne = false
+            assert(amount_in.mag == 9975124224178055, 'incorrect amount_in');
+            assert(fee_amount == 5988667735148, 'incorrect fee_amount');
+            assert(amount_out == 9925619580021728, 'incorrect amount_out');
+            assert(amount_in.mag + fee_amount < SwapMath::i256_into_u256(amount), 'entire amount is not used');
 
-//       const { amountIn, amountOut, sqrtQ, feeAmount } = await swapMath.computeSwapStep(
-//         price,
-//         priceTarget,
-//         liquidity,
-//         amount,
-//         fee
-//       )
+            let price_after_whole_input_amount = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, expand_to_18_decimals(1), zero_for_one);
 
-//       expect(amountIn).to.eq('2000000000000000000')
-//       expect(feeAmount).to.eq('1200720432259356')
-//       expect(amountOut).to.eq(amount.mul(-1))
+            assert(sqrtQ == price_target.mag, 'price is capped at price target');
+            assert(sqrtQ < price_after_whole_input_amount.mag, 'price < price after whole input'); // price is less than price after whole input amount
+        }
 
-//       const priceAfterWholeOutputAmount = await sqrtPriceMath.getNextSqrtPriceFromOutput(
-//         price,
-//         liquidity,
-//         amount.mul(-1),
-//         zeroForOne
-//       )
+        // exact amount in that is fully spent in one for zero
+        #[test]
+        #[available_gas(200000000)]
+        fn test_amount_in_that_is_fully_spent_in_one_for_zero() {
+            let price = encode_price_sqrt(1, 1);
+            let price_target = encode_price_sqrt(1000, 100);
+            let liquidity: u128 = expand_to_18_decimals(2).try_into().unwrap();
+            let amount = IntegerTrait::<i256>::new(expand_to_18_decimals(1), false);
+            let fee = 600;
+            let zero_for_one = false;
 
-//       expect(sqrtQ, 'price does not reach price target').to.be.lt(priceTarget)
-//       expect(sqrtQ, 'price is less than price after whole output amount').to.eq(priceAfterWholeOutputAmount)
-//     })
+            let (amount_in, amount_out, sqrtQ, fee_amount) = SwapMath::compute_swap_step(
+                price, price_target, liquidity, amount, fee
+            );
 
-//     it('amount out is capped at the desired amount out', async () => {
-//       const { amountIn, amountOut, sqrtQ, feeAmount } = await swapMath.computeSwapStep(
-//         BigNumber.from('417332158212080721273783715441582'),
-//         BigNumber.from('1452870262520218020823638996'),
-//         '159344665391607089467575320103',
-//         '-1',
-//         1
-//       )
-//       expect(amountIn).to.eq('1')
-//       expect(feeAmount).to.eq('1')
-//       expect(amountOut).to.eq('1') // would be 2 if not capped
-//       expect(sqrtQ).to.eq('417332158212080721273783715441581')
-//     })
+            assert(amount_in.mag == 999400000000000000, 'incorrect amount_in');
+            assert(fee_amount == 600000000000000, 'incorrect fee_amount');
+            assert(amount_out == 666399946655997866, 'incorrect amount_out');
+            assert(amount_in.mag + fee_amount == SwapMath::i256_into_u256(amount), 'entire amount is not used');
 
-//     it('target price of 1 uses partial input amount', async () => {
-//       const { amountIn, amountOut, sqrtQ, feeAmount } = await swapMath.computeSwapStep(
-//         BigNumber.from('2'),
-//         BigNumber.from('1'),
-//         '1',
-//         '3915081100057732413702495386755767',
-//         1
-//       )
-//       expect(amountIn).to.eq('39614081257132168796771975168')
-//       expect(feeAmount).to.eq('39614120871253040049813')
-//       expect(amountIn.add(feeAmount)).to.be.lte('3915081100057732413702495386755767')
-//       expect(amountOut).to.eq('0')
-//       expect(sqrtQ).to.eq('1')
-//     })
+            let price_after_whole_import_amount_less_fee = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, SwapMath::i256_into_u256(amount) - fee_amount, zero_for_one);
 
-//     it('entire input amount taken as fee', async () => {
-//       const { amountIn, amountOut, sqrtQ, feeAmount } = await swapMath.computeSwapStep(
-//         '2413',
-//         '79887613182836312',
-//         '1985041575832132834610021537970',
-//         '10',
-//         1872
-//       )
-//       expect(amountIn).to.eq('0')
-//       expect(feeAmount).to.eq('10')
-//       expect(amountOut).to.eq('0')
-//       expect(sqrtQ).to.eq('2413')
-//     })
+            assert(sqrtQ < price_target.mag, 'price is capped at price target');
+            assert(sqrtQ == price_after_whole_import_amount_less_fee.mag, 'price = price after whole input'); // price is less than price after whole input amount
+        }    
 
-//     it('handles intermediate insufficient liquidity in zero for one exact output case', async () => {
-//       const sqrtP = BigNumber.from('20282409603651670423947251286016')
-//       const sqrtPTarget = sqrtP.mul(11).div(10)
-//       const liquidity = 1024
-//       // virtual reserves of one are only 4
-//       // https://www.wolframalpha.com/input/?i=1024+%2F+%2820282409603651670423947251286016+%2F+2**96%29
-//       const amountRemaining = -4
-//       const feePips = 3000
-//       const { amountIn, amountOut, sqrtQ, feeAmount } = await swapMath.computeSwapStep(
-//         sqrtP,
-//         sqrtPTarget,
-//         liquidity,
-//         amountRemaining,
-//         feePips
-//       )
-//       expect(amountOut).to.eq(0)
-//       expect(sqrtQ).to.eq(sqrtPTarget)
-//       expect(amountIn).to.eq(26215)
-//       expect(feeAmount).to.eq(79)
-//     })
+        // exact amount out that is fully received in one for zero
+        #[test]
+        #[available_gas(200000000)]
+        fn test_amount_out_that_is_fully_received_in_one_for_zero() {
+            let price = encode_price_sqrt(1, 1);
+            let price_target = encode_price_sqrt(10000, 100);
+            let liquidity: u128 = expand_to_18_decimals(2).try_into().unwrap();
+            let amount = IntegerTrait::<i256>::new(expand_to_18_decimals(1), true);
+            let fee = 600;
+            let zero_for_one = false;
 
-//     it('handles intermediate insufficient liquidity in one for zero exact output case', async () => {
-//       const sqrtP = BigNumber.from('20282409603651670423947251286016')
-//       const sqrtPTarget = sqrtP.mul(9).div(10)
-//       const liquidity = 1024
-//       // virtual reserves of zero are only 262144
-//       // https://www.wolframalpha.com/input/?i=1024+*+%2820282409603651670423947251286016+%2F+2**96%29
-//       const amountRemaining = -263000
-//       const feePips = 3000
-//       const { amountIn, amountOut, sqrtQ, feeAmount } = await swapMath.computeSwapStep(
-//         sqrtP,
-//         sqrtPTarget,
-//         liquidity,
-//         amountRemaining,
-//         feePips
-//       )
-//       expect(amountOut).to.eq(26214)
-//       expect(sqrtQ).to.eq(sqrtPTarget)
-//       expect(amountIn).to.eq(1)
-//       expect(feeAmount).to.eq(1)
-//     })
+            let (amount_in, amount_out, sqrtQ, fee_amount) = SwapMath::compute_swap_step(
+                price, price_target, liquidity, amount, fee
+            );
 
-//     describe('gas', () => {
-//       it('swap one for zero exact in capped', async () => {
-//         await snapshotGasCost(
-//           swapMath.getGasCostOfComputeSwapStep(
-//             encodePriceSqrt(1, 1),
-//             encodePriceSqrt(101, 100),
-//             expandTo18Decimals(2),
-//             expandTo18Decimals(1),
-//             600
-//           )
-//         )
-//       })
-//       it('swap zero for one exact in capped', async () => {
-//         await snapshotGasCost(
-//           swapMath.getGasCostOfComputeSwapStep(
-//             encodePriceSqrt(1, 1),
-//             encodePriceSqrt(99, 100),
-//             expandTo18Decimals(2),
-//             expandTo18Decimals(1),
-//             600
-//           )
-//         )
-//       })
-//       it('swap one for zero exact out capped', async () => {
-//         await snapshotGasCost(
-//           swapMath.getGasCostOfComputeSwapStep(
-//             encodePriceSqrt(1, 1),
-//             encodePriceSqrt(101, 100),
-//             expandTo18Decimals(2),
-//             expandTo18Decimals(1).mul(-1),
-//             600
-//           )
-//         )
-//       })
-//       it('swap zero for one exact out capped', async () => {
-//         await snapshotGasCost(
-//           swapMath.getGasCostOfComputeSwapStep(
-//             encodePriceSqrt(1, 1),
-//             encodePriceSqrt(99, 100),
-//             expandTo18Decimals(2),
-//             expandTo18Decimals(1).mul(-1),
-//             600
-//           )
-//         )
-//       })
-//       it('swap one for zero exact in partial', async () => {
-//         await snapshotGasCost(
-//           swapMath.getGasCostOfComputeSwapStep(
-//             encodePriceSqrt(1, 1),
-//             encodePriceSqrt(1010, 100),
-//             expandTo18Decimals(2),
-//             1000,
-//             600
-//           )
-//         )
-//       })
-//       it('swap zero for one exact in partial', async () => {
-//         await snapshotGasCost(
-//           swapMath.getGasCostOfComputeSwapStep(
-//             encodePriceSqrt(1, 1),
-//             encodePriceSqrt(99, 1000),
-//             expandTo18Decimals(2),
-//             1000,
-//             600
-//           )
-//         )
-//       })
-//       it('swap one for zero exact out partial', async () => {
-//         await snapshotGasCost(
-//           swapMath.getGasCostOfComputeSwapStep(
-//             encodePriceSqrt(1, 1),
-//             encodePriceSqrt(1010, 100),
-//             expandTo18Decimals(2),
-//             1000,
-//             600
-//           )
-//         )
-//       })
-//       it('swap zero for one exact out partial', async () => {
-//         await snapshotGasCost(
-//           swapMath.getGasCostOfComputeSwapStep(
-//             encodePriceSqrt(1, 1),
-//             encodePriceSqrt(99, 1000),
-//             expandTo18Decimals(2),
-//             1000,
-//             600
-//           )
-//         )
-//       })
-//     })
-//   })
+            assert(amount_in.mag == 2000000000000000000, 'incorrect amount_in');
+            assert(fee_amount == 1200720432259356, 'incorrect fee_amount');
+            assert(amount_out ==  expand_to_18_decimals(1), 'incorrect amount_out');
+
+            let price_after_whole_output_amount = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, expand_to_18_decimals(1), zero_for_one);
+            
+            assert(sqrtQ < price_target.mag, 'price doest reach price target');
+            assert(sqrtQ == price_after_whole_output_amount.mag, 'price = price after whole input'); // price is less than price after whole input amount
+        }
+
+        // amount out is capped at the desired amount out
+        #[test]
+        #[available_gas(200000000)]
+        fn test_amount_out_is_capped_at_the_desired_amount_out() {
+            let price = FP64x96Impl::new(417332158212080721273783715441582, false);
+            let price_target = FP64x96Impl::new(1452870262520218020823638996, false);
+            let liquidity: u128 = 159344665391607089467575320103;
+            let amount = IntegerTrait::<i256>::new(expand_to_18_decimals(1), true);
+            let fee = 1;
+
+            let (amount_in, amount_out, sqrtQ, fee_amount) = SwapMath::compute_swap_step(
+                price, price_target, liquidity, amount, fee
+            );
+
+            assert(amount_in.mag == 1, 'incorrect amount_in');
+            assert(fee_amount == 1, 'incorrect fee_amount');
+            assert(amount_out == 1, 'incorrect amount_out'); // would be 2 if not capped
+            assert(sqrtQ == 417332158212080721273783715441581, 'incorrect sqrtQ'); 
+        }
+
+        // target price of 1 uses partial input amount
+        #[test]
+        #[available_gas(200000000)]
+        fn test_target_price_of_1_uses_partial_input_amount() {
+            let price = FP64x96Impl::new(2, false);
+            let price_target = FP64x96Impl::new(1, false);
+            let liquidity: u128 = 1;
+            let amount = IntegerTrait::<i256>::new(3915081100057732413702495386755767, false);
+            let fee = 1;
+
+            let (amount_in, amount_out, sqrtQ, fee_amount) = SwapMath::compute_swap_step(
+                price, price_target, liquidity, amount, fee
+            );
+
+            assert(amount_in.mag == 39614081257132168796771975168, 'incorrect amount_in');
+            assert(fee_amount == 39614120871253040049813, 'incorrect fee_amount');
+            assert(amount_in.mag + fee_amount <= 3915081100057732413702495386755767, 'incorrect amount_in+fee_amount');
+            assert(amount_out <= 0, 'incorrect amount_out'); 
+            assert(sqrtQ == 1, 'incorrect sqrtQ'); 
+            
+        }
+
+        // entire input amount taken as fee
+        #[test]
+        #[available_gas(200000000)]
+        fn test_entire_input_amount_taken_as_fee() {
+            let price = FP64x96Impl::new(2413, false);
+            let price_target = FP64x96Impl::new(79887613182836312, false);
+            let liquidity: u128 = 1985041575832132834610021537970;
+            let amount = IntegerTrait::<i256>::new(10, false);
+            let fee = 1872;
+
+            let (amount_in, amount_out, sqrtQ, fee_amount) = SwapMath::compute_swap_step(
+                price, price_target, liquidity, amount, fee
+            );
+
+            assert(amount_in.mag == 0, 'incorrect amount_in');
+            assert(fee_amount == 10, 'incorrect fee_amount');
+            assert(amount_out <= 0, 'incorrect amount_out'); 
+            assert(sqrtQ == 2413, 'incorrect sqrtQ'); 
+        }
+
+        // handles intermediate insufficient liquidity in zero for one exact output case
+        #[test]
+        #[available_gas(200000000)]
+        fn test_handles_intermediate_insufficient_liq_in_zero_for_one_exact_output_case() {
+            let sqrtP = FP64x96Impl::new(20282409603651670423947251286016, false);
+            let sqrtP_target = FP64x96Impl::new(sqrtP.mag * 11 / 10, false);
+            let liquidity: u128 = 1024;
+            let amount_remaining = IntegerTrait::<i256>::new(4, true);
+            let fee_pips = 3000;
+
+            let (amount_in, amount_out, sqrtQ, fee_amount) = SwapMath::compute_swap_step(
+                sqrtP, sqrtP_target, liquidity, amount_remaining, fee_pips
+            );
+
+            assert(amount_in.mag == 26215, 'incorrect amount_in');
+            assert(fee_amount == 10, 'incorrect fee_amount');
+            assert(amount_out == 0, 'incorrect amount_out'); 
+            assert(sqrtQ == sqrtP_target.mag, 'incorrect sqrtQ'); 
+        }
+
+        // handles intermediate insufficient liquidity in one for zero exact output case
+        #[test]
+        #[available_gas(200000000)]
+        fn test_handles_intermediate_insufficient_liq_in_zero_for_on_exact_output_case() {
+            let sqrtP = FP64x96Impl::new(20282409603651670423947251286016, false);
+            let sqrtP_target = FP64x96Impl::new(sqrtP.mag * 9 / 10, false);
+            let liquidity: u128 = 1024;
+            let amount_remaining = IntegerTrait::<i256>::new(263000, true);
+            let fee_pips = 3000;
+
+            let (amount_in, amount_out, sqrtQ, fee_amount) = SwapMath::compute_swap_step(
+                sqrtP, sqrtP_target, liquidity, amount_remaining, fee_pips
+            );
+
+            assert(amount_in.mag == 1, 'incorrect amount_in');
+            assert(fee_amount == 1, 'incorrect fee_amount');
+            assert(amount_out == 26214, 'incorrect amount_out'); 
+            assert(sqrtQ == sqrtP_target.mag, 'incorrect sqrtQ'); 
+        }
+    }           
 }
