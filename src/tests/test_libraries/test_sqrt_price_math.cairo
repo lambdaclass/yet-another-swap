@@ -5,22 +5,41 @@ mod TestSqrtPriceMath {
     };
     use traits::Into;
     use integer::{u256_sqrt, u256_safe_div_rem, u256_try_as_non_zero};
-    use debug::PrintTrait;
+
+    // Aux methods for tests
+    fn encode_price_sqrt(reserve1: u256, reserve0: u256) -> FixedType {
+        let reserve1X96U256 = reserve1 * pow(2, 96);
+        let reserve0X96U256 = reserve0 * pow(2, 96);
+
+        let mul_res = integer::u256_wide_mul(reserve1X96U256, ONE);
+        let b_inv = MAX / reserve0X96U256;
+        let res_div_u256 = u256 { high: mul_res.limb1, low: mul_res.limb0 } / reserve0X96U256
+            + u256 { high: mul_res.limb3, low: mul_res.limb2 } * b_inv;
+
+        let root = integer::u256_sqrt(res_div_u256);
+        let scale_root = integer::u256_sqrt(ONE);
+        let res_u256 = root.into() * ONE / scale_root.into();
+
+        FP64x96Impl::new(res_u256, false)
+    }
+
+    fn expand_to_18_decimals(n: u256) -> u256 {
+        n * pow(10, 18)
+    }
 
     mod GetNextSqrtPriceFromInput {
         use fractal_swap::utils::math_utils::MathUtils::pow;
+        use fractal_swap::utils::fullmath::FullMath::mul_div;
         use fractal_swap::libraries::sqrt_price_math::SqrtPriceMath;
         use fractal_swap::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
             encode_price_sqrt, expand_to_18_decimals
         };
-        use fractal_swap::numbers::fixed_point::implementations::fullmath::FullMath::{mul_div};
         use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
         use integer::BoundedInt;
         use traits::{Into, TryInto};
         use option::OptionTrait;
-        use debug::PrintTrait;
 
         // fails if price is zero
         #[test]
@@ -344,7 +363,6 @@ mod TestSqrtPriceMath {
         use option::OptionTrait;
         use traits::{Into, TryInto};
 
-        use debug::PrintTrait;
         // returns 0 if liquidity is 0
         #[test]
         #[available_gas(20000000)]
@@ -468,30 +486,5 @@ mod TestSqrtPriceMath {
             );
             assert(actual_rounded_down == actual - 1, 'wrong 1delta round amount price')
         }
-    }
-
-    // Aux methods for tests
-    fn encode_price_sqrt(reserve1: u256, reserve0: u256) -> FixedType {
-        // let reserve1x96 = FP64x96Impl::new(reserve1 * pow(2, 96), false);
-        // let reserve0x96 = FP64x96Impl::new(reserve0 * pow(2, 96), false);
-        // let sqrt_price = (reserve1x96 / reserve0x96).sqrt();
-
-        let reserve1X96U256 = reserve1 * pow(2, 96);
-        let reserve0X96U256 = reserve0 * pow(2, 96);
-
-        let mul_res = integer::u256_wide_mul(reserve1X96U256, ONE);
-        let b_inv = MAX / reserve0X96U256;
-        let res_div_u256 = u256 { high: mul_res.limb1, low: mul_res.limb0 } / reserve0X96U256
-            + u256 { high: mul_res.limb3, low: mul_res.limb2 } * b_inv;
-
-        let root = integer::u256_sqrt(res_div_u256);
-        let scale_root = integer::u256_sqrt(ONE);
-        let res_u256 = root.into() * ONE / scale_root.into();
-
-        FP64x96Impl::new(res_u256, false)
-    }
-
-    fn expand_to_18_decimals(n: u256) -> u256 {
-        n * pow(10, 18)
     }
 }
