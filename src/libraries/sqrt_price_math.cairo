@@ -43,17 +43,13 @@ mod SqrtPriceMath {
                     );
                 }
             }
-            return FP64x96Impl::new(
-                div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false
-            );
+            FP64x96Impl::new(div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false)
         } else {
             assert(
                 FP64x96Impl::new(product / amount, false) == sqrtPX96 && numerator > product, '!'
             );
             let denominator = numerator - product;
-            return FP64x96Impl::new(
-                mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false
-            );
+            FP64x96Impl::new(mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false)
         }
     }
 
@@ -76,7 +72,7 @@ mod SqrtPriceMath {
             } else {
                 mul_div(amount, ONE, liquidity.into())
             };
-            return (sqrtPX96 + FP64x96Impl::new(quotient, false));
+            (sqrtPX96 + FP64x96Impl::new(quotient, false))
         } else {
             let mut quotient = if amount <= MAX {
                 div_rounding_up(amount * pow(2, Q96_RESOLUTION.into()), liquidity.into())
@@ -84,7 +80,7 @@ mod SqrtPriceMath {
                 mul_div_rounding_up(amount, ONE, liquidity.into())
             };
             assert(sqrtPX96 > FP64x96Impl::new(quotient, false), 'sqrtPX96_fp < quotient');
-            return (sqrtPX96 - FP64x96Impl::new(quotient, false));
+            (sqrtPX96 - FP64x96Impl::new(quotient, false))
         }
     }
 
@@ -100,13 +96,9 @@ mod SqrtPriceMath {
     ) -> FixedType {
         assert(sqrtPX96.sign == false && liquidity > 0, 'sqrtPX96 & liquidity must be >0');
         if zero_for_one {
-            return get_next_sqrt_price_from_amount0_rounding_up(
-                sqrtPX96, liquidity, amount_in, true
-            );
+            get_next_sqrt_price_from_amount0_rounding_up(sqrtPX96, liquidity, amount_in, true)
         } else {
-            return get_next_sqrt_price_from_amount1_rounding_down(
-                sqrtPX96, liquidity, amount_in, true
-            );
+            get_next_sqrt_price_from_amount1_rounding_down(sqrtPX96, liquidity, amount_in, true)
         }
     }
 
@@ -123,13 +115,9 @@ mod SqrtPriceMath {
         assert(sqrtPX96.sign == false && liquidity > 0, 'sqrtPX96 & liquidity must be >0');
 
         if zero_for_one {
-            return get_next_sqrt_price_from_amount1_rounding_down(
-                sqrtPX96, liquidity, amount_out, false
-            );
+            get_next_sqrt_price_from_amount1_rounding_down(sqrtPX96, liquidity, amount_out, false)
         } else {
-            return get_next_sqrt_price_from_amount0_rounding_up(
-                sqrtPX96, liquidity, amount_out, false
-            );
+            get_next_sqrt_price_from_amount0_rounding_up(sqrtPX96, liquidity, amount_out, false)
         }
     }
 
@@ -174,20 +162,16 @@ mod SqrtPriceMath {
     fn get_amount_1_delta(
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: u128, round_up: bool
     ) -> u256 {
-        let mut sqrt_ratio_AX96_1 = sqrt_ratio_AX96;
-        let mut sqrt_ratio_BX96_1 = sqrt_ratio_BX96;
-
-        if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
-            sqrt_ratio_AX96_1 = sqrt_ratio_BX96;
-            sqrt_ratio_BX96_1 = sqrt_ratio_AX96;
-        }
+        let (sqrt_ratio_AX96_1, sqrt_ratio_BX96_1) = if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
+            (sqrt_ratio_BX96, sqrt_ratio_AX96)
+        } else {
+            (sqrt_ratio_AX96, sqrt_ratio_BX96)
+        };
 
         if round_up {
-            return mul_div_rounding_up(
-                liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE
-            );
+            mul_div_rounding_up(liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE)
         } else {
-            return mul_div(liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE);
+            mul_div(liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE)
         }
     }
 
@@ -195,14 +179,14 @@ mod SqrtPriceMath {
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128
     ) -> i256 {
         if liquidity < IntegerTrait::<i128>::new(0, false) {
-            return IntegerTrait::<i256>::new(
+            IntegerTrait::<i256>::new(
                 get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false),
                 true
-            );
+            )
         } else {
-            return IntegerTrait::<i256>::new(
+            IntegerTrait::<i256>::new(
                 get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false
-            );
+            )
         }
     }
 
@@ -210,14 +194,14 @@ mod SqrtPriceMath {
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128
     ) -> i256 {
         if liquidity < IntegerTrait::<i128>::new(0, false) {
-            return IntegerTrait::<i256>::new(
+            IntegerTrait::<i256>::new(
                 get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false),
                 true
-            );
+            )
         } else {
-            return IntegerTrait::<i256>::new(
+            IntegerTrait::<i256>::new(
                 get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false
-            );
+            )
         }
     }
 }
