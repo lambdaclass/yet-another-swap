@@ -3,6 +3,12 @@ mod BitMath {
     use traits::{TryInto, DivEq};
     use option::OptionTrait;
 
+    /// @notice Returns the index of the most significant bit of the number,
+    ///     where the least significant bit is at index 0 and the most significant bit is at index 255
+    /// @dev The function satisfies the property:
+    ///     x >= 2**mostSignificantBit(x) and x < 2**(mostSignificantBit(x)+1)
+    /// @param x the value for which to compute the most significant bit, must be greater than 0
+    /// @return r the index of the most significant bit
     fn most_significant_bit(x: u256) -> u8 {
         assert(x > 0, 'x must be greater than 0');
         let mut x: u256 = x;
@@ -42,6 +48,12 @@ mod BitMath {
         r
     }
 
+    /// @notice Returns the index of the least significant bit of the number,
+    ///     where the least significant bit is at index 0 and the most significant bit is at index 255
+    /// @dev The function satisfies the property:
+    ///     (x & 2**leastSignificantBit(x)) != 0 and (x & (2**(leastSignificantBit(x)) - 1)) == 0)
+    /// @param x the value for which to compute the least significant bit, must be greater than 0
+    /// @return r the index of the least significant bit
     fn least_significant_bit(x: u256) -> u8 {
         assert(x > 0, 'x must be greater than 0');
         let mut x = x;
