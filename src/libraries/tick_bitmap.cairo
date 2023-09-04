@@ -30,7 +30,7 @@ mod TickBitmap {
     use fractal_swap::utils::math_utils::MathUtils::{BitShiftTrait, pow};
 
     use fractal_swap::utils::orion_utils::OrionUtils::{
-        u8Intoi32, convert_i32_to_i16, convert_i32_to_u8, mod_i32
+        u8Intoi32, convert_i32_to_i16, i32TryIntou8, mod_i32
     };
 
     #[storage]
@@ -104,7 +104,7 @@ mod TickBitmap {
         fn _calculate_bit(self: @ContractState, tick: i32) -> u8 {
             // Using this util function because Orion returns negative reminder numbers
             let bit = mod_i32(tick, IntegerTrait::<i32>::new(256, false));
-            convert_i32_to_u8(bit)
+            bit.try_into().expect('calculate_bit')
         }
 
         /// @notice Computes the position in the mapping where the initialized bit for a tick lives

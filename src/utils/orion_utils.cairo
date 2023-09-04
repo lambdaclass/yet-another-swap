@@ -13,15 +13,17 @@ mod OrionUtils {
         }
     }
 
-    fn convert_i32_to_i16(value: i32) -> i16 {
-        IntegerTrait::<i16>::new(value.mag.try_into().unwrap(), value.sign)
+    impl i32TryIntou8 of TryInto<i32, u8> {
+        fn try_into(self: i32) -> Option<u8> {
+            assert(self.sign == false, 'The sign must be positive');
+            let max: u8 = BoundedInt::max();
+            assert(self.mag <= max.into(), 'Overflow of magnitude');
+            self.mag.try_into()
+        }
     }
 
-    fn convert_i32_to_u8(value: i32) -> u8 {
-        assert(value.sign == false, 'The sign must be positive');
-        let max: u8 = BoundedInt::max();
-        assert(value.mag <= max.into(), 'Overflow of magnitude');
-        value.mag.try_into().unwrap()
+    fn convert_i32_to_i16(value: i32) -> i16 {
+        IntegerTrait::<i16>::new(value.mag.try_into().unwrap(), value.sign)
     }
 
     /// Computes the mathematical modulo of two i32 numbers.
