@@ -22,7 +22,15 @@ mod OrionUtils {
         value.mag.try_into().unwrap()
     }
 
+    /// Computes the mathematical modulo of two i32 numbers.
+    /// Unlike Orion '%' operator, which can return negative remainders,
+    /// our function ensures the result is always positive.
+    ///
+    /// Parameters:
+    /// - n: The dividend, can be positive or negative.
+    /// - m: The divisor, should be positive.
     fn mod_i32(n: i32, m: i32) -> i32 {
+        assert(m.sign == false, 'm should be positive');
         ((n % m) + m) % m
     }
 }
