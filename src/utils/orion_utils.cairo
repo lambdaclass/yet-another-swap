@@ -22,8 +22,10 @@ mod OrionUtils {
         }
     }
 
-    fn convert_i32_to_i16(value: i32) -> i16 {
-        IntegerTrait::<i16>::new(value.mag.try_into().unwrap(), value.sign)
+    impl i32TryIntoi16 of TryInto<i32, i16> {
+        fn try_into(self: i32) -> Option<i16> {
+            Option::Some(IntegerTrait::<i16>::new(self.mag.try_into().unwrap(), self.sign))
+        }
     }
 
     /// Computes the mathematical modulo of two i32 numbers.

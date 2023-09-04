@@ -30,7 +30,7 @@ mod TickBitmap {
     use fractal_swap::utils::math_utils::MathUtils::{BitShiftTrait, pow};
 
     use fractal_swap::utils::orion_utils::OrionUtils::{
-        u8Intoi32, convert_i32_to_i16, i32TryIntou8, mod_i32
+        u8Intoi32, i32TryIntoi16, i32TryIntou8, mod_i32
     };
 
     #[storage]
@@ -93,7 +93,7 @@ mod TickBitmap {
             } else {
                 tick / divisor + one_negative
             };
-            convert_i32_to_i16(result)
+            result.try_into().expect('calculate_word')
         }
 
         /// Calculates the bit value based on a given tick input.

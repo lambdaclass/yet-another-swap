@@ -78,26 +78,26 @@ mod OrionUtilsTests {
         use orion::numbers::signed_integer::i32::i32;
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-        use fractal_swap::utils::orion_utils::OrionUtils::convert_i32_to_i16;
+        use fractal_swap::utils::orion_utils::OrionUtils::i32TryIntoi16;
 
         #[test]
         fn test_positive_conversion_within_range() {
             let val: i32 = IntegerTrait::<i32>::new(1000, false);
-            let result = convert_i32_to_i16(val);
+            let result: i16 = val.try_into().unwrap();
             assert(result == IntegerTrait::<i16>::new(1000, false), 'result should be 1000');
         }
 
         #[test]
         fn test_zero_conversion() {
             let val: i32 = IntegerTrait::<i32>::new(0, false);
-            let result = convert_i32_to_i16(val);
+            let result: i16 = val.try_into().unwrap();
             assert(result == IntegerTrait::<i16>::new(0, false), 'result should be 0');
         }
 
         #[test]
         fn test_negative_conversion_within_range() {
             let val: i32 = IntegerTrait::<i32>::new(500, true);
-            let result = convert_i32_to_i16(val);
+            let result: i16 = val.try_into().unwrap();
             assert(result == IntegerTrait::<i16>::new(500, true), 'result should be -500');
         }
 
@@ -105,14 +105,14 @@ mod OrionUtilsTests {
         #[should_panic]
         fn test_positive_conversion_above_range() {
             let val: i32 = IntegerTrait::<i32>::new(35000, false);
-            let result = convert_i32_to_i16(val);
+            let result: i16 = val.try_into().unwrap();
         }
 
         #[test]
         #[should_panic]
         fn test_negative_conversion_below_range() {
             let val: i32 = IntegerTrait::<i32>::new(35000, true);
-            let result = convert_i32_to_i16(val);
+            let result: i16 = val.try_into().unwrap();
         }
     }
 
