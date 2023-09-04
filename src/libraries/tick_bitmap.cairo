@@ -67,26 +67,53 @@ mod TickBitmap {
             poseidon_hash_span(serialized.span())
         }
 
+        /// Calculates the word value based on a tick input.
+        /// - For ticks between 0 and 255 inclusive, it returns 0.
+        /// - For ticks greater than 255, it divides the tick by 256.
+        /// - For ticks less than 0 but greater than or equal to -256, it returns -1.
+        /// - For other negative ticks, it divides the tick by 256 and subtracts 1.
+        ///
+        /// Parameters:
+        /// - `tick`: An i32 input representing the tick value.
+        ///
+        /// Returns: An i16 value representing the calculated word.
+        fn _calculate_word(self: @ContractState, tick: i32) -> i16 {
+            let zero = IntegerTrait::<i32>::new(0, false);
+            let one_negative = IntegerTrait::<i32>::new(1, true);
+            let upper_bound = IntegerTrait::<i32>::new(255, false);
+            let divisor = IntegerTrait::<i32>::new(256, false);
+            let negative_lower_bound = IntegerTrait::<i32>::new(256, true);
+
+            let result = if tick >= zero && tick <= upper_bound {
+                zero
+            } else if tick > upper_bound {
+                tick / divisor
+            } else if tick >= negative_lower_bound {
+                one_negative
+            } else {
+                tick / divisor + one_negative
+            };
+            convert_i32_to_i16(result)
+        }
+
+        /// Calculates the bit value based on a given tick input.
+        ///
+        /// Parameters:
+        /// - `tick`: An i32 input representing the tick value.
+        /// Returns: A u8 value representing the calculated bit.
+        fn _calculate_bit(self: @ContractState, tick: i32) -> u8 {
+            // Using this util function because Orion returns negative reminder numbers
+            let bit = mod_i32(tick, IntegerTrait::<i32>::new(256, false));
+            convert_i32_to_u8(bit)
+        }
+
         /// @notice Computes the position in the mapping where the initialized bit for a tick lives
         /// @param tick The tick for which to compute the position
         /// @return word_pos The key in the mapping containing the word in which the bit is stored
         /// @return bit_pos The bit position in the word where the flag is stored
         fn _position(self: @ContractState, tick: i32) -> (i16, u8) {
-            let result = if tick >= IntegerTrait::<i32>::new(0, false)
-                && tick <= IntegerTrait::<i32>::new(255, false) {
-                IntegerTrait::<i32>::new(0, false)
-            } else if tick > IntegerTrait::<i32>::new(255, false) {
-                tick / IntegerTrait::<i32>::new(256, false)
-            } else if tick >= IntegerTrait::<i32>::new(256, true) {
-                IntegerTrait::<i32>::new(1, true)
-            } else {
-                tick / IntegerTrait::<i32>::new(256, false) - IntegerTrait::<i32>::new(1, false)
-            };
-
-            let word_pos: i16 = convert_i32_to_i16(result);
-            let bit_pos: u8 = convert_i32_to_u8(
-                mod_i32(tick, IntegerTrait::<i32>::new(256, false))
-            );
+            let word_pos: i16 = self._calculate_word(tick);
+            let bit_pos: u8 = self._calculate_bit(tick);
             (word_pos, bit_pos)
         }
 
