@@ -7,8 +7,10 @@ mod OrionUtils {
     use orion::numbers::signed_integer::i16::i16;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-    fn convert_u8_to_i32(value: u8) -> i32 {
-        IntegerTrait::<i32>::new(value.into(), false)
+    impl u8Intoi32 of Into<u8, i32> {
+        fn into(self: u8) -> i32 {
+            IntegerTrait::<i32>::new(self.into(), false)
+        }
     }
 
     fn convert_i32_to_i16(value: i32) -> i16 {

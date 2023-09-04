@@ -49,26 +49,26 @@ mod OrionUtilsTests {
         use orion::numbers::signed_integer::i32::i32;
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-        use fractal_swap::utils::orion_utils::OrionUtils::convert_u8_to_i32;
+        use fractal_swap::utils::orion_utils::OrionUtils::u8Intoi32;
 
         #[test]
         fn test_conversion() {
             let val: u8 = 127;
-            let result = convert_u8_to_i32(val);
+            let result: i32 = val.into();
             assert(result == IntegerTrait::<i32>::new(127, false), 'result should be 127');
         }
 
         #[test]
         fn test_zero_conversion() {
             let val: u8 = 0;
-            let result = convert_u8_to_i32(val);
+            let result: i32 = val.into();
             assert(result == IntegerTrait::<i32>::new(0, false), 'result should be 0');
         }
 
         #[test]
         fn test_max_value_conversion() {
             let val: u8 = BoundedInt::max();
-            let result = convert_u8_to_i32(val);
+            let result: i32 = val.into();
             assert(result == IntegerTrait::<i32>::new(255, false), 'result should be 255');
         }
     }

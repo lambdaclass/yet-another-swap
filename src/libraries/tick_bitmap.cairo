@@ -30,7 +30,7 @@ mod TickBitmap {
     use fractal_swap::utils::math_utils::MathUtils::{BitShiftTrait, pow};
 
     use fractal_swap::utils::orion_utils::OrionUtils::{
-        convert_u8_to_i32, convert_i32_to_i16, convert_i32_to_u8, mod_i32
+        u8Intoi32, convert_i32_to_i16, convert_i32_to_u8, mod_i32
     };
 
     #[storage]
@@ -163,12 +163,11 @@ mod TickBitmap {
                 // overflow/underflow is possible, but prevented externally by limiting both tickSpacing and tick
                 let next = if initialized {
                     // (compressed - int24(bit_pos - BitMath.most_significant_bit(masked))) * tick_spacing
-                    (compressed
-                        - convert_u8_to_i32(bit_pos - BitMath::most_significant_bit(masked)))
+                    (compressed - (bit_pos - BitMath::most_significant_bit(masked)).into())
                         * tick_spacing
                 } else {
                     // (compressed - int24(bit_pos)) * tick_spacing
-                    (compressed - convert_u8_to_i32(bit_pos)) * tick_spacing
+                    (compressed - bit_pos.into()) * tick_spacing
                 };
                 (next, initialized)
             } else {
@@ -187,14 +186,12 @@ mod TickBitmap {
                     // (compressed + 1 + int24(BitMath::least_significant_bit(masked) - bit_pos)) * tick_spacing
                     (compressed
                         + IntegerTrait::<i32>::new(1, false)
-                        + convert_u8_to_i32(BitMath::least_significant_bit(masked) - bit_pos))
+                        + (BitMath::least_significant_bit(masked) - bit_pos).into())
                         * tick_spacing
                 } else {
                     // (compressed + 1 + int24(type(uint8).max - bit_pos)) * tick_spacing
                     let max_u8: u8 = BoundedInt::max();
-                    (compressed
-                        + IntegerTrait::<i32>::new(1, false)
-                        + convert_u8_to_i32(max_u8 - bit_pos))
+                    (compressed + IntegerTrait::<i32>::new(1, false) + (max_u8 - bit_pos).into())
                         * tick_spacing
                 };
                 (next, initialized)
