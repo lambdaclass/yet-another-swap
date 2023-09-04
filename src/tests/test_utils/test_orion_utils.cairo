@@ -156,5 +156,13 @@ mod OrionUtilsTests {
             let m = IntegerTrait::<i32>::new(256, false); // 256
             assert(mod_i32(n, m) == IntegerTrait::<i32>::new(0, false), '0 mod 256 -> 0');
         }
+
+        #[test]
+        #[should_panic]
+        fn test_divisor_negative() {
+            let n = IntegerTrait::<i32>::new(150, false); // 150
+            let m = IntegerTrait::<i32>::new(256, true); // -256
+            let result = mod_i32(n, m);
+        }
     }
 }
