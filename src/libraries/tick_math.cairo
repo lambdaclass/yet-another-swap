@@ -361,17 +361,51 @@ mod TickMath {
         log_sqrt10001.mag.low.print();
         log_sqrt10001.sign.print();
 
-        let tickLow = as_i24(
-            (log_sqrt10001
-                - IntegerTrait::<i256>::new(3402992956809132418596140100660247210, false))
-                .shr(IntegerTrait::<i256>::new(128, false))
-        );
+        let mut minus_op = log_sqrt10001
+                - IntegerTrait::<i256>::new(3402992956809132418596140100660247210, false);
+        'my hack shifted 1'.print();
+        minus_op.mag.low = minus_op.mag.high;
+        minus_op.mag.high = 0;
+        minus_op.mag.high.print();
+        minus_op.mag.low.print();
+        minus_op.sign.print();
 
-        let tickHi = as_i24(
-            (log_sqrt10001
+        let tickLow_i256 = (log_sqrt10001
+                - IntegerTrait::<i256>::new(3402992956809132418596140100660247210, false))
+                .shr(IntegerTrait::<i256>::new(128, false));
+        'tickLow_i256'.print();
+        tickLow_i256.mag.high.print();
+        tickLow_i256.mag.low.print();
+        tickLow_i256.sign.print();
+
+
+        let tickLow = as_i24(tickLow_i256);
+
+        let mut plus_op = log_sqrt10001
+                + IntegerTrait::<i256>::new(291339464771989622907027621153398088495, false);
+        'my hack shifted 2'.print();
+        plus_op.mag.low = plus_op.mag.high;
+        plus_op.mag.high = 0;
+        plus_op.mag.high.print();
+        plus_op.mag.low.print();
+        plus_op.sign.print();
+
+        let tickHi_i256 = (log_sqrt10001
                 + IntegerTrait::<i256>::new(291339464771989622907027621153398088495, false))
-                .shr(IntegerTrait::<i256>::new(128, false))
-        );
+                .shr(IntegerTrait::<i256>::new(128, false));
+        'tickHi_i256'.print();
+        tickHi_i256.mag.high.print();
+        tickHi_i256.mag.low.print();
+        tickHi_i256.sign.print();
+
+        let tickHi = as_i24(tickHi_i256);
+
+        'tickLow'.print();
+        tickLow.mag.print();
+        tickLow.sign.print();
+        'tickHi'.print();
+        tickHi.mag.print();
+        tickHi.sign.print();
 
         let tick = if (tickLow == tickHi) {
             tickLow
