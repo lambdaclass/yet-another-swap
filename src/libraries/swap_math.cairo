@@ -30,15 +30,13 @@ mod SwapMath {
         let zero_for_one = sqrt_ratio_currentX96 >= sqrt_ratio_targetX96;
         let exact_in = amount_remaining >= IntegerTrait::<i256>::new(0, false);
         let mut sqrt_ratio_nextX96 = FP64x96Impl::new(1, false);
-        let mut amount_in = 0; // TODO: validate
-        let mut amount_out = 0; // TODO: validate
+        let mut amount_in = 0;
+        let mut amount_out = 0;
 
         if exact_in {
-            'exact in'.print();
-
             // at this point, amount_remaining is positive bc exact_in == true
             let amount_remaining_less_fee = mul_div(
-                i256_into_u256(amount_remaining), _1e6 - fee_pips.into(), _1e6
+                amount_remaining.mag, _1e6 - fee_pips.into(), _1e6
             );
             amount_in =
                 if zero_for_one {
@@ -56,7 +54,6 @@ mod SwapMath {
                     )
                 };
         } else {
-            'not exact in'.print();
             amount_out =
                 if zero_for_one {
                     get_amount_1_delta(
@@ -68,41 +65,19 @@ mod SwapMath {
                     )
                 };
 
-            let amount_remaining_flip_sign = IntegerTrait::<i256>::new(
-                amount_remaining.mag, !amount_remaining.sign
-            );
-            if (amount_remaining_flip_sign >= u256_into_i256(amount_out)) {
-                sqrt_ratio_nextX96 = sqrt_ratio_targetX96;
-            } else {
-                sqrt_ratio_nextX96 =
+            sqrt_ratio_nextX96 =
+                if amount_remaining.mag >= amount_out {
+                    sqrt_ratio_targetX96
+                } else {
                     get_next_sqrt_price_from_output(
-                        sqrt_ratio_currentX96,
-                        liquidity,
-                        i256_into_u256(amount_remaining_flip_sign),
-                        zero_for_one
-                    );
-            }
+                        sqrt_ratio_currentX96, liquidity, amount_remaining.mag, zero_for_one
+                    )
+                };
         }
 
-        // 'before max'.print();
-        // 'amount_in'.print();
-        // amount_in.print();
-        // 'amount_out'.print();
-        // amount_out.print();
-        // 'sqrt_ratio_nextX96'.print();
-        // sqrt_ratio_nextX96.mag.print();
-
         let max = sqrt_ratio_targetX96 == sqrt_ratio_nextX96;
-        'max'.print();
-        max.print();
-        // 'sqrt_ratio_targetX96'.print();
-        // sqrt_ratio_targetX96.mag.print();
-
-        'sqrt_ratio_nextX96'.print();
-        sqrt_ratio_nextX96.mag.print();
 
         if zero_for_one {
-            'zero_for_one T'.print();
             amount_in =
                 if max && exact_in {
                     amount_in
@@ -117,7 +92,6 @@ mod SwapMath {
                     get_amount_1_delta(sqrt_ratio_nextX96, sqrt_ratio_currentX96, liquidity, false)
                 };
         } else {
-            'zero_for_one F'.print();
             amount_in =
                 if max && exact_in {
                     amount_in
@@ -133,21 +107,8 @@ mod SwapMath {
                 };
         }
 
-        'after max'.print();
-        'amount_in'.print();
-        amount_in.print();
-        'amount_out'.print();
-        amount_out.print();
-
-        let amount_remaining_flip_sign = IntegerTrait::<i256>::new(
-            amount_remaining.mag, !amount_remaining.sign
-        );
-
-        'amount_remaining_flip_sign'.print();
-        amount_remaining_flip_sign.mag.print();
-
-        if !exact_in && amount_out > i256_into_u256(amount_remaining_flip_sign) {
-            amount_out = i256_into_u256(amount_remaining_flip_sign);
+        if !exact_in && amount_out > amount_remaining.mag {
+            amount_out = amount_remaining.mag;
         }
 
         let fee_amount = if exact_in && sqrt_ratio_nextX96 != sqrt_ratio_targetX96 {
@@ -156,11 +117,6 @@ mod SwapMath {
             mul_div_rounding_up(amount_in, fee_pips.into(), _1e6 - fee_pips.into())
         };
 
-        // 'fee_amount'.print();
-        // fee_amount.print();
-
-        // 'sqrt_ratio_nextX96'.print();
-        // sqrt_ratio_nextX96.mag.print();
         (sqrt_ratio_nextX96, amount_in, amount_out, fee_amount)
     }
 
