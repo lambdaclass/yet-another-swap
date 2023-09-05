@@ -65,7 +65,6 @@ mod Tick {
 
     #[external(v0)]
     impl Tick of ITick<ContractState> {
-        
         /// @notice Transitions to next tick as needed by price movement
         /// @param self The mapping containing all tick information for initialized ticks
         /// @param tick The destination tick of the transition
