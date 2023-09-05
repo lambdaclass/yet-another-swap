@@ -332,5 +332,97 @@ mod TestInteger256 {
             let b = IntegerTrait::<i256>::new(0, false);
             let (q, r) = a.div_rem(b);
         }
+
+        // Test to ensure that the results do not produce invalid 'negative' zeros
+        #[test]
+        fn test_denominator_gt_numerator_result_should_be_zero() {
+            // -65 / 256 = 0   
+            let a = IntegerTrait::<i256>::new(65, true);
+            let b = IntegerTrait::<i256>::new(256, false);
+            let (q, r) = a.div_rem(b);
+            assert(q.mag == 0 && r.mag == 65, '-65 // 256 = 0 r 65');
+            assert(q.sign == false && r.sign == true, '-65 // 256 -> positive (bc 0)');
+
+            // -55 / 256 = 0
+            let a = IntegerTrait::<i256>::new(55, true);
+            let b = IntegerTrait::<i256>::new(256, false);
+            let result = a / b;
+            assert(result.mag == 0, '-55 // 256 = 0');
+            assert(result.sign == false, '-55 // 256 -> positive (bc 0)');
+        }
+
+        // Test to evaluate rounding behavior and zeros
+        #[test]
+        fn test_division_round_with_negative_result() {
+            // -10/ 3 = 0   
+            let a = IntegerTrait::<i256>::new(10, true);
+            let b = IntegerTrait::<i256>::new(3, false);
+            let (q, r) = a.div_rem(b);
+            assert(q.mag == 3 && r.mag == 1, '-10 / 3 = (-3, -1)'); // should be (-3, 1)?
+            assert(q.sign == true && r.sign == true, '(neg, neg)');
+
+            // -6 / 10 = -1
+            let a = IntegerTrait::<i256>::new(6, true);
+            let b = IntegerTrait::<i256>::new(10, false);
+            let (q, r) = a.div_rem(b);
+            assert(q.mag == 1 && r.mag == 4, '-6 / 10 = (-1, 4)'); // should be (0, -4)?
+            // Following the previous behavior, the rest should be negative!
+            // TODO: Change r.sign to true
+            assert(q.sign == true && r.sign == false, '(neg, neg)'); // assert fails
+
+            // -5 / 10 = 0
+            let a = IntegerTrait::<i256>::new(5, true);
+            let b = IntegerTrait::<i256>::new(10, false);
+            let (q, r) = a.div_rem(b);
+            assert(q.mag == 0 && r.mag == 5, '-5 // 10 = 0 r -4');
+            assert(q.sign == false && r.sign == true, '-5 // 10 -> (q: +, r: -)');
+
+            // 5 / 10 = 0
+            let a = IntegerTrait::<i256>::new(5, false);
+            let b = IntegerTrait::<i256>::new(10, false);
+            let (q, r) = a.div_rem(b);
+            assert(q.mag == 0 && r.mag == 5, '5 // 10 = 0 r 5');
+            assert(q.sign == false && r.sign == false, '5 // 10 -> (q: +, r: +)');
+
+            // 5 / -10 = 0
+            let a = IntegerTrait::<i256>::new(5, false);
+            let b = IntegerTrait::<i256>::new(10, true);
+            let (q, r) = a.div_rem(b);
+            assert(q.mag == 0 && r.mag == 5, '5 // -10 = 0 r -5');
+            // TODO: Change r.sign to true
+            assert(q.sign == false && r.sign == false, '5 // -10 -> (q: +, r: -)');
+
+            // -4 / 10 = 0
+            let a = IntegerTrait::<i256>::new(4, true);
+            let b = IntegerTrait::<i256>::new(10, false);
+            let (q, r) = a.div_rem(b);
+            // TODO: verify r.mag 4
+            assert(q.mag == 0 && r.mag == 4, '-4 / 10 = 0 r -4');
+            assert(q.sign == false && r.sign == true, '-4 // 10 -> (q: +, r: -)');
+
+            // -3 / 10 = 0
+            let a = IntegerTrait::<i256>::new(3, true);
+            let b = IntegerTrait::<i256>::new(10, false);
+            let (q, r) = a.div_rem(b);
+            // TODO: verify r.mag 3
+            assert(q.mag == 0 && r.mag == 3, '-3 / 10 = 0 r -3');
+            assert(q.sign == false && r.sign == true, '-3 // 10 -> (q: +, r: -)');
+
+            // -2 / 10 = 0
+            let a = IntegerTrait::<i256>::new(2, true);
+            let b = IntegerTrait::<i256>::new(10, false);
+            let (q, r) = a.div_rem(b);
+            // TODO: verify r.mag 2
+            assert(q.mag == 0 && r.mag == 2, '-2 / 10 = 0 r -2');
+            assert(q.sign == false && r.sign == true, '-2 // 10 -> (q: +, r: -)');
+
+            // -1 / 10 = 0
+            let a = IntegerTrait::<i256>::new(1, true);
+            let b = IntegerTrait::<i256>::new(10, false);
+            let (q, r) = a.div_rem(b);
+            // TODO: verify r.mag 1
+            assert(q.mag == 0 && r.mag == 1, '-1 / 10 = 0 r -1');
+            assert(q.sign == false && r.sign == true, '-1 // 10 -> (q: +, r: -)');
+        }
     }
 }

@@ -1,22 +1,19 @@
 // Functions based on Q64.96 sqrt price and liquidity
 // Contains the math that uses square root of price as a Q64.96 and liquidity to compute deltas
 mod SqrtPriceMath {
-    use fractal_swap::numbers::fixed_point::implementations::fullmath::FullMath::{
-        div_rounding_up, mul_div, mul_div_rounding_up
-    };
+    use fractal_swap::utils::fullmath::FullMath::{div_rounding_up, mul_div, mul_div_rounding_up};
     use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FixedType, FixedTrait, FP64x96Add, FP64x96Sub, FP64x96Mul, FP64x96Div,
         FP64x96PartialEq, FP64x96PartialOrd, Q96_RESOLUTION, ONE, MAX
     };
     use fractal_swap::numbers::signed_integer::i256::i256;
     use integer::{u256_overflowing_add, u256_overflow_mul};
-    use orion::numbers::signed_integer::i128::{i128};
+    use orion::numbers::signed_integer::i128::i128;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-    use fractal_swap::utils::math_utils::MathUtils::{pow};
+    use fractal_swap::utils::math_utils::MathUtils::pow;
     use traits::{Into, TryInto};
     use option::OptionTrait;
-    use debug::PrintTrait;
 
     /// Returns the next square root price given a token0 delta.
     /// @param sqrtPX96 The initial price (prior to considering the token0 delta).
@@ -46,17 +43,14 @@ mod SqrtPriceMath {
                     );
                 }
             }
-            return FP64x96Impl::new(
-                div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false
-            );
+            FP64x96Impl::new(div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false)
         } else {
-            assert(
-                FP64x96Impl::new(product / amount, false) == sqrtPX96 && numerator > product, '!'
-            );
+            // if the product overflows, we know the denominator underflows
+            // in addition, we must check that the denominator does not underflow
+            assert(FP64x96Impl::new(product / amount, false) == sqrtPX96, 'product overflow');
+            assert(numerator > product, 'denominator underflow');
             let denominator = numerator - product;
-            return FP64x96Impl::new(
-                mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false
-            );
+            FP64x96Impl::new(mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false)
         }
     }
 
@@ -79,7 +73,7 @@ mod SqrtPriceMath {
             } else {
                 mul_div(amount, ONE, liquidity.into())
             };
-            return (sqrtPX96 + FP64x96Impl::new(quotient, false));
+            (sqrtPX96 + FP64x96Impl::new(quotient, false))
         } else {
             let mut quotient = if amount <= MAX {
                 div_rounding_up(amount * pow(2, Q96_RESOLUTION.into()), liquidity.into())
@@ -87,7 +81,7 @@ mod SqrtPriceMath {
                 mul_div_rounding_up(amount, ONE, liquidity.into())
             };
             assert(sqrtPX96 > FP64x96Impl::new(quotient, false), 'sqrtPX96_fp < quotient');
-            return (sqrtPX96 - FP64x96Impl::new(quotient, false));
+            (sqrtPX96 - FP64x96Impl::new(quotient, false))
         }
     }
 
@@ -103,13 +97,9 @@ mod SqrtPriceMath {
     ) -> FixedType {
         assert(sqrtPX96.sign == false && liquidity > 0, 'sqrtPX96 & liquidity must be >0');
         if zero_for_one {
-            return get_next_sqrt_price_from_amount0_rounding_up(
-                sqrtPX96, liquidity, amount_in, true
-            );
+            get_next_sqrt_price_from_amount0_rounding_up(sqrtPX96, liquidity, amount_in, true)
         } else {
-            return get_next_sqrt_price_from_amount1_rounding_down(
-                sqrtPX96, liquidity, amount_in, true
-            );
+            get_next_sqrt_price_from_amount1_rounding_down(sqrtPX96, liquidity, amount_in, true)
         }
     }
 
@@ -126,13 +116,9 @@ mod SqrtPriceMath {
         assert(sqrtPX96.sign == false && liquidity > 0, 'sqrtPX96 & liquidity must be >0');
 
         if zero_for_one {
-            return get_next_sqrt_price_from_amount1_rounding_down(
-                sqrtPX96, liquidity, amount_out, false
-            );
+            get_next_sqrt_price_from_amount1_rounding_down(sqrtPX96, liquidity, amount_out, false)
         } else {
-            return get_next_sqrt_price_from_amount0_rounding_up(
-                sqrtPX96, liquidity, amount_out, false
-            );
+            get_next_sqrt_price_from_amount0_rounding_up(sqrtPX96, liquidity, amount_out, false)
         }
     }
 
@@ -147,26 +133,23 @@ mod SqrtPriceMath {
     fn get_amount_0_delta(
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: u128, round_up: bool
     ) -> u256 {
-        let mut sqrt_ratio_AX96_1 = sqrt_ratio_AX96;
-        let mut sqrt_ratio_BX96_1 = sqrt_ratio_BX96;
-
-        if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
-            sqrt_ratio_AX96_1 = sqrt_ratio_BX96;
-            sqrt_ratio_BX96_1 = sqrt_ratio_AX96;
-        }
+        let (sqrt_ratio_AX96_1, sqrt_ratio_BX96_1) = if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
+            (sqrt_ratio_BX96, sqrt_ratio_AX96)
+        } else {
+            (sqrt_ratio_AX96, sqrt_ratio_BX96)
+        };
 
         let numerator1 = liquidity.into() * pow(2, Q96_RESOLUTION.into());
         let numerator2 = sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1;
         assert(sqrt_ratio_AX96_1.sign == false, 'sqrt_ratio_AX96 cannot be neg');
 
         if round_up {
-            return div_rounding_up(
+            div_rounding_up(
                 mul_div_rounding_up(numerator1, numerator2.mag, sqrt_ratio_BX96_1.mag),
                 sqrt_ratio_AX96_1.mag
-            );
+            )
         } else {
-            return mul_div(numerator1, numerator2.mag, sqrt_ratio_BX96_1.mag)
-                / sqrt_ratio_AX96_1.mag;
+            mul_div(numerator1, numerator2.mag, sqrt_ratio_BX96_1.mag) / sqrt_ratio_AX96_1.mag
         }
     }
 
@@ -180,20 +163,16 @@ mod SqrtPriceMath {
     fn get_amount_1_delta(
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: u128, round_up: bool
     ) -> u256 {
-        let mut sqrt_ratio_AX96_1 = sqrt_ratio_AX96;
-        let mut sqrt_ratio_BX96_1 = sqrt_ratio_BX96;
-
-        if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
-            sqrt_ratio_AX96_1 = sqrt_ratio_BX96;
-            sqrt_ratio_BX96_1 = sqrt_ratio_AX96;
-        }
+        let (sqrt_ratio_AX96_1, sqrt_ratio_BX96_1) = if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
+            (sqrt_ratio_BX96, sqrt_ratio_AX96)
+        } else {
+            (sqrt_ratio_AX96, sqrt_ratio_BX96)
+        };
 
         if round_up {
-            return mul_div_rounding_up(
-                liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE
-            );
+            mul_div_rounding_up(liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE)
         } else {
-            return mul_div(liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE);
+            mul_div(liquidity.into(), (sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1).mag, ONE)
         }
     }
 
@@ -201,14 +180,14 @@ mod SqrtPriceMath {
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128
     ) -> i256 {
         if liquidity < IntegerTrait::<i128>::new(0, false) {
-            return IntegerTrait::<i256>::new(
+            IntegerTrait::<i256>::new(
                 get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false),
                 true
-            );
+            )
         } else {
-            return IntegerTrait::<i256>::new(
+            IntegerTrait::<i256>::new(
                 get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false
-            );
+            )
         }
     }
 
@@ -216,14 +195,14 @@ mod SqrtPriceMath {
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128
     ) -> i256 {
         if liquidity < IntegerTrait::<i128>::new(0, false) {
-            return IntegerTrait::<i256>::new(
+            IntegerTrait::<i256>::new(
                 get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false),
                 true
-            );
+            )
         } else {
-            return IntegerTrait::<i256>::new(
+            IntegerTrait::<i256>::new(
                 get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false
-            );
+            )
         }
     }
 }
