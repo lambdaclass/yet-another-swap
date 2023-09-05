@@ -32,12 +32,14 @@ mod SwapMath {
         let mut sqrt_ratio_nextX96 = FP64x96Impl::new(1, false);
         let mut amount_in = 0; // TODO: validate
         let mut amount_out = 0; // TODO: validate
-        
+
         if exact_in {
             'exact in'.print();
 
             // at this point, amount_remaining is positive bc exact_in == true
-            let amount_remaining_less_fee = mul_div(i256_into_u256(amount_remaining), _1e6 - fee_pips.into(), _1e6);
+            let amount_remaining_less_fee = mul_div(
+                i256_into_u256(amount_remaining), _1e6 - fee_pips.into(), _1e6
+            );
             amount_in =
                 if zero_for_one {
                     get_amount_0_delta(sqrt_ratio_targetX96, sqrt_ratio_currentX96, liquidity, true)
@@ -74,7 +76,10 @@ mod SwapMath {
             } else {
                 sqrt_ratio_nextX96 =
                     get_next_sqrt_price_from_output(
-                        sqrt_ratio_currentX96, liquidity, i256_into_u256(amount_remaining_flip_sign), zero_for_one
+                        sqrt_ratio_currentX96,
+                        liquidity,
+                        i256_into_u256(amount_remaining_flip_sign),
+                        zero_for_one
                     );
             }
         }
@@ -86,7 +91,7 @@ mod SwapMath {
         // amount_out.print();
         // 'sqrt_ratio_nextX96'.print();
         // sqrt_ratio_nextX96.mag.print();
-        
+
         let max = sqrt_ratio_targetX96 == sqrt_ratio_nextX96;
         'max'.print();
         max.print();
@@ -124,7 +129,7 @@ mod SwapMath {
                 if max && !exact_in {
                     amount_out
                 } else {
-                    get_amount_0_delta(sqrt_ratio_currentX96, sqrt_ratio_nextX96, liquidity, false) 
+                    get_amount_0_delta(sqrt_ratio_currentX96, sqrt_ratio_nextX96, liquidity, false)
                 };
         }
 
@@ -134,7 +139,13 @@ mod SwapMath {
         'amount_out'.print();
         amount_out.print();
 
-        let amount_remaining_flip_sign = IntegerTrait::<i256>::new(amount_remaining.mag, !amount_remaining.sign);
+        let amount_remaining_flip_sign = IntegerTrait::<i256>::new(
+            amount_remaining.mag, !amount_remaining.sign
+        );
+
+        'amount_remaining_flip_sign'.print();
+        amount_remaining_flip_sign.mag.print();
+
         if !exact_in && amount_out > i256_into_u256(amount_remaining_flip_sign) {
             amount_out = i256_into_u256(amount_remaining_flip_sign);
         }
