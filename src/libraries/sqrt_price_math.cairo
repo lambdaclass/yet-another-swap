@@ -45,9 +45,10 @@ mod SqrtPriceMath {
             }
             FP64x96Impl::new(div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false)
         } else {
-            assert(
-                FP64x96Impl::new(product / amount, false) == sqrtPX96 && numerator > product, '!'
-            );
+            // if the product overflows, we know the denominator underflows
+            // in addition, we must check that the denominator does not underflow
+            assert(FP64x96Impl::new(product / amount, false) == sqrtPX96, 'product overflow');
+            assert(numerator > product, 'denominator underflow');
             let denominator = numerator - product;
             FP64x96Impl::new(mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false)
         }
