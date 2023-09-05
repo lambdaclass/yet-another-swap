@@ -24,14 +24,22 @@ mod MathUtils {
     impl I256BitShift of BitShiftTrait<i256> {
         #[inline(always)]
         fn shl(self: @i256, n: i256) -> i256 {
+            let mut new_mag = self.mag.shl(n.mag);
+            if *self.sign && n.mag == 128 {
+                new_mag += 1_u256;
+            };
             // Left shift operation: mag << n
-            i256 { mag: self.mag.shl(n.mag), sign: self.sign.clone(), }
+            i256 { mag: new_mag, sign: self.sign.clone(), }
         }
 
         #[inline(always)]
         fn shr(self: @i256, n: i256) -> i256 {
+            let mut new_mag = self.mag.shr(n.mag);
+            if *self.sign && n.mag == 128 {
+                new_mag += 1_u256;
+            };
             // Right shift operation: mag >> n
-            i256 { mag: self.mag.shr(n.mag), sign: self.sign.clone(), }
+            i256 { mag: new_mag, sign: self.sign.clone(), }
         }
     }
 

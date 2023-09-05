@@ -464,13 +464,10 @@ fn bitwise_or(x: i256, y: i256) -> i256 {
     let y = two_complement_if_nec(y);
     let sign = x.sign || y.sign;
     let mag = if sign {
-        ~(x.mag | y.mag) +1
+        ~(x.mag | y.mag) + 1
     } else {
         x.mag | y.mag
     };
 
-    i256 {
-        mag: mag,
-        sign: sign,
-    }
+    i256 { mag: mag, sign: sign, }
 }
