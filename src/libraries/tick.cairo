@@ -68,12 +68,12 @@ mod Tick {
         /// @notice Transitions to next tick as needed by price movement
         /// @param self The mapping containing all tick information for initialized ticks
         /// @param tick The destination tick of the transition
-        /// @param feeGrowthGlobal0X128 The all-time global fee growth, per unit of liquidity, in token0
-        /// @param feeGrowthGlobal1X128 The all-time global fee growth, per unit of liquidity, in token1
-        /// @param secondsPerLiquidityCumulativeX128 The current seconds per liquidity
-        /// @param tickCumulative The tick * time elapsed since the pool was first initialized
+        /// @param fee_growth_global_0X128 The all-time global fee growth, per unit of liquidity, in token0
+        /// @param fee_growth_global_1X128 The all-time global fee growth, per unit of liquidity, in token1
+        /// @param seconds_per_liquidity_cumulative_X128 The current seconds per liquidity
+        /// @param tick_cumulative The tick * time elapsed since the pool was first initialized
         /// @param time The current block.timestamp
-        /// @return liquidityNet The amount of liquidity added (subtracted) when tick is crossed from left to right (right to left)
+        /// @return liquidity_net The amount of liquidity added (subtracted) when tick is crossed from left to right (right to left)
         fn cross(
             ref self: ContractState,
             tick: i32,
