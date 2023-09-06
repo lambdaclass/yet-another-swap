@@ -29,6 +29,15 @@ struct Info {
 #[starknet::interface]
 trait ITick<TStorage> {
     fn clear(ref self: TStorage, tick: i32);
+    fn cross(
+        ref self: TStorage,
+        tick: i32,
+        fee_growth_global_0X128: u256,
+        fee_growth_global_1X128: u256,
+        seconds_per_liquidity_cumulative_X128: u256,
+        tick_cumulative: i64,
+        time: u32
+    ) -> i128;
     // TODO: Function used for testing. To be removed in the future
     fn set_tick(ref self: TStorage, tick: i32, info: Info);
     // TODO: Function used for testing. To be removed in the future
@@ -77,6 +86,36 @@ mod Tick {
                         initialized: false
                     }
                 );
+        }
+
+        /// @notice Transitions to next tick as needed by price movement
+        /// @param self The mapping containing all tick information for initialized ticks
+        /// @param tick The destination tick of the transition
+        /// @param fee_growth_global_0X128 The all-time global fee growth, per unit of liquidity, in token0
+        /// @param fee_growth_global_1X128 The all-time global fee growth, per unit of liquidity, in token1
+        /// @param seconds_per_liquidity_cumulative_X128 The current seconds per liquidity
+        /// @param tick_cumulative The tick * time elapsed since the pool was first initialized
+        /// @param time The current block.timestamp
+        /// @return liquidity_net The amount of liquidity added (subtracted) when tick is crossed from left to right (right to left)
+        fn cross(
+            ref self: ContractState,
+            tick: i32,
+            fee_growth_global_0X128: u256,
+            fee_growth_global_1X128: u256,
+            seconds_per_liquidity_cumulative_X128: u256,
+            tick_cumulative: i64,
+            time: u32
+        ) -> i128 {
+            let hashed_tick = self._generate_hashed_tick(@tick);
+            let mut info: Info = self.ticks.read(hashed_tick);
+            info.fee_growth_outside_0X128 = fee_growth_global_0X128 - info.fee_growth_outside_0X128;
+            info.fee_growth_outside_1X128 = fee_growth_global_1X128 - info.fee_growth_outside_1X128;
+            info.seconds_per_liquidity_outside_X128 = seconds_per_liquidity_cumulative_X128
+                - info.seconds_per_liquidity_outside_X128;
+            info.tick_cumulative_outside = tick_cumulative - info.tick_cumulative_outside;
+            info.seconds_outside = time - info.seconds_outside;
+            self.ticks.write(hashed_tick, info);
+            info.liquidity_net
         }
 
         fn set_tick(ref self: ContractState, tick: i32, info: Info) {
