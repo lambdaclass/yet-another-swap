@@ -28,6 +28,7 @@ struct Info {
 
 #[starknet::interface]
 trait ITick<TStorage> {
+    fn clear(ref self: TStorage, tick: i32);
     fn cross(
         ref self: TStorage,
         tick: i32,
@@ -65,6 +66,28 @@ mod Tick {
 
     #[external(v0)]
     impl Tick of ITick<ContractState> {
+        /// @notice Clears tick data
+        /// @param self The mapping containing all initialized tick information for initialized ticks
+        /// @param tick The tick that will be cleared
+        fn clear(ref self: ContractState, tick: i32) {
+            let hashed_tick = self._generate_hashed_tick(@tick);
+            self
+                .ticks
+                .write(
+                    hashed_tick,
+                    Info {
+                        liquidity_gross: 0,
+                        liquidity_net: IntegerTrait::<i128>::new(0, false),
+                        fee_growth_outside_0X128: 0,
+                        fee_growth_outside_1X128: 0,
+                        tick_cumulative_outside: IntegerTrait::<i64>::new(0, false),
+                        seconds_per_liquidity_outside_X128: 0,
+                        seconds_outside: 0,
+                        initialized: false
+                    }
+                );
+        }
+
         /// @notice Transitions to next tick as needed by price movement
         /// @param self The mapping containing all tick information for initialized ticks
         /// @param tick The destination tick of the transition
