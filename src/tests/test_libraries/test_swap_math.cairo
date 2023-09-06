@@ -210,7 +210,7 @@ mod TestSwapMath {
 
             assert(sqrtQ < price_target, 'price doest reach price target');
             assert(
-                sqrtQ == price_after_whole_output_amount, 'price = price after whole output'
+                sqrtQ == price_after_whole_output_amount, 'price = price after whole out'
             ); // price is less than price after whole input amount
         }
 
