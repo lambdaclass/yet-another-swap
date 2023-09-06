@@ -3,6 +3,7 @@ mod MathUtils {
     use traits::{Into, TryInto};
     use option::OptionTrait;
     use fractal_swap::numbers::signed_integer::i256::i256;
+    use integer::BoundedInt;
 
     trait BitShiftTrait<T> {
         fn shl(self: @T, n: T) -> T;
@@ -29,17 +30,32 @@ mod MathUtils {
                 new_mag += 1_u256;
             };
             // Left shift operation: mag << n
+            if *self.sign {
+                new_mag = new_mag & BoundedInt::<u256>::max() / 2;
+            } else {
+                new_mag = new_mag & ((BoundedInt::<u256>::max() / 2) - 1);
+            };
+
             i256 { mag: new_mag, sign: self.sign.clone(), }
         }
 
         #[inline(always)]
         fn shr(self: @i256, n: i256) -> i256 {
             let mut new_mag = self.mag.shr(n.mag);
+            let mut new_sign = self.sign.clone();
             if *self.sign && n.mag == 128 {
                 new_mag += 1_u256;
             };
+            if new_mag == 0 {
+                if *self.sign {
+                    new_sign = true;
+                    new_mag = 1;
+                } else {
+                    new_sign == false;
+                };
+            };
             // Right shift operation: mag >> n
-            i256 { mag: new_mag, sign: self.sign.clone(), }
+            i256 { mag: new_mag, sign: new_sign, }
         }
     }
 
