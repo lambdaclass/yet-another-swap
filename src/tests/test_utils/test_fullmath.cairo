@@ -159,4 +159,43 @@ mod TestFullMath {
             assert(actual == expected, 'accurate with phantom overflow');
         }
     }
+
+    mod MulModN {
+        use fractal_swap::utils::fullmath::FullMath::mul_mod_n;
+        use fractal_swap::utils::math_utils::MathUtils::pow;
+        use integer::BoundedInt;
+
+        #[test]
+        #[available_gas(2000000)]
+        fn test_mul_mod_n_positive_numbers() {
+            let a: u256 = 12345.into();
+            let b: u256 = 67890.into();
+            let n: u256 = 100000.into();
+
+            let result = mul_mod_n(a, b, n);
+        
+            assert(result == (a * b) % n, 'wrong mul mod n');
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_mul_mod_n_zero_n() {
+            let a: u256 = 1;
+            let b: u256 = 1;
+            let n: u256 = 0;
+            
+            mul_mod_n(a, b, n);
+        }
+
+        #[test]
+        fn test_mul_mod_n_zero_a_or_b() {
+            let a: u256 = 0.into(); // Prueba con a igual a cero
+            let b: u256 = 67890.into();
+            let n: u256 = 100000.into();
+            
+            let result = mul_mod_n(a, b, n);
+            
+            assert(result == 0, 'wrong mul mod n');
+        }
+    }
 }

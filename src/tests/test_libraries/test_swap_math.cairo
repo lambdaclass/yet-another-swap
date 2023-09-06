@@ -4,24 +4,6 @@ mod TestSwapMath {
         FP64x96Impl, FP64x96Div, FixedType, FixedTrait, Q96_RESOLUTION, ONE, MAX
     };
     use traits::Into;
-    use integer::{u256_sqrt, u256_safe_div_rem, u256_try_as_non_zero};
-
-    // Aux methods for tests
-    fn encode_price_sqrt(reserve1: u256, reserve0: u256) -> FixedType {
-        let reserve1X96U256 = reserve1 * pow(2, 96);
-        let reserve0X96U256 = reserve0 * pow(2, 96);
-
-        let mul_res = integer::u256_wide_mul(reserve1X96U256, ONE);
-        let b_inv = MAX / reserve0X96U256;
-        let res_div_u256 = u256 { high: mul_res.limb1, low: mul_res.limb0 } / reserve0X96U256
-            + u256 { high: mul_res.limb3, low: mul_res.limb2 } * b_inv;
-
-        let root = integer::u256_sqrt(res_div_u256);
-        let scale_root = integer::u256_sqrt(ONE);
-        let res_u256 = root.into() * ONE / scale_root.into();
-
-        FP64x96Impl::new(res_u256, false)
-    }
 
     fn expand_to_18_decimals(n: u256) -> u256 {
         n * pow(10, 18)
@@ -34,18 +16,19 @@ mod TestSwapMath {
             FP64x96Impl, FP64x96PartialEq, FP64x96PartialOrd, FP64x96Div, FixedType, FixedTrait,
             Q96_RESOLUTION, ONE, MAX
         };
-        use fractal_swap::numbers::signed_integer::i256::i256;
-        use fractal_swap::tests::test_libraries::test_swap_math::TestSwapMath::{
-            encode_price_sqrt, expand_to_18_decimals
-        };
+        use fractal_swap::numbers::signed_integer::i256::{i256, i256TryIntou256};
+        use fractal_swap::tests::test_libraries::test_swap_math::TestSwapMath::expand_to_18_decimals;
+
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
         // exact amount in that gets capped at price target in one for zero
         #[test]
         #[available_gas(200000000)]
         fn test_amount_in_gets_capped_at_price_target_in_one_for_zero() {
-            let price = encode_price_sqrt(1, 1);
-            let price_target = encode_price_sqrt(101, 100);
+            // price is the result of encode_price_sqrt(1, 1) on v3-core typescript impl. 
+            let price = FP64x96Impl::new(79228162514264337593543950336, false);
+            // price_target is the result of encode_price_sqrt(101, 100) on v3-core typescript impl. 
+            let price_target = FP64x96Impl::new(79623317895830914510639640423, false);
             let liquidity: u128 = expand_to_18_decimals(2).try_into().unwrap();
             let amount = IntegerTrait::<i256>::new(expand_to_18_decimals(1), false);
             let fee = 600;
@@ -55,28 +38,16 @@ mod TestSwapMath {
                 price, price_target, liquidity, amount, fee
             );
 
-            // TODO: Check outputs 
-            // [.sol]
-            // sqrtRatioNextX96: 79623317895830914510639640423 
-            // amount_in: 9975124224178055, 
-            // amount_out: 9925619580021728 
-            // fee_amount: 5988667735148    
-            // [.cairo]
-            // sqrt_ratio_nextX96 79623317895830855645443129344
-            // amount_in 9975124224176569 
-            // amount_out 9925619580020257
-            // fee_amount 5988667735148 
-
-            assert(amount_in == 9975124224176569, 'incorrect amount_in');
+            assert(amount_in == 9975124224178055, 'incorrect amount_in');
             assert(fee_amount == 5988667735148, 'incorrect fee_amount');
-            assert(amount_out == 9925619580020257, 'incorrect amount_out');
+            assert(amount_out == 9925619580021728, 'incorrect amount_out');
             assert(
-                amount_in + fee_amount < SwapMath::i256_into_u256(amount),
+                amount_in + fee_amount < amount.try_into().unwrap(),
                 'entire amount is not used'
             );
 
             let price_after_whole_input_amount = SqrtPriceMath::get_next_sqrt_price_from_input(
-                price, liquidity, SwapMath::i256_into_u256(amount), zero_for_one
+                price, liquidity, amount.try_into().unwrap(), zero_for_one
             );
 
             assert(sqrtQ == price_target, 'price is capped at price target');
@@ -89,8 +60,10 @@ mod TestSwapMath {
         #[test]
         #[available_gas(200000000)]
         fn test_amount_out_gets_capped_at_price_target_in_one_for_zero() {
-            let price = encode_price_sqrt(1, 1);
-            let price_target = encode_price_sqrt(101, 100);
+            // price is the result of encode_price_sqrt(1, 1) on v3-core typescript impl. 
+            let price = FP64x96Impl::new(79228162514264337593543950336, false);
+            // price_target is the result of encode_price_sqrt(101, 100) on v3-core typescript impl. 
+            let price_target = FP64x96Impl::new(79623317895830914510639640423, false);
             let liquidity: u128 = expand_to_18_decimals(2).try_into().unwrap();
             let amount = IntegerTrait::<i256>::new(expand_to_18_decimals(1), true);
             let fee = 600;
@@ -100,21 +73,9 @@ mod TestSwapMath {
                 price, price_target, liquidity, amount, fee
             );
 
-            // TODO: Check outputs 
-            // [.sol]
-            // sqrtRatioNextX96: 79623317895830914510639640423 
-            // amount_in: 9975124224178055, 
-            // amount_out: 9925619580021728 
-            // fee_amount: 5988667735148    
-            // [.cairo]
-            // sqrt_ratio_nextX96 79623317895830855645443129344
-            // amount_in 9975124224176569 
-            // amount_out 9925619580020257
-            // fee_amount 5988667735148 
-
-            assert(amount_in == 9975124224176569, 'incorrect amount_in');
+            assert(amount_in == 9975124224178055, 'incorrect amount_in');
             assert(fee_amount == 5988667735148, 'incorrect fee_amount');
-            assert(amount_out == 9925619580020257, 'incorrect amount_out');
+            assert(amount_out == 9925619580021728, 'incorrect amount_out');
             assert(amount_out < expand_to_18_decimals(1), 'entire amount out isnt returned');
 
             let price_after_whole_input_amount = SqrtPriceMath::get_next_sqrt_price_from_output(
@@ -124,15 +85,18 @@ mod TestSwapMath {
             assert(sqrtQ == price_target, 'price is capped at price target');
             assert(
                 sqrtQ < price_after_whole_input_amount, 'price < price after whole input'
-            ); // price is less than price after whole input amount
+            ); 
         }
 
         // exact amount in that is fully spent in one for zero
         #[test]
         #[available_gas(200000000)]
         fn test_amount_in_that_is_fully_spent_in_one_for_zero() {
-            let price = encode_price_sqrt(1, 1);
-            let price_target = encode_price_sqrt(1000, 100);
+            // price is the result of encode_price_sqrt(1, 1) on v3-core typescript impl. 
+            let price = FP64x96Impl::new(79228162514264337593543950336, false);
+            // price_target is the result of encode_price_sqrt(1000, 100) on v3-core typescript impl. 
+            let price_target = FP64x96Impl::new(250541448375047931186413801569, false);
+            
             let liquidity: u128 = expand_to_18_decimals(2).try_into().unwrap();
             let amount = IntegerTrait::<i256>::new(expand_to_18_decimals(1), false);
             let fee = 600;
@@ -142,43 +106,34 @@ mod TestSwapMath {
                 price, price_target, liquidity, amount, fee
             );
 
-            // TODO: Check outputs (in this case .cairo == .sol)
-            // [.sol]
-            // sqrtRatioNextX96: 118818475322642227089037862318 
-            // amount_in: 999400000000000000, 
-            // amount_out: 666399946655997866 
-            // fee_amount: 600000000000000    
-            // [.cairo]
-            // sqrt_ratio_nextX96 118818475322642227089037862318
-            // amount_in 999400000000000000 
-            // amount_out 666399946655997866
-            // fee_amount 600000000000000 
-
             assert(amount_in == 999400000000000000, 'incorrect amount_in');
             assert(fee_amount == 600000000000000, 'incorrect fee_amount');
             assert(amount_out == 666399946655997866, 'incorrect amount_out');
             assert(
-                amount_in + fee_amount == SwapMath::i256_into_u256(amount),
-                'entire amount is not used'
+                amount_in + fee_amount == amount.try_into().unwrap(),
+                'entire amount is not used' 
             );
 
             let price_after_whole_import_amount_less_fee =
                 SqrtPriceMath::get_next_sqrt_price_from_input(
-                price, liquidity, SwapMath::i256_into_u256(amount) - fee_amount, zero_for_one
+                price, liquidity, amount.try_into().unwrap() - fee_amount, zero_for_one
             );
 
             assert(sqrtQ < price_target, 'price is capped at price target');
             assert(
                 sqrtQ == price_after_whole_import_amount_less_fee, 'price = p_after_amount_less_fee'
-            ); // price is less than price after whole input amount
+            ); 
         }
 
         // exact amount out that is fully received in one for zero
         #[test]
         #[available_gas(200000000)]
         fn test_amount_out_that_is_fully_received_in_one_for_zero() {
-            let price = encode_price_sqrt(1, 1);
-            let price_target = encode_price_sqrt(10000, 100);
+            // price is the result of encode_price_sqrt(1, 1) on v3-core typescript impl. 
+            let price = FP64x96Impl::new(79228162514264337593543950336, false);
+            // price_target is the result of encode_price_sqrt(10000, 100) on v3-core typescript impl. 
+            let price_target = FP64x96Impl::new(792281625142643375935439503360, false);
+        
             let liquidity: u128 = expand_to_18_decimals(2).try_into().unwrap();
             let amount = IntegerTrait::<i256>::new(expand_to_18_decimals(1), true);
             let fee = 600;
@@ -187,18 +142,6 @@ mod TestSwapMath {
             let (sqrtQ, amount_in, amount_out, fee_amount) = SwapMath::compute_swap_step(
                 price, price_target, liquidity, amount, fee
             );
-
-            // TODO: Check outputs (in this case .cairo == .sol)
-            // [.sol]
-            // sqrtRatioNextX96: 158456325028528675187087900672 
-            // amount_in: 2000000000000000000, 
-            // amount_out: 1000000000000000000 
-            // fee_amount: 1200720432259356    
-            // [.cairo]
-            // sqrt_ratio_nextX96 158456325028528675187087900672
-            // amount_in 2000000000000000000 
-            // amount_out 1000000000000000000
-            // fee_amount 1200720432259356 
 
             assert(amount_in == 2000000000000000000, 'incorrect amount_in');
             assert(fee_amount == 1200720432259356, 'incorrect fee_amount');
@@ -211,7 +154,7 @@ mod TestSwapMath {
             assert(sqrtQ < price_target, 'price doest reach price target');
             assert(
                 sqrtQ == price_after_whole_output_amount, 'price = price after whole out'
-            ); // price is less than price after whole input amount
+            ); 
         }
 
         // amount out is capped at the desired amount out
@@ -250,7 +193,6 @@ mod TestSwapMath {
             let (sqrtQ, amount_in, amount_out, fee_amount) = SwapMath::compute_swap_step(
                 price, price_target, liquidity, amount, fee
             );
-            // TODO: Check outputs (in this case .cairo == .sol)
             assert(amount_in == 39614081257132168796771975168, 'incorrect amount_in');
             assert(fee_amount == 39614120871253040049813, 'incorrect fee_amount');
             assert(
@@ -275,7 +217,6 @@ mod TestSwapMath {
                 price, price_target, liquidity, amount, fee
             );
 
-            // TODO: Check outputs (in this case .cairo == .sol)
             assert(amount_in == 0, 'incorrect amount_in');
             assert(fee_amount == 10, 'incorrect fee_amount');
             assert(amount_out <= 0, 'incorrect amount_out');
@@ -296,11 +237,6 @@ mod TestSwapMath {
                 sqrtP, sqrtP_target, liquidity, amount_remaining, fee_pips
             );
 
-            // TODO: Check outputs
-            // [.sol]
-            // fee_amount: 10 
-            // [.cairo]
-            // fee_amount: 79 
             assert(amount_in == 26215, 'incorrect amount_in');
             assert(amount_out == 0, 'incorrect amount_out');
             assert(sqrtQ == sqrtP_target, 'incorrect sqrtQ');
@@ -321,7 +257,6 @@ mod TestSwapMath {
                 sqrtP, sqrtP_target, liquidity, amount_remaining, fee_pips
             );
 
-            // TODO: Check outputs (in this case .cairo == .sol)
             assert(amount_in == 1, 'incorrect amount_in');
             assert(fee_amount == 1, 'incorrect fee_amount');
             assert(amount_out == 26214, 'incorrect amount_out');

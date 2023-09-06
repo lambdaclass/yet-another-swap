@@ -1,7 +1,7 @@
 /// Computes the result of a swap within ticks
 /// Contains methods for computing the result of a swap within a single tick price range, i.e., a single tick.
 mod SwapMath {
-    use fractal_swap::numbers::fixed_point::implementations::fullmath::FullMath::{
+    use fractal_swap::utils::fullmath::FullMath::{
         div_rounding_up, mul_div, mul_div_rounding_up
     };
     use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
@@ -20,15 +20,15 @@ mod SwapMath {
     const _1e6: u256 = 1000000; // 10 ** 6 
 
     /// Computes the result of swapping some amount in, or amount out, given the parameters of the swap
-    /// @param sqrtRatioCurrentX96 The current sqrt price of the pool
-    /// @param sqrtRatioTargetX96 The price that cannot be exceeded, from which the direction of the swap is inferred
+    /// @param sqrt_ratio_currentX96 The current sqrt price of the pool
+    /// @param sqrt_ratio_targetX96 The price that cannot be exceeded, from which the direction of the swap is inferred
     /// @param liquidity The usable liquidity
-    /// @param amountRemaining How much input or output amount is remaining to be swapped in/out
-    /// @param feePips The fee taken from the input amount, expressed in hundredths of a bip
-    /// @return sqrtRatioNextX96 The price after swapping the amount in/out, not to exceed the price target
-    /// @return amountIn The amount to be swapped in, of either token0 or token1, based on the direction of the swap
-    /// @return amountOut The amount to be received, of either token0 or token1, based on the direction of the swap
-    /// @return feeAmount The amount of input that will be taken as a fee
+    /// @param amount_remaining How much input or output amount is remaining to be swapped in/out
+    /// @param fee_pips The fee taken from the input amount, expressed in hundredths of a bip
+    /// @return sqrt_ratio_nextX96 The price after swapping the amount in/out, not to exceed the price target
+    /// @return amount_in The amount to be swapped in, of either token0 or token1, based on the direction of the swap
+    /// @return amount_out The amount to be received, of either token0 or token1, based on the direction of the swap
+    /// @return fee_amount The amount of input that will be taken as a fee
     fn compute_swap_step(
         sqrt_ratio_currentX96: FixedType,
         sqrt_ratio_targetX96: FixedType,
@@ -119,7 +119,7 @@ mod SwapMath {
         if !exact_in && amount_out > amount_remaining.mag {
             amount_out = amount_remaining.mag;
         }
-
+        
         let fee_amount = if exact_in && sqrt_ratio_nextX96 != sqrt_ratio_targetX96 {
             amount_remaining.mag - amount_in
         } else {
@@ -127,14 +127,5 @@ mod SwapMath {
         };
 
         (sqrt_ratio_nextX96, amount_in, amount_out, fee_amount)
-    }
-
-    fn i256_into_u256(input: i256) -> u256 {
-        assert(input.sign == false, 'u256 cannot be negative');
-        input.mag
-    }
-
-    fn u256_into_i256(input: u256) -> i256 {
-        IntegerTrait::<i256>::new(input, false)
     }
 }

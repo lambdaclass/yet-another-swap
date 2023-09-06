@@ -145,6 +145,12 @@ impl i256Neg of Neg<i256> {
     }
 }
 
+impl i256TryIntou256 of TryInto<i256, u256> {
+    fn try_into(self: i256) -> Option<u256> {
+        assert(self.sign == false, 'The sign must be positive');
+        Option::Some(self.mag)
+    }
+}
 
 // Checks if the given i256 integer is zero and has the correct sign.
 // # Arguments
