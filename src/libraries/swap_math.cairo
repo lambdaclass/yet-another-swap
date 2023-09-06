@@ -129,14 +129,4 @@ mod SwapMath {
 
         (sqrt_ratio_nextX96, amount_in, amount_out, fee_amount)
     }
-
-    // TODO: Migrate this to i256 impl
-    fn i256_into_u256(input: i256) -> u256 {
-        assert(input.sign == false, 'u256 cannot be negative');
-        input.mag
-    }
-
-    fn u256_into_i256(input: u256) -> i256 {
-        IntegerTrait::<i256>::new(input, false)
-    }
 }
