@@ -1,5 +1,4 @@
 mod TickMath {
-    use core::debug::PrintTrait;
     use core::clone::Clone;
     use option::OptionTrait;
     use traits::{Into, TryInto};
@@ -19,20 +18,18 @@ mod TickMath {
     use integer::BoundedInt;
     use fractal_swap::numbers::signed_integer::i256::{i256, bitwise_or};
 
-    /// The minimum tick that may be passed to #getSqrtRatioAtTick computed from log base 1.0001 of 2**-128
-    // const MIN_TICK: i32 = -887272;
+    /// The minimum tick that may be passed to `get_sqrt_ratio_at_tick` computed from log base 1.0001 of 2**-128
     fn MIN_TICK() -> i32 {
         return i32 { mag: 887272, sign: true };
     }
 
-    /// The maximum tick that may be passed to #getSqrtRatioAtTick computed from log base 1.0001 of 2**128
-    // const MAX_TICK: i32 = -MIN_TICK;
+    /// The maximum tick that may be passed to `get_sqrt_ratio_at_tick` computed from log base 1.0001 of 2**128
     fn MAX_TICK() -> i32 {
         return i32 { mag: 887272, sign: false };
     }
-    /// The minimum value that can be returned from #getSqrtRatioAtTick. Equivalent to getSqrtRatioAtTick(MIN_TICK)
+    /// The minimum value that can be returned from `get_sqrt_ratio_at_tick`. Equivalent to get_sqrt_ratio_at_tick(MIN_TICK).
     const MIN_SQRT_RATIO: u256 = 4295128739;
-    /// The maximum value that can be returned from #getSqrtRatioAtTick. Equivalent to getSqrtRatioAtTick(MAX_TICK)
+    /// The maximum value that can be returned from `get_sqrt_ratio_at_tick`. Equivalent to get_sqrt_ratio_at_tick(MAX_TICK).
     const MAX_SQRT_RATIO: u256 = 1461446703485210103287273052203988822378723970342;
 
     /// Calculates sqrt(1.0001^tick) * 2^96
@@ -44,7 +41,9 @@ mod TickMath {
     ///     at the given tick
     fn get_sqrt_ratio_at_tick(tick: i32) -> FixedType {
         let abs_tick = tick.abs();
-        assert(abs_tick <= MAX_TICK(), 'T');
+        assert(
+            abs_tick <= MAX_TICK(), 'T'
+        ); // TODO: review this error in the future. This is the original error from UniswapV3.
 
         // Initialize ratio with a base value
         let abs_tick_u256: u256 = abs_tick.mag.into();
@@ -130,7 +129,9 @@ mod TickMath {
         return FixedTrait::new(sqrtPriceX96_mag, false);
     }
 
-    fn solidity_assembly_gt(a: u256, b: u256) -> u256 {
+    // Returns 1 if a > b, otherwise returns 0.
+    // This is not the behavior in Cairo.
+    fn is_gt_as_int(a: u256, b: u256) -> u256 {
         let val = if (a > b) {
             1
         } else {
@@ -152,41 +153,41 @@ mod TickMath {
         assert(
             sqrtPriceX96 >= FixedTrait::new(MIN_SQRT_RATIO, false)
                 && sqrtPriceX96 < FixedTrait::new(MAX_SQRT_RATIO, false),
-            'R'
+            'R' // TODO: review this error in the future. This is the original error from UniswapV3.
         );
         let ratio = sqrtPriceX96.mag.shl(32);
         let mut r = ratio.clone();
         let mut msb = 0;
 
-        let f: u256 = solidity_assembly_gt(r, 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF).shl(7);
+        let f: u256 = is_gt_as_int(r, 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF).shl(7);
         msb = msb | f;
         r = r.shr(f);
 
-        let f: u256 = solidity_assembly_gt(r, 0xFFFFFFFFFFFFFFFF).shl(6);
+        let f: u256 = is_gt_as_int(r, 0xFFFFFFFFFFFFFFFF).shl(6);
         msb = msb | f;
         r = r.shr(f);
 
-        let f: u256 = solidity_assembly_gt(r, 0xFFFFFFFF).shl(5);
+        let f: u256 = is_gt_as_int(r, 0xFFFFFFFF).shl(5);
         msb = msb | f;
         r = r.shr(f);
 
-        let f: u256 = solidity_assembly_gt(r, 0xFFFF).shl(4);
+        let f: u256 = is_gt_as_int(r, 0xFFFF).shl(4);
         msb = msb | f;
         r = r.shr(f);
 
-        let f: u256 = solidity_assembly_gt(r, 0xFF).shl(3);
+        let f: u256 = is_gt_as_int(r, 0xFF).shl(3);
         msb = msb | f;
         r = r.shr(f);
 
-        let f: u256 = solidity_assembly_gt(r, 0xF).shl(2);
+        let f: u256 = is_gt_as_int(r, 0xF).shl(2);
         msb = msb | f;
         r = r.shr(f);
 
-        let f: u256 = solidity_assembly_gt(r, 0x3).shl(1);
+        let f: u256 = is_gt_as_int(r, 0x3).shl(1);
         msb = msb | f;
         r = r.shr(f);
 
-        let f: u256 = solidity_assembly_gt(r, 0x1);
+        let f: u256 = is_gt_as_int(r, 0x1);
         msb = msb | f;
 
         let mut r = if (msb >= 128) {
