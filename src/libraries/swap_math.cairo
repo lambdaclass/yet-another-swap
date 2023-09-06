@@ -16,7 +16,6 @@ mod SwapMath {
     use integer::{u256_overflowing_add, u256_overflow_mul};
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
     use option::OptionTrait;
-    use debug::PrintTrait;
 
     const _1e6: u256 = 1000000; // 10 ** 6 
 
@@ -128,5 +127,14 @@ mod SwapMath {
         };
 
         (sqrt_ratio_nextX96, amount_in, amount_out, fee_amount)
+    }
+
+    fn i256_into_u256(input: i256) -> u256 {
+        assert(input.sign == false, 'u256 cannot be negative');
+        input.mag
+    }
+
+    fn u256_into_i256(input: u256) -> i256 {
+        IntegerTrait::<i256>::new(input, false)
     }
 }
