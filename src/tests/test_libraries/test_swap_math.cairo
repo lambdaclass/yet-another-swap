@@ -5,7 +5,6 @@ mod TestSwapMath {
     };
     use traits::Into;
     use integer::{u256_sqrt, u256_safe_div_rem, u256_try_as_non_zero};
-    use debug::PrintTrait;
 
     // Aux methods for tests
     fn encode_price_sqrt(reserve1: u256, reserve0: u256) -> FixedType {
@@ -40,8 +39,6 @@ mod TestSwapMath {
             encode_price_sqrt, expand_to_18_decimals
         };
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-
-        use debug::PrintTrait;
 
         // exact amount in that gets capped at price target in one for zero
         #[test]
@@ -213,7 +210,7 @@ mod TestSwapMath {
 
             assert(sqrtQ < price_target, 'price doest reach price target');
             assert(
-                sqrtQ == price_after_whole_output_amount, 'price = price after whole input'
+                sqrtQ == price_after_whole_output_amount, 'price = price after whole output'
             ); // price is less than price after whole input amount
         }
 
