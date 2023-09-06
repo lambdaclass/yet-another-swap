@@ -1,6 +1,6 @@
 use fractal_swap::libraries::tick_math::TickMath::{
     MIN_TICK, MAX_TICK, get_sqrt_ratio_at_tick, MAX_SQRT_RATIO, MIN_SQRT_RATIO,
-    get_tick_at_sqrt_ratio,
+    get_tick_at_sqrt_ratio, as_i24,
 };
 use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 use orion::numbers::signed_integer::i32::i32;
@@ -11,6 +11,7 @@ use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
     FP64x96PartialEq
 };
 use fractal_swap::numbers::signed_integer::i256::{i256, bitwise_or};
+use fractal_swap::utils::math_utils::MathUtils::BitShiftTrait;
 
 #[test]
 #[available_gas(200000000)]
@@ -363,4 +364,59 @@ fn test_check_within_ranges_get_tick_at_sqrt_ratio() {
         'ratio >= ratio_of_tick 13',
         'ratio < r(tick + 1) 13'
     );
+}
+
+#[test]
+#[available_gas(200000000)]
+fn test_as_i24_within_range() {
+    let a_i32 = IntegerTrait::<i32>::new(0, false);
+    let a_i256 = IntegerTrait::<i256>::new(0, false);
+    assert(a_i32 == as_i24(a_i256), '0 == as_i24(0)');
+
+    let a_i32 = IntegerTrait::<i32>::new(1, false);
+    let a_i256 = IntegerTrait::<i256>::new(1, false);
+    assert(a_i32 == as_i24(a_i256), '1 == as_i24(1)');
+
+    let a_i32 = IntegerTrait::<i32>::new(1, true);
+    let a_i256 = IntegerTrait::<i256>::new(1, true);
+    assert(a_i32 == as_i24(a_i256), '-1 == as_i24(-1)');
+
+    let a_i32 = IntegerTrait::<i32>::new(123321, false);
+    let a_i256 = IntegerTrait::<i256>::new(123321, false);
+    assert(a_i32 == as_i24(a_i256), '123321 == as_i24(123321)');
+
+    let a_i32 = IntegerTrait::<i32>::new(123321, true);
+    let a_i256 = IntegerTrait::<i256>::new(123321, true);
+    assert(a_i32 == as_i24(a_i256), '-123321 == as_i24(-123321)');
+
+    // MAX
+    let a_i32 = IntegerTrait::<i32>::new(8388607, false);
+    let a_i256 = IntegerTrait::<i256>::new(8388607, false);
+    assert(a_i32 == as_i24(a_i256), '8388607 == as_i24(8388607)');
+
+    // MIN
+    let a_i32 = IntegerTrait::<i32>::new(8388607, true);
+    let a_i256 = IntegerTrait::<i256>::new(8388607, true);
+    assert(a_i32 == as_i24(a_i256), '-8388607 == as_i24(-8388607)');
+}
+
+#[test]
+#[available_gas(200000000)]
+fn test_as_i24_out_of_range() {
+    let max_u32: u32 = ((1_u256.shl(23)) - 1).try_into().unwrap();
+    let max: i32 = IntegerTrait::<i32>::new(max_u32, false);
+    let min: i32 = IntegerTrait::<i32>::new(max_u32, true);
+    // MAX + 1
+    let a_i256 = IntegerTrait::<i256>::new(8388607 + 1, false);
+    assert(min <= as_i24(a_i256) && as_i24(a_i256) <= max, 'min <= i24(max+1) <= max');
+
+    // MIN - 1
+    let a_i256 = IntegerTrait::<i256>::new(8388607 + 1, true);
+    assert(min <= as_i24(a_i256) && as_i24(a_i256) <= max, 'min <= i24(min-1) <= max');
+
+    let a_i256 = IntegerTrait::<i256>::new(1073741824, true);
+    assert(min <= as_i24(a_i256) && as_i24(a_i256) <= max, 'min <= i24(-large) <= max');
+
+    let a_i256 = IntegerTrait::<i256>::new(1073741824, false);
+    assert(min <= as_i24(a_i256) && as_i24(a_i256) <= max, 'min <= i24(large) <= max');
 }
