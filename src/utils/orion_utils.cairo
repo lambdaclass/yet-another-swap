@@ -3,9 +3,12 @@ mod OrionUtils {
     use option::{OptionTrait};
     use traits::{Into, TryInto};
 
-    use orion::numbers::signed_integer::i32::i32;
     use orion::numbers::signed_integer::i16::i16;
+    use orion::numbers::signed_integer::i32::i32;
+    use orion::numbers::signed_integer::i128::i128;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+
+    use fractal_swap::numbers::signed_integer::i256::i256;
 
     impl u8Intoi32 of Into<u8, i32> {
         fn into(self: u8) -> i32 {
@@ -26,6 +29,14 @@ mod OrionUtils {
         fn try_into(self: i32) -> Option<i16> {
             Option::Some(IntegerTrait::<i16>::new(self.mag.try_into().unwrap(), self.sign))
         }
+    }
+
+    fn convert_i256_to_i128(n: i256) -> i128 {
+        IntegerTrait::<i128>::new(n.mag.try_into().unwrap(), n.sign)
+    }
+
+    fn convert_i128_to_i256(n: i128) -> i256 {
+        IntegerTrait::<i256>::new(n.mag.into(), n.sign)
     }
 
     /// Computes the mathematical modulo of two i32 numbers.

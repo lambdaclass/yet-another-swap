@@ -1,3 +1,4 @@
+use orion::numbers::signed_integer::i32::i32;
 use orion::numbers::signed_integer::i64::i64;
 use orion::numbers::signed_integer::i128::i128;
 use orion::numbers::signed_integer::integer_trait::IntegerTrait;
@@ -25,12 +26,128 @@ struct Info {
     initialized: bool
 }
 
+#[starknet::interface]
+trait ITick<TStorage> {
+    fn update(
+        ref self: TStorage,
+        tick: i32,
+        tick_current: i32,
+        liquidity_delta: i128,
+        fee_growth_global_0X128: u256,
+        fee_growth_global_1X128: u256,
+        seconds_per_liquidity_cumulative_X128: u256,
+        tick_cumulative: i64,
+        time: u32,
+        upper: bool,
+        max_liquidity: u128
+    ) -> bool;
+    // TODO: Function used for testing. To be removed in the future
+    fn set_tick(ref self: TStorage, tick: i32, info: Info);
+    // TODO: Function used for testing. To be removed in the future
+    fn get_tick(self: @TStorage, tick: i32) -> Info;
+}
+
 #[starknet::contract]
 mod Tick {
-    use super::{Info};
+    use super::{ITick, Info};
+
+    use array::ArrayTrait;
+    use option::OptionTrait;
+    use poseidon::poseidon_hash_span;
+    use serde::Serde;
+    use traits::{Into, TryInto};
+
+    use orion::numbers::signed_integer::i32::i32;
+    use orion::numbers::signed_integer::i64::i64;
+    use orion::numbers::signed_integer::i128::i128;
+    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+
+    use fractal_swap::libraries::liquidity_math::LiquidityMath;
+    use fractal_swap::utils::orion_utils::OrionUtils::{convert_i256_to_i128, convert_i128_to_i256};
 
     #[storage]
     struct Storage {
         ticks: LegacyMap::<felt252, Info>
+    }
+
+    #[external(v0)]
+    impl Tick of ITick<ContractState> {
+        fn update(
+            ref self: ContractState,
+            tick: i32,
+            tick_current: i32,
+            liquidity_delta: i128,
+            fee_growth_global_0X128: u256,
+            fee_growth_global_1X128: u256,
+            seconds_per_liquidity_cumulative_X128: u256,
+            tick_cumulative: i64,
+            time: u32,
+            upper: bool,
+            max_liquidity: u128
+        ) -> bool {
+            let hashed_tick = self._generate_hashed_tick(@tick);
+            let mut info: Info = self.ticks.read(hashed_tick);
+
+            let liquidity_gross_before: u128 = info.liquidity_gross;
+            let liquidity_gross_after: u128 = LiquidityMath::add_delta(
+                liquidity_gross_before, liquidity_delta
+            );
+
+            assert(liquidity_gross_after <= max_liquidity, 'LO');
+
+            let flipped = (liquidity_gross_after == 0) != (liquidity_gross_before == 0);
+
+            if (liquidity_gross_before == 0) {
+                // by convention, we assume that all growth before a tick was initialized happened _below_ the tick
+                if (tick <= tick_current) {
+                    info.fee_growth_outside_0X128 = fee_growth_global_0X128;
+                    info.fee_growth_outside_1X128 = fee_growth_global_1X128;
+                    info.seconds_per_liquidity_outside_X128 = seconds_per_liquidity_cumulative_X128;
+                    info.tick_cumulative_outside = tick_cumulative;
+                    info.seconds_outside = time;
+                }
+                info.initialized = true;
+            }
+
+            info.liquidity_gross = liquidity_gross_after;
+
+            // when the lower (upper) tick is crossed left to right (right to left), liquidity must be added (removed)
+            info
+                .liquidity_net =
+                    if upper {
+                        convert_i256_to_i128(
+                            convert_i128_to_i256(info.liquidity_net)
+                                - convert_i128_to_i256(liquidity_delta)
+                        )
+                    } else {
+                        convert_i256_to_i128(
+                            convert_i128_to_i256(info.liquidity_net)
+                                + convert_i128_to_i256(liquidity_delta)
+                        )
+                    };
+
+            self.ticks.write(hashed_tick, info);
+
+            flipped
+        }
+
+        fn set_tick(ref self: ContractState, tick: i32, info: Info) {
+            let hashed_tick = self._generate_hashed_tick(@tick);
+            self.ticks.write(hashed_tick, info);
+        }
+
+        fn get_tick(self: @ContractState, tick: i32) -> Info {
+            let hashed_tick = self._generate_hashed_tick(@tick);
+            self.ticks.read(hashed_tick)
+        }
+    }
+
+    #[generate_trait]
+    impl InternalFunctions of InternalFunctionsTrait {
+        fn _generate_hashed_tick(self: @ContractState, tick: @i32) -> felt252 {
+            let mut serialized: Array<felt252> = ArrayTrait::new();
+            Serde::<i32>::serialize(tick, ref serialized);
+            poseidon_hash_span(serialized.span())
+        }
     }
 }
