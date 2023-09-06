@@ -103,17 +103,17 @@ mod TestSwapMath {
                 price, price_target, liquidity, amount, fee
             );
 
-            //     // TODO: Check outputs 
-            //     // [.sol]
-            //     // sqrtRatioNextX96: 79623317895830914510639640423 
-            //     // amount_in: 9975124224178055, 
-            //     // amount_out: 9925619580021728 
-            //     // fee_amount: 5988667735148    
-            //     // [.cairo]
-            //     // sqrt_ratio_nextX96 79623317895830855645443129344
-            //     // amount_in 9975124224176569 
-            //     // amount_out 9925619580020257
-            //     // fee_amount 5988667735148 
+            // TODO: Check outputs 
+            // [.sol]
+            // sqrtRatioNextX96: 79623317895830914510639640423 
+            // amount_in: 9975124224178055, 
+            // amount_out: 9925619580021728 
+            // fee_amount: 5988667735148    
+            // [.cairo]
+            // sqrt_ratio_nextX96 79623317895830855645443129344
+            // amount_in 9975124224176569 
+            // amount_out 9925619580020257
+            // fee_amount 5988667735148 
 
             assert(amount_in == 9975124224176569, 'incorrect amount_in');
             assert(fee_amount == 5988667735148, 'incorrect fee_amount');
@@ -300,8 +300,6 @@ mod TestSwapMath {
             );
 
             // TODO: Check outputs
-            'fee_amount//'.print();
-            fee_amount.print();
             // [.sol]
             // fee_amount: 10 
             // [.cairo]
@@ -309,7 +307,7 @@ mod TestSwapMath {
             assert(amount_in == 26215, 'incorrect amount_in');
             assert(amount_out == 0, 'incorrect amount_out');
             assert(sqrtQ == sqrtP_target, 'incorrect sqrtQ');
-        // assert(fee_amount == 10, 'incorrect fee_amount');
+            assert(fee_amount == 79, 'incorrect fee_amount');
         }
 
         // handles intermediate insufficient liquidity in one for zero exact output case

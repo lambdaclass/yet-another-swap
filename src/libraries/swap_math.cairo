@@ -20,6 +20,16 @@ mod SwapMath {
 
     const _1e6: u256 = 1000000; // 10 ** 6 
 
+    /// Computes the result of swapping some amount in, or amount out, given the parameters of the swap
+    /// @param sqrtRatioCurrentX96 The current sqrt price of the pool
+    /// @param sqrtRatioTargetX96 The price that cannot be exceeded, from which the direction of the swap is inferred
+    /// @param liquidity The usable liquidity
+    /// @param amountRemaining How much input or output amount is remaining to be swapped in/out
+    /// @param feePips The fee taken from the input amount, expressed in hundredths of a bip
+    /// @return sqrtRatioNextX96 The price after swapping the amount in/out, not to exceed the price target
+    /// @return amountIn The amount to be swapped in, of either token0 or token1, based on the direction of the swap
+    /// @return amountOut The amount to be received, of either token0 or token1, based on the direction of the swap
+    /// @return feeAmount The amount of input that will be taken as a fee
     fn compute_swap_step(
         sqrt_ratio_currentX96: FixedType,
         sqrt_ratio_targetX96: FixedType,
