@@ -173,7 +173,7 @@ mod TestFullMath {
             let n: u256 = 100000.into();
 
             let result = mul_mod_n(a, b, n);
-        
+
             assert(result == (a * b) % n, 'wrong mul mod n');
         }
 
@@ -183,7 +183,7 @@ mod TestFullMath {
             let a: u256 = 1;
             let b: u256 = 1;
             let n: u256 = 0;
-            
+
             mul_mod_n(a, b, n);
         }
 
@@ -192,9 +192,9 @@ mod TestFullMath {
             let a: u256 = 0.into(); // Prueba con a igual a cero
             let b: u256 = 67890.into();
             let n: u256 = 100000.into();
-            
+
             let result = mul_mod_n(a, b, n);
-            
+
             assert(result == 0, 'wrong mul mod n');
         }
     }

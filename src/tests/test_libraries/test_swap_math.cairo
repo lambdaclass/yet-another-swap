@@ -42,8 +42,7 @@ mod TestSwapMath {
             assert(fee_amount == 5988667735148, 'incorrect fee_amount');
             assert(amount_out == 9925619580021728, 'incorrect amount_out');
             assert(
-                amount_in + fee_amount < amount.try_into().unwrap(),
-                'entire amount is not used'
+                amount_in + fee_amount < amount.try_into().unwrap(), 'entire amount is not used'
             );
 
             let price_after_whole_input_amount = SqrtPriceMath::get_next_sqrt_price_from_input(
@@ -83,9 +82,7 @@ mod TestSwapMath {
             );
 
             assert(sqrtQ == price_target, 'price is capped at price target');
-            assert(
-                sqrtQ < price_after_whole_input_amount, 'price < price after whole input'
-            ); 
+            assert(sqrtQ < price_after_whole_input_amount, 'price < price after whole input');
         }
 
         // exact amount in that is fully spent in one for zero
@@ -96,7 +93,7 @@ mod TestSwapMath {
             let price = FP64x96Impl::new(79228162514264337593543950336, false);
             // price_target is the result of encode_price_sqrt(1000, 100) on v3-core typescript impl. 
             let price_target = FP64x96Impl::new(250541448375047931186413801569, false);
-            
+
             let liquidity: u128 = expand_to_18_decimals(2).try_into().unwrap();
             let amount = IntegerTrait::<i256>::new(expand_to_18_decimals(1), false);
             let fee = 600;
@@ -110,8 +107,7 @@ mod TestSwapMath {
             assert(fee_amount == 600000000000000, 'incorrect fee_amount');
             assert(amount_out == 666399946655997866, 'incorrect amount_out');
             assert(
-                amount_in + fee_amount == amount.try_into().unwrap(),
-                'entire amount is not used' 
+                amount_in + fee_amount == amount.try_into().unwrap(), 'entire amount is not used'
             );
 
             let price_after_whole_import_amount_less_fee =
@@ -122,7 +118,7 @@ mod TestSwapMath {
             assert(sqrtQ < price_target, 'price is capped at price target');
             assert(
                 sqrtQ == price_after_whole_import_amount_less_fee, 'price = p_after_amount_less_fee'
-            ); 
+            );
         }
 
         // exact amount out that is fully received in one for zero
@@ -133,7 +129,7 @@ mod TestSwapMath {
             let price = FP64x96Impl::new(79228162514264337593543950336, false);
             // price_target is the result of encode_price_sqrt(10000, 100) on v3-core typescript impl. 
             let price_target = FP64x96Impl::new(792281625142643375935439503360, false);
-        
+
             let liquidity: u128 = expand_to_18_decimals(2).try_into().unwrap();
             let amount = IntegerTrait::<i256>::new(expand_to_18_decimals(1), true);
             let fee = 600;
@@ -152,9 +148,7 @@ mod TestSwapMath {
             );
 
             assert(sqrtQ < price_target, 'price doest reach price target');
-            assert(
-                sqrtQ == price_after_whole_output_amount, 'price = price after whole out'
-            ); 
+            assert(sqrtQ == price_after_whole_output_amount, 'price = price after whole out');
         }
 
         // amount out is capped at the desired amount out

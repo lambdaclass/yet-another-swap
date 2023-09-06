@@ -1,9 +1,7 @@
 /// Computes the result of a swap within ticks
 /// Contains methods for computing the result of a swap within a single tick price range, i.e., a single tick.
 mod SwapMath {
-    use fractal_swap::utils::fullmath::FullMath::{
-        div_rounding_up, mul_div, mul_div_rounding_up
-    };
+    use fractal_swap::utils::fullmath::FullMath::{div_rounding_up, mul_div, mul_div_rounding_up};
     use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FixedType, FixedTrait, FP64x96Add, FP64x96Sub, FP64x96Mul, FP64x96Div,
         FP64x96PartialEq, FP64x96PartialOrd, Q96_RESOLUTION, ONE, MAX
@@ -119,7 +117,7 @@ mod SwapMath {
         if !exact_in && amount_out > amount_remaining.mag {
             amount_out = amount_remaining.mag;
         }
-        
+
         let fee_amount = if exact_in && sqrt_ratio_nextX96 != sqrt_ratio_targetX96 {
             amount_remaining.mag - amount_in
         } else {

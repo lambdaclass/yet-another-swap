@@ -56,7 +56,7 @@ mod FullMath {
         if remainder != 0 {
             quotient + 1
         } else {
-             quotient
+            quotient
         }
     }
 }
