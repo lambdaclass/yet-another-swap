@@ -1,6 +1,6 @@
-# Fractal-Swap
+# YAS - Yet Another Swap
 
-Fractal Swap is a Uniswap V3 implementation on StarkNet.
+Yet Another Swap is a Uniswap V3 implementation on Starknet.
 
 ## Important Disclaimer
  Currently, the project is using our [fork](https://github.com/dpinones/orion) of [Orion](https://github.com/gizatechxyz/orion/tree/main/src/numbers/signed_integer) `signed integer` implementation until all features are implemented and supported in the latest version of Cairo. 
@@ -119,6 +119,7 @@ On Starknet, the deployment process is in two steps:
 ## Tooling
 - [Starkli](https://book.starkli.rs/)
 - [Scarb](https://book.starknet.io/chapter_2/scarb.html)
+- [Cairo 1.0 VSCode Extension](https://marketplace.visualstudio.com/items?itemName=starkware.cairo1)
 - [Starknet Foundry](https://foundry-rs.github.io/starknet-foundry/)
 
 ## Useful resources
@@ -127,5 +128,6 @@ On Starknet, the deployment process is in two steps:
 - [Starknet Book](https://book.starknet.io/index.html)
 - [Uniswap Protocol](https://docs.uniswap.org/concepts/uniswap-protocol)
 - [Uniswap V3 Development Book](https://uniswapv3book.com/docs/introduction/uniswap-v3/)
+- [Liquidity Math in Uniswap V3](https://atiselsts.github.io/pdfs/uniswap-v3-liquidity-math.pdf)
 - [UNISWAP V3 - New Era Of AMMs? Architecture Explained](https://www.youtube.com/watch?v=Ehm-OYBmlPM)
 - [ZK Podcast: Exploring Uniswap V3 and a Multi-L2 Future with Noah and Moody](https://zeroknowledge.fm/185-2/)
