@@ -1,21 +1,16 @@
 mod TickMath {
     use core::clone::Clone;
+    use integer::BoundedInt;
     use option::OptionTrait;
     use traits::{Into, TryInto};
-    use core::traits::PartialOrd;
-    use result::Result;
-    use result::ResultTrait;
-    use core::integer::u128_overflowing_add;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
     use orion::numbers::signed_integer::i32::i32;
     use fractal_swap::numbers::fixed_point::core::{FixedTrait, FixedType};
     use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
-        ONE_u128, ONE, MAX, _felt_abs, _felt_sign, FP64x96Impl, FP64x96Into, FP64x96Add,
-        FP64x96AddEq, FP64x96Sub, FP64x96SubEq, FP64x96Mul, FP64x96MulEq, FP64x96Div, FP64x96DivEq,
-        FP64x96PartialOrd, FP64x96PartialEq
+        FP64x96Impl, FP64x96Into, FP64x96Add, FP64x96AddEq, FP64x96Sub, FP64x96SubEq, FP64x96Mul,
+        FP64x96MulEq, FP64x96Div, FP64x96DivEq, FP64x96PartialOrd, FP64x96PartialEq
     };
     use fractal_swap::utils::math_utils::MathUtils::BitShiftTrait;
-    use integer::BoundedInt;
     use fractal_swap::numbers::signed_integer::i256::{i256, bitwise_or};
 
     /// The minimum tick that may be passed to `get_sqrt_ratio_at_tick` computed from log base 1.0001 of 2**-128
@@ -37,7 +32,7 @@ mod TickMath {
     /// params: 
     ///     - tick: The input tick for the above formula
     /// return: 
-    ///     - sqrtPriceX96 A Fixed point Q64.96 number representing the sqrt of the ratio of the two assets (token1/token0)
+    ///     - sqrt_priceX96 A Fixed point Q64.96 number representing the sqrt of the ratio of the two assets (token1/token0)
     ///     at the given tick
     fn get_sqrt_ratio_at_tick(tick: i32) -> FixedType {
         let abs_tick = tick.abs();
@@ -125,8 +120,8 @@ mod TickMath {
         // this divides by 1<<32 rounding up to go from a Q128.128 to a Q128.96.
         // we then downcast because we know the result always fits within 160 bits due to our tick input constraint
         // we round up in the division so getTickAtSqrtRatio of the output price is always consistent
-        let sqrtPriceX96_mag = ((aux_ratio.shr(32)) + aux_add) & ((1.shl(160)) - 1);
-        return FixedTrait::new(sqrtPriceX96_mag, false);
+        let sqrt_priceX96_mag = ((aux_ratio.shr(32)) + aux_add) & ((1.shl(160)) - 1);
+        return FixedTrait::new(sqrt_priceX96_mag, false);
     }
 
     // Returns 1 if a > b, otherwise returns 0.
@@ -143,17 +138,17 @@ mod TickMath {
     /// Throws in case sqrtPriceX96 < MIN_SQRT_RATIO, as MIN_SQRT_RATIO is the lowest value getRatioAtTick may
     /// ever return.
     /// params:
-    ///     - sqrtPriceX96 The sqrt ratio for which to compute the tick as a Q64.96.
+    ///     - sqrt_priceX96 The sqrt ratio for which to compute the tick as a Q64.96.
     /// return:
     ///     - tick The greatest tick for which the ratio is less than or equal to the input ratio.
-    fn get_tick_at_sqrt_ratio(sqrtPriceX96: FixedType) -> i32 {
+    fn get_tick_at_sqrt_ratio(sqrt_priceX96: FixedType) -> i32 {
         // second inequality must be < because the price can never reach the price at the max tick
         assert(
-            sqrtPriceX96 >= FixedTrait::new(MIN_SQRT_RATIO, false)
-                && sqrtPriceX96 < FixedTrait::new(MAX_SQRT_RATIO, false),
+            sqrt_priceX96 >= FixedTrait::new(MIN_SQRT_RATIO, false)
+                && sqrt_priceX96 < FixedTrait::new(MAX_SQRT_RATIO, false),
             'R' // TODO: review this error in the future. This is the original error from UniswapV3.
         );
-        let ratio = sqrtPriceX96.mag.shl(32);
+        let ratio = sqrt_priceX96.mag.shl(32);
         let mut r = ratio.clone();
         let mut msb = 0;
 
@@ -274,35 +269,35 @@ mod TickMath {
         let log_sqrt10001 = log_2
             * IntegerTrait::<i256>::new(255738958999603826347141, false); // 128.128 number
 
-        let tickLow_i256 = (log_sqrt10001
+        let tick_low_i256 = (log_sqrt10001
             - IntegerTrait::<i256>::new(3402992956809132418596140100660247210, false))
             .shr(IntegerTrait::<i256>::new(128, false));
 
-        let tickLow = as_i24(tickLow_i256);
+        let tick_low = as_i24(tick_low_i256);
 
-        let tickHi_i256 = (log_sqrt10001
+        let tick_high_i256 = (log_sqrt10001
             + IntegerTrait::<i256>::new(291339464771989622907027621153398088495, false))
             .shr(IntegerTrait::<i256>::new(128, false));
 
-        let tickHi = as_i24(tickHi_i256);
+        let tick_high = as_i24(tick_high_i256);
 
-        let tick = if (tickLow == tickHi) {
-            tickLow
+        let tick = if (tick_low == tick_high) {
+            tick_low
         } else {
-            if (get_sqrt_ratio_at_tick(tickHi) <= sqrtPriceX96) {
-                tickHi
+            if (get_sqrt_ratio_at_tick(tick_high) <= sqrt_priceX96) {
+                tick_high
             } else {
-                tickLow
+                tick_low
             }
         };
 
-        return tick;
+        tick
     }
 
     // We don't have an impl of the i24 type, but I'm using only the 23 LSB bits
     // and keeping the sign.
     fn as_i24(x: i256) -> i32 {
         let mask: u256 = (1.shl(23)) - 1; // Mask for the least significant 23 bits
-        return IntegerTrait::<i32>::new((x.mag & mask).try_into().unwrap(), x.sign);
+        IntegerTrait::<i32>::new((x.mag & mask).try_into().unwrap(), x.sign)
     }
 }
