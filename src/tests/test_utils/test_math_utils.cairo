@@ -181,4 +181,11 @@ mod ModSubtractionTests {
         let result = mod_subtraction(BoundedInt::max(), BoundedInt::max());
         assert(result == 0, 'result should be 0');
     }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_zero_from_max() {
+        let result = mod_subtraction(0, BoundedInt::max());
+        assert(result == 1, 'result should be 1');
+    }
 }
