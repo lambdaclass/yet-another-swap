@@ -55,7 +55,7 @@ mod MathUtils {
                 };
             };
             // Right shift operation: mag >> n
-            i256 { mag: new_mag, sign: new_sign, }
+            IntegerTrait::<i256>::new(new_mag, new_sign)
         }
     }
 
