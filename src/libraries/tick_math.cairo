@@ -132,13 +132,11 @@ mod TickMath {
     // Returns 1 if a > b, otherwise returns 0.
     // This is not the behavior in Cairo.
     fn is_gt_as_int(a: u256, b: u256) -> u256 {
-        let val = if (a > b) {
+        if a > b {
             1
         } else {
             0
-        };
-
-        return val;
+        }
     }
 
     /// Calculates the greatest tick value such that `getRatioAtTick(tick) <= ratio`.
