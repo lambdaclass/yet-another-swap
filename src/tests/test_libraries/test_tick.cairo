@@ -108,7 +108,7 @@ mod TickTests {
             // TODO: Check results
             // .cai 11505354575363080317263139282924270
             // .sol 11505743598341114571880798222544994
-            assert(result == 11505354575363080317263139282924270, '113.1 bits');
+            assert(result == 11505743598341114571880798222544994, '113.1 bits');
             assert(result == get_max_liquidity_per_tick(tick_spacing_medium_fee), '113.1 bits');
         }
 
