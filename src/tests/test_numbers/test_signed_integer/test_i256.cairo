@@ -425,4 +425,38 @@ mod TestInteger256 {
             assert(q.sign == false && r.sign == true, '-1 // 10 -> (q: +, r: -)');
         }
     }
+
+    mod i256IntoU256 {
+        use fractal_swap::numbers::signed_integer::i256::{i256, i256TryIntou256};
+        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use integer::BoundedInt;
+
+        #[test]
+        fn test_positive_conversion_within_range() {
+            let val = IntegerTrait::<i256>::new(100, false);
+            let result: u256 = val.try_into().unwrap();
+            assert(result == 100, 'result should be 100');
+        }
+
+        #[test]
+        fn test_zero_conversion() {
+            let val = IntegerTrait::<i256>::new(0, false);
+            let result: u256 = val.try_into().unwrap();
+            assert(result == 0, 'result should be 0');
+        }
+
+        #[test]
+        fn test_positive_conversion_i256_max() {
+            let val = IntegerTrait::<i256>::new(BoundedInt::max() / 2 - 1, false);
+            let result: u256 = val.try_into().unwrap();
+            assert(result == BoundedInt::max() / 2 - 1, 'result should be max');
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_negative_conversion() {
+            let val = IntegerTrait::<i256>::new(200, true);
+            let result: u256 = val.try_into().unwrap();
+        }
+    }
 }
