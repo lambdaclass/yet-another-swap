@@ -39,13 +39,13 @@ trait ITick<TStorage> {
         time: u32
     ) -> i128;
     fn get_fee_growth_inside(
-            ref self: TStorage,
-            tick_lower: i32,
-            tick_upper: i32,
-            tick_current: i32,
-            fee_growth_global_0X128: u256,
-            fee_growth_global_1X128: u256
-        ) -> (u256, u256);
+        ref self: TStorage,
+        tick_lower: i32,
+        tick_upper: i32,
+        tick_current: i32,
+        fee_growth_global_0X128: u256,
+        fee_growth_global_1X128: u256
+    ) -> (u256, u256);
     // TODO: Function used for testing. To be removed in the future
     fn set_tick(ref self: TStorage, tick: i32, info: Info);
     // TODO: Function used for testing. To be removed in the future
