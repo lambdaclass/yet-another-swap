@@ -456,7 +456,7 @@ fn two_complement_if_nec(x: i256) -> i256 {
         x.mag
     };
 
-    return i256 { mag: mag, sign: x.sign };
+    i256 { mag: mag, sign: x.sign }
 }
 
 fn bitwise_or(x: i256, y: i256) -> i256 {
