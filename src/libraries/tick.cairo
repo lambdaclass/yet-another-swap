@@ -54,6 +54,8 @@ mod Tick {
     use orion::numbers::signed_integer::i128::i128;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
+    use fractal_swap::utils::math_utils::MathUtils::mod_subtraction;
+
     #[storage]
     struct Storage {
         ticks: LegacyMap::<felt252, Info>
@@ -101,9 +103,17 @@ mod Tick {
                 )
             };
 
+            // (fee_growth_global_0X128 - fee_growth_below_0X128 - fee_growth_above_0X128,
+            // fee_growth_global_1X128 - fee_growth_below_1X128 - fee_growth_above_1X128)
             (
-                fee_growth_global_0X128 - fee_growth_below_0X128 - fee_growth_above_0X128,
-                fee_growth_global_1X128 - fee_growth_below_1X128 - fee_growth_above_1X128
+                mod_subtraction(
+                    mod_subtraction(fee_growth_global_0X128, fee_growth_below_0X128),
+                    fee_growth_above_0X128
+                ),
+                mod_subtraction(
+                    mod_subtraction(fee_growth_global_1X128, fee_growth_below_1X128),
+                    fee_growth_above_1X128
+                )
             )
         }
 
