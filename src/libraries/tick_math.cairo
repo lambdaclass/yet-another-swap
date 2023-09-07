@@ -14,7 +14,7 @@ mod TickMath {
         FP64x96AddEq, FP64x96Sub, FP64x96SubEq, FP64x96Mul, FP64x96MulEq, FP64x96Div, FP64x96DivEq,
         FP64x96PartialOrd, FP64x96PartialEq
     };
-    use fractal_swap::utils::math_utils::MathUtils::{BitShiftTrait};
+    use fractal_swap::utils::math_utils::MathUtils::BitShiftTrait;
     use integer::BoundedInt;
     use fractal_swap::numbers::signed_integer::i256::{i256, bitwise_or};
 
