@@ -36,7 +36,7 @@ mod MathUtils {
                 new_mag = new_mag & ((BoundedInt::<u256>::max() / 2) - 1);
             };
 
-            i256 { mag: new_mag, sign: self.sign.clone(), }
+            IntegerTrait::<i256>::new(new_mag, self.sign.clone())
         }
 
         #[inline(always)]
