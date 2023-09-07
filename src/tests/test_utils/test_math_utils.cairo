@@ -3,7 +3,6 @@ mod BitShift {
     use integer::BoundedInt;
     use fractal_swap::numbers::signed_integer::i256::i256;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-    use core::debug::PrintTrait;
 
     #[test]
     #[available_gas(20000000)]

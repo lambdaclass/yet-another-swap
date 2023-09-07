@@ -22,6 +22,7 @@ mod TickMath {
     fn MAX_TICK() -> i32 {
         IntegerTrait::<i32>::new(887272, false)
     }
+
     /// The minimum value that can be returned from `get_sqrt_ratio_at_tick`. Equivalent to get_sqrt_ratio_at_tick(MIN_TICK).
     const MIN_SQRT_RATIO: u256 = 4295128739;
     /// The maximum value that can be returned from `get_sqrt_ratio_at_tick`. Equivalent to get_sqrt_ratio_at_tick(MAX_TICK).

@@ -1,8 +1,8 @@
 mod MathUtils {
-    use core::clone::Clone;
     use traits::{Into, TryInto};
     use option::OptionTrait;
     use fractal_swap::numbers::signed_integer::i256::i256;
+    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
     use integer::BoundedInt;
 
     trait BitShiftTrait<T> {
@@ -36,13 +36,13 @@ mod MathUtils {
                 new_mag = new_mag & ((BoundedInt::<u256>::max() / 2) - 1);
             };
 
-            IntegerTrait::<i256>::new(new_mag, self.sign.clone())
+            IntegerTrait::<i256>::new(new_mag, *self.sign)
         }
 
         #[inline(always)]
         fn shr(self: @i256, n: i256) -> i256 {
             let mut new_mag = self.mag.shr(n.mag);
-            let mut new_sign = self.sign.clone();
+            let mut new_sign = *self.sign;
             if *self.sign && n.mag == 128 {
                 new_mag += 1_u256;
             };
