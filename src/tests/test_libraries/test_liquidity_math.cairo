@@ -1,4 +1,4 @@
-use fractal_swap::libraries::liquidity_math::LiquidityMath::add_delta;
+use yas::libraries::liquidity_math::LiquidityMath::add_delta;
 use orion::numbers::signed_integer::i128::i128;
 use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 

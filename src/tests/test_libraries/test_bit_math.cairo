@@ -1,7 +1,7 @@
 mod BitMathTests {
     mod MostSignificantBit {
         use integer::BoundedInt;
-        use fractal_swap::libraries::bit_math::BitMath::most_significant_bit;
+        use yas::libraries::bit_math::BitMath::most_significant_bit;
 
         #[test]
         fn msb_happy_path() {
@@ -41,7 +41,7 @@ mod BitMathTests {
 
     mod LeastSignificantBit {
         use integer::BoundedInt;
-        use fractal_swap::libraries::bit_math::BitMath::least_significant_bit;
+        use yas::libraries::bit_math::BitMath::least_significant_bit;
 
         #[test]
         fn lsb_happy_path() {

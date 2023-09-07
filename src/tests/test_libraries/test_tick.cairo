@@ -8,7 +8,7 @@ mod TickTests {
     use orion::numbers::signed_integer::i32::i32;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-    use fractal_swap::libraries::tick::{Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
+    use yas::libraries::tick::{Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
     fn deploy() -> ITickDispatcher {
         let calldata: Array<felt252> = ArrayTrait::new();
@@ -23,9 +23,7 @@ mod TickTests {
         use super::deploy;
         use integer::BoundedInt;
 
-        use fractal_swap::libraries::tick::{
-            Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait
-        };
+        use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
         use orion::numbers::signed_integer::i32::i32;
         use orion::numbers::signed_integer::i64::i64;
@@ -79,9 +77,7 @@ mod TickTests {
         use super::deploy;
         use integer::BoundedInt;
 
-        use fractal_swap::libraries::tick::{
-            Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait
-        };
+        use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
         use orion::numbers::signed_integer::i32::i32;
         use orion::numbers::signed_integer::i64::i64;
