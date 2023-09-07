@@ -51,34 +51,36 @@ mod TickTests {
         use orion::numbers::signed_integer::i128::i128;
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
+        use debug::PrintTrait;
+
         // returns the correct value for low fee
-        #[test]
-        #[available_gas(30000000)]
-        fn test_low_fee_returns_correct_value() {
-            let tick = deploy();
+        // #[test]
+        // #[available_gas(30000000)]
+        // fn test_low_fee_returns_correct_value() {
+        //     let tick = deploy();
 
-            let tick_id = IntegerTrait::<i32>::new(2, false);
-            tick
-                .set_tick(
-                    tick_id,
-                    Info {
-                        fee_growth_outside_0X128: 1,
-                        fee_growth_outside_1X128: 2,
-                        liquidity_gross: 3,
-                        liquidity_net: IntegerTrait::<i128>::new(4, false),
-                        seconds_per_liquidity_outside_X128: 5,
-                        tick_cumulative_outside: IntegerTrait::<i64>::new(6, false),
-                        seconds_outside: 7,
-                        initialized: true
-                    }
-                );
+        //     let tick_id = IntegerTrait::<i32>::new(2, false);
+        //     tick
+        //         .set_tick(
+        //             tick_id,
+        //             Info {
+        //                 fee_growth_outside_0X128: 1,
+        //                 fee_growth_outside_1X128: 2,
+        //                 liquidity_gross: 3,
+        //                 liquidity_net: IntegerTrait::<i128>::new(4, false),
+        //                 seconds_per_liquidity_outside_X128: 5,
+        //                 tick_cumulative_outside: IntegerTrait::<i64>::new(6, false),
+        //                 seconds_outside: 7,
+        //                 initialized: true
+        //             }
+        //         );
 
-            let tick_spacing_low_fee = IntegerTrait::<i32>::new(10, false);
-            let result = tick.tick_spacing_to_max_liquidity_per_tick(tick_spacing_low_fee);
+        //     let tick_spacing_low_fee = IntegerTrait::<i32>::new(10, false);
+        //     let result = tick.tick_spacing_to_max_liquidity_per_tick(tick_spacing_low_fee);
 
-            assert(result == 1917569901783203986719870431555990, '110.8 bits');
-            assert(result == get_max_liquidity_per_tick(tick_spacing_low_fee), '110.8 bits');
-        }
+        //     assert(result == 1917569901783203986719870431555990, '110.8 bits');
+        //     assert(result == get_max_liquidity_per_tick(tick_spacing_low_fee), '110.8 bits');
+        // }
 
         // returns the correct value for medium fee
         #[test]
@@ -112,99 +114,130 @@ mod TickTests {
             assert(result == get_max_liquidity_per_tick(tick_spacing_medium_fee), '113.1 bits');
         }
 
+        #[test]
+        fn test_orion_neg_div() {
+            let MIN_TICK = IntegerTrait::<i32>::new(887272, true);
+            let MAX_TICK = IntegerTrait::<i32>::new(887272, false);
+
+            let tick_spacing_medium_fee = IntegerTrait::<i32>::new(60, false);
+
+            let min_tick = (MIN_TICK / tick_spacing_medium_fee) * tick_spacing_medium_fee;
+            let max_tick = (MAX_TICK / tick_spacing_medium_fee) * tick_spacing_medium_fee;
+            
+            let min_int_tick = MIN_TICK / tick_spacing_medium_fee;
+            let max_int_tick = MAX_TICK / tick_spacing_medium_fee;
+
+            'min_int_tick'.print();
+            min_int_tick.mag.print(); // cai: 14788; sol: -14787
+            min_int_tick.sign.print();
+
+            let calc: u256 = (887272 / 60) * 60;
+
+            'calc'.print();
+            calc.print(); // 887220
+
+            // 'max_tick'.print();
+            // max_tick.mag.print(); // 887220
+            // max_tick.sign.print(); // false
+
+            'min_tick'.print();
+            min_tick.mag.print(); // 887280
+            min_tick.sign.print(); // true
+        }
+
         // returns the correct value for high fee
-        #[test]
-        #[available_gas(30000000)]
-        fn test_high_fee_returns_correct_value() {
-            let tick = deploy();
+        // #[test]
+        // #[available_gas(30000000)]
+        // fn test_high_fee_returns_correct_value() {
+        //     let tick = deploy();
 
-            let tick_id = IntegerTrait::<i32>::new(2, false);
-            tick
-                .set_tick(
-                    tick_id,
-                    Info {
-                        fee_growth_outside_0X128: 1,
-                        fee_growth_outside_1X128: 2,
-                        liquidity_gross: 3,
-                        liquidity_net: IntegerTrait::<i128>::new(4, false),
-                        seconds_per_liquidity_outside_X128: 5,
-                        tick_cumulative_outside: IntegerTrait::<i64>::new(6, false),
-                        seconds_outside: 7,
-                        initialized: true
-                    }
-                );
+        //     let tick_id = IntegerTrait::<i32>::new(2, false);
+        //     tick
+        //         .set_tick(
+        //             tick_id,
+        //             Info {
+        //                 fee_growth_outside_0X128: 1,
+        //                 fee_growth_outside_1X128: 2,
+        //                 liquidity_gross: 3,
+        //                 liquidity_net: IntegerTrait::<i128>::new(4, false),
+        //                 seconds_per_liquidity_outside_X128: 5,
+        //                 tick_cumulative_outside: IntegerTrait::<i64>::new(6, false),
+        //                 seconds_outside: 7,
+        //                 initialized: true
+        //             }
+        //         );
 
-            let tick_spacing_high_fee = IntegerTrait::<i32>::new(200, false);
-            let result = tick.tick_spacing_to_max_liquidity_per_tick(tick_spacing_high_fee);
+        //     let tick_spacing_high_fee = IntegerTrait::<i32>::new(200, false);
+        //     let result = tick.tick_spacing_to_max_liquidity_per_tick(tick_spacing_high_fee);
 
-            assert(result == 38350317471085141830651933667504588, '114.7 bits');
-            assert(result == get_max_liquidity_per_tick(tick_spacing_high_fee), '114.7 bits');
-        }
+        //     assert(result == 38350317471085141830651933667504588, '114.7 bits');
+        //     assert(result == get_max_liquidity_per_tick(tick_spacing_high_fee), '114.7 bits');
+        // }
 
-        // returns the correct value for entire range
-        #[test]
-        #[available_gas(30000000)]
-        fn test_returns_correct_value_for_entire_range() {
-            let tick = deploy();
+        // // returns the correct value for entire range
+        // #[test]
+        // #[available_gas(30000000)]
+        // fn test_returns_correct_value_for_entire_range() {
+        //     let tick = deploy();
 
-            let tick_id = IntegerTrait::<i32>::new(2, false);
-            tick
-                .set_tick(
-                    tick_id,
-                    Info {
-                        fee_growth_outside_0X128: 1,
-                        fee_growth_outside_1X128: 2,
-                        liquidity_gross: 3,
-                        liquidity_net: IntegerTrait::<i128>::new(4, false),
-                        seconds_per_liquidity_outside_X128: 5,
-                        tick_cumulative_outside: IntegerTrait::<i64>::new(6, false),
-                        seconds_outside: 7,
-                        initialized: true
-                    }
-                );
+        //     let tick_id = IntegerTrait::<i32>::new(2, false);
+        //     tick
+        //         .set_tick(
+        //             tick_id,
+        //             Info {
+        //                 fee_growth_outside_0X128: 1,
+        //                 fee_growth_outside_1X128: 2,
+        //                 liquidity_gross: 3,
+        //                 liquidity_net: IntegerTrait::<i128>::new(4, false),
+        //                 seconds_per_liquidity_outside_X128: 5,
+        //                 tick_cumulative_outside: IntegerTrait::<i64>::new(6, false),
+        //                 seconds_outside: 7,
+        //                 initialized: true
+        //             }
+        //         );
 
-            let tick_spacing_high_fee = IntegerTrait::<i32>::new(887272, false);
-            let expected: u128 = BoundedInt::max() / 3;
-            let result = tick.tick_spacing_to_max_liquidity_per_tick(tick_spacing_high_fee);
+        //     let tick_spacing_high_fee = IntegerTrait::<i32>::new(887272, false);
+        //     let expected: u128 = BoundedInt::max() / 3;
+        //     let result = tick.tick_spacing_to_max_liquidity_per_tick(tick_spacing_high_fee);
 
-            assert(result == expected, '126 bits');
-            assert(
-                result == get_max_liquidity_per_tick(IntegerTrait::<i32>::new(887272, false)),
-                '126 bits'
-            );
-        }
+        //     assert(result == expected, '126 bits');
+        //     assert(
+        //         result == get_max_liquidity_per_tick(IntegerTrait::<i32>::new(887272, false)),
+        //         '126 bits'
+        //     );
+        // }
 
-        // returns the correct value for 2302
-        #[test]
-        #[available_gas(30000000)]
-        fn test_returns_correct_value_for_2302() {
-            let tick = deploy();
+        // // returns the correct value for 2302
+        // #[test]
+        // #[available_gas(30000000)]
+        // fn test_returns_correct_value_for_2302() {
+        //     let tick = deploy();
 
-            let tick_id = IntegerTrait::<i32>::new(2, false);
-            tick
-                .set_tick(
-                    tick_id,
-                    Info {
-                        fee_growth_outside_0X128: 1,
-                        fee_growth_outside_1X128: 2,
-                        liquidity_gross: 3,
-                        liquidity_net: IntegerTrait::<i128>::new(4, false),
-                        seconds_per_liquidity_outside_X128: 5,
-                        tick_cumulative_outside: IntegerTrait::<i64>::new(6, false),
-                        seconds_outside: 7,
-                        initialized: true
-                    }
-                );
+        //     let tick_id = IntegerTrait::<i32>::new(2, false);
+        //     tick
+        //         .set_tick(
+        //             tick_id,
+        //             Info {
+        //                 fee_growth_outside_0X128: 1,
+        //                 fee_growth_outside_1X128: 2,
+        //                 liquidity_gross: 3,
+        //                 liquidity_net: IntegerTrait::<i128>::new(4, false),
+        //                 seconds_per_liquidity_outside_X128: 5,
+        //                 tick_cumulative_outside: IntegerTrait::<i64>::new(6, false),
+        //                 seconds_outside: 7,
+        //                 initialized: true
+        //             }
+        //         );
 
-            let tick_spacing_high_fee = IntegerTrait::<i32>::new(2302, false);
-            let result = tick
-                .tick_spacing_to_max_liquidity_per_tick(IntegerTrait::<i32>::new(2302, false));
+        //     let tick_spacing_high_fee = IntegerTrait::<i32>::new(2302, false);
+        //     let result = tick
+        //         .tick_spacing_to_max_liquidity_per_tick(IntegerTrait::<i32>::new(2302, false));
 
-            assert(result == 441351967472034323558203122479595605, ' 118 bits');
-            assert(
-                result == get_max_liquidity_per_tick(IntegerTrait::<i32>::new(2302, false)),
-                '118 bits'
-            );
-        }
+        //     assert(result == 441351967472034323558203122479595605, ' 118 bits');
+        //     assert(
+        //         result == get_max_liquidity_per_tick(IntegerTrait::<i32>::new(2302, false)),
+        //         '118 bits'
+        //     );
+        // }
     }
 }

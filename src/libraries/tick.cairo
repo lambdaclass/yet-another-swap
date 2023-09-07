@@ -44,6 +44,7 @@ mod Tick {
 
     use integer::BoundedInt;
     use traits::Into;
+    use debug::PrintTrait;
 
     #[storage]
     struct Storage {
@@ -66,10 +67,18 @@ mod Tick {
 
             let min_tick = (MIN_TICK / tick_spacing) * tick_spacing;
             let max_tick = (MAX_TICK / tick_spacing) * tick_spacing;
-            let num_ticks: u32 = (((max_tick - min_tick) / tick_spacing)
+            let num_ticks: u32 = (((MAX_TICK + MIN_TICK) / tick_spacing)
                 + IntegerTrait::<i32>::new(1, false))
                 .try_into()
                 .unwrap();
+
+            let num_ticks_0 = (max_tick - min_tick);
+            let num_ticks_1 = (((max_tick - min_tick) / tick_spacing));
+
+            'num_ticks_0'.print();
+            num_ticks_0.mag.print();
+            'num_ticks_1'.print();
+            num_ticks_1.mag.print();
 
             let max_u128: u128 = BoundedInt::max();
             max_u128 / num_ticks.into()
