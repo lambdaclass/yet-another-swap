@@ -456,7 +456,7 @@ fn two_complement_if_nec(x: i256) -> i256 {
         x.mag
     };
 
-    i256 { mag: mag, sign: x.sign }
+    IntegerTrait::<i256>::new(mag, x.sign)
 }
 
 fn bitwise_or(x: i256, y: i256) -> i256 {
