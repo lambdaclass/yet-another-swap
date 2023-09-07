@@ -1,6 +1,6 @@
-# Fractal-Swap
+# YAS - Yet Another Swap
 
-Fractal Swap is a Uniswap V3 implementation on StarkNet.
+Yet Another Swap is a Uniswap V3 implementation on Starknet.
 
 ## Important Disclaimer
  Currently, the project is using our [fork](https://github.com/dpinones/orion) of [Orion](https://github.com/gizatechxyz/orion/tree/main/src/numbers/signed_integer) `signed integer` implementation until all features are implemented and supported in the latest version of Cairo. 
