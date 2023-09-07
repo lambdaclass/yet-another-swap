@@ -469,5 +469,5 @@ fn bitwise_or(x: i256, y: i256) -> i256 {
         x.mag | y.mag
     };
 
-    i256 { mag: mag, sign: sign, }
+    IntegerTrait::<i256>::new(mag, sign)
 }
