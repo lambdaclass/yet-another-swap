@@ -39,18 +39,18 @@ trait ITick<TStorage> {
         time: u32
     ) -> i128;
     fn update(
-            ref self: TStorage,
-            tick: i32,
-            tick_current: i32,
-            liquidity_delta: i128,
-            fee_growth_global_0X128: u256,
-            fee_growth_global_1X128: u256,
-            seconds_per_liquidity_cumulative_X128: u256,
-            tick_cumulative: i64,
-            time: u32,
-            upper: bool,
-            max_liquidity: u128
-        ) -> bool;
+        ref self: TStorage,
+        tick: i32,
+        tick_current: i32,
+        liquidity_delta: i128,
+        fee_growth_global_0X128: u256,
+        fee_growth_global_1X128: u256,
+        seconds_per_liquidity_cumulative_X128: u256,
+        tick_cumulative: i64,
+        time: u32,
+        upper: bool,
+        max_liquidity: u128
+    ) -> bool;
     // TODO: Function used for testing. To be removed in the future
     fn set_tick(ref self: TStorage, tick: i32, info: Info);
     // TODO: Function used for testing. To be removed in the future
