@@ -178,7 +178,7 @@ mod TestFullMath {
         }
 
         #[test]
-        #[should_panic]
+        #[should_panic(expected: ('mul_mod_n by zero',))]
         fn test_mul_mod_n_zero_n() {
             let a: u256 = 1;
             let b: u256 = 1;

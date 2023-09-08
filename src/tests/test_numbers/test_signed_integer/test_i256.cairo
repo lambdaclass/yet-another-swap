@@ -453,7 +453,7 @@ mod TestInteger256 {
         }
 
         #[test]
-        #[should_panic]
+        #[should_panic(expected: ('The sign must be positive',))]
         fn test_negative_conversion() {
             let val = IntegerTrait::<i256>::new(200, true);
             let result: u256 = val.try_into().unwrap();

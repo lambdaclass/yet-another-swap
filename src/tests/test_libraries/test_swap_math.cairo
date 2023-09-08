@@ -224,6 +224,8 @@ mod TestSwapMath {
             let sqrtP = FP64x96Impl::new(20282409603651670423947251286016, false);
             let sqrtP_target = FP64x96Impl::new(sqrtP.mag * 11 / 10, false);
             let liquidity: u128 = 1024;
+            // virtual reserves of one are only 4
+            // https://www.wolframalpha.com/input/?i=1024+%2F+%2820282409603651670423947251286016+%2F+2**96%29
             let amount_remaining = IntegerTrait::<i256>::new(4, true);
             let fee_pips = 3000;
 
@@ -244,6 +246,8 @@ mod TestSwapMath {
             let sqrtP = FP64x96Impl::new(20282409603651670423947251286016, false);
             let sqrtP_target = FP64x96Impl::new(sqrtP.mag * 9 / 10, false);
             let liquidity: u128 = 1024;
+            // virtual reserves of zero are only 262144
+            // https://www.wolframalpha.com/input/?i=1024+*+%2820282409603651670423947251286016+%2F+2**96%29
             let amount_remaining = IntegerTrait::<i256>::new(263000, true);
             let fee_pips = 3000;
 
