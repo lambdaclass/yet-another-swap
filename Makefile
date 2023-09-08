@@ -9,7 +9,7 @@ declare:
 	starkli declare target/dev/yas_AMM.sierra.json --keystore ~/.starkli-wallets/keystore.json --account ~/.starkli-wallets/account.json
 
 CLASS_HASH:=
-deploy:
+deployz:
 	starkli deploy $(CLASS_HASH) --keystore ~/.starkli-wallets/keystore.json  --account ~/.starkli-wallets/account.json
 
 test:
