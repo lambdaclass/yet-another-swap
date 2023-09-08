@@ -189,7 +189,7 @@ mod TestFullMath {
 
         #[test]
         fn test_mul_mod_n_zero_a_or_b() {
-            let a: u256 = 0.into(); // Prueba con a igual a cero
+            let a: u256 = 0.into();
             let b: u256 = 67890.into();
             let n: u256 = 100000.into();
 
