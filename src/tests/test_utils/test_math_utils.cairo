@@ -131,7 +131,7 @@ mod Pow {
 mod ModSubtractionTests {
     use integer::BoundedInt;
 
-    use fractal_swap::utils::math_utils::MathUtils::mod_subtraction;
+    use yas::utils::math_utils::MathUtils::mod_subtraction;
 
     #[test]
     #[available_gas(2000000)]
