@@ -120,7 +120,7 @@ On Starknet, the deployment process is in two steps:
 - [Starkli](https://book.starkli.rs/)
 - [Scarb](https://book.starknet.io/chapter_2/scarb.html)
 - [Cairo 1.0 VSCode Extension](https://marketplace.visualstudio.com/items?itemName=starkware.cairo1)
-- [Starknet Foundry](https://foundry-rs.github.io/starknet-foundry/)
+- [Starknet Foundry](https://foundry-rs.github.io/starknet-foundry/) **In the near future once it's more mature**
 
 ## Useful resources
 - [Cairo Book](https://book.cairo-lang.org/)
