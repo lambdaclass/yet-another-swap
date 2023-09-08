@@ -1,6 +1,13 @@
 # YAS - Yet Another Swap
 
-Yet Another Swap is a Uniswap V3 implementation on Starknet.
+YAS. is Yet Another Swap on Starknet 😝. It's an AMM based on Uniswap v3 that will add some new features to the Starknet ecosystem.
+- Provide a more capital efficient liquidity layer
+- Based on a robust and battle-tested protocol. LPs from Uniswap v3 should feel right at home.
+- Provide the best prices for aggregators and traders.
+
+At YAS we believe product should always be a priority so we are commited to provide the best experience for users that want to put Starknet to the limit.
+
+This project will be build in the open, it's still in development. We love the Starknet developer ecosystem and we know that a lot of smart and hungry developers would like to collaborate in the future of Starknet. If that's your case you are more than welcome to join us!
 
 ## Important Disclaimer
  Currently, the project is using our [fork](https://github.com/dpinones/orion) of [Orion](https://github.com/gizatechxyz/orion/tree/main/src/numbers/signed_integer) `signed integer` implementation until all features are implemented and supported in the latest version of Cairo. 
