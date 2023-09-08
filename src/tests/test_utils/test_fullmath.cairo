@@ -161,8 +161,8 @@ mod TestFullMath {
     }
 
     mod MulModN {
-        use fractal_swap::utils::fullmath::FullMath::mul_mod_n;
-        use fractal_swap::utils::math_utils::MathUtils::pow;
+        use yas::utils::fullmath::FullMath::mul_mod_n;
+        use yas::utils::math_utils::MathUtils::pow;
         use integer::BoundedInt;
 
         #[test]

@@ -1,13 +1,13 @@
 /// Computes the result of a swap within ticks
 /// Contains methods for computing the result of a swap within a single tick price range, i.e., a single tick.
 mod SwapMath {
-    use fractal_swap::utils::fullmath::FullMath::{div_rounding_up, mul_div, mul_div_rounding_up};
-    use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
+    use yas::utils::fullmath::FullMath::{div_rounding_up, mul_div, mul_div_rounding_up};
+    use yas::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FixedType, FixedTrait, FP64x96Add, FP64x96Sub, FP64x96Mul, FP64x96Div,
         FP64x96PartialEq, FP64x96PartialOrd, Q96_RESOLUTION, ONE, MAX
     };
-    use fractal_swap::numbers::signed_integer::i256::i256;
-    use fractal_swap::libraries::sqrt_price_math::SqrtPriceMath::{
+    use yas::numbers::signed_integer::i256::i256;
+    use yas::libraries::sqrt_price_math::SqrtPriceMath::{
         get_amount_0_delta, get_amount_1_delta, get_next_sqrt_price_from_input,
         get_next_sqrt_price_from_output
     };

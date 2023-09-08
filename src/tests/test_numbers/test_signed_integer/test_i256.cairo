@@ -427,7 +427,7 @@ mod TestInteger256 {
     }
 
     mod i256IntoU256 {
-        use fractal_swap::numbers::signed_integer::i256::{i256, i256TryIntou256};
+        use yas::numbers::signed_integer::i256::{i256, i256TryIntou256};
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
 
