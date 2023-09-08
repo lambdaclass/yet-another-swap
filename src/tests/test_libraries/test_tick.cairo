@@ -390,9 +390,7 @@ mod TickTests {
         use super::deploy;
         use integer::BoundedInt;
 
-        use fractal_swap::libraries::tick::{
-            Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait
-        };
+        use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
         use orion::numbers::signed_integer::i32::i32;
         use orion::numbers::signed_integer::i64::i64;
