@@ -6,11 +6,6 @@ Yet Another Swap is a Uniswap V3 implementation on Starknet.
  Currently, the project is using our [fork](https://github.com/dpinones/orion) of [Orion](https://github.com/gizatechxyz/orion/tree/main/src/numbers/signed_integer) `signed integer` implementation until all features are implemented and supported in the latest version of Cairo. 
  > Note: In our Orion fork, we've added the capability for signed integers to be stored in a smart contract.
 
-The following commands will not work in this branch:
-- `make declare`
-- `make deploy`
-
-The main branch should always include contracts that can be deployed to Starknet.
 
 ## Install dependencies
 Run the following command:
