@@ -1,6 +1,6 @@
 mod TestSqrtPriceMath {
-    use fractal_swap::utils::math_utils::MathUtils::pow;
-    use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
+    use yas::utils::math_utils::MathUtils::pow;
+    use yas::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FP64x96Div, FixedType, FixedTrait, Q96_RESOLUTION, ONE, MAX
     };
     use traits::Into;
@@ -28,13 +28,13 @@ mod TestSqrtPriceMath {
     }
 
     mod GetNextSqrtPriceFromInput {
-        use fractal_swap::utils::math_utils::MathUtils::pow;
-        use fractal_swap::utils::fullmath::FullMath::mul_div;
-        use fractal_swap::libraries::sqrt_price_math::SqrtPriceMath;
-        use fractal_swap::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
+        use yas::utils::math_utils::MathUtils::pow;
+        use yas::utils::fullmath::FullMath::mul_div;
+        use yas::libraries::sqrt_price_math::SqrtPriceMath;
+        use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
             encode_price_sqrt, expand_to_18_decimals
         };
-        use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
+        use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
         use integer::BoundedInt;
@@ -183,11 +183,11 @@ mod TestSqrtPriceMath {
     }
 
     mod GetNextSqrtPriceFromOutput {
-        use fractal_swap::libraries::sqrt_price_math::SqrtPriceMath;
-        use fractal_swap::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
+        use yas::libraries::sqrt_price_math::SqrtPriceMath;
+        use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
             encode_price_sqrt, expand_to_18_decimals
         };
-        use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
+        use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
         use integer::BoundedInt;
@@ -352,14 +352,14 @@ mod TestSqrtPriceMath {
     }
 
     mod GetAmount0Delta {
-        use fractal_swap::libraries::sqrt_price_math::SqrtPriceMath;
-        use fractal_swap::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
+        use yas::libraries::sqrt_price_math::SqrtPriceMath;
+        use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
             encode_price_sqrt, expand_to_18_decimals
         };
-        use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
+        use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
-        use fractal_swap::utils::math_utils::MathUtils::pow;
+        use yas::utils::math_utils::MathUtils::pow;
         use option::OptionTrait;
         use traits::{Into, TryInto};
 
@@ -431,14 +431,14 @@ mod TestSqrtPriceMath {
     }
 
     mod GetAmount1Delta {
-        use fractal_swap::libraries::sqrt_price_math::SqrtPriceMath;
-        use fractal_swap::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
+        use yas::libraries::sqrt_price_math::SqrtPriceMath;
+        use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
             encode_price_sqrt, expand_to_18_decimals
         };
-        use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
+        use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
-        use fractal_swap::utils::math_utils::MathUtils::pow;
+        use yas::utils::math_utils::MathUtils::pow;
         use option::OptionTrait;
         use traits::{Into, TryInto};
 
