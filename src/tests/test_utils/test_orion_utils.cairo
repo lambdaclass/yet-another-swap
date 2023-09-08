@@ -5,7 +5,7 @@ mod OrionUtilsTests {
         use orion::numbers::signed_integer::i32::i32;
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-        use fractal_swap::utils::orion_utils::OrionUtils::i32TryIntou8;
+        use yas::utils::orion_utils::OrionUtils::i32TryIntou8;
 
         #[test]
         fn test_positive_conversion_within_range() {
@@ -49,7 +49,7 @@ mod OrionUtilsTests {
         use orion::numbers::signed_integer::i32::i32;
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-        use fractal_swap::utils::orion_utils::OrionUtils::u8Intoi32;
+        use yas::utils::orion_utils::OrionUtils::u8Intoi32;
 
         #[test]
         fn test_conversion() {
@@ -78,7 +78,7 @@ mod OrionUtilsTests {
         use orion::numbers::signed_integer::i32::i32;
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-        use fractal_swap::utils::orion_utils::OrionUtils::i32TryIntoi16;
+        use yas::utils::orion_utils::OrionUtils::i32TryIntoi16;
 
         #[test]
         fn test_positive_conversion_within_range() {
@@ -120,7 +120,7 @@ mod OrionUtilsTests {
         use orion::numbers::signed_integer::i32::i32;
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-        use fractal_swap::utils::orion_utils::OrionUtils::mod_i32;
+        use yas::utils::orion_utils::OrionUtils::mod_i32;
 
         #[test]
         fn test_positive_mod() {
