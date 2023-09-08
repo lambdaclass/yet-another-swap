@@ -1,3 +1,8 @@
+<div align="center">
+<img src="./yas.png" height="150">
+</div>
+
+
 # YAS - Yet Another Swap
 
 YAS. is Yet Another Swap on Starknet 😝. It's an AMM based on Uniswap v3 that will add some new features to the Starknet ecosystem.
@@ -7,7 +12,9 @@ YAS. is Yet Another Swap on Starknet 😝. It's an AMM based on Uniswap v3 that 
 
 At YAS we believe product should always be a priority so we are commited to provide the best experience for users that want to put Starknet to the limit.
 
-This project will be build in the open, it's still in development. We love the Starknet developer ecosystem and we know that a lot of smart and hungry developers would like to collaborate in the future of Starknet. If that's your case you are more than welcome to join us!
+This project will be build in the open, ***it's still in development***. We love the Starknet developer ecosystem and we know that a lot of smart and hungry developers would like to collaborate in the future of Starknet. If that's your case you are more than welcome to join us!
+
+***Follow us on [Twitter](https://twitter.com/yas_starknet)***
 
 ## Important Disclaimer
  Currently, the project is using our [fork](https://github.com/dpinones/orion) of [Orion](https://github.com/gizatechxyz/orion/tree/main/src/numbers/signed_integer) `signed integer` implementation until all features are implemented and supported in the latest version of Cairo. 
