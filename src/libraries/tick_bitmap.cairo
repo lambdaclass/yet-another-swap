@@ -26,12 +26,10 @@ mod TickBitmap {
     use orion::numbers::signed_integer::i16::i16;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-    use fractal_swap::libraries::bit_math::BitMath;
-    use fractal_swap::utils::math_utils::MathUtils::{BitShiftTrait, pow};
+    use yas::libraries::bit_math::BitMath;
+    use yas::utils::math_utils::MathUtils::{BitShiftTrait, pow};
 
-    use fractal_swap::utils::orion_utils::OrionUtils::{
-        u8Intoi32, i32TryIntoi16, i32TryIntou8, mod_i32
-    };
+    use yas::utils::orion_utils::OrionUtils::{u8Intoi32, i32TryIntoi16, i32TryIntou8, mod_i32};
 
     #[storage]
     struct Storage {

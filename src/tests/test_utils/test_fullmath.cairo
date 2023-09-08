@@ -1,6 +1,6 @@
 mod TestFullMath {
     mod MulDiv {
-        use fractal_swap::utils::fullmath::FullMath::mul_div;
+        use yas::utils::fullmath::FullMath::mul_div;
         use integer::BoundedInt;
 
         const Q128: u256 = 340282366920938463463374607431768211456;
@@ -69,7 +69,7 @@ mod TestFullMath {
     }
 
     mod MulDivRoundingUp {
-        use fractal_swap::utils::fullmath::FullMath::mul_div_rounding_up;
+        use yas::utils::fullmath::FullMath::mul_div_rounding_up;
         use integer::BoundedInt;
 
         const Q128: u256 = 340282366920938463463374607431768211456;

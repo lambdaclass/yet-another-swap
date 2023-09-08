@@ -2,8 +2,8 @@ use debug::PrintTrait;
 use option::OptionTrait;
 use traits::{Into, TryInto};
 
-use fractal_swap::numbers::fixed_point::core::{FixedTrait, FixedType};
-use fractal_swap::numbers::fixed_point::math::math_64x96;
+use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
+use yas::numbers::fixed_point::math::math_64x96;
 use orion::numbers::signed_integer::{i32::i32, i8::i8};
 
 const PRIME: felt252 = 3618502788666131213697322783095070105623107215331596699973092056135872020480;

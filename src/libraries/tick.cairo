@@ -38,6 +38,14 @@ trait ITick<TStorage> {
         tick_cumulative: i64,
         time: u32
     ) -> i128;
+    fn get_fee_growth_inside(
+        ref self: TStorage,
+        tick_lower: i32,
+        tick_upper: i32,
+        tick_current: i32,
+        fee_growth_global_0X128: u256,
+        fee_growth_global_1X128: u256
+    ) -> (u256, u256);
     fn update(
         ref self: TStorage,
         tick: i32,
@@ -72,8 +80,9 @@ mod Tick {
     use orion::numbers::signed_integer::i128::i128;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-    use fractal_swap::libraries::liquidity_math::LiquidityMath;
-    use fractal_swap::utils::orion_utils::OrionUtils::{convert_i256_to_i128, convert_i128_to_i256};
+    use yas::utils::math_utils::MathUtils::mod_subtraction;
+    use yas::libraries::liquidity_math::LiquidityMath;
+    use yas::utils::orion_utils::OrionUtils::{convert_i256_to_i128, convert_i128_to_i256};
 
     #[storage]
     struct Storage {
@@ -132,6 +141,59 @@ mod Tick {
             info.seconds_outside = time - info.seconds_outside;
             self.ticks.write(hashed_tick, info);
             info.liquidity_net
+        }
+
+        /// @notice Retrieves fee growth data
+        /// @param self The mapping containing all tick information for initialized ticks
+        /// @param tick_lower The lower tick boundary of the position
+        /// @param tick_upper The upper tick boundary of the position
+        /// @param tick_current The current tick
+        /// @param fee_growth_global_0X128 The all-time global fee growth, per unit of liquidity, in token0
+        /// @param fee_growth_global_1X128 The all-time global fee growth, per unit of liquidity, in token1
+        /// @return fee_growth_inside_0X128 The all-time fee growth in token0, per unit of liquidity, inside the position's tick boundaries
+        /// @return fee_growth_inside_1X128 The all-time fee growth in token1, per unit of liquidity, inside the position's tick boundaries
+        fn get_fee_growth_inside(
+            ref self: ContractState,
+            tick_lower: i32,
+            tick_upper: i32,
+            tick_current: i32,
+            fee_growth_global_0X128: u256,
+            fee_growth_global_1X128: u256
+        ) -> (u256, u256) {
+            let lower: Info = self.ticks.read(self._generate_hashed_tick(@tick_lower));
+            let upper: Info = self.ticks.read(self._generate_hashed_tick(@tick_upper));
+
+            // calculate fee growth below
+            let (fee_growth_below_0X128, fee_growth_below_1X128) = if tick_current >= tick_lower {
+                (lower.fee_growth_outside_0X128, lower.fee_growth_outside_1X128)
+            } else {
+                (
+                    fee_growth_global_0X128 - lower.fee_growth_outside_0X128,
+                    fee_growth_global_1X128 - lower.fee_growth_outside_1X128
+                )
+            };
+
+            // calculate fee growth above
+            let (fee_growth_above_0X128, fee_growth_above_1X128) = if tick_current < tick_upper {
+                (upper.fee_growth_outside_0X128, upper.fee_growth_outside_1X128)
+            } else {
+                (
+                    fee_growth_global_0X128 - upper.fee_growth_outside_0X128,
+                    fee_growth_global_1X128 - upper.fee_growth_outside_1X128
+                )
+            };
+
+            // this function mimics the u256 overflow that occurs in Solidity
+            (
+                mod_subtraction(
+                    mod_subtraction(fee_growth_global_0X128, fee_growth_below_0X128),
+                    fee_growth_above_0X128
+                ),
+                mod_subtraction(
+                    mod_subtraction(fee_growth_global_1X128, fee_growth_below_1X128),
+                    fee_growth_above_1X128
+                )
+            )
         }
 
         fn update(

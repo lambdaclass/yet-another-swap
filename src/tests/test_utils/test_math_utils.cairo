@@ -1,5 +1,5 @@
 mod BitShift {
-    use fractal_swap::utils::math_utils::MathUtils::{BitShiftTrait, pow};
+    use yas::utils::math_utils::MathUtils::{BitShiftTrait, pow};
     use integer::BoundedInt;
     #[test]
     #[available_gas(2000000)]
@@ -94,7 +94,7 @@ mod BitShift {
 }
 
 mod Pow {
-    use fractal_swap::utils::math_utils::MathUtils::pow;
+    use yas::utils::math_utils::MathUtils::pow;
     #[test]
     #[available_gas(2000000)]
     fn test_pow_by_0_should_return_1() {
@@ -125,5 +125,67 @@ mod Pow {
             result == 57896044618658097711785492504343953926634992332820282019728792003956564819968,
             'test_pow_by_255'
         );
+    }
+}
+
+mod ModSubtractionTests {
+    use integer::BoundedInt;
+
+    use yas::utils::math_utils::MathUtils::mod_subtraction;
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_positive_subtraction() {
+        let result = mod_subtraction(500, 100);
+        assert(result == 400, 'result should be 400');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_from_zero() {
+        let result = mod_subtraction(500, 0);
+        assert(result == 500, 'result should be 500');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_to_overflow() {
+        let result = mod_subtraction(0, 500);
+        assert(result == BoundedInt::max() - 499, 'result should be max_u256 - 499');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_max_from_zero() {
+        let result = mod_subtraction(0, 1);
+        assert(result == BoundedInt::max(), 'result should be max_u256');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_zero() {
+        let result = mod_subtraction(0, 0);
+        assert(result == 0, 'result should be 0');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_max_from_small() {
+        let result = mod_subtraction(15, BoundedInt::max());
+        assert(result == 15 + 1, 'result should be 15 + 1');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_max_from_max() {
+        let result = mod_subtraction(BoundedInt::max(), BoundedInt::max());
+        assert(result == 0, 'result should be 0');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_zero_from_max() {
+        let result = mod_subtraction(0, BoundedInt::max());
+        assert(result == 1, 'result should be 1');
     }
 }
