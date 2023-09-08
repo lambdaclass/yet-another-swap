@@ -127,3 +127,65 @@ mod Pow {
         );
     }
 }
+
+mod ModSubtractionTests {
+    use integer::BoundedInt;
+
+    use fractal_swap::utils::math_utils::MathUtils::mod_subtraction;
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_positive_subtraction() {
+        let result = mod_subtraction(500, 100);
+        assert(result == 400, 'result should be 400');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_from_zero() {
+        let result = mod_subtraction(500, 0);
+        assert(result == 500, 'result should be 500');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_to_overflow() {
+        let result = mod_subtraction(0, 500);
+        assert(result == BoundedInt::max() - 499, 'result should be max_u256 - 499');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_max_from_zero() {
+        let result = mod_subtraction(0, 1);
+        assert(result == BoundedInt::max(), 'result should be max_u256');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_zero() {
+        let result = mod_subtraction(0, 0);
+        assert(result == 0, 'result should be 0');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_max_from_small() {
+        let result = mod_subtraction(15, BoundedInt::max());
+        assert(result == 15 + 1, 'result should be 15 + 1');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_max_from_max() {
+        let result = mod_subtraction(BoundedInt::max(), BoundedInt::max());
+        assert(result == 0, 'result should be 0');
+    }
+
+    #[test]
+    #[available_gas(2000000)]
+    fn test_subtract_zero_from_max() {
+        let result = mod_subtraction(0, BoundedInt::max());
+        assert(result == 1, 'result should be 1');
+    }
+}
