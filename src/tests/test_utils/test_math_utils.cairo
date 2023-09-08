@@ -1,5 +1,5 @@
 mod BitShift {
-    use fractal_swap::utils::math_utils::MathUtils::{BitShiftTrait, pow};
+    use yas::utils::math_utils::MathUtils::{BitShiftTrait, pow};
     use integer::BoundedInt;
     #[test]
     #[available_gas(2000000)]
@@ -94,7 +94,7 @@ mod BitShift {
 }
 
 mod Pow {
-    use fractal_swap::utils::math_utils::MathUtils::pow;
+    use yas::utils::math_utils::MathUtils::pow;
     #[test]
     #[available_gas(2000000)]
     fn test_pow_by_0_should_return_1() {
@@ -131,7 +131,7 @@ mod Pow {
 mod ModSubtractionTests {
     use integer::BoundedInt;
 
-    use fractal_swap::utils::math_utils::MathUtils::mod_subtraction;
+    use yas::utils::math_utils::MathUtils::mod_subtraction;
 
     #[test]
     #[available_gas(2000000)]

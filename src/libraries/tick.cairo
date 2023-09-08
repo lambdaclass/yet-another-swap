@@ -67,7 +67,7 @@ mod Tick {
     use orion::numbers::signed_integer::i128::i128;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-    use fractal_swap::utils::math_utils::MathUtils::mod_subtraction;
+    use yas::utils::math_utils::MathUtils::mod_subtraction;
 
     #[storage]
     struct Storage {
