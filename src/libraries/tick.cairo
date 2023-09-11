@@ -1,7 +1,4 @@
-use orion::numbers::signed_integer::i32::i32;
-use orion::numbers::signed_integer::i64::i64;
-use orion::numbers::signed_integer::i128::i128;
-use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+use orion::numbers::signed_integer::{i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait};
 
 #[derive(Copy, Drop, Serde, starknet::Store)]
 struct Info {
@@ -75,14 +72,12 @@ mod Tick {
     use serde::Serde;
     use traits::{Into, TryInto};
 
-    use orion::numbers::signed_integer::i32::i32;
-    use orion::numbers::signed_integer::i64::i64;
-    use orion::numbers::signed_integer::i128::i128;
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+    use orion::numbers::signed_integer::{
+        i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
+    };
 
-    use yas::utils::math_utils::MathUtils::mod_subtraction;
     use yas::libraries::liquidity_math::LiquidityMath;
-    use yas::utils::orion_utils::OrionUtils::{convert_i256_to_i128, convert_i128_to_i256};
+    use yas::utils::math_utils::MathUtils::mod_subtraction;
 
     #[storage]
     struct Storage {
@@ -196,6 +191,19 @@ mod Tick {
             )
         }
 
+        /// @notice Updates a tick and returns true if the tick was flipped from initialized to uninitialized, or vice versa
+        /// @param self The mapping containing all tick information for initialized ticks
+        /// @param tick The tick that will be updated
+        /// @param tick_current The current tick
+        /// @param liquidity_delta A new amount of liquidity to be added (subtracted) when tick is crossed from left to right (right to left)
+        /// @param fee_growth_global_0X128 The all-time global fee growth, per unit of liquidity, in token0
+        /// @param fee_growth_global_1X128 The all-time global fee growth, per unit of liquidity, in token1
+        /// @param seconds_per_liquidity_cumulative_X128 The all-time seconds per max(1, liquidity) of the pool
+        /// @param tick_cumulative The tick * time elapsed since the pool was first initialized
+        /// @param time The current block timestamp cast to a uint32
+        /// @param upper true for updating a position's upper tick, or false for updating a position's lower tick
+        /// @param max_liquidity The maximum liquidity allocation for a single tick
+        /// @return flipped Whether the tick was flipped from initialized to uninitialized, or vice versa
         fn update(
             ref self: ContractState,
             tick: i32,
@@ -239,19 +247,12 @@ mod Tick {
             info
                 .liquidity_net =
                     if upper {
-                        convert_i256_to_i128(
-                            convert_i128_to_i256(info.liquidity_net)
-                                - convert_i128_to_i256(liquidity_delta)
-                        )
+                        info.liquidity_net - liquidity_delta
                     } else {
-                        convert_i256_to_i128(
-                            convert_i128_to_i256(info.liquidity_net)
-                                + convert_i128_to_i256(liquidity_delta)
-                        )
+                        info.liquidity_net + liquidity_delta
                     };
 
             self.ticks.write(hashed_tick, info);
-
             flipped
         }
 
