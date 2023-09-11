@@ -116,6 +116,64 @@ mod OrionUtilsTests {
         }
     }
 
+    mod ConvertI32toU32 {
+        use orion::numbers::signed_integer::i32::i32;
+        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::utils::orion_utils::OrionUtils::i32TryIntou32;
+        use integer::BoundedInt;
+
+        #[test]
+        fn test_positive_max_conversion() {
+            let i32_max: u32 = BoundedInt::max() / 2 - 1;
+            let val: i32 = IntegerTrait::<i32>::new(i32_max, false);
+            let result: u32 = val.try_into().unwrap();
+            assert(result == i32_max, 'result should be 2147483647');
+        }
+
+        #[test]
+        fn test_zero_conversion() {
+            let val: i32 = IntegerTrait::<i32>::new(0, false);
+            let result: u32 = val.try_into().unwrap();
+            assert(result == 0, 'result should be 0');
+        }
+
+        #[test]
+        #[should_panic(expected: ('The sign must be positive',))]
+        fn test_negative_conversion() {
+            let val: i32 = IntegerTrait::<i32>::new(1, true);
+            let result: u32 = val.try_into().unwrap();
+        }
+    }
+
+    mod ConvertI32toU128 {
+        use orion::numbers::signed_integer::i32::i32;
+        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::utils::orion_utils::OrionUtils::i32TryIntou128;
+        use integer::BoundedInt;
+
+        #[test]
+        fn test_positive_max_conversion() {
+            let i32_max: u32 = BoundedInt::max() / 2 - 1;
+            let val: i32 = IntegerTrait::<i32>::new(i32_max, false);
+            let result: u128 = val.try_into().unwrap();
+            assert(result == i32_max.into(), 'result should be 2147483647');
+        }
+
+        #[test]
+        fn test_zero_conversion() {
+            let val: i32 = IntegerTrait::<i32>::new(0, false);
+            let result: u128 = val.try_into().unwrap();
+            assert(result == 0, 'result should be 0');
+        }
+
+        #[test]
+        #[should_panic(expected: ('The sign must be positive',))]
+        fn test_negative_conversion() {
+            let val: i32 = IntegerTrait::<i32>::new(1, true);
+            let result: u128 = val.try_into().unwrap();
+        }
+    }
+
     mod ModI32 {
         use orion::numbers::signed_integer::i32::i32;
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
