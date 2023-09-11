@@ -2,7 +2,6 @@ mod FullMath {
     use integer::{
         BoundedInt, u256_wide_mul, u256_safe_divmod, u512_safe_div_rem_by_u256, u256_try_as_non_zero
     };
-    use option::OptionTrait;
 
     // Multiplies two u256 numbers and divides the result by a third.
     // Credits to sphinx-protocol

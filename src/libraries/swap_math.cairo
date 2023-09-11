@@ -13,7 +13,6 @@ mod SwapMath {
     };
     use integer::{u256_overflowing_add, u256_overflow_mul};
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-    use option::OptionTrait;
 
     const _1e6: u256 = 1000000; // 10 ** 6 
 

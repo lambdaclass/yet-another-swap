@@ -1,7 +1,6 @@
 mod BitMath {
     use integer::{U256BitAnd, Felt252IntoU256};
-    use traits::{TryInto, DivEq};
-    use option::OptionTrait;
+    use traits::DivEq;
 
     /// @notice Returns the index of the most significant bit of the number,
     ///     where the least significant bit is at index 0 and the most significant bit is at index 255
