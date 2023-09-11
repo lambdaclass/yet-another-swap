@@ -140,3 +140,8 @@ On Starknet, the deployment process is in two steps:
 - [Liquidity Math in Uniswap V3](https://atiselsts.github.io/pdfs/uniswap-v3-liquidity-math.pdf)
 - [UNISWAP V3 - New Era Of AMMs? Architecture Explained](https://www.youtube.com/watch?v=Ehm-OYBmlPM)
 - [ZK Podcast: Exploring Uniswap V3 and a Multi-L2 Future with Noah and Moody](https://zeroknowledge.fm/185-2/)
+
+## License
+ This project is licensed under the Apache 2.0 license.
+ See [LICENSE](./LICENSE) for more information.
+
