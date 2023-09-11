@@ -14,10 +14,10 @@ At YAS we believe product quality should always be a priority so we are commited
 
 This project will be built in the open, ***it's still in development***. We love the Starknet developer ecosystem and we know that a lot of smart and hungry developers would like to collaborate in the future of Starknet. If that's your case you are more than welcome to join us!
 
-***Follow us on [Twitter](https://twitter.com/yas_starknet)***
+***Follow us on [Twitter](https://twitter.com/yetanotherswap)***
 
 ## Important Disclaimer
- Currently, the project is using our [fork](https://github.com/dpinones/orion) of [Orion](https://github.com/gizatechxyz/orion/tree/main/src/numbers/signed_integer) `signed integer` implementation until all features are implemented and supported in the latest version of Cairo. 
+ Currently, **the project is in a development stage, it has not been audited yet and is not ready for production**. We are also using our [fork](https://github.com/dpinones/orion) of [Orion](https://github.com/gizatechxyz/orion/tree/main/src/numbers/signed_integer) `signed integer` implementation until all features are implemented and supported in the latest version of Cairo. 
  > Note: In our Orion fork, we've added the capability for signed integers to be stored in a smart contract.
 
 
