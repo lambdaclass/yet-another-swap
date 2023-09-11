@@ -189,3 +189,131 @@ mod ModSubtractionTests {
         assert(result == 1, 'result should be 1');
     }
 }
+
+mod i32Div {
+    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+    use orion::numbers::signed_integer::i32::i32;
+    use yas::utils::math_utils::MathUtils::i32_div;
+
+    #[test]
+    fn test_numerator_eq_denominator_negative_x_negative() {
+        // -24 / -24 = 1   
+        let a = IntegerTrait::<i32>::new(24, true);
+        let b = IntegerTrait::<i32>::new(24, true);
+        let actual = i32_div(a, b);
+        assert(actual.mag == 1, '-24 // -24 should be 1');
+        assert(actual.sign == false, '-24 // -24 should be positive');
+    }
+
+    #[test]
+    fn test_numerator_eq_denominator_positive_x_negative() {
+        // 24 / -24 = -1   
+        let a = IntegerTrait::<i32>::new(24, false);
+        let b = IntegerTrait::<i32>::new(24, true);
+        let actual = i32_div(a, b);
+        assert(actual.mag == 1, '24 // -24 should be 1');
+        assert(actual.sign == true, '24 // -24 should be negative');
+    }
+
+    #[test]
+    fn test_numerator_eq_denominator_negative_x_positive() {
+        // -24 / 24 = -1   
+        let a = IntegerTrait::<i32>::new(24, true);
+        let b = IntegerTrait::<i32>::new(24, false);
+        let actual = i32_div(a, b);
+        assert(actual.mag == 1, '-24 // 24 should be 1');
+        assert(actual.sign == true, '-24 // 24 should be negative');
+    }
+
+    #[test]
+    fn test_numerator_eq_denominator_positive_x_positive() {
+        // 24 / 24 = 1   
+        let a = IntegerTrait::<i32>::new(24, false);
+        let b = IntegerTrait::<i32>::new(24, false);
+        let actual = i32_div(a, b);
+        assert(actual.mag == 1, '24 // 24 should be 1');
+        assert(actual.sign == false, '24 // 24 should be negative');
+    }
+
+    #[test]
+    fn test_negative_x_positive() {
+        // -10 / 3 = -3   
+        let a = IntegerTrait::<i32>::new(10, true);
+        let b = IntegerTrait::<i32>::new(3, false);
+        let actual = i32_div(a, b);
+        assert(actual.mag == 3, '-10 // 3 should be 3');
+        assert(actual.sign == true, '-10 // 3 should be negative');
+    }
+
+    #[test]
+    fn test_positive_x_negative() {
+        // 5 / -3 = -1   
+        let a = IntegerTrait::<i32>::new(5, false);
+        let b = IntegerTrait::<i32>::new(3, true);
+        let actual = i32_div(a, b);
+        assert(actual.mag == 1, '5 // -3 should be 3');
+        assert(actual.sign == true, '5 // -3 should be negative');
+    }
+
+    // Test to evaluate rounding behavior and zeros
+    #[test]
+    fn test_numerator_gt_denominator_positive() {
+        let ZERO = IntegerTrait::<i32>::new(0, false);
+
+        // 6 / 10 = 0
+        let a = IntegerTrait::<i32>::new(6, false);
+        let b = IntegerTrait::<i32>::new(10, false);
+        let actual = i32_div(a, b);
+        assert(actual == ZERO, '6 // 10 should be 0');
+
+        // 5 / 10 = 0
+        let a = IntegerTrait::<i32>::new(5, false);
+        let b = IntegerTrait::<i32>::new(10, false);
+        let actual = i32_div(a, b);
+        assert(actual == ZERO, '5 // 10 should be 0');
+
+        // 1 / 10 = 0
+        let a = IntegerTrait::<i32>::new(1, false);
+        let b = IntegerTrait::<i32>::new(10, false);
+        let actual = i32_div(a, b);
+        assert(actual == ZERO, '1 // 10 should be 0');
+    }
+
+    // Test to evaluate rounding behavior and zeros
+    #[test]
+    fn test_numerator_gt_denominator_negative() {
+        let ZERO = IntegerTrait::<i32>::new(0, false);
+
+        // -6 / 10 = 0
+        let a = IntegerTrait::<i32>::new(6, true);
+        let b = IntegerTrait::<i32>::new(10, false);
+        let actual = i32_div(a, b);
+        assert(actual == ZERO, '-6 // 10 should be 0');
+
+        // -5 / 10 = 0
+        let a = IntegerTrait::<i32>::new(5, true);
+        let b = IntegerTrait::<i32>::new(10, false);
+        let actual = i32_div(a, b);
+        assert(actual == ZERO, '-5 // 10 should be 0');
+
+        // -1 / 10 = 0
+        let a = IntegerTrait::<i32>::new(1, true);
+        let b = IntegerTrait::<i32>::new(10, false);
+        let actual = i32_div(a, b);
+        assert(actual == ZERO, '-1 // 10 should be 0');
+
+        // 5 / -10 = 0
+        let a = IntegerTrait::<i32>::new(5, false);
+        let b = IntegerTrait::<i32>::new(10, true);
+        let actual = i32_div(a, b);
+        assert(actual == ZERO, '5 // -10 should be 0');
+    }
+
+    #[test]
+    #[should_panic(expected: ('denominator cannot be 0',))]
+    fn test_div_by_zero_should_panic() {
+        let a = IntegerTrait::<i32>::new(1, false);
+        let b = IntegerTrait::<i32>::new(0, false);
+        let actual = i32_div(a, b);
+    }
+}

@@ -28,6 +28,7 @@ struct Info {
 
 #[starknet::interface]
 trait ITick<TStorage> {
+    fn tick_spacing_to_max_liquidity_per_tick(self: @TStorage, tick_spacing: i32) -> u128;
     fn clear(ref self: TStorage, tick: i32);
     fn cross(
         ref self: TStorage,
@@ -61,13 +62,13 @@ mod Tick {
     use poseidon::poseidon_hash_span;
     use serde::Serde;
     use traits::{Into, TryInto};
+    use integer::BoundedInt;
 
-    use orion::numbers::signed_integer::i32::i32;
-    use orion::numbers::signed_integer::i64::i64;
-    use orion::numbers::signed_integer::i128::i128;
+    use orion::numbers::signed_integer::{i32::i32, i64::i64, i128::i128};
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-    use yas::utils::math_utils::MathUtils::mod_subtraction;
+    use yas::utils::math_utils::MathUtils::{i32_div, mod_subtraction};
+    use yas::utils::orion_utils::OrionUtils::i32TryIntou128;
 
     #[storage]
     struct Storage {
@@ -76,6 +77,24 @@ mod Tick {
 
     #[external(v0)]
     impl Tick of ITick<ContractState> {
+        /// @notice Derives max liquidity per tick from given tick spacing
+        /// @dev Executed within the pool constructor
+        /// @param tick_spacing The amount of required tick separation, realized in multiples of `tick_spacing`
+        ///     e.g., a tick_spacing of 3 requires ticks to be initialized every 3rd tick i.e., ..., -6, -3, 0, 3, 6, ...
+        /// @return The max liquidity per tick
+        fn tick_spacing_to_max_liquidity_per_tick(self: @ContractState, tick_spacing: i32) -> u128 {
+            let MIN_TICK = IntegerTrait::<i32>::new(887272, true);
+            let MAX_TICK = IntegerTrait::<i32>::new(887272, false);
+
+            let min_tick = i32_div(MIN_TICK, tick_spacing) * tick_spacing;
+            let max_tick = i32_div(MAX_TICK, tick_spacing) * tick_spacing;
+            let num_ticks = i32_div((max_tick - min_tick), tick_spacing)
+                + IntegerTrait::<i32>::new(1, false);
+
+            let max_u128: u128 = BoundedInt::max();
+            max_u128 / num_ticks.try_into().expect('num ticks cannot be negative!')
+        }
+
         /// @notice Clears tick data
         /// @param self The mapping containing all initialized tick information for initialized ticks
         /// @param tick The tick that will be cleared

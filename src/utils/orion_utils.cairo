@@ -28,6 +28,20 @@ mod OrionUtils {
         }
     }
 
+    impl i32TryIntou32 of TryInto<i32, u32> {
+        fn try_into(self: i32) -> Option<u32> {
+            assert(self.sign == false, 'The sign must be positive');
+            Option::Some(self.mag)
+        }
+    }
+
+    impl i32TryIntou128 of TryInto<i32, u128> {
+        fn try_into(self: i32) -> Option<u128> {
+            assert(self.sign == false, 'The sign must be positive');
+            Option::Some(self.mag.into())
+        }
+    }
+
     /// Computes the mathematical modulo of two i32 numbers.
     /// Unlike Orion '%' operator, which can return negative remainders,
     /// our function ensures the result is always positive.
