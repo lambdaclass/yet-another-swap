@@ -1,5 +1,4 @@
 mod TickTests {
-    use result::ResultTrait;
     use starknet::syscalls::deploy_syscall;
 
     use orion::numbers::signed_integer::i32::i32;

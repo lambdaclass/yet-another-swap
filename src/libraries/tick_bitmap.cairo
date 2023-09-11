@@ -17,7 +17,6 @@ mod TickBitmap {
 
     use integer::BoundedInt;
     use poseidon::poseidon_hash_span;
-    use serde::Serde;
 
     use orion::numbers::signed_integer::i32::i32;
     use orion::numbers::signed_integer::i16::i16;

@@ -1,9 +1,6 @@
-use core::result::ResultTrait;
 /// Math library for liquidity
 mod LiquidityMath {
     use core::traits::PartialOrd;
-    use result::Result;
-    use result::ResultTrait;
     use core::integer::u128_overflowing_add;
     use orion::numbers::signed_integer::i128::i128;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
