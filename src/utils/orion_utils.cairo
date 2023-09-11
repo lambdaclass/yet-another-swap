@@ -1,7 +1,5 @@
 mod OrionUtils {
     use integer::BoundedInt;
-    use option::{OptionTrait};
-    use traits::{Into, TryInto};
 
     use orion::numbers::signed_integer::i32::i32;
     use orion::numbers::signed_integer::i16::i16;

@@ -1,7 +1,3 @@
-use core::debug::PrintTrait;
-use option::OptionTrait;
-use traits::{Into, TryInto};
-
 use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
 use yas::numbers::fixed_point::implementations::impl_64x96::{ONE, ONE_u128, MAX, HALF};
 use yas::numbers::fixed_point::implementations::impl_64x96::{

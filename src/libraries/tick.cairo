@@ -57,11 +57,7 @@ trait ITick<TStorage> {
 mod Tick {
     use super::{ITick, Info};
 
-    use array::ArrayTrait;
-    use option::OptionTrait;
     use poseidon::poseidon_hash_span;
-    use serde::Serde;
-    use traits::{Into, TryInto};
     use integer::BoundedInt;
 
     use orion::numbers::signed_integer::{i32::i32, i64::i64, i128::i128};
