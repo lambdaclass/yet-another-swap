@@ -12,8 +12,6 @@ mod SqrtPriceMath {
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
     use yas::utils::math_utils::MathUtils::pow;
-    use traits::{Into, TryInto};
-    use option::OptionTrait;
 
     /// Returns the next square root price given a token0 delta.
     /// @param sqrtPX96 The initial price (prior to considering the token0 delta).

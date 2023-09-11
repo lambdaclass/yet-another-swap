@@ -1,10 +1,7 @@
 use core::result::ResultTrait;
 /// Math library for liquidity
 mod LiquidityMath {
-    use traits::Into;
-    use traits::TryInto;
     use core::traits::PartialOrd;
-    use option::OptionTrait;
     use result::Result;
     use result::ResultTrait;
     use core::integer::u128_overflowing_add;

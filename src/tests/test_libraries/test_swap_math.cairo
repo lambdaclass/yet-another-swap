@@ -3,7 +3,6 @@ mod TestSwapMath {
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FP64x96Div, FixedType, FixedTrait, Q96_RESOLUTION, ONE, MAX
     };
-    use traits::Into;
 
     fn expand_to_18_decimals(n: u256) -> u256 {
         n * pow(10, 18)

@@ -1,6 +1,4 @@
 mod MathUtils {
-    use traits::{Into, TryInto};
-    use option::OptionTrait;
     use integer::BoundedInt;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
     use orion::numbers::signed_integer::i32::{i32, ensure_non_negative_zero, i32_check_sign_zero};

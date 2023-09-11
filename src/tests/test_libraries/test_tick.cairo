@@ -1,8 +1,5 @@
 mod TickTests {
-    use array::ArrayTrait;
     use result::ResultTrait;
-    use traits::{Into, TryInto};
-    use option::OptionTrait;
     use starknet::syscalls::deploy_syscall;
 
     use orion::numbers::signed_integer::i32::i32;

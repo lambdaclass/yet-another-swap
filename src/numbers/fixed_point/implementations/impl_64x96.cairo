@@ -1,6 +1,4 @@
 use debug::PrintTrait;
-use option::OptionTrait;
-use traits::{Into, TryInto};
 
 use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
 use yas::numbers::fixed_point::math::math_64x96;
