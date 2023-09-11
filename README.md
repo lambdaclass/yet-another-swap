@@ -1,16 +1,25 @@
-# Fractal-Swap
+<div align="center">
+<img src="./yas.png" height="150">
+</div>
 
-Fractal Swap is a Uniswap V3 implementation on StarkNet.
+
+# YAS - Yet Another Swap
+
+YAS is Yet Another Swap on Starknet 😝. It's an AMM based on Uniswap v3 that will add some new features to the Starknet ecosystem.
+- Provide a more capital efficient liquidity layer
+- Based on a robust and battle-tested protocol. LPs from Uniswap v3 will feel right at home.
+- Provide the best prices for aggregators and traders.
+
+At YAS we believe product quality should always be a priority so we are commited to provide the best experience for users that want to put Starknet to the limit.
+
+This project will be built in the open, ***it's still in development***. We love the Starknet developer ecosystem and we know that a lot of smart and hungry developers would like to collaborate in the future of Starknet. If that's your case you are more than welcome to join us!
+
+***Follow us on [Twitter](https://twitter.com/yetanotherswap)***
 
 ## Important Disclaimer
- Currently, the project is using our [fork](https://github.com/dpinones/orion) of [Orion](https://github.com/gizatechxyz/orion/tree/main/src/numbers/signed_integer) `signed integer` implementation until all features are implemented and supported in the latest version of Cairo. 
+ Currently, **the project is in a development stage, it has not been audited yet and is not ready for production**. We are also using our [fork](https://github.com/dpinones/orion) of [Orion](https://github.com/gizatechxyz/orion/tree/main/src/numbers/signed_integer) `signed integer` implementation until all features are implemented and supported in the latest version of Cairo. 
  > Note: In our Orion fork, we've added the capability for signed integers to be stored in a smart contract.
 
-The following commands will not work in this branch:
-- `make declare`
-- `make deploy`
-
-The main branch should always include contracts that can be deployed to Starknet.
 
 ## Install dependencies
 Run the following command:
@@ -119,7 +128,8 @@ On Starknet, the deployment process is in two steps:
 ## Tooling
 - [Starkli](https://book.starkli.rs/)
 - [Scarb](https://book.starknet.io/chapter_2/scarb.html)
-- [Starknet Foundry](https://foundry-rs.github.io/starknet-foundry/)
+- [Cairo 1.0 VSCode Extension](https://marketplace.visualstudio.com/items?itemName=starkware.cairo1)
+- [Starknet Foundry](https://foundry-rs.github.io/starknet-foundry/) **In the near future once it's more mature**
 
 ## Useful resources
 - [Cairo Book](https://book.cairo-lang.org/)
@@ -127,5 +137,6 @@ On Starknet, the deployment process is in two steps:
 - [Starknet Book](https://book.starknet.io/index.html)
 - [Uniswap Protocol](https://docs.uniswap.org/concepts/uniswap-protocol)
 - [Uniswap V3 Development Book](https://uniswapv3book.com/docs/introduction/uniswap-v3/)
+- [Liquidity Math in Uniswap V3](https://atiselsts.github.io/pdfs/uniswap-v3-liquidity-math.pdf)
 - [UNISWAP V3 - New Era Of AMMs? Architecture Explained](https://www.youtube.com/watch?v=Ehm-OYBmlPM)
 - [ZK Podcast: Exploring Uniswap V3 and a Multi-L2 Future with Noah and Moody](https://zeroknowledge.fm/185-2/)

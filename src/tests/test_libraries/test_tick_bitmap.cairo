@@ -8,7 +8,7 @@ mod TickBitmapTests {
     use orion::numbers::signed_integer::i32::i32;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-    use fractal_swap::libraries::tick_bitmap::{
+    use yas::libraries::tick_bitmap::{
         TickBitmap, ITickBitmap, ITickBitmapDispatcher, ITickBitmapDispatcherTrait
     };
 
@@ -45,7 +45,7 @@ mod TickBitmapTests {
     mod IsInitialized {
         use super::deploy;
 
-        use fractal_swap::libraries::tick_bitmap::{
+        use yas::libraries::tick_bitmap::{
             TickBitmap, ITickBitmap, ITickBitmapDispatcher, ITickBitmapDispatcherTrait
         };
 
@@ -131,7 +131,7 @@ mod TickBitmapTests {
     mod FlipTick {
         use super::deploy;
 
-        use fractal_swap::libraries::tick_bitmap::{
+        use yas::libraries::tick_bitmap::{
             TickBitmap, ITickBitmap, ITickBitmapDispatcher, ITickBitmapDispatcherTrait
         };
 
@@ -240,7 +240,7 @@ mod TickBitmapTests {
     mod NextInitializedTickWithinOneWordToTheRight {
         use super::{deploy, init_ticks};
 
-        use fractal_swap::libraries::tick_bitmap::{
+        use yas::libraries::tick_bitmap::{
             TickBitmap, ITickBitmap, ITickBitmapDispatcher, ITickBitmapDispatcherTrait
         };
 
@@ -406,7 +406,7 @@ mod TickBitmapTests {
     mod NextInitializedTickWithinOneWordToTheLeft {
         use super::{deploy, init_ticks};
 
-        use fractal_swap::libraries::tick_bitmap::{
+        use yas::libraries::tick_bitmap::{
             TickBitmap, ITickBitmap, ITickBitmapDispatcher, ITickBitmapDispatcherTrait
         };
 
@@ -556,7 +556,7 @@ mod TickBitmapTests {
     mod Position {
         use super::deploy;
 
-        use fractal_swap::libraries::tick_bitmap::{
+        use yas::libraries::tick_bitmap::{
             TickBitmap, ITickBitmap, ITickBitmapDispatcher, ITickBitmapDispatcherTrait
         };
 

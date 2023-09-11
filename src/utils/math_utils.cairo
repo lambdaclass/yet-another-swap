@@ -1,7 +1,7 @@
 mod MathUtils {
     use traits::{Into, TryInto};
     use option::OptionTrait;
-    use fractal_swap::numbers::signed_integer::i256::i256;
+    use yas::numbers::signed_integer::i256::i256;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
     use integer::BoundedInt;
 
@@ -80,6 +80,18 @@ mod MathUtils {
             x * pow(x * x, n / 2)
         } else {
             pow(x * x, n / 2)
+        }
+    }
+
+    /// @notice Performs modular subtraction of two unsigned 256-bit integers, a and b.
+    /// @param a The first operand for subtraction.
+    /// @param b The second operand for subtraction.
+    /// @return The result of (a - b) modulo 2^256.
+    fn mod_subtraction(a: u256, b: u256) -> u256 {
+        if b > a {
+            (BoundedInt::max() - b) + a + 1
+        } else {
+            a - b
         }
     }
 }
