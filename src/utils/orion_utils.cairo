@@ -31,8 +31,6 @@ mod OrionUtils {
     impl i32TryIntou32 of TryInto<i32, u32> {
         fn try_into(self: i32) -> Option<u32> {
             assert(self.sign == false, 'The sign must be positive');
-            let max: u32 = BoundedInt::max();
-            assert(self.mag <= max.into(), 'Overflow of magnitude');
             Option::Some(self.mag)
         }
     }

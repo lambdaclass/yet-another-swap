@@ -63,7 +63,7 @@ mod MathUtils {
     /// This is necessary because the behavior for the division of negative 
     /// numbers works incorrectly when it comes to rounding.
     fn i32_div(a: i32, b: i32) -> i32 {
-        assert(b.mag != 0, 'b can not be 0');
+        assert(b.mag != 0, 'denominator cannot be 0');
 
         if a.mag == 0 {
             assert(a.sign == false, 'sign of 0 must be false');

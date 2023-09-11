@@ -28,7 +28,7 @@ struct Info {
 
 #[starknet::interface]
 trait ITick<TStorage> {
-    fn tick_spacing_to_max_liquidity_per_tick(ref self: TStorage, tick_spacing: i32) -> u128;
+    fn tick_spacing_to_max_liquidity_per_tick(self: @TStorage, tick_spacing: i32) -> u128;
     fn clear(ref self: TStorage, tick: i32);
     fn cross(
         ref self: TStorage,
@@ -82,9 +82,7 @@ mod Tick {
         /// @param tick_spacing The amount of required tick separation, realized in multiples of `tick_spacing`
         ///     e.g., a tick_spacing of 3 requires ticks to be initialized every 3rd tick i.e., ..., -6, -3, 0, 3, 6, ...
         /// @return The max liquidity per tick
-        fn tick_spacing_to_max_liquidity_per_tick(
-            ref self: ContractState, tick_spacing: i32
-        ) -> u128 {
+        fn tick_spacing_to_max_liquidity_per_tick(self: @ContractState, tick_spacing: i32) -> u128 {
             let MIN_TICK = IntegerTrait::<i32>::new(887272, true);
             let MAX_TICK = IntegerTrait::<i32>::new(887272, false);
 

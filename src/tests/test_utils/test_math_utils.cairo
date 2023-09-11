@@ -308,4 +308,12 @@ mod i32Div {
         let actual = i32_div(a, b);
         assert(actual == ZERO, '5 // -10 should be 0');
     }
+
+    #[test]
+    #[should_panic(expected: ('denominator cannot be 0',))]
+    fn test_div_by_zero_should_panic() {
+        let a = IntegerTrait::<i32>::new(1, false);
+        let b = IntegerTrait::<i32>::new(0, false);
+        let actual = i32_div(a, b);
+    }
 }
