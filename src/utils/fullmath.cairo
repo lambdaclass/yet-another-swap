@@ -36,9 +36,10 @@ mod FullMath {
         let max_u256: u256 = BoundedInt::max();
         if (mul_mod_n(a, b, denominator) > 0) {
             assert(result < max_u256, 'mul_div_rounding_up overflow');
-            return result + 1;
+            result + 1
+        } else {
+            result
         }
-        result
     }
 
     fn mul_mod_n(a: u256, b: u256, n: u256) -> u256 {
@@ -53,9 +54,9 @@ mod FullMath {
             a, u256_try_as_non_zero(denominator).expect('div_rounding_up by zero')
         );
         if remainder != 0 {
-            return quotient + 1;
+            quotient + 1
         } else {
-            return quotient;
+            quotient
         }
     }
 }
