@@ -5,8 +5,7 @@ mod TickTests {
     use option::OptionTrait;
     use starknet::syscalls::deploy_syscall;
 
-    use orion::numbers::signed_integer::i32::i32;
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+    use orion::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
 
     use yas::libraries::tick::{Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
@@ -25,10 +24,9 @@ mod TickTests {
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::i64::i64;
-        use orion::numbers::signed_integer::i128::i128;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use orion::numbers::signed_integer::{
+            i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
+        };
 
         #[test]
         #[available_gas(30000000)]
@@ -79,10 +77,9 @@ mod TickTests {
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::i64::i64;
-        use orion::numbers::signed_integer::i128::i128;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use orion::numbers::signed_integer::{
+            i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
+        };
 
         #[test]
         #[available_gas(30000000)]
@@ -164,10 +161,9 @@ mod TickTests {
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::i64::i64;
-        use orion::numbers::signed_integer::i128::i128;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use orion::numbers::signed_integer::{
+            i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
+        };
 
         #[test]
         #[available_gas(30000000)]
@@ -392,10 +388,9 @@ mod TickTests {
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::i64::i64;
-        use orion::numbers::signed_integer::i128::i128;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use orion::numbers::signed_integer::{
+            i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
+        };
 
         #[test]
         #[available_gas(30000000)]
@@ -528,6 +523,55 @@ mod TickTests {
 
         #[test]
         #[available_gas(30000000)]
+        #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED'))]
+        fn test_reverts_if_total_liquidity_gross_is_greater_than_max() {
+            let tick = deploy();
+
+            tick
+                .update(
+                    IntegerTrait::<i32>::new(0, false),
+                    IntegerTrait::<i32>::new(0, false),
+                    IntegerTrait::<i128>::new(2, false),
+                    0,
+                    0,
+                    0,
+                    IntegerTrait::<i64>::new(0, false),
+                    0,
+                    false,
+                    3
+                );
+
+            tick
+                .update(
+                    IntegerTrait::<i32>::new(0, false),
+                    IntegerTrait::<i32>::new(0, false),
+                    IntegerTrait::<i128>::new(1, false),
+                    0,
+                    0,
+                    0,
+                    IntegerTrait::<i64>::new(0, false),
+                    0,
+                    true,
+                    3
+                );
+
+            tick
+                .update(
+                    IntegerTrait::<i32>::new(0, false),
+                    IntegerTrait::<i32>::new(0, false),
+                    IntegerTrait::<i128>::new(1, false),
+                    0,
+                    0,
+                    0,
+                    IntegerTrait::<i64>::new(0, false),
+                    0,
+                    false,
+                    3
+                );
+        }
+
+        #[test]
+        #[available_gas(30000000)]
         fn test_nets_the_liquidity_based_on_upper_flag() {
             let tick = deploy();
 
@@ -591,9 +635,45 @@ mod TickTests {
             let result = tick.get_tick(tick_id);
             assert(result.liquidity_gross == 2 + 1 + 3 + 1, 'liquidity_gross should be 7');
             assert(
-                result.liquidity_net == IntegerTrait::<i128>::new(2 - 1 - 3 + 1, true),
+                result.liquidity_net == IntegerTrait::<i128>::new(1, true),
                 'liquidity_net should be -1'
             );
+        }
+
+        #[test]
+        #[available_gas(30000000)]
+        #[should_panic(expected: ('int: out of range', 'ENTRYPOINT_FAILED'))]
+        fn test_reverts_on_overflow_liquidity_gross() {
+            let tick = deploy();
+
+            let max_u128: u128 = BoundedInt::max();
+            tick
+                .update(
+                    IntegerTrait::<i32>::new(0, false),
+                    IntegerTrait::<i32>::new(0, false),
+                    IntegerTrait::<i128>::new((max_u128 / 2) - 1, false),
+                    0,
+                    0,
+                    0,
+                    IntegerTrait::<i64>::new(0, false),
+                    0,
+                    false,
+                    max_u128
+                );
+
+            tick
+                .update(
+                    IntegerTrait::<i32>::new(0, false),
+                    IntegerTrait::<i32>::new(0, false),
+                    IntegerTrait::<i128>::new((max_u128 / 2) - 1, false),
+                    0,
+                    0,
+                    0,
+                    IntegerTrait::<i64>::new(0, false),
+                    0,
+                    false,
+                    max_u128
+                );
         }
 
         #[test]
