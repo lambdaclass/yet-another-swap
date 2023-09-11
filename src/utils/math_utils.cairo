@@ -64,10 +64,7 @@ mod MathUtils {
     /// numbers works incorrectly when it comes to rounding.
     fn i32_div(a: i32, b: i32) -> i32 {
         assert(b.mag != 0, 'denominator cannot be 0');
-
-        if a.mag == 0 {
-            assert(a.sign == false, 'sign of 0 must be false');
-        }
+        i32_check_sign_zero(a);
 
         if b.mag > a.mag {
             return IntegerTrait::new(0, false);
@@ -81,6 +78,18 @@ mod MathUtils {
             IntegerTrait::<i32>::new(mag, false)
         } else {
             IntegerTrait::<i32>::new(mag, sign)
+        }
+    }
+
+
+    // Checks if the given i256 integer is zero and has the correct sign.
+    // # Arguments
+    // * `x` - The i256 integer to check.
+    // # Panics
+    // Panics if `x` is zero and has a sign that is not false.
+    fn i32_check_sign_zero(x: i32) {
+        if x.mag == 0 {
+            assert(x.sign == false, 'sign of 0 must be false');
         }
     }
 }
