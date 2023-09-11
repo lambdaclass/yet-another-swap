@@ -3,12 +3,9 @@ mod OrionUtils {
     use option::{OptionTrait};
     use traits::{Into, TryInto};
 
-    use orion::numbers::signed_integer::i16::i16;
-    use orion::numbers::signed_integer::i32::i32;
-    use orion::numbers::signed_integer::i128::i128;
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-
-    use yas::numbers::signed_integer::i256::i256;
+    use orion::numbers::signed_integer::{
+        i16::i16, i32::i32, i128::i128, integer_trait::IntegerTrait
+    };
 
     impl u8Intoi32 of Into<u8, i32> {
         fn into(self: u8) -> i32 {
