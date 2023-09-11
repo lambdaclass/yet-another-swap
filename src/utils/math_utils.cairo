@@ -3,7 +3,7 @@ mod MathUtils {
     use option::OptionTrait;
     use integer::BoundedInt;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-    use orion::numbers::signed_integer::i32::i32;
+    use orion::numbers::signed_integer::i32::{i32, ensure_non_negative_zero, i32_check_sign_zero};
 
     trait BitShiftTrait<T> {
         fn shl(self: @T, n: T) -> T;
@@ -71,25 +71,5 @@ mod MathUtils {
         }
 
         ensure_non_negative_zero(a.mag / b.mag, a.sign ^ b.sign)
-    }
-
-    fn ensure_non_negative_zero(mag: u32, sign: bool) -> i32 {
-        if mag == 0 {
-            IntegerTrait::<i32>::new(mag, false)
-        } else {
-            IntegerTrait::<i32>::new(mag, sign)
-        }
-    }
-
-
-    // Checks if the given i256 integer is zero and has the correct sign.
-    // # Arguments
-    // * `x` - The i256 integer to check.
-    // # Panics
-    // Panics if `x` is zero and has a sign that is not false.
-    fn i32_check_sign_zero(x: i32) {
-        if x.mag == 0 {
-            assert(x.sign == false, 'sign of 0 must be false');
-        }
     }
 }
