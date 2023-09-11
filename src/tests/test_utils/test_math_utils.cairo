@@ -1,7 +1,7 @@
 mod BitShift {
     use yas::utils::math_utils::MathUtils::{BitShiftTrait, pow};
     use integer::BoundedInt;
-    use fractal_swap::numbers::signed_integer::i256::i256;
+    use yas::numbers::signed_integer::i256::i256;
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
     #[test]

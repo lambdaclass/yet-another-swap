@@ -1,17 +1,17 @@
-use fractal_swap::libraries::tick_math::TickMath::{
+use yas::libraries::tick_math::TickMath::{
     MIN_TICK, MAX_TICK, get_sqrt_ratio_at_tick, MAX_SQRT_RATIO, MIN_SQRT_RATIO,
     get_tick_at_sqrt_ratio, as_i24,
 };
 use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 use orion::numbers::signed_integer::i32::i32;
-use fractal_swap::numbers::fixed_point::core::{FixedTrait, FixedType};
-use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
+use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
+use yas::numbers::fixed_point::implementations::impl_64x96::{
     ONE_u128, ONE, MAX, _felt_abs, _felt_sign, FP64x96Impl, FP64x96Into, FP64x96Add, FP64x96AddEq,
     FP64x96Sub, FP64x96SubEq, FP64x96Mul, FP64x96MulEq, FP64x96Div, FP64x96DivEq, FP64x96PartialOrd,
     FP64x96PartialEq
 };
-use fractal_swap::numbers::signed_integer::i256::{i256, bitwise_or};
-use fractal_swap::utils::math_utils::MathUtils::BitShiftTrait;
+use yas::numbers::signed_integer::i256::{i256, bitwise_or};
+use yas::utils::math_utils::MathUtils::BitShiftTrait;
 
 #[test]
 #[available_gas(200000000)]

@@ -427,9 +427,9 @@ mod TestInteger256 {
     }
 
     mod TwoComplementTests {
-        use fractal_swap::numbers::signed_integer::i256::{i256, two_complement_if_nec};
+        use yas::numbers::signed_integer::i256::{i256, two_complement_if_nec};
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-        use fractal_swap::utils::math_utils::MathUtils::pow;
+        use yas::utils::math_utils::MathUtils::pow;
         use integer::BoundedInt;
         use debug::PrintTrait;
 
