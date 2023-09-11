@@ -31,14 +31,6 @@ mod OrionUtils {
         }
     }
 
-    fn convert_i256_to_i128(n: i256) -> i128 {
-        IntegerTrait::<i128>::new(n.mag.try_into().unwrap(), n.sign)
-    }
-
-    fn convert_i128_to_i256(n: i128) -> i256 {
-        IntegerTrait::<i256>::new(n.mag.into(), n.sign)
-    }
-
     /// Computes the mathematical modulo of two i32 numbers.
     /// Unlike Orion '%' operator, which can return negative remainders,
     /// our function ensures the result is always positive.
