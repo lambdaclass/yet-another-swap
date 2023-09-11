@@ -2,6 +2,8 @@ mod MathUtils {
     use traits::{Into, TryInto};
     use option::OptionTrait;
     use integer::BoundedInt;
+    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+    use orion::numbers::signed_integer::i32::i32;
 
     trait BitShiftTrait<T> {
         fn shl(self: @T, n: T) -> T;
@@ -53,6 +55,32 @@ mod MathUtils {
             (BoundedInt::max() - b) + a + 1
         } else {
             a - b
+        }
+    }
+
+    /// TODO: Replace when the implementation of integers in Cairo is released. 
+    /// @notice This function is an override for Orion's integer division. 
+    /// This is necessary because the behavior for the division of negative 
+    /// numbers works incorrectly when it comes to rounding.
+    fn i32_div(a: i32, b: i32) -> i32 {
+        assert(b.mag != 0, 'b can not be 0');
+
+        if a.mag == 0 {
+            assert(a.sign == false, 'sign of 0 must be false');
+        }
+
+        if b.mag > a.mag {
+            return IntegerTrait::new(0, false);
+        }
+
+        ensure_non_negative_zero(a.mag / b.mag, a.sign ^ b.sign)
+    }
+
+    fn ensure_non_negative_zero(mag: u32, sign: bool) -> i32 {
+        if mag == 0 {
+            IntegerTrait::<i32>::new(mag, false)
+        } else {
+            IntegerTrait::<i32>::new(mag, sign)
         }
     }
 }

@@ -388,26 +388,23 @@ mod TickTests {
     }
 
     mod TickSpacingToMaxLiquidityPerTick {
-            use super::deploy;
-            use integer::BoundedInt;
+        use super::deploy;
+        use integer::BoundedInt;
 
-            use orion::numbers::signed_integer::{i32::i32, i64::i64, i128::i128};
-            use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-            
-            use yas::utils::math_utils::MathUtils::pow;
-            use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
+        use orion::numbers::signed_integer::{i32::i32, i64::i64, i128::i128};
+        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
 
-            // TODO: Remove PrintTrait
-            use debug::PrintTrait;
+        use yas::utils::math_utils::MathUtils::{i32_div, pow};
+        use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
-            // returns the correct value for low fee
-            #[test]
-            #[available_gas(30000000)]
-            fn test_low_fee_returns_correct_value() {
-                let tick = deploy();
+        // returns the correct value for low fee
+        #[test]
+        #[available_gas(30000000)]
+        fn test_low_fee_returns_correct_value() {
+            let tick = deploy();
 
-                let tick_id = IntegerTrait::<i32>::new(2, false);
-                tick
+            let tick_id = IntegerTrait::<i32>::new(2, false);
+            tick
                 .set_tick(
                     tick_id,
                     Info {
@@ -421,11 +418,11 @@ mod TickTests {
                         initialized: true
                     }
                 );
-                let tick_spacing_low_fee = IntegerTrait::<i32>::new(10, false);
-                let result = tick.tick_spacing_to_max_liquidity_per_tick(tick_spacing_low_fee);
+            let tick_spacing_low_fee = IntegerTrait::<i32>::new(10, false);
+            let result = tick.tick_spacing_to_max_liquidity_per_tick(tick_spacing_low_fee);
 
-                assert(result == 1917569901783203986719870431555990, '110.8 bits');
-            }
+            assert(result == 1917569901783203986719870431555990, '110.8 bits');
+        }
 
         // returns the correct value for medium fee
         #[test]
@@ -452,41 +449,7 @@ mod TickTests {
             let tick_spacing_medium_fee = IntegerTrait::<i32>::new(60, false);
             let result = tick.tick_spacing_to_max_liquidity_per_tick(tick_spacing_medium_fee);
 
-            // TODO: Check results
-            // .cai 11505354575363080317263139282924270
-            // .sol 11505743598341114571880798222544994
             assert(result == 11505743598341114571880798222544994, '113.1 bits');
-        }
-
-        #[test]
-        fn test_orion_neg_div() {
-            let MIN_TICK = IntegerTrait::<i32>::new(887272, true);
-            let MAX_TICK = IntegerTrait::<i32>::new(887272, false);
-
-            let tick_spacing_medium_fee = IntegerTrait::<i32>::new(60, false);
-
-            let min_tick = (MIN_TICK / tick_spacing_medium_fee) * tick_spacing_medium_fee;
-            let max_tick = (MAX_TICK / tick_spacing_medium_fee) * tick_spacing_medium_fee;
-            
-            let min_int_tick = MIN_TICK / tick_spacing_medium_fee;
-            let max_int_tick = MAX_TICK / tick_spacing_medium_fee;
-
-            'min_int_tick'.print();
-            min_int_tick.mag.print(); // cai: -14788; sol: -14787
-            min_int_tick.sign.print(); 
-
-            let calc: u256 = (887272 / 60) * 60;
-
-            'calc'.print();
-            calc.print(); // 887220
-
-            // 'max_tick'.print();
-            // max_tick.mag.print(); // 887220
-            // max_tick.sign.print(); // false
-
-            'min_tick'.print();
-            min_tick.mag.print(); // cai: -887280; sol: -887220
-            min_tick.sign.print(); // true
         }
 
         // returns the correct value for high fee
