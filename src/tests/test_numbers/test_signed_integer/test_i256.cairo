@@ -431,6 +431,8 @@ mod TestInteger256 {
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use yas::utils::math_utils::MathUtils::pow;
         use integer::BoundedInt;
+        use option::OptionTrait;
+        use traits::{Into, TryInto};
         use debug::PrintTrait;
 
         #[test]
@@ -438,6 +440,7 @@ mod TestInteger256 {
             let input = IntegerTrait::<i256>::new(0, false);
             let actual = two_complement_if_nec(input);
             let expected = i256 { mag: 0, sign: false };
+
             assert(actual == expected, 'positive min wrong val');
         }
 
@@ -445,7 +448,8 @@ mod TestInteger256 {
         fn test_positive_max_mag() {
             let input = IntegerTrait::<i256>::new(BoundedInt::max() / 2 - 1, false);
             let actual = two_complement_if_nec(input);
-            let expected = i256 { mag: BoundedInt::max() / 2 - 1 , sign: false };
+            let expected = i256 { mag: BoundedInt::max() / 2 - 1, sign: false };
+
             assert(actual == expected, 'positive max wrong value');
         }
 
@@ -454,27 +458,19 @@ mod TestInteger256 {
             let input = IntegerTrait::<i256>::new(1, true);
             let actual = two_complement_if_nec(input);
             let expected = i256 { mag: BoundedInt::max(), sign: true };
+
             assert(actual == expected, 'negative min wrong val');
         }
 
         #[test]
-        #[available_gas(2000000)]
         fn test_negative_max_mag() {
             let input = IntegerTrait::<i256>::new(BoundedInt::max() / 2, true);
-            'input'.print();
-            input.mag.print();
-
-            'pow_input'.print();
-            pow(2, 127).print();
             let actual = two_complement_if_nec(input);
-            // since i256 max using new is BoundedInt::max() / 2 -> pow(2, 127) but in low part, 
-            // the complement will be that in the high part
-            let expected = i256 { mag: u256 { high: BoundedInt::max() / 2, low: 0 }, sign: true };
-            'actual.mag'.print();
-            actual.mag.print();
+            let expected = i256 {
+                mag: 57896044618658097711785492504343953926634992332820282019728792003956564819969,
+                sign: true
+            };
 
-            'expected'.print();
-            expected.mag.print();
             assert(actual == expected, 'negative max wrong val');
         }
 
@@ -483,6 +479,7 @@ mod TestInteger256 {
             let input = IntegerTrait::<i256>::new(12345, false);
             let actual = two_complement_if_nec(input);
             let expected = i256 { mag: 12345, sign: false };
+
             assert(actual == expected, 'positive non zero wrong value');
         }
 
@@ -490,7 +487,11 @@ mod TestInteger256 {
         fn test_negative_non_zero_mag() {
             let input = IntegerTrait::<i256>::new(54321, true);
             let actual = two_complement_if_nec(input);
-            let expected = i256 { mag: 54321, sign: true };
+            let expected = i256 {
+                mag: 115792089237316195423570985008687907853269984665640564039457584007913129585615,
+                sign: true
+            };
+
             assert(actual == expected, 'negative non zero wrong value');
         }
     }
