@@ -1,7 +1,5 @@
 mod OrionUtils {
     use integer::BoundedInt;
-    use option::{OptionTrait};
-    use traits::{Into, TryInto};
 
     use orion::numbers::signed_integer::i32::i32;
     use orion::numbers::signed_integer::i16::i16;
@@ -25,6 +23,20 @@ mod OrionUtils {
     impl i32TryIntoi16 of TryInto<i32, i16> {
         fn try_into(self: i32) -> Option<i16> {
             Option::Some(IntegerTrait::<i16>::new(self.mag.try_into().unwrap(), self.sign))
+        }
+    }
+
+    impl i32TryIntou32 of TryInto<i32, u32> {
+        fn try_into(self: i32) -> Option<u32> {
+            assert(self.sign == false, 'The sign must be positive');
+            Option::Some(self.mag)
+        }
+    }
+
+    impl i32TryIntou128 of TryInto<i32, u128> {
+        fn try_into(self: i32) -> Option<u128> {
+            assert(self.sign == false, 'The sign must be positive');
+            Option::Some(self.mag.into())
         }
     }
 

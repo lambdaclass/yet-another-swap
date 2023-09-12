@@ -3,7 +3,6 @@ mod TestSqrtPriceMath {
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FP64x96Div, FixedType, FixedTrait, Q96_RESOLUTION, ONE, MAX
     };
-    use traits::Into;
     use integer::{u256_sqrt, u256_safe_div_rem, u256_try_as_non_zero};
 
     // Aux methods for tests
@@ -38,8 +37,6 @@ mod TestSqrtPriceMath {
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
         use integer::BoundedInt;
-        use traits::{Into, TryInto};
-        use option::OptionTrait;
 
         // fails if price is zero
         #[test]
@@ -191,8 +188,6 @@ mod TestSqrtPriceMath {
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
         use integer::BoundedInt;
-        use option::OptionTrait;
-        use traits::{Into, TryInto};
 
         // fails if price is zero
         #[test]
@@ -360,8 +355,6 @@ mod TestSqrtPriceMath {
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
         use yas::utils::math_utils::MathUtils::pow;
-        use option::OptionTrait;
-        use traits::{Into, TryInto};
 
         // returns 0 if liquidity is 0
         #[test]
@@ -439,8 +432,6 @@ mod TestSqrtPriceMath {
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
         use yas::utils::math_utils::MathUtils::pow;
-        use option::OptionTrait;
-        use traits::{Into, TryInto};
 
         // returns 0 if liquidity is 0
         #[test]

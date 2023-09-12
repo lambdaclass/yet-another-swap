@@ -1,6 +1,3 @@
-use option::OptionTrait;
-use traits::{Into, TryInto};
-
 use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
 use yas::numbers::fixed_point::implementations::impl_64x96::{
     ONE_u128, ONE, MAX, _felt_abs, _felt_sign, FP64x96Impl, FP64x96Into, FP64x96Add, FP64x96AddEq,

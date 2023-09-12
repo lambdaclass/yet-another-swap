@@ -426,6 +426,40 @@ mod TestInteger256 {
         }
     }
 
+    mod i256IntoU256 {
+        use yas::numbers::signed_integer::i256::{i256, i256TryIntou256};
+        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use integer::BoundedInt;
+
+        #[test]
+        fn test_positive_conversion_within_range() {
+            let val = IntegerTrait::<i256>::new(100, false);
+            let result: u256 = val.try_into().unwrap();
+            assert(result == 100, 'result should be 100');
+        }
+
+        #[test]
+        fn test_zero_conversion() {
+            let val = IntegerTrait::<i256>::new(0, false);
+            let result: u256 = val.try_into().unwrap();
+            assert(result == 0, 'result should be 0');
+        }
+
+        #[test]
+        fn test_positive_conversion_i256_max() {
+            let val = IntegerTrait::<i256>::new(BoundedInt::max() / 2 - 1, false);
+            let result: u256 = val.try_into().unwrap();
+            assert(result == BoundedInt::max() / 2 - 1, 'result should be max');
+        }
+
+        #[test]
+        #[should_panic(expected: ('The sign must be positive',))]
+        fn test_negative_conversion() {
+            let val = IntegerTrait::<i256>::new(200, true);
+            let result: u256 = val.try_into().unwrap();
+        }
+    }
+    
     mod TwoComplementTests {
         use yas::numbers::signed_integer::i256::{i256, two_complement_if_nec};
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
