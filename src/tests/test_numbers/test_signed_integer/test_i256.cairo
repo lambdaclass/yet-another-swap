@@ -473,7 +473,7 @@ mod TestInteger256 {
         // Step 2: inverting (or flipping) all bits – changing every 0 to 1, and every 1 to 0;
         // Step 3: adding 1 to the entire inverted number, ignoring any overflow. Accounting 
         // for overflow will produce the wrong value for the result.
-        
+
         #[test]
         fn test_positive_min_mag() {
             let input = IntegerTrait::<i256>::new(0, false);
