@@ -546,7 +546,7 @@ mod TickTests {
         use orion::numbers::signed_integer::{
             i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait
         };
-        
+
         use yas::libraries::tick::Tick::{TickImpl, InternalImpl};
 
         #[test]

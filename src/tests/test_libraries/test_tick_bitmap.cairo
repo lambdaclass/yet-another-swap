@@ -130,7 +130,7 @@ mod TickBitmapTests {
         use super::STATE;
 
         use orion::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
-        
+
         use yas::libraries::tick_bitmap::TickBitmap::{TickBitmapImpl, InternalImpl};
 
         #[test]
@@ -250,7 +250,7 @@ mod TickBitmapTests {
         use super::{init_ticks, STATE};
 
         use orion::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
-        
+
         use yas::libraries::tick_bitmap::TickBitmap::{TickBitmapImpl, InternalImpl};
 
         #[test]
@@ -432,7 +432,7 @@ mod TickBitmapTests {
         use super::{init_ticks, STATE};
 
         use orion::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
-        
+
         use yas::libraries::tick_bitmap::TickBitmap::{TickBitmapImpl, InternalImpl};
 
         #[test]
@@ -594,7 +594,7 @@ mod TickBitmapTests {
 
     mod Position {
         use orion::numbers::signed_integer::{i16::i16, i32::i32, integer_trait::IntegerTrait};
-        
+
         use yas::libraries::tick_bitmap::TickBitmap;
 
         #[test]
