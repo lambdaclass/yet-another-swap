@@ -24,11 +24,11 @@ struct Info {
 }
 
 #[starknet::interface]
-trait ITick<TStorage> {
-    fn tick_spacing_to_max_liquidity_per_tick(self: @TStorage, tick_spacing: i32) -> u128;
-    fn clear(ref self: TStorage, tick: i32);
+trait ITick<TContractState> {
+    fn tick_spacing_to_max_liquidity_per_tick(self: @TContractState, tick_spacing: i32) -> u128;
+    fn clear(ref self: TContractState, tick: i32);
     fn cross(
-        ref self: TStorage,
+        ref self: TContractState,
         tick: i32,
         fee_growth_global_0X128: u256,
         fee_growth_global_1X128: u256,
@@ -37,7 +37,7 @@ trait ITick<TStorage> {
         time: u32
     ) -> i128;
     fn get_fee_growth_inside(
-        self: @TStorage,
+        self: @TContractState,
         tick_lower: i32,
         tick_upper: i32,
         tick_current: i32,
@@ -45,7 +45,7 @@ trait ITick<TStorage> {
         fee_growth_global_1X128: u256
     ) -> (u256, u256);
     fn update(
-        ref self: TStorage,
+        ref self: TContractState,
         tick: i32,
         tick_current: i32,
         liquidity_delta: i128,
@@ -103,7 +103,7 @@ mod Tick {
         /// @param self The mapping containing all initialized tick information for initialized ticks
         /// @param tick The tick that will be cleared
         fn clear(ref self: ContractState, tick: i32) {
-            let hashed_tick = self.generate_hashed_tick(@tick);
+            let hashed_tick = generate_hashed_tick(@tick);
             self
                 .ticks
                 .write(
@@ -139,7 +139,7 @@ mod Tick {
             tick_cumulative: i64,
             time: u32
         ) -> i128 {
-            let hashed_tick = self.generate_hashed_tick(@tick);
+            let hashed_tick = generate_hashed_tick(@tick);
             let mut info: Info = self.ticks.read(hashed_tick);
             info.fee_growth_outside_0X128 = fee_growth_global_0X128 - info.fee_growth_outside_0X128;
             info.fee_growth_outside_1X128 = fee_growth_global_1X128 - info.fee_growth_outside_1X128;
@@ -168,8 +168,8 @@ mod Tick {
             fee_growth_global_0X128: u256,
             fee_growth_global_1X128: u256
         ) -> (u256, u256) {
-            let lower: Info = self.ticks.read(self.generate_hashed_tick(@tick_lower));
-            let upper: Info = self.ticks.read(self.generate_hashed_tick(@tick_upper));
+            let lower: Info = self.ticks.read(generate_hashed_tick(@tick_lower));
+            let upper: Info = self.ticks.read(generate_hashed_tick(@tick_upper));
 
             // calculate fee growth below
             let (fee_growth_below_0X128, fee_growth_below_1X128) = if tick_current >= tick_lower {
@@ -230,7 +230,7 @@ mod Tick {
             upper: bool,
             max_liquidity: u128
         ) -> bool {
-            let hashed_tick = self.generate_hashed_tick(@tick);
+            let hashed_tick = generate_hashed_tick(@tick);
             let mut info: Info = self.ticks.read(hashed_tick);
 
             let liquidity_gross_before: u128 = info.liquidity_gross;
@@ -272,20 +272,20 @@ mod Tick {
 
     #[generate_trait]
     impl InternalImpl of InternalTrait {
-        fn generate_hashed_tick(self: @ContractState, tick: @i32) -> felt252 {
-            let mut serialized: Array<felt252> = ArrayTrait::new();
-            Serde::<i32>::serialize(tick, ref serialized);
-            poseidon_hash_span(serialized.span())
-        }
-
         fn set_tick(ref self: ContractState, tick: i32, info: Info) {
-            let hashed_tick = self.generate_hashed_tick(@tick);
+            let hashed_tick = generate_hashed_tick(@tick);
             self.ticks.write(hashed_tick, info);
         }
 
         fn get_tick(self: @ContractState, tick: i32) -> Info {
-            let hashed_tick = self.generate_hashed_tick(@tick);
+            let hashed_tick = generate_hashed_tick(@tick);
             self.ticks.read(hashed_tick)
         }
+    }
+
+    fn generate_hashed_tick(tick: @i32) -> felt252 {
+        let mut serialized: Array<felt252> = ArrayTrait::new();
+        Serde::<i32>::serialize(tick, ref serialized);
+        poseidon_hash_span(serialized.span())
     }
 }

@@ -595,6 +595,7 @@ mod TickBitmapTests {
     mod Position {
         use super::{init_ticks, STATE};
 
+        use yas::libraries::tick_bitmap::TickBitmap;
         use yas::libraries::tick_bitmap::TickBitmap::{TickBitmapImpl, InternalImpl};
 
         use orion::numbers::signed_integer::{i16::i16, i32::i32, integer_trait::IntegerTrait};
@@ -603,7 +604,7 @@ mod TickBitmapTests {
         #[available_gas(30000000)]
         fn test_positive_position_at_one() {
             let mut state = STATE();
-            let (word, bit) = InternalImpl::position(@state, IntegerTrait::<i32>::new(1, false));
+            let (word, bit) = TickBitmap::position(IntegerTrait::<i32>::new(1, false));
             assert(word == IntegerTrait::<i16>::new(0, false), 'word should be 0');
             assert(bit == 1, 'bit should be 1');
         }
@@ -612,7 +613,7 @@ mod TickBitmapTests {
         #[available_gas(30000000)]
         fn test_zero_position() {
             let mut state = STATE();
-            let (word, bit) = InternalImpl::position(@state, IntegerTrait::<i32>::new(0, false));
+            let (word, bit) = TickBitmap::position(IntegerTrait::<i32>::new(0, false));
             assert(word == IntegerTrait::<i16>::new(0, false), 'word should be 0');
             assert(bit == 0, 'bit should be 0');
         }
@@ -621,7 +622,7 @@ mod TickBitmapTests {
         #[available_gas(30000000)]
         fn test_positive_position_at_255_boundary() {
             let mut state = STATE();
-            let (word, bit) = InternalImpl::position(@state, IntegerTrait::<i32>::new(255, false));
+            let (word, bit) = TickBitmap::position(IntegerTrait::<i32>::new(255, false));
             assert(word == IntegerTrait::<i16>::new(0, false), 'word should be 0');
             assert(bit == 255, 'bit should be 255');
         }
@@ -630,7 +631,7 @@ mod TickBitmapTests {
         #[available_gas(30000000)]
         fn test_positive_position_beyond_255_boundary() {
             let mut state = STATE();
-            let (word, bit) = InternalImpl::position(@state, IntegerTrait::<i32>::new(256, false));
+            let (word, bit) = TickBitmap::position(IntegerTrait::<i32>::new(256, false));
             assert(word == IntegerTrait::<i16>::new(1, false), 'word should be 1');
             assert(bit == 0, 'bit should be 0');
         }
@@ -639,7 +640,7 @@ mod TickBitmapTests {
         #[available_gas(30000000)]
         fn test_negative_position_at_minus_one() {
             let mut state = STATE();
-            let (word, bit) = InternalImpl::position(@state, IntegerTrait::<i32>::new(1, true));
+            let (word, bit) = TickBitmap::position(IntegerTrait::<i32>::new(1, true));
             assert(word == IntegerTrait::<i16>::new(1, true), 'word should be 1');
             assert(bit == 255, 'bit should be 255');
         }
@@ -648,7 +649,7 @@ mod TickBitmapTests {
         #[available_gas(30000000)]
         fn test_negative_position_at_minus_100() {
             let mut state = STATE();
-            let (word, bit) = InternalImpl::position(@state, IntegerTrait::<i32>::new(100, true));
+            let (word, bit) = TickBitmap::position(IntegerTrait::<i32>::new(100, true));
             assert(word == IntegerTrait::<i16>::new(1, true), 'word should be 1');
         }
 
@@ -656,7 +657,7 @@ mod TickBitmapTests {
         #[available_gas(30000000)]
         fn test_negative_position_at_minus_200() {
             let mut state = STATE();
-            let (word, bit) = InternalImpl::position(@state, IntegerTrait::<i32>::new(200, true));
+            let (word, bit) = TickBitmap::position(IntegerTrait::<i32>::new(200, true));
             assert(word == IntegerTrait::<i16>::new(1, true), 'word should be 1');
         }
 
@@ -664,7 +665,7 @@ mod TickBitmapTests {
         #[available_gas(30000000)]
         fn test_negative_position_at_minus_256_boundary() {
             let mut state = STATE();
-            let (word, bit) = InternalImpl::position(@state, IntegerTrait::<i32>::new(256, true));
+            let (word, bit) = TickBitmap::position(IntegerTrait::<i32>::new(256, true));
             assert(word == IntegerTrait::<i16>::new(1, true), 'word should be 1');
             assert(bit == 0, 'bit should be 0');
         }
@@ -673,7 +674,7 @@ mod TickBitmapTests {
         #[available_gas(30000000)]
         fn test_negative_position_beyond_minus_256_boundary() {
             let mut state = STATE();
-            let (word, bit) = InternalImpl::position(@state, IntegerTrait::<i32>::new(257, true));
+            let (word, bit) = TickBitmap::position(IntegerTrait::<i32>::new(257, true));
             assert(word == IntegerTrait::<i16>::new(2, true), 'word should be 2');
             assert(bit == 255, 'bit should be 255');
         }
