@@ -477,4 +477,23 @@ mod TickMathTest {
             assert(min <= as_i24(a_i256) && as_i24(a_i256) <= max, 'min <= i24(large) <= max');
         }
     }
+
+    mod IsGtAsInt {
+        use yas::libraries::tick_math::TickMath::is_gt_as_int;
+
+        #[test]
+        fn test_a_gt_b() {
+            assert(is_gt_as_int(10, 2) == 1, 'a > b result should be 1');
+        }    
+
+        #[test]
+        fn test_a_lt_b() {
+            assert(is_gt_as_int(5, 10) == 0, 'a < b result should be 0');
+        }   
+
+        #[test]
+        fn test_a_eq_b() {
+            assert(is_gt_as_int(5, 5) == 0, 'a == b result should be 0');
+        }    
+    }
 }
