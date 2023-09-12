@@ -1,8 +1,6 @@
 mod TickMath {
     use core::clone::Clone;
     use integer::BoundedInt;
-    use option::OptionTrait;
-    use traits::{Into, TryInto};
     use orion::numbers::signed_integer::integer_trait::IntegerTrait;
     use orion::numbers::signed_integer::i32::i32;
     use yas::numbers::fixed_point::core::{FixedTrait, FixedType};

@@ -465,10 +465,15 @@ mod TestInteger256 {
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use yas::utils::math_utils::MathUtils::pow;
         use integer::BoundedInt;
-        use option::OptionTrait;
-        use traits::{Into, TryInto};
-        use debug::PrintTrait;
 
+        // Some expected values where calculated in Python with a script
+
+        // Two's complement expected is achieved by:
+        // Step 1: starting with the equivalent positive number.
+        // Step 2: inverting (or flipping) all bits – changing every 0 to 1, and every 1 to 0;
+        // Step 3: adding 1 to the entire inverted number, ignoring any overflow. Accounting 
+        // for overflow will produce the wrong value for the result.
+        
         #[test]
         fn test_positive_min_mag() {
             let input = IntegerTrait::<i256>::new(0, false);
