@@ -1,7 +1,4 @@
-use orion::numbers::signed_integer::i32::i32;
-use orion::numbers::signed_integer::i64::i64;
-use orion::numbers::signed_integer::i128::i128;
-use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+use orion::numbers::signed_integer::{i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait};
 
 #[derive(Copy, Drop, Serde, starknet::Store)]
 struct Info {
@@ -47,6 +44,19 @@ trait ITick<TStorage> {
         fee_growth_global_0X128: u256,
         fee_growth_global_1X128: u256
     ) -> (u256, u256);
+    fn update(
+        ref self: TStorage,
+        tick: i32,
+        tick_current: i32,
+        liquidity_delta: i128,
+        fee_growth_global_0X128: u256,
+        fee_growth_global_1X128: u256,
+        seconds_per_liquidity_cumulative_X128: u256,
+        tick_cumulative: i64,
+        time: u32,
+        upper: bool,
+        max_liquidity: u128
+    ) -> bool;
     // TODO: Function used for testing. To be removed in the future
     fn set_tick(ref self: TStorage, tick: i32, info: Info);
     // TODO: Function used for testing. To be removed in the future
@@ -60,9 +70,11 @@ mod Tick {
     use poseidon::poseidon_hash_span;
     use integer::BoundedInt;
 
-    use orion::numbers::signed_integer::{i32::i32, i64::i64, i128::i128};
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+    use orion::numbers::signed_integer::{
+        i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
+    };
 
+    use yas::libraries::liquidity_math::LiquidityMath;
     use yas::utils::math_utils::MathUtils::{i32_div, mod_subtraction};
     use yas::utils::orion_utils::OrionUtils::i32TryIntou128;
 
@@ -194,6 +206,71 @@ mod Tick {
                     fee_growth_above_1X128
                 )
             )
+        }
+
+        /// @notice Updates a tick and returns true if the tick was flipped from initialized to uninitialized, or vice versa
+        /// @param self The mapping containing all tick information for initialized ticks
+        /// @param tick The tick that will be updated
+        /// @param tick_current The current tick
+        /// @param liquidity_delta A new amount of liquidity to be added (subtracted) when tick is crossed from left to right (right to left)
+        /// @param fee_growth_global_0X128 The all-time global fee growth, per unit of liquidity, in token0
+        /// @param fee_growth_global_1X128 The all-time global fee growth, per unit of liquidity, in token1
+        /// @param seconds_per_liquidity_cumulative_X128 The all-time seconds per max(1, liquidity) of the pool
+        /// @param tick_cumulative The tick * time elapsed since the pool was first initialized
+        /// @param time The current block timestamp cast to a uint32
+        /// @param upper true for updating a position's upper tick, or false for updating a position's lower tick
+        /// @param max_liquidity The maximum liquidity allocation for a single tick
+        /// @return flipped Whether the tick was flipped from initialized to uninitialized, or vice versa
+        fn update(
+            ref self: ContractState,
+            tick: i32,
+            tick_current: i32,
+            liquidity_delta: i128,
+            fee_growth_global_0X128: u256,
+            fee_growth_global_1X128: u256,
+            seconds_per_liquidity_cumulative_X128: u256,
+            tick_cumulative: i64,
+            time: u32,
+            upper: bool,
+            max_liquidity: u128
+        ) -> bool {
+            let hashed_tick = self._generate_hashed_tick(@tick);
+            let mut info: Info = self.ticks.read(hashed_tick);
+
+            let liquidity_gross_before: u128 = info.liquidity_gross;
+            let liquidity_gross_after: u128 = LiquidityMath::add_delta(
+                liquidity_gross_before, liquidity_delta
+            );
+
+            assert(liquidity_gross_after <= max_liquidity, 'LO');
+
+            let flipped = (liquidity_gross_after == 0) != (liquidity_gross_before == 0);
+
+            if (liquidity_gross_before == 0) {
+                // by convention, we assume that all growth before a tick was initialized happened _below_ the tick
+                if (tick <= tick_current) {
+                    info.fee_growth_outside_0X128 = fee_growth_global_0X128;
+                    info.fee_growth_outside_1X128 = fee_growth_global_1X128;
+                    info.seconds_per_liquidity_outside_X128 = seconds_per_liquidity_cumulative_X128;
+                    info.tick_cumulative_outside = tick_cumulative;
+                    info.seconds_outside = time;
+                }
+                info.initialized = true;
+            }
+
+            info.liquidity_gross = liquidity_gross_after;
+
+            // when the lower (upper) tick is crossed left to right (right to left), liquidity must be added (removed)
+            info
+                .liquidity_net =
+                    if upper {
+                        info.liquidity_net - liquidity_delta
+                    } else {
+                        info.liquidity_net + liquidity_delta
+                    };
+
+            self.ticks.write(hashed_tick, info);
+            flipped
         }
 
         fn set_tick(ref self: ContractState, tick: i32, info: Info) {
