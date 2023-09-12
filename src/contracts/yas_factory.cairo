@@ -54,10 +54,8 @@ trait IYASFactory<TContractState> {
 #[starknet::contract]
 mod YASFactory {
     use super::IYASFactory;
-    use starknet::{ContractAddress, get_caller_address};
-    use orion::numbers::signed_integer::{
-        i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
-    };
+    use starknet::{ContractAddress, get_caller_address, contract_address_const};
+    use orion::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
 
     #[event]
     #[derive(Drop, starknet::Event)]
@@ -105,6 +103,29 @@ mod YASFactory {
         owner: ContractAddress,
         fee_amount_tick_spacing: LegacyMap::<u32, i32>,
         pool: LegacyMap<(ContractAddress, ContractAddress, u32), ContractAddress>
+    }
+
+    #[constructor]
+    fn constructor(ref self: ContractState) {
+        self.owner.write(get_caller_address());
+        self
+            .emit(
+                OwnerChanged {
+                    old_owner: contract_address_const::<0>(), new_owner: get_caller_address()
+                }
+            );
+
+        // fee %0.05 -> tick_spacing 10
+        self.fee_amount_tick_spacing.write(500, i32 { mag: 10, sign: false });
+        self.emit(FeeAmountEnabled { fee: 500, tick_spacing: i32 { mag: 10, sign: false } });
+
+        // fee %0.3 -> tick_spacing 60
+        self.fee_amount_tick_spacing.write(3000, i32 { mag: 60, sign: false });
+        self.emit(FeeAmountEnabled { fee: 3000, tick_spacing: i32 { mag: 200, sign: false } });
+
+        // fee %1 -> tick_spacing 200
+        self.fee_amount_tick_spacing.write(10000, i32 { mag: 200, sign: false });
+        self.emit(FeeAmountEnabled { fee: 10000, tick_spacing: i32 { mag: 200, sign: false } });
     }
 
     #[external(v0)]
