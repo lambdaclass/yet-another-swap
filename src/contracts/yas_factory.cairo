@@ -142,7 +142,7 @@ mod YASFactory {
                 tick_spacing > zero && tick_spacing < IntegerTrait::<i32>::new(16384, false),
                 'wrong tick_spacing (0<ts<16384)'
             );
-            assert(self.fee_amount_tick_spacing.read(fee) == zero, 'fee_amount_tick should be 0');
+            assert(self.fee_amount_tick_spacing.read(fee) == zero, 'fee_amount_tick cannot be 0');
 
             self.fee_amount_tick_spacing.write(fee, tick_spacing);
             self.emit(FeeAmountEnabled { fee, tick_spacing });
