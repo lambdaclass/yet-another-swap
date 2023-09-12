@@ -680,7 +680,7 @@ mod TickTests {
 
         #[test]
         #[available_gas(30000000)]
-        #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED'))]
+        #[should_panic(expected: ('LO',))]
         fn test_reverts_if_total_liquidity_gross_is_greater_than_max() {
             let mut state = STATE();
 
@@ -799,7 +799,7 @@ mod TickTests {
 
         #[test]
         #[available_gas(30000000)]
-        #[should_panic(expected: ('int: out of range', 'ENTRYPOINT_FAILED'))]
+        #[should_panic(expected: ('int: out of range',))]
         fn test_reverts_on_overflow_liquidity_gross() {
             let mut state = STATE();
 
