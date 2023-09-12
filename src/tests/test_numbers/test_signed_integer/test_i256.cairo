@@ -459,7 +459,7 @@ mod TestInteger256 {
             let result: u256 = val.try_into().unwrap();
         }
     }
-    
+
     mod TwoComplementTests {
         use yas::numbers::signed_integer::i256::{i256, two_complement_if_nec};
         use orion::numbers::signed_integer::integer_trait::IntegerTrait;

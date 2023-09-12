@@ -484,16 +484,16 @@ mod TickMathTest {
         #[test]
         fn test_a_gt_b() {
             assert(is_gt_as_int(10, 2) == 1, 'a > b result should be 1');
-        }    
+        }
 
         #[test]
         fn test_a_lt_b() {
             assert(is_gt_as_int(5, 10) == 0, 'a < b result should be 0');
-        }   
+        }
 
         #[test]
         fn test_a_eq_b() {
             assert(is_gt_as_int(5, 5) == 0, 'a == b result should be 0');
-        }    
+        }
     }
 }
