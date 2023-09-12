@@ -1,4 +1,4 @@
-use orion::numbers::signed_integer::{i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait};
+use orion::numbers::signed_integer::{i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait};
 
 #[derive(Copy, Drop, Serde, starknet::Store)]
 struct Info {
@@ -67,7 +67,7 @@ mod Tick {
     use integer::BoundedInt;
 
     use orion::numbers::signed_integer::{
-        i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
+        i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait
     };
 
     use yas::libraries::liquidity_math::LiquidityMath;

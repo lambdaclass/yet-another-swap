@@ -41,14 +41,14 @@ mod TickBitmapTests {
     mod IsInitialized {
         use super::{init_ticks, STATE};
 
-        use yas::libraries::tick_bitmap::TickBitmap::{TickBitmapImpl, InternalImpl};
-
         use orion::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+
+        use yas::libraries::tick_bitmap::TickBitmap::{TickBitmapImpl, InternalImpl};
 
         #[test]
         #[available_gas(30000000)]
         fn test_is_false_at_first() {
-            let mut state = STATE();
+            let state = STATE();
 
             assert(
                 InternalImpl::is_initialized(@state, IntegerTrait::<i32>::new(1, false)) == false,
@@ -127,11 +127,11 @@ mod TickBitmapTests {
     }
 
     mod FlipTick {
-        use super::{init_ticks, STATE};
-
-        use yas::libraries::tick_bitmap::TickBitmap::{TickBitmapImpl, InternalImpl};
+        use super::STATE;
 
         use orion::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+        
+        use yas::libraries::tick_bitmap::TickBitmap::{TickBitmapImpl, InternalImpl};
 
         #[test]
         #[available_gas(300000000)]
@@ -249,9 +249,9 @@ mod TickBitmapTests {
     mod NextInitializedTickWithinOneWordToTheRight {
         use super::{init_ticks, STATE};
 
-        use yas::libraries::tick_bitmap::TickBitmap::{TickBitmapImpl, InternalImpl};
-
         use orion::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+        
+        use yas::libraries::tick_bitmap::TickBitmap::{TickBitmapImpl, InternalImpl};
 
         #[test]
         #[available_gas(300000000)]
@@ -431,9 +431,9 @@ mod TickBitmapTests {
     mod NextInitializedTickWithinOneWordToTheLeft {
         use super::{init_ticks, STATE};
 
-        use yas::libraries::tick_bitmap::TickBitmap::{TickBitmapImpl, InternalImpl};
-
         use orion::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+        
+        use yas::libraries::tick_bitmap::TickBitmap::{TickBitmapImpl, InternalImpl};
 
         #[test]
         #[available_gas(300000000)]
@@ -593,10 +593,9 @@ mod TickBitmapTests {
     }
 
     mod Position {
-        use yas::libraries::tick_bitmap::TickBitmap;
-        use yas::libraries::tick_bitmap::TickBitmap::{TickBitmapImpl, InternalImpl};
-
         use orion::numbers::signed_integer::{i16::i16, i32::i32, integer_trait::IntegerTrait};
+        
+        use yas::libraries::tick_bitmap::TickBitmap;
 
         #[test]
         #[available_gas(30000000)]
