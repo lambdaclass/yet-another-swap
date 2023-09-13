@@ -47,6 +47,7 @@ fn generate_hashed_position_key(key: @PositionKey) -> felt252 {
 
 #[starknet::contract]
 mod Position {
+    use core::traits::Into;
     use core::traits::TryInto;
     use super::{PositionKey, IPosition, Info, generate_hashed_position_key};
     use orion::numbers::signed_integer::{
@@ -58,6 +59,7 @@ mod Position {
     use array::ArrayTrait;
     use yas::libraries::liquidity_math::LiquidityMath::{add_delta};
     use yas::utils::fullmath::FullMath::{mul_div};
+    use integer::BoundedInt;
 
     #[storage]
     struct Storage {
@@ -100,17 +102,18 @@ mod Position {
             };
 
             // calculate accumulated fees
+            let max_u128_plus_one: u128 = BoundedInt::max() + 1;
             let tokens_owed_0: u128 = mul_div(
                 fee_growth_inside_0_X128 - position.fee_growth_inside_0_last_X128,
                 position.liquidity.into(),
-                0x100000000000000000000000000000000
+                max_u128_plus_one.into()
             )
                 .try_into()
                 .unwrap();
             let tokens_owed_1: u128 = mul_div(
                 fee_growth_inside_1_X128 - position.fee_growth_inside_1_last_X128,
                 position.liquidity.into(),
-                0x100000000000000000000000000000000
+                max_u128_plus_one.into()
             )
                 .try_into()
                 .unwrap();
