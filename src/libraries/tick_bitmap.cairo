@@ -13,7 +13,8 @@ mod TickBitmap {
     use super::ITickBitmap;
 
     use integer::BoundedInt;
-    use poseidon::poseidon_hash_span;
+    use hash::{HashStateTrait, HashStateExTrait};
+    use poseidon::PoseidonTrait;
 
     use yas::libraries::bit_math::BitMath;
     use yas::numbers::signed_integer::{
@@ -41,7 +42,7 @@ mod TickBitmap {
 
             let (word_pos, bit_pos) = position(tick / tick_spacing);
             let mask: u256 = 1_u256.shl(bit_pos.into());
-            let hashed_word_pos = generate_hashed_word_pos(@word_pos);
+            let hashed_word_pos = PoseidonTrait::new().update_with(word_pos).finalize();
             let word = self.bitmap.read(hashed_word_pos);
             self.bitmap.write(hashed_word_pos, word ^ mask);
         }
@@ -65,7 +66,9 @@ mod TickBitmap {
 
             if lte {
                 let (word_pos, bit_pos) = position(compressed);
-                let word: u256 = self.bitmap.read(generate_hashed_word_pos(@word_pos));
+                let word: u256 = self
+                    .bitmap
+                    .read(PoseidonTrait::new().update_with(word_pos).finalize());
                 // all the 1s at or to the right of the current bitPos
                 let mask: u256 = 1_u256.shl(bit_pos.into()) - 1 + 1_u256.shl(bit_pos.into());
                 let masked: u256 = word & mask;
@@ -85,7 +88,7 @@ mod TickBitmap {
             } else {
                 // start from the word of the next tick, since the current tick state doesn't matter
                 let (word_pos, bit_pos) = position(compressed + IntegerTrait::<i32>::new(1, false));
-                let word = self.bitmap.read(generate_hashed_word_pos(@word_pos));
+                let word = self.bitmap.read(PoseidonTrait::new().update_with(word_pos).finalize());
                 // all the 1s at or to the left of the bitPos
                 let mask: u256 = ~(1_u256.shl(bit_pos.into()) - 1);
                 let masked: u256 = word & mask;
@@ -124,12 +127,6 @@ mod TickBitmap {
                 false
             }
         }
-    }
-
-    fn generate_hashed_word_pos(word_pos: @i16) -> felt252 {
-        let mut serialized: Array<felt252> = ArrayTrait::new();
-        Serde::<i16>::serialize(word_pos, ref serialized);
-        poseidon_hash_span(serialized.span())
     }
 
     /// Calculates the word value based on a tick input.
