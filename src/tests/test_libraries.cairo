@@ -1,6 +1,5 @@
 mod test_bit_math;
 mod test_liquidity_math;
-mod test_position_utils;
 mod test_tick_math;
 mod test_sqrt_price_math;
 mod test_swap_math;
