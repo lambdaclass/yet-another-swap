@@ -8,12 +8,11 @@ mod TickTests {
     mod Clear {
         use super::STATE;
 
-        use orion::numbers::signed_integer::{
-            i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait
-        };
-
         use yas::libraries::tick::Info;
         use yas::libraries::tick::Tick::{TickImpl, InternalImpl};
+        use yas::numbers::signed_integer::{
+            i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait
+        };
 
         #[test]
         #[available_gas(30000000)]
@@ -61,12 +60,11 @@ mod TickTests {
     mod Cross {
         use super::STATE;
 
-        use orion::numbers::signed_integer::{
-            i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait
-        };
-
         use yas::libraries::tick::Info;
         use yas::libraries::tick::Tick::{TickImpl, InternalImpl};
+        use yas::numbers::signed_integer::{
+            i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait
+        };
 
         #[test]
         #[available_gas(30000000)]
@@ -146,12 +144,11 @@ mod TickTests {
         use super::STATE;
         use integer::BoundedInt;
 
-        use orion::numbers::signed_integer::{
-            i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait
-        };
-
         use yas::libraries::tick::Info;
         use yas::libraries::tick::Tick::{TickImpl, InternalImpl};
+        use yas::numbers::signed_integer::{
+            i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait
+        };
 
         #[test]
         #[available_gas(30000000)]
@@ -381,12 +378,11 @@ mod TickTests {
         use super::STATE;
         use integer::BoundedInt;
 
-        use orion::numbers::signed_integer::{
-            i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait
-        };
-
         use yas::libraries::tick::Info;
         use yas::libraries::tick::Tick::{TickImpl, InternalImpl};
+        use yas::numbers::signed_integer::{
+            i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait
+        };
 
         // returns the correct value for low fee
         #[test]
@@ -543,11 +539,10 @@ mod TickTests {
         use super::STATE;
         use integer::BoundedInt;
 
-        use orion::numbers::signed_integer::{
+        use yas::libraries::tick::Tick::{TickImpl, InternalImpl};
+        use yas::numbers::signed_integer::{
             i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait
         };
-
-        use yas::libraries::tick::Tick::{TickImpl, InternalImpl};
 
         #[test]
         #[available_gas(30000000)]
