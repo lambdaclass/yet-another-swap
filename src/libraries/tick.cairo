@@ -69,7 +69,8 @@ mod Tick {
 
     use yas::libraries::liquidity_math::LiquidityMath;
     use yas::numbers::signed_integer::{
-        i32::{i32, i32TryIntou128, i32_div}, i64::i64, i128::i128, integer_trait::IntegerTrait
+        i32::{i32, i32TryIntou128, i32_div_no_round}, i64::i64, i128::i128,
+        integer_trait::IntegerTrait
     };
     use yas::utils::math_utils::mod_subtraction;
 
@@ -89,9 +90,9 @@ mod Tick {
             let MIN_TICK = IntegerTrait::<i32>::new(887272, true);
             let MAX_TICK = IntegerTrait::<i32>::new(887272, false);
 
-            let min_tick = i32_div(MIN_TICK, tick_spacing) * tick_spacing;
-            let max_tick = i32_div(MAX_TICK, tick_spacing) * tick_spacing;
-            let num_ticks = i32_div((max_tick - min_tick), tick_spacing)
+            let min_tick = i32_div_no_round(MIN_TICK, tick_spacing) * tick_spacing;
+            let max_tick = i32_div_no_round(MAX_TICK, tick_spacing) * tick_spacing;
+            let num_ticks = i32_div_no_round((max_tick - min_tick), tick_spacing)
                 + IntegerTrait::<i32>::new(1, false);
 
             let max_u128: u128 = BoundedInt::max();
