@@ -137,16 +137,20 @@ mod BitShift {
     }
 }
 
-// TODO: add comment
-fn pow(x: u256, n: u256) -> u256 {
+/// Raise a number to a power.
+/// * `base` - The number to raise.
+/// * `exp` - The exponent.
+/// # Returns
+/// * `u256` - The result of base raised to the power of exp.
+fn pow(base: u256, exp: u256) -> u256 {
     if n == 0 {
         1
     } else if n == 1 {
-        x
+        base
     } else if (n & 1) == 1 {
-        x * pow(x * x, n / 2)
+        base * pow(base * base, exp / 2)
     } else {
-        pow(x * x, n / 2)
+        pow(base * base, exp / 2)
     }
 }
 
