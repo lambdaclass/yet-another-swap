@@ -1,6 +1,6 @@
 mod TestSwapMath {
     use yas::utils::math_utils::MathUtils::pow;
-    use yas::numbers::fixed_point::implementations::impl_64x96::{
+    use cairo_finance::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FP64x96Div, FixedType, FixedTrait, Q96_RESOLUTION, ONE, MAX
     };
 
@@ -11,11 +11,11 @@ mod TestSwapMath {
     mod ComputeSwapStep {
         use yas::libraries::sqrt_price_math::SqrtPriceMath;
         use yas::libraries::swap_math::SwapMath;
-        use yas::numbers::fixed_point::implementations::impl_64x96::{
+        use cairo_finance::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialEq, FP64x96PartialOrd, FP64x96Div, FixedType, FixedTrait,
             Q96_RESOLUTION, ONE, MAX
         };
-        use yas::numbers::signed_integer::i256::{i256, i256TryIntou256};
+        use cairo_finance::numbers::signed_integer::i256::{i256, i256TryIntou256};
         use yas::tests::test_libraries::test_swap_math::TestSwapMath::expand_to_18_decimals;
 
         use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;

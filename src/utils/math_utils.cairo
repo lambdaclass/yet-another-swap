@@ -1,7 +1,7 @@
 mod MathUtils {
     use traits::{Into, TryInto};
     use option::OptionTrait;
-    use yas::numbers::signed_integer::i256::i256;
+    use cairo_finance::numbers::signed_integer::i256::i256;
     use integer::BoundedInt;
     use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
     use cairo_finance::numbers::signed_integer::i32::{
