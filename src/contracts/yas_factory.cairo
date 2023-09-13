@@ -40,8 +40,8 @@ trait IYASFactory<TContractState> {
 
     /// @notice Updates the owner of the factory
     /// @dev Must be called by the current owner
-    /// @param owner The new owner of the factory
-    fn set_owner(ref self: TContractState, owner: ContractAddress);
+    /// @param new_owner The new owner of the factory
+    fn set_owner(ref self: TContractState, new_owner: ContractAddress);
 
     /// @notice Enables a fee amount with the given tick_spacing
     /// @dev Fee amounts may never be removed once enabled
@@ -54,8 +54,10 @@ trait IYASFactory<TContractState> {
 #[starknet::contract]
 mod YASFactory {
     use super::IYASFactory;
-    use starknet::{ContractAddress, get_caller_address, contract_address_const};
+    use starknet::{ContractAddress, get_caller_address};
     use orion::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+
+    use debug::PrintTrait;
 
     #[event]
     #[derive(Drop, starknet::Event)]
@@ -106,14 +108,9 @@ mod YASFactory {
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState) {
-        self.owner.write(get_caller_address());
-        self
-            .emit(
-                OwnerChanged {
-                    old_owner: contract_address_const::<0>(), new_owner: get_caller_address()
-                }
-            );
+    fn constructor(ref self: ContractState, owner: ContractAddress) {
+        self.owner.write(owner);
+        self.emit(OwnerChanged { old_owner: Zeroable::zero(), new_owner: owner });
 
         // fee %0.05 -> tick_spacing 10
         self.fee_amount_tick_spacing.write(500, i32 { mag: 10, sign: false });
@@ -121,7 +118,7 @@ mod YASFactory {
 
         // fee %0.3 -> tick_spacing 60
         self.fee_amount_tick_spacing.write(3000, i32 { mag: 60, sign: false });
-        self.emit(FeeAmountEnabled { fee: 3000, tick_spacing: i32 { mag: 200, sign: false } });
+        self.emit(FeeAmountEnabled { fee: 3000, tick_spacing: i32 { mag: 60, sign: false } });
 
         // fee %1 -> tick_spacing 200
         self.fee_amount_tick_spacing.write(10000, i32 { mag: 200, sign: false });
@@ -129,7 +126,7 @@ mod YASFactory {
     }
 
     #[external(v0)]
-    impl YASFactory of IYASFactory<ContractState> {
+    impl YASFactoryImpl of IYASFactory<ContractState> {
         fn owner(self: @ContractState) -> ContractAddress {
             self.owner.read()
         }
@@ -152,7 +149,7 @@ mod YASFactory {
         }
 
         fn enable_fee_amount(ref self: ContractState, fee: u32, tick_spacing: i32) {
-            self.assert_only_owner(get_caller_address());
+            self.assert_only_owner();
             assert(fee < 1000000, 'fee cannot be gt 1000000');
 
             let zero = IntegerTrait::<i32>::new(0, false);
@@ -169,17 +166,17 @@ mod YASFactory {
             self.emit(FeeAmountEnabled { fee, tick_spacing });
         }
 
-        fn set_owner(ref self: ContractState, owner: ContractAddress) {
-            self.assert_only_owner(get_caller_address());
-            self.emit(OwnerChanged { old_owner: self.owner.read(), new_owner: owner });
-            self.owner.write(owner);
+        fn set_owner(ref self: ContractState, new_owner: ContractAddress) {
+            self.assert_only_owner();
+            self.emit(OwnerChanged { old_owner: self.owner.read(), new_owner: new_owner });
+            self.owner.write(new_owner);
         }
     }
 
     #[generate_trait]
     impl InternalFunctions of InternalFunctionsTrait {
-        fn assert_only_owner(self: @ContractState, caller: ContractAddress) {
-            assert(caller == self.owner.read(), 'Only owner can do this action!');
+        fn assert_only_owner(self: @ContractState) {
+            assert(get_caller_address() == self.owner.read(), 'Only owner can do this action!');
         }
     }
 }

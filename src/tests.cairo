@@ -1,4 +1,7 @@
 #[cfg(test)]
+mod test_contracts;
+
+#[cfg(test)]
 mod test_libraries;
 
 #[cfg(test)]
