@@ -25,7 +25,7 @@ mod TickBitmap {
     use yas::libraries::bit_math::BitMath;
     use yas::utils::math_utils::MathUtils::{BitShiftTrait, pow};
 
-    use yas::utils::cairo_finance_utils::OrionUtils::{
+    use yas::utils::cairo_finance_utils::CairoFinanceUtils::{
         u8Intoi32, i32TryIntoi16, i32TryIntou8, mod_i32
     };
 

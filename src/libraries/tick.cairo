@@ -78,7 +78,7 @@ mod Tick {
 
     use yas::libraries::liquidity_math::LiquidityMath;
     use yas::utils::math_utils::MathUtils::{i32_div, mod_subtraction};
-    use yas::utils::cairo_finance_utils::OrionUtils::i32TryIntou128;
+    use yas::utils::cairo_finance_utils::CairoFinanceUtils::i32TryIntou128;
 
     #[storage]
     struct Storage {

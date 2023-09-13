@@ -1,4 +1,4 @@
-mod OrionUtils {
+mod CairoFinanceUtils {
     use integer::BoundedInt;
 
     use cairo_finance::numbers::signed_integer::i32::i32;
