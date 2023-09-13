@@ -2,8 +2,8 @@
 mod LiquidityMath {
     use core::traits::PartialOrd;
     use core::integer::u128_overflowing_add;
-    use orion::numbers::signed_integer::i128::i128;
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+    use cairo_finance::numbers::signed_integer::i128::i128;
+    use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
 
     /// Add a signed liquidity delta to liquidity and revert if it overflows or underflows.
     /// Parameters:

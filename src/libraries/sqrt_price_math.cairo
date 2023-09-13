@@ -8,8 +8,8 @@ mod SqrtPriceMath {
     };
     use yas::numbers::signed_integer::i256::i256;
     use integer::{u256_overflowing_add, u256_overflow_mul};
-    use orion::numbers::signed_integer::i128::i128;
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+    use cairo_finance::numbers::signed_integer::i128::i128;
+    use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
 
     use yas::utils::math_utils::MathUtils::pow;
 

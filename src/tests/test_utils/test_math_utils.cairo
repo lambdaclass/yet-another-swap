@@ -2,7 +2,7 @@ mod BitShift {
     use yas::utils::math_utils::MathUtils::{BitShiftTrait, pow};
     use integer::BoundedInt;
     use yas::numbers::signed_integer::i256::i256;
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+    use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
 
     #[test]
     #[available_gas(20000000)]
@@ -385,8 +385,8 @@ mod ModSubtractionTests {
 }
 
 mod i32Div {
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-    use orion::numbers::signed_integer::i32::i32;
+    use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+    use cairo_finance::numbers::signed_integer::i32::i32;
     use yas::utils::math_utils::MathUtils::i32_div;
 
     #[test]

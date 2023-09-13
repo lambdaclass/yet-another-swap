@@ -1,8 +1,8 @@
 mod TickTests {
     use starknet::syscalls::deploy_syscall;
 
-    use orion::numbers::signed_integer::i32::i32;
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+    use cairo_finance::numbers::signed_integer::i32::i32;
+    use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
 
     use yas::libraries::tick::{Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
     use yas::utils::math_utils::MathUtils::pow;
@@ -22,7 +22,7 @@ mod TickTests {
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
-        use orion::numbers::signed_integer::{
+        use cairo_finance::numbers::signed_integer::{
             i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
         };
 
@@ -75,7 +75,7 @@ mod TickTests {
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
-        use orion::numbers::signed_integer::{
+        use cairo_finance::numbers::signed_integer::{
             i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
         };
 
@@ -159,7 +159,7 @@ mod TickTests {
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
-        use orion::numbers::signed_integer::{
+        use cairo_finance::numbers::signed_integer::{
             i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
         };
 
@@ -384,7 +384,7 @@ mod TickTests {
         use super::deploy;
         use integer::BoundedInt;
 
-        use orion::numbers::signed_integer::{
+        use cairo_finance::numbers::signed_integer::{
             i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
         };
 
@@ -539,7 +539,7 @@ mod TickTests {
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
-        use orion::numbers::signed_integer::{
+        use cairo_finance::numbers::signed_integer::{
             i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
         };
 

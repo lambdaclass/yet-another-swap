@@ -1,9 +1,9 @@
 mod OrionUtils {
     use integer::BoundedInt;
 
-    use orion::numbers::signed_integer::i32::i32;
-    use orion::numbers::signed_integer::i16::i16;
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+    use cairo_finance::numbers::signed_integer::i32::i32;
+    use cairo_finance::numbers::signed_integer::i16::i16;
+    use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
 
     impl u8Intoi32 of Into<u8, i32> {
         fn into(self: u8) -> i32 {

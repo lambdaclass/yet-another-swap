@@ -1,8 +1,8 @@
 mod TickMath {
     use core::clone::Clone;
     use integer::BoundedInt;
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-    use orion::numbers::signed_integer::i32::i32;
+    use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+    use cairo_finance::numbers::signed_integer::i32::i32;
     use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FP64x96Into, FP64x96Add, FP64x96AddEq, FP64x96Sub, FP64x96SubEq, FP64x96Mul,

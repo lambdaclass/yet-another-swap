@@ -1,4 +1,6 @@
-use orion::numbers::signed_integer::{i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait};
+use cairo_finance::numbers::signed_integer::{
+    i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
+};
 
 #[derive(Copy, Drop, Serde, starknet::Store)]
 struct Info {
@@ -70,13 +72,13 @@ mod Tick {
     use poseidon::poseidon_hash_span;
     use integer::BoundedInt;
 
-    use orion::numbers::signed_integer::{
+    use cairo_finance::numbers::signed_integer::{
         i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
     };
 
     use yas::libraries::liquidity_math::LiquidityMath;
     use yas::utils::math_utils::MathUtils::{i32_div, mod_subtraction};
-    use yas::utils::orion_utils::OrionUtils::i32TryIntou128;
+    use yas::utils::cairo_finance_utils::OrionUtils::i32TryIntou128;
 
     #[storage]
     struct Storage {

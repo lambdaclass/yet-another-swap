@@ -2,10 +2,10 @@ mod OrionUtilsTests {
     mod ConvertI32toU8 {
         use integer::BoundedInt;
 
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::i32::i32;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
 
-        use yas::utils::orion_utils::OrionUtils::i32TryIntou8;
+        use yas::utils::cairo_finance_utils::OrionUtils::i32TryIntou8;
 
         #[test]
         fn test_positive_conversion_within_range() {
@@ -46,10 +46,10 @@ mod OrionUtilsTests {
     mod ConvertU8toI32 {
         use integer::BoundedInt;
 
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::i32::i32;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
 
-        use yas::utils::orion_utils::OrionUtils::u8Intoi32;
+        use yas::utils::cairo_finance_utils::OrionUtils::u8Intoi32;
 
         #[test]
         fn test_conversion() {
@@ -74,11 +74,11 @@ mod OrionUtilsTests {
     }
 
     mod ConvertI32toI16 {
-        use orion::numbers::signed_integer::i16::i16;
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::i16::i16;
+        use cairo_finance::numbers::signed_integer::i32::i32;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
 
-        use yas::utils::orion_utils::OrionUtils::i32TryIntoi16;
+        use yas::utils::cairo_finance_utils::OrionUtils::i32TryIntoi16;
 
         #[test]
         fn test_positive_conversion_within_range() {
@@ -117,9 +117,9 @@ mod OrionUtilsTests {
     }
 
     mod ConvertI32toU32 {
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-        use yas::utils::orion_utils::OrionUtils::i32TryIntou32;
+        use cairo_finance::numbers::signed_integer::i32::i32;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::utils::cairo_finance_utils::OrionUtils::i32TryIntou32;
         use integer::BoundedInt;
 
         #[test]
@@ -146,9 +146,9 @@ mod OrionUtilsTests {
     }
 
     mod ConvertI32toU128 {
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-        use yas::utils::orion_utils::OrionUtils::i32TryIntou128;
+        use cairo_finance::numbers::signed_integer::i32::i32;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::utils::cairo_finance_utils::OrionUtils::i32TryIntou128;
         use integer::BoundedInt;
 
         #[test]
@@ -175,10 +175,10 @@ mod OrionUtilsTests {
     }
 
     mod ModI32 {
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::i32::i32;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
 
-        use yas::utils::orion_utils::OrionUtils::mod_i32;
+        use yas::utils::cairo_finance_utils::OrionUtils::mod_i32;
 
         #[test]
         fn test_positive_mod() {

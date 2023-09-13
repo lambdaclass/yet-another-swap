@@ -1,4 +1,4 @@
-use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
 use integer::{BoundedInt, u256_wide_mul};
 // ====================== INT 256 ======================
 

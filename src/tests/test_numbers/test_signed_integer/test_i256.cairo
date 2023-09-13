@@ -1,7 +1,7 @@
 mod TestInteger256 {
     mod New {
         use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
 
         // Test new i256 max
@@ -33,7 +33,7 @@ mod TestInteger256 {
 
     mod Add {
         use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
 
         // Test addition of two positive integers
@@ -99,7 +99,7 @@ mod TestInteger256 {
 
     mod Sub {
         use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
 
         // Test subtraction of two positive integers with larger first
@@ -205,7 +205,7 @@ mod TestInteger256 {
 
     mod Mul {
         use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
 
         // Test multiplication of positive integers
@@ -271,7 +271,7 @@ mod TestInteger256 {
 
     mod DivRem {
         use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
 
         // Test division and remainder of positive integers
@@ -428,7 +428,7 @@ mod TestInteger256 {
 
     mod i256IntoU256 {
         use yas::numbers::signed_integer::i256::{i256, i256TryIntou256};
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
 
         #[test]
@@ -462,7 +462,7 @@ mod TestInteger256 {
 
     mod TwoComplementTests {
         use yas::numbers::signed_integer::i256::{i256, two_complement_if_nec};
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
         use yas::utils::math_utils::MathUtils::pow;
         use integer::BoundedInt;
 

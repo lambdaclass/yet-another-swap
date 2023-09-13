@@ -1,5 +1,5 @@
-use orion::numbers::signed_integer::i32::i32;
-use orion::numbers::signed_integer::i16::i16;
+use cairo_finance::numbers::signed_integer::i32::i32;
+use cairo_finance::numbers::signed_integer::i16::i16;
 
 #[starknet::interface]
 trait ITickBitmap<TStorage> {
@@ -18,14 +18,16 @@ mod TickBitmap {
     use integer::BoundedInt;
     use poseidon::poseidon_hash_span;
 
-    use orion::numbers::signed_integer::i32::i32;
-    use orion::numbers::signed_integer::i16::i16;
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+    use cairo_finance::numbers::signed_integer::i32::i32;
+    use cairo_finance::numbers::signed_integer::i16::i16;
+    use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
 
     use yas::libraries::bit_math::BitMath;
     use yas::utils::math_utils::MathUtils::{BitShiftTrait, pow};
 
-    use yas::utils::orion_utils::OrionUtils::{u8Intoi32, i32TryIntoi16, i32TryIntou8, mod_i32};
+    use yas::utils::cairo_finance_utils::OrionUtils::{
+        u8Intoi32, i32TryIntoi16, i32TryIntou8, mod_i32
+    };
 
     #[storage]
     struct Storage {

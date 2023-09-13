@@ -9,8 +9,8 @@ mod TickMathTest {
         };
         use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
 
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::i32::i32;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
 
         #[test]
         #[available_gas(200000000)]
@@ -188,8 +188,8 @@ mod TickMathTest {
         };
         use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
 
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::i32::i32;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
 
         #[test]
         #[available_gas(2000000000)]
@@ -377,7 +377,7 @@ mod TickMathTest {
     }
 
     mod BitWise {
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
         use yas::numbers::signed_integer::i256::{i256, bitwise_or};
 
         #[test]
@@ -418,8 +418,8 @@ mod TickMathTest {
         use yas::numbers::signed_integer::i256::i256;
         use yas::utils::math_utils::MathUtils::BitShiftTrait;
 
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-        use orion::numbers::signed_integer::i32::i32;
+        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+        use cairo_finance::numbers::signed_integer::i32::i32;
 
         #[test]
         #[available_gas(200000000)]

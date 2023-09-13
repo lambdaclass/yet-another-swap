@@ -3,8 +3,10 @@ mod MathUtils {
     use option::OptionTrait;
     use yas::numbers::signed_integer::i256::i256;
     use integer::BoundedInt;
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-    use orion::numbers::signed_integer::i32::{i32, ensure_non_negative_zero, i32_check_sign_zero};
+    use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+    use cairo_finance::numbers::signed_integer::i32::{
+        i32, ensure_non_negative_zero, i32_check_sign_zero
+    };
 
     trait BitShiftTrait<T> {
         fn shl(self: @T, n: T) -> T;

@@ -2,7 +2,7 @@ use debug::PrintTrait;
 
 use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
 use yas::numbers::fixed_point::math::math_64x96;
-use orion::numbers::signed_integer::{i32::i32, i8::i8};
+use cairo_finance::numbers::signed_integer::{i32::i32, i8::i8};
 
 const PRIME: felt252 = 3618502788666131213697322783095070105623107215331596699973092056135872020480;
 const HALF_PRIME: felt252 =

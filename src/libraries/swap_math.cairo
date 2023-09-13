@@ -12,7 +12,7 @@ mod SwapMath {
         get_next_sqrt_price_from_output
     };
     use integer::{u256_overflowing_add, u256_overflow_mul};
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+    use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
 
     const _1e6: u256 = 1000000; // 10 ** 6 
 
