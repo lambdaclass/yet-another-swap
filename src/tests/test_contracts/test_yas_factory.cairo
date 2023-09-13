@@ -19,7 +19,7 @@ mod YASFactoryTests {
     }
 
     fn ZERO() -> ContractAddress {
-        contract_address_const::<0>()
+        Zeroable::zero()
     }
 
     enum FeeAmount {
@@ -45,7 +45,6 @@ mod YASFactoryTests {
     }
 
     fn deploy(deployer: ContractAddress) -> IYASFactoryDispatcher {
-        let calldata: Array<felt252> = ArrayTrait::new();
         let (address, _) = deploy_syscall(
             YASFactory::TEST_CLASS_HASH.try_into().unwrap(), 0, array![deployer.into()].span(), true
         )
@@ -84,9 +83,7 @@ mod YASFactoryTests {
         #[available_gas(20000000)]
         fn test_deployer_should_be_contract_owner() {
             let yas_factory = deploy(OWNER());
-            let deployer = yas_factory.owner();
-
-            assert(deployer == OWNER(), 'Deployer should be owner')
+            assert(yas_factory.owner() == OWNER(), 'Owner doesnt match')
         }
 
         #[test]
@@ -178,35 +175,17 @@ mod YASFactoryTests {
 
             // Clean up the 4 events emitted by the deploy
             clean_events(yas_factory.contract_address);
+
+            // Set and read new owner
             yas_factory.set_owner(OTHER());
             let new_owner = yas_factory.owner();
 
             assert(new_owner == OTHER(), 'new owner should be OTHER');
 
+            // Verify OwnerChanged event emitted
             let event = pop_log::<OwnerChanged>(yas_factory.contract_address).unwrap();
             assert(event.old_owner == OWNER(), 'event old owner should be OWNER');
             assert(event.new_owner == OTHER(), 'event new owner should be OTHER');
         }
     }
-//   describe('#setOwner', () => {
-//     it('fails if caller is not owner', async () => {
-//       await expect(factory.connect(other).setOwner(wallet.address)).to.be.reverted
-//     })
-
-//     it('updates owner', async () => {
-//       await factory.setOwner(other.address)
-//       expect(await factory.owner()).to.eq(other.address)
-//     })
-
-//     it('emits event', async () => {
-//       await expect(factory.setOwner(other.address))
-//         .to.emit(factory, 'OwnerChanged')
-//         .withArgs(wallet.address, other.address)
-//     })
-
-//     it('cannot be called by original owner', async () => {
-//       await factory.setOwner(other.address)
-//       await expect(factory.setOwner(wallet.address)).to.be.reverted
-//     })
-//   })
 }
