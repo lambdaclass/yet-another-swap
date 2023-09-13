@@ -1,10 +1,8 @@
 mod TickTests {
     use starknet::syscalls::deploy_syscall;
 
-    use yas::numbers::signed_integer::i32::i32;
-    use yas::numbers::signed_integer::integer_trait::IntegerTrait;
-
     use yas::libraries::tick::{Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
+    use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
     use yas::utils::math_utils::pow;
 
     fn deploy() -> ITickDispatcher {
@@ -21,7 +19,6 @@ mod TickTests {
         use integer::BoundedInt;
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
-
         use yas::numbers::signed_integer::{
             i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
         };
@@ -74,7 +71,6 @@ mod TickTests {
         use integer::BoundedInt;
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
-
         use yas::numbers::signed_integer::{
             i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
         };
@@ -158,7 +154,6 @@ mod TickTests {
         use integer::BoundedInt;
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
-
         use yas::numbers::signed_integer::{
             i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
         };
@@ -384,12 +379,11 @@ mod TickTests {
         use super::deploy;
         use integer::BoundedInt;
 
+        use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
         use yas::numbers::signed_integer::{
             i32::{i32, i32_div_no_round}, i128::i128, i64::i64, integer_trait::IntegerTrait
         };
-
         use yas::utils::math_utils::pow;
-        use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
 
         // returns the correct value for low fee
         #[test]
@@ -538,7 +532,6 @@ mod TickTests {
         use integer::BoundedInt;
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
-
         use yas::numbers::signed_integer::{
             i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
         };

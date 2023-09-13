@@ -2,8 +2,7 @@
 mod LiquidityMath {
     use core::traits::PartialOrd;
     use core::integer::u128_overflowing_add;
-    use yas::numbers::signed_integer::i128::i128;
-    use yas::numbers::signed_integer::integer_trait::IntegerTrait;
+    use yas::numbers::signed_integer::{i128::i128, integer_trait::IntegerTrait};
 
     /// Add a signed liquidity delta to liquidity and revert if it overflows or underflows.
     /// Parameters:

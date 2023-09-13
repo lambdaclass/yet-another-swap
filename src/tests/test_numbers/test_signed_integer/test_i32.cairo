@@ -2,8 +2,7 @@ mod TestInteger32 {
     mod ConvertI32toU8 {
         use integer::BoundedInt;
 
-        use yas::numbers::signed_integer::i32::{i32, i32TryIntou8};
-        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::{i32::{i32, i32TryIntou8}, integer_trait::IntegerTrait};
 
         #[test]
         fn test_positive_conversion_within_range() {
@@ -44,8 +43,7 @@ mod TestInteger32 {
     mod ConvertU8toI32 {
         use integer::BoundedInt;
 
-        use yas::numbers::signed_integer::i32::{i32, u8Intoi32};
-        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::{i32::{i32, u8Intoi32}, integer_trait::IntegerTrait};
 
         #[test]
         fn test_conversion() {
@@ -70,9 +68,9 @@ mod TestInteger32 {
     }
 
     mod ConvertI32toI16 {
-        use yas::numbers::signed_integer::i16::i16;
-        use yas::numbers::signed_integer::i32::{i32, i32TryIntoi16};
-        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::{
+            i16::i16, i32::{i32, i32TryIntoi16}, integer_trait::IntegerTrait
+        };
 
         #[test]
         fn test_positive_conversion_within_range() {
@@ -111,9 +109,9 @@ mod TestInteger32 {
     }
 
     mod ConvertI32toU32 {
-        use yas::numbers::signed_integer::i32::{i32, i32TryIntou32};
-        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i32::{i32, i32TryIntou32}, integer_trait::IntegerTrait};
 
         #[test]
         fn test_positive_max_conversion() {
@@ -139,9 +137,9 @@ mod TestInteger32 {
     }
 
     mod ConvertI32toU128 {
-        use yas::numbers::signed_integer::i32::{i32, i32TryIntou128};
-        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i32::{i32, i32TryIntou128}, integer_trait::IntegerTrait};
 
         #[test]
         fn test_positive_max_conversion() {
@@ -167,8 +165,7 @@ mod TestInteger32 {
     }
 
     mod ModI32 {
-        use yas::numbers::signed_integer::i32::{i32, mod_i32};
-        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::{i32::{i32, mod_i32}, integer_trait::IntegerTrait};
 
         #[test]
         fn test_positive_mod() {
@@ -215,8 +212,9 @@ mod TestInteger32 {
     }
 
     mod i32DivNoRound {
-        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
-        use yas::numbers::signed_integer::i32::{i32, i32_div_no_round};
+        use yas::numbers::signed_integer::{
+            i32::{i32, i32_div_no_round}, integer_trait::IntegerTrait
+        };
 
         #[test]
         fn test_numerator_eq_denominator_negative_x_negative() {

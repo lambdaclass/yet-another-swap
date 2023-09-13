@@ -70,12 +70,11 @@ mod Tick {
     use poseidon::poseidon_hash_span;
     use integer::BoundedInt;
 
+    use yas::libraries::liquidity_math::LiquidityMath;
     use yas::numbers::signed_integer::{
-        i32::{i32, i32TryIntou128, i32_div_no_round}, i128::i128, i64::i64,
+        i32::{i32, i32TryIntou128, i32_div_no_round}, i64::i64, i128::i128,
         integer_trait::IntegerTrait
     };
-
-    use yas::libraries::liquidity_math::LiquidityMath;
     use yas::utils::math_utils::mod_subtraction;
 
     #[storage]

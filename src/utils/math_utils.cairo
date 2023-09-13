@@ -64,11 +64,12 @@ mod FullMath {
 
 mod BitShift {
     use super::pow;
-    use traits::{Into, TryInto};
-    use yas::numbers::signed_integer::i256::i256;
     use integer::BoundedInt;
-    use yas::numbers::signed_integer::integer_trait::IntegerTrait;
-    use yas::numbers::signed_integer::i32::{i32, ensure_non_negative_zero, i32_check_sign_zero};
+
+    use yas::numbers::signed_integer::{
+        i32::{i32, ensure_non_negative_zero, i32_check_sign_zero}, i256::i256,
+        integer_trait::IntegerTrait
+    };
 
     trait BitShiftTrait<T> {
         fn shl(self: @T, n: T) -> T;

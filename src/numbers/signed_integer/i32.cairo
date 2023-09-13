@@ -1,10 +1,6 @@
-use core::option::OptionTrait;
-use core::traits::TryInto;
 use integer::BoundedInt;
 
-use yas::numbers::signed_integer::integer_trait::IntegerTrait;
-use yas::numbers::signed_integer::{i8::i8, i16::i16};
-
+use yas::numbers::signed_integer::{i8::i8, i16::i16, integer_trait::IntegerTrait};
 
 // ====================== INT 32 ======================
 

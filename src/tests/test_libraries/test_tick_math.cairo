@@ -8,9 +8,7 @@ mod TickMathTest {
             FP64x96PartialEq
         };
         use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
-
-        use yas::numbers::signed_integer::i32::i32;
-        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
 
         #[test]
         #[available_gas(200000000)]
@@ -187,9 +185,7 @@ mod TickMathTest {
             FP64x96Impl, FP64x96PartialOrd
         };
         use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
-
-        use yas::numbers::signed_integer::i32::i32;
-        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
 
         #[test]
         #[available_gas(2000000000)]
@@ -377,8 +373,7 @@ mod TickMathTest {
     }
 
     mod BitWise {
-        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
-        use yas::numbers::signed_integer::i256::{i256, bitwise_or};
+        use yas::numbers::signed_integer::{i256::{i256, bitwise_or}, integer_trait::IntegerTrait};
 
         #[test]
         #[available_gas(2000000000)]
@@ -415,11 +410,8 @@ mod TickMathTest {
 
     mod AsI24 {
         use yas::libraries::tick_math::TickMath::as_i24;
-        use yas::numbers::signed_integer::i256::i256;
+        use yas::numbers::signed_integer::{i32::i32, i256::i256, integer_trait::IntegerTrait};
         use yas::utils::math_utils::BitShift::BitShiftTrait;
-
-        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
-        use yas::numbers::signed_integer::i32::i32;
 
         #[test]
         #[available_gas(200000000)]

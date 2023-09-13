@@ -1,17 +1,15 @@
 // Functions based on Q64.96 sqrt price and liquidity
 // Contains the math that uses square root of price as a Q64.96 and liquidity to compute deltas
 mod SqrtPriceMath {
-    use yas::utils::math_utils::FullMath::{div_rounding_up, mul_div, mul_div_rounding_up};
+    use integer::{u256_overflowing_add, u256_overflow_mul};
+
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FixedType, FixedTrait, FP64x96Add, FP64x96Sub, FP64x96Mul, FP64x96Div,
         FP64x96PartialEq, FP64x96PartialOrd, Q96_RESOLUTION, ONE, MAX
     };
     use yas::numbers::signed_integer::i256::i256;
-    use integer::{u256_overflowing_add, u256_overflow_mul};
-    use yas::numbers::signed_integer::i128::i128;
-    use yas::numbers::signed_integer::integer_trait::IntegerTrait;
-
-    use yas::utils::math_utils::pow;
+    use yas::numbers::signed_integer::{i128::i128, integer_trait::IntegerTrait};
+    use yas::utils::math_utils::{FullMath::{div_rounding_up, mul_div, mul_div_rounding_up}, pow};
 
     /// Returns the next square root price given a token0 delta.
     /// @param sqrtPX96 The initial price (prior to considering the token0 delta).
