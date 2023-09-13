@@ -6,7 +6,7 @@ use yas::numbers::signed_integer::integer_trait::IntegerTrait;
 // i64 represents a 64-bit integer.
 // The mag field holds the absolute value of the integer.
 // The sign field is true for negative integers, and false for non-negative integers.
-#[derive(Serde, Copy, Drop, starknet::Store)]
+#[derive(Serde, Copy, Drop, Hash, starknet::Store)]
 struct i64 {
     mag: u64,
     sign: bool,

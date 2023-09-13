@@ -5,7 +5,7 @@ use integer::{BoundedInt, u256_wide_mul};
 // i256 represents a 256-bit integer.
 // The mag field holds the absolute value of the integer.
 // The sign field is true for negative integers, and false for non-negative integers.
-#[derive(Serde, Copy, Drop)]
+#[derive(Serde, Copy, Drop, Hash, starknet::Store)]
 struct i256 {
     mag: u256,
     sign: bool,
