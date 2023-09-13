@@ -1,8 +1,8 @@
 mod TestInteger256 {
     mod New {
-        use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
 
         // Test new i256 max
         #[test]
@@ -32,9 +32,9 @@ mod TestInteger256 {
     }
 
     mod Add {
-        use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
 
         // Test addition of two positive integers
         #[test]
@@ -98,9 +98,9 @@ mod TestInteger256 {
     }
 
     mod Sub {
-        use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
 
         // Test subtraction of two positive integers with larger first
         #[test]
@@ -204,9 +204,9 @@ mod TestInteger256 {
     }
 
     mod Mul {
-        use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
 
         // Test multiplication of positive integers
         #[test]
@@ -270,9 +270,9 @@ mod TestInteger256 {
     }
 
     mod DivRem {
-        use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
 
         // Test division and remainder of positive integers
         #[test]
@@ -427,9 +427,9 @@ mod TestInteger256 {
     }
 
     mod i256IntoU256 {
-        use yas::numbers::signed_integer::i256::{i256, i256TryIntou256};
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
 
         #[test]
         fn test_positive_conversion_within_range() {
@@ -461,10 +461,11 @@ mod TestInteger256 {
     }
 
     mod TwoComplementTests {
-        use yas::numbers::signed_integer::i256::{i256, two_complement_if_nec};
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-        use yas::utils::math_utils::MathUtils::pow;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{
+            i256::{i256, two_complement_if_nec}, integer_trait::IntegerTrait
+        };
 
         // Some expected values where calculated in Python with a script
 

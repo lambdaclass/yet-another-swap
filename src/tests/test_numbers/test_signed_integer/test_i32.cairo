@@ -1,11 +1,8 @@
-mod OrionUtilsTests {
+mod TestInteger32 {
     mod ConvertI32toU8 {
         use integer::BoundedInt;
 
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-
-        use yas::utils::orion_utils::OrionUtils::i32TryIntou8;
+        use yas::numbers::signed_integer::{i32::{i32, i32TryIntou8}, integer_trait::IntegerTrait};
 
         #[test]
         fn test_positive_conversion_within_range() {
@@ -46,10 +43,7 @@ mod OrionUtilsTests {
     mod ConvertU8toI32 {
         use integer::BoundedInt;
 
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-
-        use yas::utils::orion_utils::OrionUtils::u8Intoi32;
+        use yas::numbers::signed_integer::{i32::{i32, u8Intoi32}, integer_trait::IntegerTrait};
 
         #[test]
         fn test_conversion() {
@@ -74,11 +68,9 @@ mod OrionUtilsTests {
     }
 
     mod ConvertI32toI16 {
-        use orion::numbers::signed_integer::i16::i16;
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-
-        use yas::utils::orion_utils::OrionUtils::i32TryIntoi16;
+        use yas::numbers::signed_integer::{
+            i16::i16, i32::{i32, i32TryIntoi16}, integer_trait::IntegerTrait
+        };
 
         #[test]
         fn test_positive_conversion_within_range() {
@@ -117,10 +109,9 @@ mod OrionUtilsTests {
     }
 
     mod ConvertI32toU32 {
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-        use yas::utils::orion_utils::OrionUtils::i32TryIntou32;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i32::{i32, i32TryIntou32}, integer_trait::IntegerTrait};
 
         #[test]
         fn test_positive_max_conversion() {
@@ -146,10 +137,9 @@ mod OrionUtilsTests {
     }
 
     mod ConvertI32toU128 {
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-        use yas::utils::orion_utils::OrionUtils::i32TryIntou128;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i32::{i32, i32TryIntou128}, integer_trait::IntegerTrait};
 
         #[test]
         fn test_positive_max_conversion() {
@@ -175,10 +165,7 @@ mod OrionUtilsTests {
     }
 
     mod ModI32 {
-        use orion::numbers::signed_integer::i32::i32;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-
-        use yas::utils::orion_utils::OrionUtils::mod_i32;
+        use yas::numbers::signed_integer::{i32::{i32, mod_i32}, integer_trait::IntegerTrait};
 
         #[test]
         fn test_positive_mod() {
@@ -221,6 +208,134 @@ mod OrionUtilsTests {
             let n = IntegerTrait::<i32>::new(150, false); // 150
             let m = IntegerTrait::<i32>::new(256, true); // -256
             let result = mod_i32(n, m);
+        }
+    }
+
+    mod i32DivNoRound {
+        use yas::numbers::signed_integer::{
+            i32::{i32, i32_div_no_round}, integer_trait::IntegerTrait
+        };
+
+        #[test]
+        fn test_numerator_eq_denominator_negative_x_negative() {
+            // -24 / -24 = 1   
+            let a = IntegerTrait::<i32>::new(24, true);
+            let b = IntegerTrait::<i32>::new(24, true);
+            let actual = i32_div_no_round(a, b);
+            assert(actual.mag == 1, '-24 // -24 should be 1');
+            assert(actual.sign == false, '-24 // -24 should be positive');
+        }
+
+        #[test]
+        fn test_numerator_eq_denominator_positive_x_negative() {
+            // 24 / -24 = -1   
+            let a = IntegerTrait::<i32>::new(24, false);
+            let b = IntegerTrait::<i32>::new(24, true);
+            let actual = i32_div_no_round(a, b);
+            assert(actual.mag == 1, '24 // -24 should be 1');
+            assert(actual.sign == true, '24 // -24 should be negative');
+        }
+
+        #[test]
+        fn test_numerator_eq_denominator_negative_x_positive() {
+            // -24 / 24 = -1   
+            let a = IntegerTrait::<i32>::new(24, true);
+            let b = IntegerTrait::<i32>::new(24, false);
+            let actual = i32_div_no_round(a, b);
+            assert(actual.mag == 1, '-24 // 24 should be 1');
+            assert(actual.sign == true, '-24 // 24 should be negative');
+        }
+
+        #[test]
+        fn test_numerator_eq_denominator_positive_x_positive() {
+            // 24 / 24 = 1   
+            let a = IntegerTrait::<i32>::new(24, false);
+            let b = IntegerTrait::<i32>::new(24, false);
+            let actual = i32_div_no_round(a, b);
+            assert(actual.mag == 1, '24 // 24 should be 1');
+            assert(actual.sign == false, '24 // 24 should be negative');
+        }
+
+        #[test]
+        fn test_negative_x_positive() {
+            // -10 / 3 = -3   
+            let a = IntegerTrait::<i32>::new(10, true);
+            let b = IntegerTrait::<i32>::new(3, false);
+            let actual = i32_div_no_round(a, b);
+            assert(actual.mag == 3, '-10 // 3 should be 3');
+            assert(actual.sign == true, '-10 // 3 should be negative');
+        }
+
+        #[test]
+        fn test_positive_x_negative() {
+            // 5 / -3 = -1   
+            let a = IntegerTrait::<i32>::new(5, false);
+            let b = IntegerTrait::<i32>::new(3, true);
+            let actual = i32_div_no_round(a, b);
+            assert(actual.mag == 1, '5 // -3 should be 3');
+            assert(actual.sign == true, '5 // -3 should be negative');
+        }
+
+        // Test to evaluate rounding behavior and zeros
+        #[test]
+        fn test_numerator_gt_denominator_positive() {
+            let ZERO = IntegerTrait::<i32>::new(0, false);
+
+            // 6 / 10 = 0
+            let a = IntegerTrait::<i32>::new(6, false);
+            let b = IntegerTrait::<i32>::new(10, false);
+            let actual = i32_div_no_round(a, b);
+            assert(actual == ZERO, '6 // 10 should be 0');
+
+            // 5 / 10 = 0
+            let a = IntegerTrait::<i32>::new(5, false);
+            let b = IntegerTrait::<i32>::new(10, false);
+            let actual = i32_div_no_round(a, b);
+            assert(actual == ZERO, '5 // 10 should be 0');
+
+            // 1 / 10 = 0
+            let a = IntegerTrait::<i32>::new(1, false);
+            let b = IntegerTrait::<i32>::new(10, false);
+            let actual = i32_div_no_round(a, b);
+            assert(actual == ZERO, '1 // 10 should be 0');
+        }
+
+        // Test to evaluate rounding behavior and zeros
+        #[test]
+        fn test_numerator_gt_denominator_negative() {
+            let ZERO = IntegerTrait::<i32>::new(0, false);
+
+            // -6 / 10 = 0
+            let a = IntegerTrait::<i32>::new(6, true);
+            let b = IntegerTrait::<i32>::new(10, false);
+            let actual = i32_div_no_round(a, b);
+            assert(actual == ZERO, '-6 // 10 should be 0');
+
+            // -5 / 10 = 0
+            let a = IntegerTrait::<i32>::new(5, true);
+            let b = IntegerTrait::<i32>::new(10, false);
+            let actual = i32_div_no_round(a, b);
+            assert(actual == ZERO, '-5 // 10 should be 0');
+
+            // -1 / 10 = 0
+            let a = IntegerTrait::<i32>::new(1, true);
+            let b = IntegerTrait::<i32>::new(10, false);
+            let actual = i32_div_no_round(a, b);
+            assert(actual == ZERO, '-1 // 10 should be 0');
+
+            // 5 / -10 = 0
+            let a = IntegerTrait::<i32>::new(5, false);
+            let b = IntegerTrait::<i32>::new(10, true);
+            let actual = i32_div_no_round(a, b);
+            assert(actual == ZERO, '5 // -10 should be 0');
+        }
+
+        #[test]
+        #[should_panic(expected: ('denominator cannot be 0',))]
+        fn test_div_by_zero_should_panic() {
+            let a = IntegerTrait::<i32>::new(1, false);
+            let b = IntegerTrait::<i32>::new(0, false);
+            let actual = i32_div_no_round(a, b);
         }
     }
 }

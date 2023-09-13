@@ -1,15 +1,15 @@
 mod TickMath {
-    use core::clone::Clone;
     use integer::BoundedInt;
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-    use orion::numbers::signed_integer::i32::i32;
+
     use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FP64x96Into, FP64x96Add, FP64x96AddEq, FP64x96Sub, FP64x96SubEq, FP64x96Mul,
         FP64x96MulEq, FP64x96Div, FP64x96DivEq, FP64x96PartialOrd, FP64x96PartialEq
     };
-    use yas::utils::math_utils::MathUtils::BitShiftTrait;
-    use yas::numbers::signed_integer::i256::{i256, bitwise_or};
+    use yas::numbers::signed_integer::{
+        i32::i32, integer_trait::IntegerTrait, i256::{i256, bitwise_or}
+    };
+    use yas::utils::math_utils::BitShift::BitShiftTrait;
 
     /// The minimum tick that may be passed to `get_sqrt_ratio_at_tick` computed from log base 1.0001 of 2**-128
     fn MIN_TICK() -> i32 {
