@@ -1,10 +1,6 @@
-use core::debug::PrintTrait;
-use option::OptionTrait;
-use traits::{Into, TryInto};
-
-use fractal_swap::numbers::fixed_point::core::{FixedTrait, FixedType};
-use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{ONE, ONE_u128, MAX, HALF};
-use fractal_swap::numbers::fixed_point::implementations::impl_64x96::{
+use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
+use yas::numbers::fixed_point::implementations::impl_64x96::{ONE, ONE_u128, MAX, HALF};
+use yas::numbers::fixed_point::implementations::impl_64x96::{
     FP64x96Impl, FP64x96Add, FP64x96AddEq, FP64x96Into, FP64x96Print, FP64x96PartialEq, FP64x96Sub,
     FP64x96SubEq, FP64x96Mul, FP64x96MulEq, FP64x96Div, FP64x96DivEq, FP64x96PartialOrd, FP64x96Neg
 };
