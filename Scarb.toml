@@ -7,7 +7,6 @@ repository = "https://github.com/lambdaclass/yet-another-swap/"
 
 [dependencies]
 starknet = ">=2.2.0"
-cairo_finance = { git = "https://github.com/dpinones/cairo_finance", branch = "add-signed-integer" }
 
 [[target.starknet-contract]]
 

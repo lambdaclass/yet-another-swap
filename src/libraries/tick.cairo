@@ -1,6 +1,4 @@
-use cairo_finance::numbers::signed_integer::{
-    i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
-};
+use yas::numbers::signed_integer::{i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait};
 
 #[derive(Copy, Drop, Serde, starknet::Store)]
 struct Info {
@@ -72,13 +70,13 @@ mod Tick {
     use poseidon::poseidon_hash_span;
     use integer::BoundedInt;
 
-    use cairo_finance::numbers::signed_integer::{
-        i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
+    use yas::numbers::signed_integer::{
+        i32::{i32, i32TryIntou128, i32_div_no_round}, i128::i128, i64::i64,
+        integer_trait::IntegerTrait
     };
 
     use yas::libraries::liquidity_math::LiquidityMath;
-    use yas::utils::math_utils::MathUtils::{i32_div, mod_subtraction};
-    use yas::utils::cairo_finance_utils::CairoFinanceUtils::i32TryIntou128;
+    use yas::utils::math_utils::mod_subtraction;
 
     #[storage]
     struct Storage {
@@ -96,9 +94,9 @@ mod Tick {
             let MIN_TICK = IntegerTrait::<i32>::new(887272, true);
             let MAX_TICK = IntegerTrait::<i32>::new(887272, false);
 
-            let min_tick = i32_div(MIN_TICK, tick_spacing) * tick_spacing;
-            let max_tick = i32_div(MAX_TICK, tick_spacing) * tick_spacing;
-            let num_ticks = i32_div((max_tick - min_tick), tick_spacing)
+            let min_tick = i32_div_no_round(MIN_TICK, tick_spacing) * tick_spacing;
+            let max_tick = i32_div_no_round(MAX_TICK, tick_spacing) * tick_spacing;
+            let num_ticks = i32_div_no_round((max_tick - min_tick), tick_spacing)
                 + IntegerTrait::<i32>::new(1, false);
 
             let max_u128: u128 = BoundedInt::max();

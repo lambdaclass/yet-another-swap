@@ -3,14 +3,14 @@ mod TickMathTest {
         use yas::libraries::tick_math::TickMath::{
             MIN_TICK, MAX_TICK, MAX_SQRT_RATIO, MIN_SQRT_RATIO, get_sqrt_ratio_at_tick,
         };
-        use cairo_finance::numbers::fixed_point::implementations::impl_64x96::{
+        use yas::numbers::fixed_point::implementations::impl_64x96::{
             ONE, MAX, FP64x96Impl, FP64x96Div, FP64x96Sub, FP64x96Mul, FP64x96PartialOrd,
             FP64x96PartialEq
         };
-        use cairo_finance::numbers::fixed_point::core::{FixedTrait, FixedType};
+        use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
 
-        use cairo_finance::numbers::signed_integer::i32::i32;
-        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::i32::i32;
+        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
 
         #[test]
         #[available_gas(200000000)]
@@ -183,13 +183,13 @@ mod TickMathTest {
             MIN_TICK, MAX_TICK, MAX_SQRT_RATIO, MIN_SQRT_RATIO, get_tick_at_sqrt_ratio,
             get_sqrt_ratio_at_tick,
         };
-        use cairo_finance::numbers::fixed_point::implementations::impl_64x96::{
+        use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialOrd
         };
-        use cairo_finance::numbers::fixed_point::core::{FixedTrait, FixedType};
+        use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
 
-        use cairo_finance::numbers::signed_integer::i32::i32;
-        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::i32::i32;
+        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
 
         #[test]
         #[available_gas(2000000000)]
@@ -377,8 +377,8 @@ mod TickMathTest {
     }
 
     mod BitWise {
-        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
-        use cairo_finance::numbers::signed_integer::i256::{i256, bitwise_or};
+        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::i256::{i256, bitwise_or};
 
         #[test]
         #[available_gas(2000000000)]
@@ -415,11 +415,11 @@ mod TickMathTest {
 
     mod AsI24 {
         use yas::libraries::tick_math::TickMath::as_i24;
-        use cairo_finance::numbers::signed_integer::i256::i256;
-        use yas::utils::math_utils::MathUtils::BitShiftTrait;
+        use yas::numbers::signed_integer::i256::i256;
+        use yas::utils::math_utils::BitShift::BitShiftTrait;
 
-        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
-        use cairo_finance::numbers::signed_integer::i32::i32;
+        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::i32::i32;
 
         #[test]
         #[available_gas(200000000)]

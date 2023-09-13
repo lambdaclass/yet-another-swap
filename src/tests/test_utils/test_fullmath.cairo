@@ -1,6 +1,6 @@
 mod TestFullMath {
     mod MulDiv {
-        use yas::utils::fullmath::FullMath::mul_div;
+        use yas::utils::math_utils::FullMath::mul_div;
         use integer::BoundedInt;
 
         const Q128: u256 = 340282366920938463463374607431768211456;
@@ -69,7 +69,7 @@ mod TestFullMath {
     }
 
     mod MulDivRoundingUp {
-        use yas::utils::fullmath::FullMath::mul_div_rounding_up;
+        use yas::utils::math_utils::FullMath::mul_div_rounding_up;
         use integer::BoundedInt;
 
         const Q128: u256 = 340282366920938463463374607431768211456;
@@ -161,8 +161,8 @@ mod TestFullMath {
     }
 
     mod MulModN {
-        use yas::utils::fullmath::FullMath::mul_mod_n;
-        use yas::utils::math_utils::MathUtils::pow;
+        use yas::utils::math_utils::FullMath::mul_mod_n;
+        use yas::utils::math_utils::pow;
         use integer::BoundedInt;
 
         #[test]

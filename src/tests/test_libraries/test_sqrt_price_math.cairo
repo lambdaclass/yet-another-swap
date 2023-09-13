@@ -1,6 +1,6 @@
 mod TestSqrtPriceMath {
-    use yas::utils::math_utils::MathUtils::pow;
-    use cairo_finance::numbers::fixed_point::implementations::impl_64x96::{
+    use yas::utils::math_utils::pow;
+    use yas::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FP64x96Div, FixedType, FixedTrait, Q96_RESOLUTION, ONE, MAX
     };
     use integer::{u256_sqrt, u256_safe_div_rem, u256_try_as_non_zero};
@@ -27,13 +27,13 @@ mod TestSqrtPriceMath {
     }
 
     mod GetNextSqrtPriceFromInput {
-        use yas::utils::math_utils::MathUtils::pow;
-        use yas::utils::fullmath::FullMath::mul_div;
+        use yas::utils::math_utils::pow;
+        use yas::utils::math_utils::FullMath::mul_div;
         use yas::libraries::sqrt_price_math::SqrtPriceMath;
         use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
             encode_price_sqrt, expand_to_18_decimals
         };
-        use cairo_finance::numbers::fixed_point::implementations::impl_64x96::{
+        use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
         use integer::BoundedInt;
@@ -184,7 +184,7 @@ mod TestSqrtPriceMath {
         use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
             encode_price_sqrt, expand_to_18_decimals
         };
-        use cairo_finance::numbers::fixed_point::implementations::impl_64x96::{
+        use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
         use integer::BoundedInt;
@@ -351,10 +351,10 @@ mod TestSqrtPriceMath {
         use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
             encode_price_sqrt, expand_to_18_decimals
         };
-        use cairo_finance::numbers::fixed_point::implementations::impl_64x96::{
+        use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
-        use yas::utils::math_utils::MathUtils::pow;
+        use yas::utils::math_utils::pow;
 
         // returns 0 if liquidity is 0
         #[test]
@@ -428,10 +428,10 @@ mod TestSqrtPriceMath {
         use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
             encode_price_sqrt, expand_to_18_decimals
         };
-        use cairo_finance::numbers::fixed_point::implementations::impl_64x96::{
+        use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
-        use yas::utils::math_utils::MathUtils::pow;
+        use yas::utils::math_utils::pow;
 
         // returns 0 if liquidity is 0
         #[test]

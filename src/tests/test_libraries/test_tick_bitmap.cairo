@@ -1,8 +1,8 @@
 mod TickBitmapTests {
     use starknet::syscalls::deploy_syscall;
 
-    use cairo_finance::numbers::signed_integer::i32::i32;
-    use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+    use yas::numbers::signed_integer::i32::i32;
+    use yas::numbers::signed_integer::integer_trait::IntegerTrait;
 
     use yas::libraries::tick_bitmap::{
         TickBitmap, ITickBitmap, ITickBitmapDispatcher, ITickBitmapDispatcherTrait
@@ -45,8 +45,8 @@ mod TickBitmapTests {
             TickBitmap, ITickBitmap, ITickBitmapDispatcher, ITickBitmapDispatcherTrait
         };
 
-        use cairo_finance::numbers::signed_integer::i32::i32;
-        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::i32::i32;
+        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
 
         #[test]
         #[available_gas(30000000)]
@@ -131,8 +131,8 @@ mod TickBitmapTests {
             TickBitmap, ITickBitmap, ITickBitmapDispatcher, ITickBitmapDispatcherTrait
         };
 
-        use cairo_finance::numbers::signed_integer::i32::i32;
-        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::i32::i32;
+        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
 
         #[test]
         #[available_gas(300000000)]
@@ -240,8 +240,8 @@ mod TickBitmapTests {
             TickBitmap, ITickBitmap, ITickBitmapDispatcher, ITickBitmapDispatcherTrait
         };
 
-        use cairo_finance::numbers::signed_integer::i32::i32;
-        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::i32::i32;
+        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
 
         #[test]
         #[available_gas(300000000)]
@@ -406,8 +406,8 @@ mod TickBitmapTests {
             TickBitmap, ITickBitmap, ITickBitmapDispatcher, ITickBitmapDispatcherTrait
         };
 
-        use cairo_finance::numbers::signed_integer::i32::i32;
-        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::i32::i32;
+        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
 
         #[test]
         #[available_gas(300000000)]
@@ -556,9 +556,9 @@ mod TickBitmapTests {
             TickBitmap, ITickBitmap, ITickBitmapDispatcher, ITickBitmapDispatcherTrait
         };
 
-        use cairo_finance::numbers::signed_integer::i16::i16;
-        use cairo_finance::numbers::signed_integer::i32::i32;
-        use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::i16::i16;
+        use yas::numbers::signed_integer::i32::i32;
+        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
 
         #[test]
         #[available_gas(30000000)]

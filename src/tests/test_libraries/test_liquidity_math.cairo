@@ -1,6 +1,6 @@
 use yas::libraries::liquidity_math::LiquidityMath::add_delta;
-use cairo_finance::numbers::signed_integer::i128::i128;
-use cairo_finance::numbers::signed_integer::integer_trait::IntegerTrait;
+use yas::numbers::signed_integer::i128::i128;
+use yas::numbers::signed_integer::integer_trait::IntegerTrait;
 
 #[test]
 #[available_gas(2000000)]
