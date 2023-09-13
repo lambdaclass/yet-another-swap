@@ -65,7 +65,6 @@ mod FullMath {
 mod BitShift {
     use super::pow;
     use traits::{Into, TryInto};
-    use option::OptionTrait;
     use yas::numbers::signed_integer::i256::i256;
     use integer::BoundedInt;
     use yas::numbers::signed_integer::integer_trait::IntegerTrait;

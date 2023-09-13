@@ -1,6 +1,5 @@
 use core::option::OptionTrait;
 use core::traits::TryInto;
-use traits::Into;
 use integer::BoundedInt;
 
 use yas::numbers::signed_integer::integer_trait::IntegerTrait;

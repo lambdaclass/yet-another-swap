@@ -1,5 +1,3 @@
-use traits::Into;
-
 use yas::numbers::signed_integer::integer_trait::IntegerTrait;
 use yas::numbers::signed_integer::i32::i32;
 
