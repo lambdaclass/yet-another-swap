@@ -174,7 +174,7 @@ mod YASFactory {
 
         fn set_owner(ref self: ContractState, new_owner: ContractAddress) {
             self.assert_only_owner();
-            self.emit(OwnerChanged { old_owner: self.owner.read(), new_owner: new_owner });
+            self.emit(OwnerChanged { old_owner: self.owner.read(), new_owner });
             self.owner.write(new_owner);
         }
     }
