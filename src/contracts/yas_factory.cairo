@@ -1,4 +1,4 @@
-use starknet::{ContractAddress, ClassHash, SyscallResult, get_caller_address};
+use starknet::ContractAddress;
 use yas::numbers::signed_integer::i32::i32;
 
 /// @title The interface for the YAS Factory
@@ -112,15 +112,21 @@ mod YASFactory {
 
         // fee %0.05 -> tick_spacing 10
         self.fee_amount_tick_spacing.write(500, IntegerTrait::<i32>::new(10, false));
-        self.emit(FeeAmountEnabled { fee: 500, tick_spacing: IntegerTrait::<i32>::new(10, false)});
+        self.emit(FeeAmountEnabled { fee: 500, tick_spacing: IntegerTrait::<i32>::new(10, false) });
 
         // fee %0.3 -> tick_spacing 60
         self.fee_amount_tick_spacing.write(3000, IntegerTrait::<i32>::new(60, false));
-        self.emit(FeeAmountEnabled { fee: 3000, tick_spacing: IntegerTrait::<i32>::new(60, false)});
+        self
+            .emit(
+                FeeAmountEnabled { fee: 3000, tick_spacing: IntegerTrait::<i32>::new(60, false) }
+            );
 
         // fee %1 -> tick_spacing 200
         self.fee_amount_tick_spacing.write(10000, IntegerTrait::<i32>::new(200, false));
-        self.emit(FeeAmountEnabled { fee: 10000, tick_spacing: IntegerTrait::<i32>::new(200, false) });
+        self
+            .emit(
+                FeeAmountEnabled { fee: 10000, tick_spacing: IntegerTrait::<i32>::new(200, false) }
+            );
     }
 
     #[external(v0)]
