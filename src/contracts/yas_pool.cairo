@@ -38,7 +38,7 @@ mod YASPool {
         let state = Tick::unsafe_new_contract_state();
         self
             .liquidity_per_tick
-            .write(Tick::Tick::tick_spacing_to_max_liquidity_per_tick(@state, tick_spacing));
+            .write(Tick::TickImpl::tick_spacing_to_max_liquidity_per_tick(@state, tick_spacing));
     }
 
     #[external(v0)]
