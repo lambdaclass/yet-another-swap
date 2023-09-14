@@ -57,8 +57,6 @@ mod YASFactory {
     use starknet::{ContractAddress, get_caller_address};
     use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
 
-    use debug::PrintTrait;
-
     #[event]
     #[derive(Drop, starknet::Event)]
     enum Event {

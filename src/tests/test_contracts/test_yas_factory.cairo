@@ -71,11 +71,8 @@ mod YASFactoryTests {
             YASFactory, YASFactory::OwnerChanged, YASFactory::FeeAmountEnabled, IYASFactory,
             IYASFactoryDispatcher, IYASFactoryDispatcherTrait
         };
-        use starknet::{
-            contract_address_const, testing::{set_caller_address, set_contract_address, pop_log}
-        };
+        use starknet::{contract_address_const, testing::{set_contract_address, pop_log}};
         use yas::numbers::signed_integer::i32::i32;
-        use debug::PrintTrait;
 
         #[test]
         #[available_gas(20000000)]
@@ -147,7 +144,7 @@ mod YASFactoryTests {
             YASFactory, YASFactory::OwnerChanged, IYASFactory, IYASFactoryDispatcher,
             IYASFactoryDispatcherTrait
         };
-        use starknet::testing::{pop_log, set_caller_address, set_contract_address};
+        use starknet::testing::{pop_log, set_contract_address};
         use yas::numbers::signed_integer::i32::i32;
 
         #[test]
@@ -167,7 +164,6 @@ mod YASFactoryTests {
 
             // Set and read new owner
             yas_factory.set_owner(OTHER());
-
             assert(yas_factory.owner() == OTHER(), 'new owner should be OTHER');
         }
 
@@ -195,7 +191,7 @@ mod YASFactoryTests {
             YASFactory, YASFactory::FeeAmountEnabled, IYASFactory, IYASFactoryDispatcher,
             IYASFactoryDispatcherTrait
         };
-        use starknet::testing::{pop_log, set_caller_address, set_contract_address};
+        use starknet::testing::{pop_log, set_contract_address};
         use yas::numbers::signed_integer::i32::i32;
 
         #[test]
