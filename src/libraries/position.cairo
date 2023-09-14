@@ -1,5 +1,5 @@
 use starknet::ContractAddress;
-use orion::numbers::signed_integer::{i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait};
+use yas::numbers::signed_integer::{i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait};
 use hash::{HashStateTrait, HashStateExTrait};
 use poseidon::PoseidonTrait;
 use poseidon::poseidon_hash_span;
@@ -53,16 +53,17 @@ fn generate_hashed_position_key(key: @PositionKey) -> felt252 {
 mod Position {
     use core::traits::Into;
     use core::traits::TryInto;
+
     use super::{PositionKey, IPosition, Info, generate_hashed_position_key};
-    use orion::numbers::signed_integer::{
-        i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait
-    };
+
+    use yas::numbers::signed_integer::{i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait};
+    use yas::utils::math_utils::FullMath::{mul_div};
+
     use hash::{HashStateTrait, HashStateExTrait};
     use poseidon::PoseidonTrait;
     use serde::Serde;
     use array::ArrayTrait;
     use yas::libraries::liquidity_math::LiquidityMath::{add_delta};
-    use yas::utils::fullmath::FullMath::{mul_div};
     use integer::BoundedInt;
 
     #[storage]
