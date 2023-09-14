@@ -267,7 +267,7 @@ mod YASFactoryTests {
             // Clean up the 4 events emitted by the deploy
             clean_events(yas_factory.contract_address);
 
-            yas_factory.enable_fee_amount(100, i32 { mag: 5, sign: false });
+            yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(5, false));
 
             // Verify FeeAmountEnabled event emitted
             let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
