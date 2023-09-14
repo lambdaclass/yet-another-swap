@@ -1,5 +1,5 @@
 use starknet::{ContractAddress, ClassHash, SyscallResult, get_caller_address};
-use orion::numbers::signed_integer::i32::i32;
+use yas::numbers::signed_integer::i32::i32;
 
 /// @title The interface for the YAS Factory
 /// @notice The YAS Factory facilitates creation of YAS pools and control over the protocol fees
@@ -55,7 +55,7 @@ trait IYASFactory<TContractState> {
 mod YASFactory {
     use super::IYASFactory;
     use starknet::{ContractAddress, get_caller_address};
-    use orion::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+    use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
 
     use debug::PrintTrait;
 
@@ -160,7 +160,9 @@ mod YASFactory {
                 tick_spacing > zero && tick_spacing < IntegerTrait::<i32>::new(16384, false),
                 'wrong tick_spacing (0<ts<16384)'
             );
-            assert(self.fee_amount_tick_spacing.read(fee) == zero, 'fee amount already initialized');
+            assert(
+                self.fee_amount_tick_spacing.read(fee) == zero, 'fee amount already initialized'
+            );
 
             self.fee_amount_tick_spacing.write(fee, tick_spacing);
             self.emit(FeeAmountEnabled { fee, tick_spacing });
