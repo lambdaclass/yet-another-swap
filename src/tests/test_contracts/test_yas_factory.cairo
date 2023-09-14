@@ -88,7 +88,8 @@ mod YASFactoryTests {
 
             let fee_amount_low = yas_factory.fee_amount_tick_spacing(fee_amount(FeeAmount::LOW));
             assert(
-                fee_amount_low == i32 { mag: tick_spacing(FeeAmount::LOW), sign: false },
+                fee_amount_low == IntegerTrait::<i32>::new(tick_spacing(FeeAmount::LOW), false),
+                
                 'fee low doesnt set correctly'
             );
 
