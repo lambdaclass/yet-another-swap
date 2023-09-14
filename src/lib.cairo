@@ -1,3 +1,4 @@
+mod contracts;
 mod libraries;
 mod numbers;
 mod utils;
