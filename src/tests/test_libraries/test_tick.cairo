@@ -1,11 +1,9 @@
 mod TickTests {
     use starknet::syscalls::deploy_syscall;
 
-    use orion::numbers::signed_integer::i32::i32;
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-
     use yas::libraries::tick::{Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
-    use yas::utils::math_utils::MathUtils::pow;
+    use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+    use yas::utils::math_utils::pow;
 
     fn deploy() -> ITickDispatcher {
         let calldata: Array<felt252> = ArrayTrait::new();
@@ -21,8 +19,7 @@ mod TickTests {
         use integer::BoundedInt;
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
-
-        use orion::numbers::signed_integer::{
+        use yas::numbers::signed_integer::{
             i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
         };
 
@@ -74,8 +71,7 @@ mod TickTests {
         use integer::BoundedInt;
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
-
-        use orion::numbers::signed_integer::{
+        use yas::numbers::signed_integer::{
             i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
         };
 
@@ -158,8 +154,7 @@ mod TickTests {
         use integer::BoundedInt;
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
-
-        use orion::numbers::signed_integer::{
+        use yas::numbers::signed_integer::{
             i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
         };
 
@@ -384,12 +379,11 @@ mod TickTests {
         use super::deploy;
         use integer::BoundedInt;
 
-        use orion::numbers::signed_integer::{
-            i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
-        };
-
-        use yas::utils::math_utils::MathUtils::{i32_div, pow};
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
+        use yas::numbers::signed_integer::{
+            i32::{i32, i32_div_no_round}, i128::i128, i64::i64, integer_trait::IntegerTrait
+        };
+        use yas::utils::math_utils::pow;
 
         // returns the correct value for low fee
         #[test]
@@ -538,8 +532,7 @@ mod TickTests {
         use integer::BoundedInt;
 
         use yas::libraries::tick::{Info, Tick, ITick, ITickDispatcher, ITickDispatcherTrait};
-
-        use orion::numbers::signed_integer::{
+        use yas::numbers::signed_integer::{
             i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait
         };
 

@@ -1,8 +1,8 @@
 mod TestInteger256 {
     mod New {
-        use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
 
         // Test new i256 max
         #[test]
@@ -32,9 +32,9 @@ mod TestInteger256 {
     }
 
     mod Add {
-        use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
 
         // Test addition of two positive integers
         #[test]
@@ -98,9 +98,9 @@ mod TestInteger256 {
     }
 
     mod Sub {
-        use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
 
         // Test subtraction of two positive integers with larger first
         #[test]
@@ -204,9 +204,9 @@ mod TestInteger256 {
     }
 
     mod Mul {
-        use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
 
         // Test multiplication of positive integers
         #[test]
@@ -270,9 +270,9 @@ mod TestInteger256 {
     }
 
     mod DivRem {
-        use yas::numbers::signed_integer::i256::i256;
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
 
         // Test division and remainder of positive integers
         #[test]
@@ -427,9 +427,9 @@ mod TestInteger256 {
     }
 
     mod i256IntoU256 {
-        use yas::numbers::signed_integer::i256::{i256, i256TryIntou256};
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
         use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
 
         #[test]
         fn test_positive_conversion_within_range() {
@@ -457,6 +457,82 @@ mod TestInteger256 {
         fn test_negative_conversion() {
             let val = IntegerTrait::<i256>::new(200, true);
             let result: u256 = val.try_into().unwrap();
+        }
+    }
+
+    mod TwoComplementTests {
+        use integer::BoundedInt;
+
+        use yas::numbers::signed_integer::{
+            i256::{i256, two_complement_if_nec}, integer_trait::IntegerTrait
+        };
+
+        // Some expected values where calculated in Python with a script
+
+        // Two's complement expected is achieved by:
+        // Step 1: starting with the equivalent positive number.
+        // Step 2: inverting (or flipping) all bits – changing every 0 to 1, and every 1 to 0;
+        // Step 3: adding 1 to the entire inverted number, ignoring any overflow. Accounting 
+        // for overflow will produce the wrong value for the result.
+
+        #[test]
+        fn test_positive_min_mag() {
+            let input = IntegerTrait::<i256>::new(0, false);
+            let actual = two_complement_if_nec(input);
+            let expected = i256 { mag: 0, sign: false };
+
+            assert(actual == expected, 'positive min wrong val');
+        }
+
+        #[test]
+        fn test_positive_max_mag() {
+            let input = IntegerTrait::<i256>::new(BoundedInt::max() / 2 - 1, false);
+            let actual = two_complement_if_nec(input);
+            let expected = i256 { mag: BoundedInt::max() / 2 - 1, sign: false };
+
+            assert(actual == expected, 'positive max wrong value');
+        }
+
+        #[test]
+        fn test_negative_min_mag() {
+            let input = IntegerTrait::<i256>::new(1, true);
+            let actual = two_complement_if_nec(input);
+            let expected = i256 { mag: BoundedInt::max(), sign: true };
+
+            assert(actual == expected, 'negative min wrong val');
+        }
+
+        #[test]
+        fn test_negative_max_mag() {
+            let input = IntegerTrait::<i256>::new(BoundedInt::max() / 2, true);
+            let actual = two_complement_if_nec(input);
+            let expected = i256 {
+                mag: 57896044618658097711785492504343953926634992332820282019728792003956564819969,
+                sign: true
+            };
+
+            assert(actual == expected, 'negative max wrong val');
+        }
+
+        #[test]
+        fn test_positive_non_zero_mag() {
+            let input = IntegerTrait::<i256>::new(12345, false);
+            let actual = two_complement_if_nec(input);
+            let expected = i256 { mag: 12345, sign: false };
+
+            assert(actual == expected, 'positive non zero wrong value');
+        }
+
+        #[test]
+        fn test_negative_non_zero_mag() {
+            let input = IntegerTrait::<i256>::new(54321, true);
+            let actual = two_complement_if_nec(input);
+            let expected = i256 {
+                mag: 115792089237316195423570985008687907853269984665640564039457584007913129585615,
+                sign: true
+            };
+
+            assert(actual == expected, 'negative non zero wrong value');
         }
     }
 }
