@@ -116,7 +116,7 @@ On Starknet, the deployment process is in two steps:
     Copy the declare Class Hash provided to use in the following step.
 3. Deploy:
    ```bash
-   make deploy CLASS_HASH="<CLASS_HASH>"
+   make deploy CLASS_HASH=<CLASS_HASH> CTOR_ARGS=<CTOR_ARGS>
    ```
 
 ## Version Specifications
