@@ -98,7 +98,7 @@ Follow the steps below to set up a testnet smart wallet using `starkli`:
 
 By following the previous two steps, you should now have a account funded on the Goerli testnet.
 
-Now we have to deploy the simple AMM contract to the Testnet.
+Now we have to deploy the simple YASFactory contract to the Testnet.
 
 On Starknet, the deployment process is in two steps:
 
@@ -115,8 +115,8 @@ On Starknet, the deployment process is in two steps:
     ```
     Copy the declare Class Hash provided to use in the following step.
 3. Deploy:
-   ```bash
-   make deploy CLASS_HASH=<CLASS_HASH> CTOR_ARGS=<CTOR_ARGS>
+   ```bash"
+   make deploy CLASS_HASH="<CLASS_HASH>" CTOR_ARGS="<CTOR_ARGS>"
    ```
 
 ## Version Specifications
