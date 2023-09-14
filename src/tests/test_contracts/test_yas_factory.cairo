@@ -273,7 +273,7 @@ mod YASFactoryTests {
             let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
             assert(event.fee == 100, 'fee event should be 100');
             assert(
-                event.tick_spacing == i32 { mag: 5, sign: false }, 'tick_spacing event should be 5'
+                event.tick_spacing == IntegerTrait::<i32>::new(5, false), 'tick_spacing event should be 5'
             );
         }
     // TODO: add this test when create_pool is implemented
