@@ -242,7 +242,7 @@ mod YASFactoryTests {
             let yas_factory = deploy(OWNER());
 
             yas_factory.enable_fee_amount(100, i32 { mag: 5, sign: false });
-            yas_factory.enable_fee_amount(100, i32 { mag: 10, sign: false });
+            yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(10, false));
         }
 
         #[test]
