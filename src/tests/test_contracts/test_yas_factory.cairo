@@ -250,7 +250,7 @@ mod YASFactoryTests {
         fn test_set_fee_amount_in_the_mapping() {
             set_contract_address(OWNER());
             let yas_factory = deploy(OWNER());
-            yas_factory.enable_fee_amount(100, i32 { mag: 5, sign: false });
+            yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(5, false));
 
             assert(
                 yas_factory.fee_amount_tick_spacing(100) == IntegerTrait::<i32>::new(5, false),
