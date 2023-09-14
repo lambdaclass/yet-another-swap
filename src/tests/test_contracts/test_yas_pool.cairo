@@ -17,7 +17,7 @@ mod YASPoolTests {
         calldata.append(token_0.into());
         calldata.append(token_1.into());
         calldata.append(fee.into());
-        // calldata.append(tick_spacing.into());
+        Serde::serialize(@tick_spacing, ref calldata);
 
         let (address, _) = deploy_syscall(
             YASPool::TEST_CLASS_HASH.try_into().unwrap(), 0, calldata.span(), true

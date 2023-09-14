@@ -27,8 +27,8 @@ mod YASPool {
         token_0: ContractAddress,
         token_1: ContractAddress,
         fee: u32,
+        tick_spacing: i32,
     ) {
-        // tick_spacing: i32
         self.factory.write(factory);
         self.token_0.write(token_0);
         self.token_1.write(token_1);
@@ -36,9 +36,9 @@ mod YASPool {
 
         //TODO: temporary component syntax
         let state = Tick::unsafe_new_contract_state();
-    // self
-    //     .liquidity_per_tick
-    //     .write(Tick::Tick::tick_spacing_to_max_liquidity_per_tick(@state, tick_spacing));
+        self
+            .liquidity_per_tick
+            .write(Tick::Tick::tick_spacing_to_max_liquidity_per_tick(@state, tick_spacing));
     }
 
     #[external(v0)]
