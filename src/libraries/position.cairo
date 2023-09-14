@@ -27,9 +27,13 @@ struct PositionKey {
 
 #[starknet::interface]
 trait IPosition<TContractState> {
-    fn get(
-        self: @TContractState, owner: starknet::ContractAddress, tick_lower: i32, tick_upper: i32
-    ) -> Info;
+    /// @notice Returns the Info struct of a position, given an owner and position boundaries
+    /// @param self The mapping containing all user positions
+    /// @param owner The ContractAddress of the position owner
+    /// @param position_key conformed by the owner and the tick boundaries
+    fn get(self: @TContractState, position_key: PositionKey) -> Info;
+
+
     fn update(
         ref self: TContractState,
         position_key: PositionKey,
@@ -68,17 +72,8 @@ mod Position {
 
     #[external(v0)]
     impl PositionImpl of IPosition<ContractState> {
-        /// @notice Returns the Info struct of a position, given an owner and position boundaries
-        /// @param self The mapping containing all user positions
-        /// @param owner The ContractAddress of the position owner
-        /// @param tickLower The lower tick boundary of the position
-        /// @param tickUpper The upper tick boundary of the position
-        /// @return position The position info struct of the given owners' position
-        fn get(
-            self: @ContractState, owner: starknet::ContractAddress, tick_lower: i32, tick_upper: i32
-        ) -> Info {
-            let key = PositionKey { owner: owner, tick_lower: tick_lower, tick_upper: tick_upper };
-            let hashed_key = generate_hashed_position_key(@key);
+        fn get(self: @ContractState, position_key: PositionKey) -> Info {
+            let hashed_key = generate_hashed_position_key(@position_key);
             self.positions.read(hashed_key)
         }
 
@@ -93,9 +88,9 @@ mod Position {
             let hashed_key = generate_hashed_position_key(@position_key);
             let mut position = self.positions.read(hashed_key);
 
-            let liquidity_next = if (liquidity_delta == IntegerTrait::<i128>::new(0, false)) {
+            let liquidity_next: u128 = if liquidity_delta == IntegerTrait::<i128>::new(0, false) {
                 // disallows pokes for 0 liquidity positions
-                assert(position.liquidity > 0, "NP");
+                assert(position.liquidity > 0, 'NP');
                 position.liquidity
             } else {
                 add_delta(position.liquidity, liquidity_delta)
