@@ -1,5 +1,5 @@
 mod TestSwapMath {
-    use yas::utils::math_utils::MathUtils::pow;
+    use yas::utils::math_utils::pow;
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FP64x96Div, FixedType, FixedTrait, Q96_RESOLUTION, ONE, MAX
     };
@@ -18,7 +18,7 @@ mod TestSwapMath {
         use yas::numbers::signed_integer::i256::{i256, i256TryIntou256};
         use yas::tests::test_libraries::test_swap_math::TestSwapMath::expand_to_18_decimals;
 
-        use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+        use yas::numbers::signed_integer::integer_trait::IntegerTrait;
 
         // exact amount in that gets capped at price target in one for zero
         #[test]

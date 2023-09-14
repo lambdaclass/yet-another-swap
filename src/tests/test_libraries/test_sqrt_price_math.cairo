@@ -1,9 +1,10 @@
 mod TestSqrtPriceMath {
-    use yas::utils::math_utils::MathUtils::pow;
+    use integer::{u256_sqrt, u256_safe_div_rem, u256_try_as_non_zero};
+
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FP64x96Div, FixedType, FixedTrait, Q96_RESOLUTION, ONE, MAX
     };
-    use integer::{u256_sqrt, u256_safe_div_rem, u256_try_as_non_zero};
+    use yas::utils::math_utils::pow;
 
     // Aux methods for tests
     fn encode_price_sqrt(reserve1: u256, reserve0: u256) -> FixedType {
@@ -27,16 +28,16 @@ mod TestSqrtPriceMath {
     }
 
     mod GetNextSqrtPriceFromInput {
-        use yas::utils::math_utils::MathUtils::pow;
-        use yas::utils::fullmath::FullMath::mul_div;
+        use integer::BoundedInt;
+
         use yas::libraries::sqrt_price_math::SqrtPriceMath;
-        use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
-            encode_price_sqrt, expand_to_18_decimals
-        };
         use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
-        use integer::BoundedInt;
+        use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
+            encode_price_sqrt, expand_to_18_decimals
+        };
+        use yas::utils::math_utils::{pow, FullMath::mul_div};
 
         // fails if price is zero
         #[test]
@@ -180,14 +181,15 @@ mod TestSqrtPriceMath {
     }
 
     mod GetNextSqrtPriceFromOutput {
+        use integer::BoundedInt;
+
         use yas::libraries::sqrt_price_math::SqrtPriceMath;
-        use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
-            encode_price_sqrt, expand_to_18_decimals
-        };
         use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
-        use integer::BoundedInt;
+        use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
+            encode_price_sqrt, expand_to_18_decimals
+        };
 
         // fails if price is zero
         #[test]
@@ -348,13 +350,13 @@ mod TestSqrtPriceMath {
 
     mod GetAmount0Delta {
         use yas::libraries::sqrt_price_math::SqrtPriceMath;
-        use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
-            encode_price_sqrt, expand_to_18_decimals
-        };
         use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
-        use yas::utils::math_utils::MathUtils::pow;
+        use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
+            encode_price_sqrt, expand_to_18_decimals
+        };
+        use yas::utils::math_utils::pow;
 
         // returns 0 if liquidity is 0
         #[test]
@@ -425,13 +427,13 @@ mod TestSqrtPriceMath {
 
     mod GetAmount1Delta {
         use yas::libraries::sqrt_price_math::SqrtPriceMath;
-        use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
-            encode_price_sqrt, expand_to_18_decimals
-        };
         use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96PartialEq, FixedType, FixedTrait, Q96_RESOLUTION
         };
-        use yas::utils::math_utils::MathUtils::pow;
+        use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::{
+            encode_price_sqrt, expand_to_18_decimals
+        };
+        use yas::utils::math_utils::pow;
 
         // returns 0 if liquidity is 0
         #[test]

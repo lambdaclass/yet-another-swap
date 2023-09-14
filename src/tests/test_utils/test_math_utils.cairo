@@ -1,8 +1,212 @@
+mod TestFullMath {
+    mod MulDiv {
+        use integer::BoundedInt;
+
+        use yas::utils::math_utils::FullMath::mul_div;
+
+        const Q128: u256 = 340282366920938463463374607431768211456;
+
+        // reverts if denominator is 0  
+        #[test]
+        #[should_panic]
+        fn test_fail_denominator_is_0() {
+            mul_div(Q128, 5, 0);
+        }
+
+        // reverts if denominator is 0 and numerator overflows  
+        #[test]
+        #[should_panic]
+        fn test_fail_denominator_is_0_and_numerator_overflows() {
+            mul_div(Q128, Q128, 0);
+        }
+
+        // reverts if output overflows uint256
+        #[test]
+        #[should_panic]
+        fn test_fail_if_output_overflows_u256() {
+            mul_div(Q128, Q128, 1);
+        }
+        // reverts on overflow with all max inputs 
+        #[test]
+        #[should_panic]
+        fn test_fail_on_overflow_with_all_max_inputs() {
+            mul_div(BoundedInt::max(), BoundedInt::max(), BoundedInt::max() - 1);
+        }
+
+        // all max inputs
+        #[test]
+        #[available_gas(2000000)]
+        fn test_all_max_inputs() {
+            let actual = mul_div(BoundedInt::max(), BoundedInt::max(), BoundedInt::max());
+            assert(actual == BoundedInt::max(), 'all_max_inputs');
+        }
+
+        // accurate without phantom overflow
+        #[test]
+        #[available_gas(2000000)]
+        fn test_accurate_without_phantom_overflow() {
+            let actual = mul_div(Q128, 50 * Q128 / 100, 150 * Q128 / 100);
+            let expected = Q128 / 3;
+            assert(actual == expected, 'accurate w/o phantom overflow');
+        }
+
+        // accurate with phantom overflow
+        #[test]
+        #[available_gas(2000000)]
+        fn test_accurate_with_phantom_overflow() {
+            let actual = mul_div(Q128, 35 * Q128, 8 * Q128);
+            let expected = 4375 * Q128 / 1000;
+            assert(actual == expected, 'accurate with phantom overflow');
+        }
+
+        // accurate with phantom overflow and repeating decimal
+        #[test]
+        #[available_gas(2000000)]
+        fn test_accurate_with_phantom_overflow_repeat_decimal() {
+            let actual = mul_div(Q128, 1000 * Q128, 3000 * Q128);
+            let expected = Q128 / 3;
+            assert(actual == expected, 'accurate with phantom overflow');
+        }
+    }
+
+    mod MulDivRoundingUp {
+        use integer::BoundedInt;
+
+        use yas::utils::math_utils::FullMath::mul_div_rounding_up;
+
+        const Q128: u256 = 340282366920938463463374607431768211456;
+
+        // reverts if denominator is 0
+        #[test]
+        #[should_panic]
+        fn test_fail_if_denominator_is_0() {
+            mul_div_rounding_up(Q128, 5, 0);
+        }
+
+        // reverts if denominator is 0 and numerator overflows
+        #[test]
+        #[should_panic]
+        fn test_fail_if_denominator_is_0_and_numerator_overflow() {
+            mul_div_rounding_up(Q128, Q128, 0);
+        }
+
+        // reverts if output overflows uint256
+        #[test]
+        #[should_panic]
+        fn test_fail_if_output_overflows_u256() {
+            mul_div_rounding_up(Q128, Q128, 1);
+        }
+
+        // reverts on overflow with all max inputs  
+        #[test]
+        #[should_panic]
+        fn test_fail_on_overflow_with_all_max_inputs() {
+            mul_div_rounding_up(BoundedInt::max(), BoundedInt::max(), BoundedInt::max() - 1);
+        }
+
+        // reverts if mulDiv overflows 256 bits after rounding up
+        #[test]
+        #[should_panic]
+        fn test_fail_if_mul_div_overflows_256_bits_after_rounding_up() {
+            mul_div_rounding_up(
+                535006138814359, 432862656469423142931042426214547535783388063929571229938474969, 2
+            );
+        }
+
+        // reverts if mulDiv overflows 256 bits after rounding up case 2
+        #[test]
+        #[should_panic]
+        fn test_fail_if_mul_div_overflows_256_bits_after_rounding_up_2() {
+            mul_div_rounding_up(
+                115792089237316195423570985008687907853269984659341747863450311749907997002549,
+                115792089237316195423570985008687907853269984659341747863450311749907997002550,
+                115792089237316195423570985008687907853269984653042931687443039491902864365164
+            );
+        }
+
+        // all max inputs 
+        #[test]
+        #[available_gas(2000000)]
+        fn test_all_max_inputs() {
+            let actual = mul_div_rounding_up(
+                BoundedInt::max(), BoundedInt::max(), BoundedInt::max()
+            );
+            assert(actual == BoundedInt::max(), 'all_max_inputs');
+        }
+
+        // accurate without phantom overflow
+        #[test]
+        #[available_gas(2000000)]
+        fn test_accurate_without_phantom_overflow() {
+            let actual = mul_div_rounding_up(Q128, 50 * Q128 / 100, 150 * Q128 / 100);
+            let expected = Q128 / 3 + 1;
+            assert(actual == expected, 'accurate w/o phantom overflow');
+        }
+
+        // accurate with phantom overflow
+        #[test]
+        #[available_gas(2000000)]
+        fn test_accurate_with_phantom_overflowl() {
+            let actual = mul_div_rounding_up(Q128, 35 * Q128, 8 * Q128);
+            let expected = 4375 * Q128 / 1000;
+            assert(actual == expected, 'acc with phantom overflow');
+        }
+
+        // accurate with phantom overflow and repeating decimal
+        #[test]
+        #[available_gas(2000000)]
+        fn test_accurate_with_phantom_overflow_repeat_decimal() {
+            let actual = mul_div_rounding_up(Q128, 1000 * Q128, 3000 * Q128);
+            let expected = Q128 / 3 + 1;
+            assert(actual == expected, 'accurate with phantom overflow');
+        }
+    }
+
+    mod MulModN {
+        use integer::BoundedInt;
+
+        use yas::utils::math_utils::{pow, FullMath::mul_mod_n};
+
+        #[test]
+        #[available_gas(2000000)]
+        fn test_mul_mod_n_positive_numbers() {
+            let a: u256 = 12345.into();
+            let b: u256 = 67890.into();
+            let n: u256 = 100000.into();
+
+            let result = mul_mod_n(a, b, n);
+
+            assert(result == (a * b) % n, 'wrong mul mod n');
+        }
+
+        #[test]
+        #[should_panic(expected: ('mul_mod_n by zero',))]
+        fn test_mul_mod_n_zero_n() {
+            let a: u256 = 1;
+            let b: u256 = 1;
+            let n: u256 = 0;
+
+            mul_mod_n(a, b, n);
+        }
+
+        #[test]
+        fn test_mul_mod_n_zero_a_or_b() {
+            let a: u256 = 0.into();
+            let b: u256 = 67890.into();
+            let n: u256 = 100000.into();
+
+            let result = mul_mod_n(a, b, n);
+
+            assert(result == 0, 'wrong mul mod n');
+        }
+    }
+}
+
 mod BitShift {
-    use yas::utils::math_utils::MathUtils::{BitShiftTrait, pow};
     use integer::BoundedInt;
-    use yas::numbers::signed_integer::i256::i256;
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
+
+    use yas::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
+    use yas::utils::math_utils::{BitShift::BitShiftTrait, pow};
 
     #[test]
     #[available_gas(20000000)]
@@ -288,7 +492,8 @@ mod BitShift {
 }
 
 mod Pow {
-    use yas::utils::math_utils::MathUtils::pow;
+    use yas::utils::math_utils::pow;
+
     #[test]
     #[available_gas(2000000)]
     fn test_pow_by_0_should_return_1() {
@@ -325,7 +530,7 @@ mod Pow {
 mod ModSubtractionTests {
     use integer::BoundedInt;
 
-    use yas::utils::math_utils::MathUtils::mod_subtraction;
+    use yas::utils::math_utils::mod_subtraction;
 
     #[test]
     #[available_gas(2000000)]
@@ -381,133 +586,5 @@ mod ModSubtractionTests {
     fn test_subtract_zero_from_max() {
         let result = mod_subtraction(0, BoundedInt::max());
         assert(result == 1, 'result should be 1');
-    }
-}
-
-mod i32Div {
-    use orion::numbers::signed_integer::integer_trait::IntegerTrait;
-    use orion::numbers::signed_integer::i32::i32;
-    use yas::utils::math_utils::MathUtils::i32_div;
-
-    #[test]
-    fn test_numerator_eq_denominator_negative_x_negative() {
-        // -24 / -24 = 1   
-        let a = IntegerTrait::<i32>::new(24, true);
-        let b = IntegerTrait::<i32>::new(24, true);
-        let actual = i32_div(a, b);
-        assert(actual.mag == 1, '-24 // -24 should be 1');
-        assert(actual.sign == false, '-24 // -24 should be positive');
-    }
-
-    #[test]
-    fn test_numerator_eq_denominator_positive_x_negative() {
-        // 24 / -24 = -1   
-        let a = IntegerTrait::<i32>::new(24, false);
-        let b = IntegerTrait::<i32>::new(24, true);
-        let actual = i32_div(a, b);
-        assert(actual.mag == 1, '24 // -24 should be 1');
-        assert(actual.sign == true, '24 // -24 should be negative');
-    }
-
-    #[test]
-    fn test_numerator_eq_denominator_negative_x_positive() {
-        // -24 / 24 = -1   
-        let a = IntegerTrait::<i32>::new(24, true);
-        let b = IntegerTrait::<i32>::new(24, false);
-        let actual = i32_div(a, b);
-        assert(actual.mag == 1, '-24 // 24 should be 1');
-        assert(actual.sign == true, '-24 // 24 should be negative');
-    }
-
-    #[test]
-    fn test_numerator_eq_denominator_positive_x_positive() {
-        // 24 / 24 = 1   
-        let a = IntegerTrait::<i32>::new(24, false);
-        let b = IntegerTrait::<i32>::new(24, false);
-        let actual = i32_div(a, b);
-        assert(actual.mag == 1, '24 // 24 should be 1');
-        assert(actual.sign == false, '24 // 24 should be negative');
-    }
-
-    #[test]
-    fn test_negative_x_positive() {
-        // -10 / 3 = -3   
-        let a = IntegerTrait::<i32>::new(10, true);
-        let b = IntegerTrait::<i32>::new(3, false);
-        let actual = i32_div(a, b);
-        assert(actual.mag == 3, '-10 // 3 should be 3');
-        assert(actual.sign == true, '-10 // 3 should be negative');
-    }
-
-    #[test]
-    fn test_positive_x_negative() {
-        // 5 / -3 = -1   
-        let a = IntegerTrait::<i32>::new(5, false);
-        let b = IntegerTrait::<i32>::new(3, true);
-        let actual = i32_div(a, b);
-        assert(actual.mag == 1, '5 // -3 should be 3');
-        assert(actual.sign == true, '5 // -3 should be negative');
-    }
-
-    // Test to evaluate rounding behavior and zeros
-    #[test]
-    fn test_numerator_gt_denominator_positive() {
-        let ZERO = IntegerTrait::<i32>::new(0, false);
-
-        // 6 / 10 = 0
-        let a = IntegerTrait::<i32>::new(6, false);
-        let b = IntegerTrait::<i32>::new(10, false);
-        let actual = i32_div(a, b);
-        assert(actual == ZERO, '6 // 10 should be 0');
-
-        // 5 / 10 = 0
-        let a = IntegerTrait::<i32>::new(5, false);
-        let b = IntegerTrait::<i32>::new(10, false);
-        let actual = i32_div(a, b);
-        assert(actual == ZERO, '5 // 10 should be 0');
-
-        // 1 / 10 = 0
-        let a = IntegerTrait::<i32>::new(1, false);
-        let b = IntegerTrait::<i32>::new(10, false);
-        let actual = i32_div(a, b);
-        assert(actual == ZERO, '1 // 10 should be 0');
-    }
-
-    // Test to evaluate rounding behavior and zeros
-    #[test]
-    fn test_numerator_gt_denominator_negative() {
-        let ZERO = IntegerTrait::<i32>::new(0, false);
-
-        // -6 / 10 = 0
-        let a = IntegerTrait::<i32>::new(6, true);
-        let b = IntegerTrait::<i32>::new(10, false);
-        let actual = i32_div(a, b);
-        assert(actual == ZERO, '-6 // 10 should be 0');
-
-        // -5 / 10 = 0
-        let a = IntegerTrait::<i32>::new(5, true);
-        let b = IntegerTrait::<i32>::new(10, false);
-        let actual = i32_div(a, b);
-        assert(actual == ZERO, '-5 // 10 should be 0');
-
-        // -1 / 10 = 0
-        let a = IntegerTrait::<i32>::new(1, true);
-        let b = IntegerTrait::<i32>::new(10, false);
-        let actual = i32_div(a, b);
-        assert(actual == ZERO, '-1 // 10 should be 0');
-
-        // 5 / -10 = 0
-        let a = IntegerTrait::<i32>::new(5, false);
-        let b = IntegerTrait::<i32>::new(10, true);
-        let actual = i32_div(a, b);
-        assert(actual == ZERO, '5 // -10 should be 0');
-    }
-
-    #[test]
-    #[should_panic(expected: ('denominator cannot be 0',))]
-    fn test_div_by_zero_should_panic() {
-        let a = IntegerTrait::<i32>::new(1, false);
-        let b = IntegerTrait::<i32>::new(0, false);
-        let actual = i32_div(a, b);
     }
 }
