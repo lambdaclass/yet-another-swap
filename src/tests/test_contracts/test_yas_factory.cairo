@@ -72,7 +72,7 @@ mod YASFactoryTests {
             IYASFactoryDispatcher, IYASFactoryDispatcherTrait
         };
         use starknet::{contract_address_const, testing::{set_contract_address, pop_log}};
-        use yas::numbers::signed_integer::i32::i32;
+        use yas::numbers::signed_integer::{integer_trait::IntegerTrait, i32::i32};
 
         #[test]
         #[available_gas(20000000)]
@@ -88,19 +88,19 @@ mod YASFactoryTests {
 
             let fee_amount_low = yas_factory.fee_amount_tick_spacing(fee_amount(FeeAmount::LOW));
             assert(
-                fee_amount_low == i32 { mag: tick_spacing(FeeAmount::LOW), sign: false },
+                fee_amount_low == IntegerTrait::<i32>::new(tick_spacing(FeeAmount::LOW), false),
                 'fee low doesnt set correctly'
             );
 
             let fee_amount_med = yas_factory.fee_amount_tick_spacing(fee_amount(FeeAmount::MEDIUM));
             assert(
-                fee_amount_med == i32 { mag: tick_spacing(FeeAmount::MEDIUM), sign: false },
+                fee_amount_med == IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
                 'fee med doesnt set correctly'
             );
 
             let fee_amount_high = yas_factory.fee_amount_tick_spacing(fee_amount(FeeAmount::HIGH));
             assert(
-                fee_amount_high == i32 { mag: tick_spacing(FeeAmount::HIGH), sign: false },
+                fee_amount_high == IntegerTrait::<i32>::new(tick_spacing(FeeAmount::HIGH), false),
                 'fee high doesnt set correctly'
             );
         }
@@ -192,7 +192,7 @@ mod YASFactoryTests {
             IYASFactoryDispatcherTrait
         };
         use starknet::testing::{pop_log, set_contract_address};
-        use yas::numbers::signed_integer::i32::i32;
+        use yas::numbers::signed_integer::{integer_trait::IntegerTrait, i32::i32};
 
         #[test]
         #[available_gas(20000000)]
@@ -200,7 +200,7 @@ mod YASFactoryTests {
         fn test_fails_if_caller_is_not_owner() {
             let yas_factory = deploy(OWNER());
             set_contract_address(OTHER());
-            yas_factory.enable_fee_amount(100, i32 { mag: 2, sign: false });
+            yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(2, false));
         }
 
         #[test]
@@ -210,7 +210,7 @@ mod YASFactoryTests {
             set_contract_address(OWNER());
             let yas_factory = deploy(OWNER());
 
-            yas_factory.enable_fee_amount(1000000, i32 { mag: 20, sign: false });
+            yas_factory.enable_fee_amount(1000000, IntegerTrait::<i32>::new(20, false));
         }
 
         #[test]
@@ -220,7 +220,7 @@ mod YASFactoryTests {
             set_contract_address(OWNER());
             let yas_factory = deploy(OWNER());
 
-            yas_factory.enable_fee_amount(500, i32 { mag: 16834, sign: false });
+            yas_factory.enable_fee_amount(500, IntegerTrait::<i32>::new(16834, false));
         }
 
         #[test]
@@ -230,7 +230,7 @@ mod YASFactoryTests {
             set_contract_address(OWNER());
             let yas_factory = deploy(OWNER());
 
-            yas_factory.enable_fee_amount(500, i32 { mag: 0, sign: false });
+            yas_factory.enable_fee_amount(500, IntegerTrait::<i32>::new(0, false));
         }
 
         #[test]
@@ -240,8 +240,8 @@ mod YASFactoryTests {
             set_contract_address(OWNER());
             let yas_factory = deploy(OWNER());
 
-            yas_factory.enable_fee_amount(100, i32 { mag: 5, sign: false });
-            yas_factory.enable_fee_amount(100, i32 { mag: 10, sign: false });
+            yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(5, false));
+            yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(10, false));
         }
 
         #[test]
@@ -249,10 +249,10 @@ mod YASFactoryTests {
         fn test_set_fee_amount_in_the_mapping() {
             set_contract_address(OWNER());
             let yas_factory = deploy(OWNER());
-            yas_factory.enable_fee_amount(100, i32 { mag: 5, sign: false });
+            yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(5, false));
 
             assert(
-                yas_factory.fee_amount_tick_spacing(100) == i32 { mag: 5, sign: false },
+                yas_factory.fee_amount_tick_spacing(100) == IntegerTrait::<i32>::new(5, false),
                 'wrong tick spacing for amount'
             );
         }
@@ -266,13 +266,13 @@ mod YASFactoryTests {
             // Clean up the 4 events emitted by the deploy
             clean_events(yas_factory.contract_address);
 
-            yas_factory.enable_fee_amount(100, i32 { mag: 5, sign: false });
+            yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(5, false));
 
             // Verify FeeAmountEnabled event emitted
             let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
             assert(event.fee == 100, 'fee event should be 100');
             assert(
-                event.tick_spacing == i32 { mag: 5, sign: false }, 'tick_spacing event should be 5'
+                event.tick_spacing == IntegerTrait::<i32>::new(5, false), 'tick_spacing event should be 5'
             );
         }
     // TODO: add this test when create_pool is implemented

@@ -111,16 +111,16 @@ mod YASFactory {
         self.emit(OwnerChanged { old_owner: Zeroable::zero(), new_owner: owner });
 
         // fee %0.05 -> tick_spacing 10
-        self.fee_amount_tick_spacing.write(500, i32 { mag: 10, sign: false });
-        self.emit(FeeAmountEnabled { fee: 500, tick_spacing: i32 { mag: 10, sign: false } });
+        self.fee_amount_tick_spacing.write(500, IntegerTrait::<i32>::new(10, false));
+        self.emit(FeeAmountEnabled { fee: 500, tick_spacing: IntegerTrait::<i32>::new(10, false)});
 
         // fee %0.3 -> tick_spacing 60
-        self.fee_amount_tick_spacing.write(3000, i32 { mag: 60, sign: false });
-        self.emit(FeeAmountEnabled { fee: 3000, tick_spacing: i32 { mag: 60, sign: false } });
+        self.fee_amount_tick_spacing.write(3000, IntegerTrait::<i32>::new(60, false));
+        self.emit(FeeAmountEnabled { fee: 3000, tick_spacing: IntegerTrait::<i32>::new(60, false)});
 
         // fee %1 -> tick_spacing 200
-        self.fee_amount_tick_spacing.write(10000, i32 { mag: 200, sign: false });
-        self.emit(FeeAmountEnabled { fee: 10000, tick_spacing: i32 { mag: 200, sign: false } });
+        self.fee_amount_tick_spacing.write(10000, IntegerTrait::<i32>::new(200, false));
+        self.emit(FeeAmountEnabled { fee: 10000, tick_spacing: IntegerTrait::<i32>::new(200, false) });
     }
 
     #[external(v0)]
