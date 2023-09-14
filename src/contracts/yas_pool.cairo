@@ -43,7 +43,7 @@ mod YASPool {
 
     #[external(v0)]
     impl YASPoolImpl of IYASPool<ContractState> {
-        fn initialize(ref self: ContractState) {// TODO: implement
+        fn initialize(ref self: ContractState) { // TODO: implement
         }
     }
 }
