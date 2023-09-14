@@ -1,4 +1,4 @@
-use yas::numbers::signed_integer::{i32::i32, i128::i128, i64::i64, integer_trait::IntegerTrait};
+use yas::numbers::signed_integer::{i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait};
 
 #[derive(Copy, Drop, Serde, starknet::Store)]
 struct Info {
@@ -24,11 +24,11 @@ struct Info {
 }
 
 #[starknet::interface]
-trait ITick<TStorage> {
-    fn tick_spacing_to_max_liquidity_per_tick(self: @TStorage, tick_spacing: i32) -> u128;
-    fn clear(ref self: TStorage, tick: i32);
+trait ITick<TContractState> {
+    fn tick_spacing_to_max_liquidity_per_tick(self: @TContractState, tick_spacing: i32) -> u128;
+    fn clear(ref self: TContractState, tick: i32);
     fn cross(
-        ref self: TStorage,
+        ref self: TContractState,
         tick: i32,
         fee_growth_global_0X128: u256,
         fee_growth_global_1X128: u256,
@@ -37,7 +37,7 @@ trait ITick<TStorage> {
         time: u32
     ) -> i128;
     fn get_fee_growth_inside(
-        ref self: TStorage,
+        self: @TContractState,
         tick_lower: i32,
         tick_upper: i32,
         tick_current: i32,
@@ -45,7 +45,7 @@ trait ITick<TStorage> {
         fee_growth_global_1X128: u256
     ) -> (u256, u256);
     fn update(
-        ref self: TStorage,
+        ref self: TContractState,
         tick: i32,
         tick_current: i32,
         liquidity_delta: i128,
@@ -57,18 +57,15 @@ trait ITick<TStorage> {
         upper: bool,
         max_liquidity: u128
     ) -> bool;
-    // TODO: Function used for testing. To be removed in the future
-    fn set_tick(ref self: TStorage, tick: i32, info: Info);
-    // TODO: Function used for testing. To be removed in the future
-    fn get_tick(self: @TStorage, tick: i32) -> Info;
 }
 
 #[starknet::contract]
 mod Tick {
     use super::{ITick, Info};
 
-    use poseidon::poseidon_hash_span;
     use integer::BoundedInt;
+    use hash::{HashStateTrait, HashStateExTrait};
+    use poseidon::PoseidonTrait;
 
     use yas::libraries::liquidity_math::LiquidityMath;
     use yas::numbers::signed_integer::{
@@ -83,7 +80,7 @@ mod Tick {
     }
 
     #[external(v0)]
-    impl Tick of ITick<ContractState> {
+    impl TickImpl of ITick<ContractState> {
         /// @notice Derives max liquidity per tick from given tick spacing
         /// @dev Executed within the pool constructor
         /// @param tick_spacing The amount of required tick separation, realized in multiples of `tick_spacing`
@@ -106,7 +103,7 @@ mod Tick {
         /// @param self The mapping containing all initialized tick information for initialized ticks
         /// @param tick The tick that will be cleared
         fn clear(ref self: ContractState, tick: i32) {
-            let hashed_tick = self._generate_hashed_tick(@tick);
+            let hashed_tick = PoseidonTrait::new().update_with(tick).finalize();
             self
                 .ticks
                 .write(
@@ -142,7 +139,7 @@ mod Tick {
             tick_cumulative: i64,
             time: u32
         ) -> i128 {
-            let hashed_tick = self._generate_hashed_tick(@tick);
+            let hashed_tick = PoseidonTrait::new().update_with(tick).finalize();
             let mut info: Info = self.ticks.read(hashed_tick);
             info.fee_growth_outside_0X128 = fee_growth_global_0X128 - info.fee_growth_outside_0X128;
             info.fee_growth_outside_1X128 = fee_growth_global_1X128 - info.fee_growth_outside_1X128;
@@ -164,15 +161,19 @@ mod Tick {
         /// @return fee_growth_inside_0X128 The all-time fee growth in token0, per unit of liquidity, inside the position's tick boundaries
         /// @return fee_growth_inside_1X128 The all-time fee growth in token1, per unit of liquidity, inside the position's tick boundaries
         fn get_fee_growth_inside(
-            ref self: ContractState,
+            self: @ContractState,
             tick_lower: i32,
             tick_upper: i32,
             tick_current: i32,
             fee_growth_global_0X128: u256,
             fee_growth_global_1X128: u256
         ) -> (u256, u256) {
-            let lower: Info = self.ticks.read(self._generate_hashed_tick(@tick_lower));
-            let upper: Info = self.ticks.read(self._generate_hashed_tick(@tick_upper));
+            let lower: Info = self
+                .ticks
+                .read(PoseidonTrait::new().update_with(tick_lower).finalize());
+            let upper: Info = self
+                .ticks
+                .read(PoseidonTrait::new().update_with(tick_upper).finalize());
 
             // calculate fee growth below
             let (fee_growth_below_0X128, fee_growth_below_1X128) = if tick_current >= tick_lower {
@@ -233,7 +234,7 @@ mod Tick {
             upper: bool,
             max_liquidity: u128
         ) -> bool {
-            let hashed_tick = self._generate_hashed_tick(@tick);
+            let hashed_tick = PoseidonTrait::new().update_with(tick).finalize();
             let mut info: Info = self.ticks.read(hashed_tick);
 
             let liquidity_gross_before: u128 = info.liquidity_gross;
@@ -271,24 +272,18 @@ mod Tick {
             self.ticks.write(hashed_tick, info);
             flipped
         }
+    }
 
+    #[generate_trait]
+    impl InternalImpl of InternalTrait {
         fn set_tick(ref self: ContractState, tick: i32, info: Info) {
-            let hashed_tick = self._generate_hashed_tick(@tick);
+            let hashed_tick = PoseidonTrait::new().update_with(tick).finalize();
             self.ticks.write(hashed_tick, info);
         }
 
         fn get_tick(self: @ContractState, tick: i32) -> Info {
-            let hashed_tick = self._generate_hashed_tick(@tick);
+            let hashed_tick = PoseidonTrait::new().update_with(tick).finalize();
             self.ticks.read(hashed_tick)
-        }
-    }
-
-    #[generate_trait]
-    impl InternalFunctions of InternalFunctionsTrait {
-        fn _generate_hashed_tick(self: @ContractState, tick: @i32) -> felt252 {
-            let mut serialized: Array<felt252> = ArrayTrait::new();
-            Serde::<i32>::serialize(tick, ref serialized);
-            poseidon_hash_span(serialized.span())
         }
     }
 }
