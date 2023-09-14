@@ -253,7 +253,7 @@ mod YASFactoryTests {
             yas_factory.enable_fee_amount(100, i32 { mag: 5, sign: false });
 
             assert(
-                yas_factory.fee_amount_tick_spacing(100) == i32 { mag: 5, sign: false },
+                yas_factory.fee_amount_tick_spacing(100) == IntegerTrait::<i32>::new(5, false),
                 'wrong tick spacing for amount'
             );
         }
