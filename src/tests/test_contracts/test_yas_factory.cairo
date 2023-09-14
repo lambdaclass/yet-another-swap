@@ -8,8 +8,6 @@ mod YASFactoryTests {
     };
     use orion::numbers::signed_integer::i32::i32;
 
-    use debug::PrintTrait;
-
     fn OWNER() -> ContractAddress {
         contract_address_const::<'OWNER'>()
     }
@@ -112,8 +110,7 @@ mod YASFactoryTests {
 
         #[test]
         #[available_gas(20000000)]
-        fn test_emits_events() {
-            // TODO: Why we should use set_contract_address instead of set_caller_address, doesnt make sense
+        fn test_emits_all_events() {
             set_contract_address(OWNER());
             let yas_factory = deploy(OWNER());
 
@@ -145,17 +142,13 @@ mod YASFactoryTests {
     }
 
     mod SetOwner {
-        use super::{OTHER, OWNER, ZERO, deploy, clean_events};
+        use super::{OTHER, OWNER, deploy, clean_events};
         use yas::contracts::yas_factory::{
             YASFactory, YASFactory::OwnerChanged, IYASFactory, IYASFactoryDispatcher,
             IYASFactoryDispatcherTrait
         };
-        use starknet::{
-            contract_address_const, testing::{pop_log, set_caller_address, set_contract_address}
-        };
+        use starknet::testing::{pop_log, set_caller_address, set_contract_address};
         use orion::numbers::signed_integer::i32::i32;
-
-        use debug::PrintTrait;
 
         #[test]
         #[available_gas(20000000)]
@@ -169,23 +162,123 @@ mod YASFactoryTests {
         #[test]
         #[available_gas(20000000)]
         fn test_success_when_caller_is_owner() {
-            // TODO: Why we should use set_contract_address instead of set_caller_address, doesnt make sense
+            set_contract_address(OWNER());
+            let yas_factory = deploy(OWNER());
+
+            // Set and read new owner
+            yas_factory.set_owner(OTHER());
+
+            assert(yas_factory.owner() == OTHER(), 'new owner should be OTHER');
+        }
+
+        #[test]
+        #[available_gas(20000000)]
+        fn test_emits_events() {
             set_contract_address(OWNER());
             let yas_factory = deploy(OWNER());
 
             // Clean up the 4 events emitted by the deploy
             clean_events(yas_factory.contract_address);
 
-            // Set and read new owner
             yas_factory.set_owner(OTHER());
-            let new_owner = yas_factory.owner();
-
-            assert(new_owner == OTHER(), 'new owner should be OTHER');
 
             // Verify OwnerChanged event emitted
             let event = pop_log::<OwnerChanged>(yas_factory.contract_address).unwrap();
             assert(event.old_owner == OWNER(), 'event old owner should be OWNER');
             assert(event.new_owner == OTHER(), 'event new owner should be OTHER');
         }
+    }
+
+    mod SetEnableFeeAmount {
+        use super::{OTHER, OWNER, deploy, clean_events};
+        use yas::contracts::yas_factory::{
+            YASFactory, YASFactory::FeeAmountEnabled, IYASFactory, IYASFactoryDispatcher,
+            IYASFactoryDispatcherTrait
+        };
+        use starknet::testing::{pop_log, set_caller_address, set_contract_address};
+        use orion::numbers::signed_integer::i32::i32;
+        
+        #[test]
+        #[available_gas(20000000)]
+        #[should_panic(expected: ('Only owner can do this action!', 'ENTRYPOINT_FAILED'))]
+        fn test_fails_if_caller_is_not_owner() {
+            let yas_factory = deploy(OWNER());
+            set_contract_address(OTHER());
+            yas_factory.enable_fee_amount(100, i32 { mag: 2, sign: false } );
+        }
+
+        #[test]
+        #[available_gas(20000000)]
+        #[should_panic(expected: ('fee cannot be gt 1000000', 'ENTRYPOINT_FAILED'))]
+        fn test_fails_if_fee_is_too_large() {
+            set_contract_address(OWNER());
+            let yas_factory = deploy(OWNER());
+            
+            yas_factory.enable_fee_amount(1000000, i32 { mag: 20, sign: false } );
+        }
+
+        #[test]
+        #[available_gas(20000000)]
+        #[should_panic(expected: ('wrong tick_spacing (0<ts<16384)', 'ENTRYPOINT_FAILED'))]
+        fn test_fails_if_tick_spacing_is_too_large() {
+            set_contract_address(OWNER());
+            let yas_factory = deploy(OWNER());
+            
+            yas_factory.enable_fee_amount(500, i32 { mag: 16834, sign: false } );
+        }
+        
+        #[test]
+        #[available_gas(20000000)]
+        #[should_panic(expected: ('wrong tick_spacing (0<ts<16384)', 'ENTRYPOINT_FAILED'))]
+        fn test_fails_if_tick_spacing_is_too_small() {
+            set_contract_address(OWNER());
+            let yas_factory = deploy(OWNER());
+            
+            yas_factory.enable_fee_amount(500, i32 { mag: 0, sign: false } );
+        }
+
+        #[test]
+        #[available_gas(20000000)]
+        #[should_panic(expected: ('fee amount already initialized', 'ENTRYPOINT_FAILED'))]
+        fn test_fails_if_already_initialized() {
+            set_contract_address(OWNER());
+            let yas_factory = deploy(OWNER());
+            
+            yas_factory.enable_fee_amount(100, i32 { mag: 5, sign: false } );
+            yas_factory.enable_fee_amount(100, i32 { mag: 10, sign: false } );
+        }
+
+        #[test]
+        #[available_gas(20000000)]
+        fn test_set_fee_amount_in_the_mapping() {
+            set_contract_address(OWNER());
+            let yas_factory = deploy(OWNER());
+            yas_factory.enable_fee_amount(100, i32 { mag: 5, sign: false } );
+
+            assert(yas_factory.fee_amount_tick_spacing(100) == i32 { mag: 5, sign: false }, 'wrong tick spacing for amount');
+        }
+
+        #[test]
+        #[available_gas(20000000)]
+        fn test_emits_event() {
+            set_contract_address(OWNER());
+            let yas_factory = deploy(OWNER());  
+
+            // Clean up the 4 events emitted by the deploy
+            clean_events(yas_factory.contract_address);
+
+            yas_factory.enable_fee_amount(100, i32 { mag: 5, sign: false } );
+
+            // Verify FeeAmountEnabled event emitted
+            let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
+            assert(event.fee == 100, 'fee event should be 100');
+            assert(event.tick_spacing == i32 { mag: 5, sign: false }, 'tick_spacing event should be 5');
+        }
+
+        // TODO: add this test when create_pool is implemented
+        // it('enables pool creation', async () => {
+        //       await factory.enableFeeAmount(250, 15)
+        //       await createAndCheckPool([TEST_ADDRESSES[0], TEST_ADDRESSES[1]], 250, 15)
+        //     })
     }
 }
