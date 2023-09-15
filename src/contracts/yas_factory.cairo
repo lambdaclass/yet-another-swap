@@ -53,9 +53,15 @@ trait IYASFactory<TContractState> {
 
 #[starknet::contract]
 mod YASFactory {
+    use core::starknet::SyscallResultTrait;
+    use core::zeroable::Zeroable;
     use super::IYASFactory;
-    use starknet::{ContractAddress, get_caller_address};
+    use starknet::{ContractAddress, ClassHash, get_caller_address};
+    use starknet::syscalls::deploy_syscall;
+    use poseidon::poseidon_hash_span;
+    use yas::contracts::yas_pool::{YASPool, IYASPool, IYASPoolDispatcher, IYASPoolDispatcherTrait};
     use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+    use yas::utils::math_utils::ContractAddressPartialOrd;
 
     #[event]
     #[derive(Drop, starknet::Event)]
@@ -102,13 +108,17 @@ mod YASFactory {
     struct Storage {
         owner: ContractAddress,
         fee_amount_tick_spacing: LegacyMap::<u32, i32>,
-        pool: LegacyMap<(ContractAddress, ContractAddress, u32), ContractAddress>
+        pool: LegacyMap<(ContractAddress, ContractAddress, u32), ContractAddress>,
+        pool_class_hash: ClassHash
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, owner: ContractAddress) {
+    fn constructor(ref self: ContractState, owner: ContractAddress, pool_class_hash: ClassHash) {
         self.owner.write(owner);
         self.emit(OwnerChanged { old_owner: Zeroable::zero(), new_owner: owner });
+
+        assert(!pool_class_hash.is_zero(), 'pool class hash can not be zero');
+        self.pool_class_hash.write(pool_class_hash);
 
         // fee %0.05 -> tick_spacing 10
         self.fee_amount_tick_spacing.write(500, IntegerTrait::<i32>::new(10, false));
@@ -148,8 +158,35 @@ mod YASFactory {
         fn create_pool(
             ref self: ContractState, token_a: ContractAddress, token_b: ContractAddress, fee: u32
         ) -> ContractAddress {
-            // TODO: implement 
-            self.owner.read()
+            assert(token_a != token_b, 'tokens must be different');
+
+            let (token_0, token_1) = if token_a < token_b {
+                (token_a, token_b)
+            } else {
+                (token_b, token_a)
+            };
+
+            let tick_spacing = self.fee_amount_tick_spacing(fee);
+            assert(tick_spacing.is_non_zero(), 'tick spacing not initialized');
+
+            assert(self.pool(token_0, token_1, fee).is_zero(), 'token pair already initialized');
+
+            let contract_address_salt = self.generate_salt(@token_0, @token_1);
+
+            let (pool, _) = deploy_syscall(
+                self.pool_class_hash.read(),
+                contract_address_salt,
+                array![token_0.into(), token_1.into(), fee.into()].span(),
+                false
+            )
+                .unwrap_syscall();
+
+            self.pool.write((token_0, token_1, fee), pool);
+            // populate mapping in the reverse direction, deliberate choice to avoid the cost of comparing addresses
+            self.pool.write((token_1, token_0, fee), pool);
+            self.emit(PoolCreated { token_0, token_1, fee, tick_spacing, pool });
+
+            pool
         }
 
         fn enable_fee_amount(ref self: ContractState, fee: u32, tick_spacing: i32) {
@@ -164,9 +201,7 @@ mod YASFactory {
                 tick_spacing > zero && tick_spacing < IntegerTrait::<i32>::new(16384, false),
                 'wrong tick_spacing (0<ts<16384)'
             );
-            assert(
-                self.fee_amount_tick_spacing.read(fee) == zero, 'fee amount already initialized'
-            );
+            assert(self.fee_amount_tick_spacing(fee) == zero, 'fee amount already initialized');
 
             self.fee_amount_tick_spacing.write(fee, tick_spacing);
             self.emit(FeeAmountEnabled { fee, tick_spacing });
@@ -174,7 +209,7 @@ mod YASFactory {
 
         fn set_owner(ref self: ContractState, new_owner: ContractAddress) {
             self.assert_only_owner();
-            self.emit(OwnerChanged { old_owner: self.owner.read(), new_owner });
+            self.emit(OwnerChanged { old_owner: self.owner(), new_owner });
             self.owner.write(new_owner);
         }
     }
@@ -182,7 +217,16 @@ mod YASFactory {
     #[generate_trait]
     impl InternalFunctions of InternalFunctionsTrait {
         fn assert_only_owner(self: @ContractState) {
-            assert(get_caller_address() == self.owner.read(), 'Only owner can do this action!');
+            assert(get_caller_address() == self.owner(), 'only owner can do this action!');
+        }
+
+        fn generate_salt(
+            self: @ContractState, token_0: @ContractAddress, token_1: @ContractAddress
+        ) -> felt252 {
+            let mut data = array![];
+            Serde::serialize(token_0, ref data);
+            Serde::serialize(token_1, ref data);
+            poseidon_hash_span(data.span())
         }
     }
 }

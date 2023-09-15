@@ -1,12 +1,15 @@
 mod YASFactoryTests {
+    use core::starknet::SyscallResultTrait;
+    use core::result::ResultTrait;
     use starknet::syscalls::deploy_syscall;
     use starknet::testing::pop_log;
-    use starknet::{contract_address_const, ContractAddress};
+    use starknet::{ContractAddress, ClassHash, contract_address_const, class_hash_const};
     use yas::contracts::yas_factory::{
         YASFactory, YASFactory::OwnerChanged, YASFactory::FeeAmountEnabled, IYASFactory,
         IYASFactoryDispatcher, IYASFactoryDispatcherTrait
     };
     use yas::numbers::signed_integer::i32::i32;
+    use yas::contracts::yas_pool::YASPool;
 
     fn OWNER() -> ContractAddress {
         contract_address_const::<'OWNER'>()
@@ -18,6 +21,10 @@ mod YASFactoryTests {
 
     fn ZERO() -> ContractAddress {
         Zeroable::zero()
+    }
+
+    fn ONE_CLASS_HASH() -> ClassHash {
+        class_hash_const::<1>()
     }
 
     enum FeeAmount {
@@ -42,11 +49,14 @@ mod YASFactoryTests {
         }
     }
 
-    fn deploy(deployer: ContractAddress) -> IYASFactoryDispatcher {
+    fn deploy(deployer: ContractAddress, pool_class_hash: ClassHash) -> IYASFactoryDispatcher {
         let (address, _) = deploy_syscall(
-            YASFactory::TEST_CLASS_HASH.try_into().unwrap(), 0, array![deployer.into()].span(), true
+            YASFactory::TEST_CLASS_HASH.try_into().unwrap(),
+            0,
+            array![deployer.into(), pool_class_hash.into()].span(),
+            true
         )
-            .expect('DEPLOY FAILED');
+            .unwrap_syscall();
 
         return IYASFactoryDispatcher { contract_address: address };
     }
@@ -66,25 +76,37 @@ mod YASFactoryTests {
     }
 
     mod Constructor {
-        use super::{OTHER, OWNER, ZERO, FeeAmount, deploy, fee_amount, tick_spacing, clean_events};
+        use super::{
+            OTHER, OWNER, ZERO, ONE_CLASS_HASH, FeeAmount, deploy, fee_amount, tick_spacing,
+            clean_events
+        };
         use yas::contracts::yas_factory::{
             YASFactory, YASFactory::OwnerChanged, YASFactory::FeeAmountEnabled, IYASFactory,
             IYASFactoryDispatcher, IYASFactoryDispatcherTrait
         };
-        use starknet::{contract_address_const, testing::{set_contract_address, pop_log}};
+        use starknet::{
+            contract_address_const, class_hash_const, testing::{set_contract_address, pop_log}
+        };
         use yas::numbers::signed_integer::{integer_trait::IntegerTrait, i32::i32};
 
         #[test]
         #[available_gas(20000000)]
+        #[should_panic(expected: ('pool class hash can not be zero', 'CONSTRUCTOR_FAILED'))]
+        fn test_fails_when_pool_class_hash_is_zero() {
+            let yas_factory = deploy(OWNER(), class_hash_const::<0>());
+        }
+
+        #[test]
+        #[available_gas(20000000)]
         fn test_deployer_should_be_contract_owner() {
-            let yas_factory = deploy(OWNER());
+            let yas_factory = deploy(OWNER(), ONE_CLASS_HASH());
             assert(yas_factory.owner() == OWNER(), 'Owner doesnt match')
         }
 
         #[test]
         #[available_gas(20000000)]
         fn test_initial_enabled_fee_amounts() {
-            let yas_factory = deploy(OWNER());
+            let yas_factory = deploy(OWNER(), ONE_CLASS_HASH());
 
             let fee_amount_low = yas_factory.fee_amount_tick_spacing(fee_amount(FeeAmount::LOW));
             assert(
@@ -109,7 +131,7 @@ mod YASFactoryTests {
         #[available_gas(20000000)]
         fn test_emits_all_events() {
             set_contract_address(OWNER());
-            let yas_factory = deploy(OWNER());
+            let yas_factory = deploy(OWNER(), ONE_CLASS_HASH());
 
             let event = pop_log::<OwnerChanged>(yas_factory.contract_address).unwrap();
             assert(event.old_owner == ZERO(), 'event old owner should be ZERO');
@@ -139,7 +161,7 @@ mod YASFactoryTests {
     }
 
     mod SetOwner {
-        use super::{OTHER, OWNER, deploy, clean_events};
+        use super::{OTHER, OWNER, ONE_CLASS_HASH, deploy, clean_events};
         use yas::contracts::yas_factory::{
             YASFactory, YASFactory::OwnerChanged, IYASFactory, IYASFactoryDispatcher,
             IYASFactoryDispatcherTrait
@@ -149,9 +171,9 @@ mod YASFactoryTests {
 
         #[test]
         #[available_gas(20000000)]
-        #[should_panic(expected: ('Only owner can do this action!', 'ENTRYPOINT_FAILED'))]
+        #[should_panic(expected: ('only owner can do this action!', 'ENTRYPOINT_FAILED'))]
         fn test_fails_if_caller_is_not_owner() {
-            let yas_factory = deploy(OWNER());
+            let yas_factory = deploy(OWNER(), ONE_CLASS_HASH());
             set_contract_address(OTHER());
             yas_factory.set_owner(OTHER());
         }
@@ -160,7 +182,7 @@ mod YASFactoryTests {
         #[available_gas(20000000)]
         fn test_success_when_caller_is_owner() {
             set_contract_address(OWNER());
-            let yas_factory = deploy(OWNER());
+            let yas_factory = deploy(OWNER(), ONE_CLASS_HASH());
 
             // Set and read new owner
             yas_factory.set_owner(OTHER());
@@ -171,7 +193,7 @@ mod YASFactoryTests {
         #[available_gas(20000000)]
         fn test_emits_events() {
             set_contract_address(OWNER());
-            let yas_factory = deploy(OWNER());
+            let yas_factory = deploy(OWNER(), ONE_CLASS_HASH());
 
             // Clean up the 4 events emitted by the deploy
             clean_events(yas_factory.contract_address);
@@ -186,7 +208,7 @@ mod YASFactoryTests {
     }
 
     mod SetEnableFeeAmount {
-        use super::{OTHER, OWNER, deploy, clean_events};
+        use super::{OTHER, OWNER, ONE_CLASS_HASH, deploy, clean_events};
         use yas::contracts::yas_factory::{
             YASFactory, YASFactory::FeeAmountEnabled, IYASFactory, IYASFactoryDispatcher,
             IYASFactoryDispatcherTrait
@@ -196,9 +218,9 @@ mod YASFactoryTests {
 
         #[test]
         #[available_gas(20000000)]
-        #[should_panic(expected: ('Only owner can do this action!', 'ENTRYPOINT_FAILED'))]
+        #[should_panic(expected: ('only owner can do this action!', 'ENTRYPOINT_FAILED'))]
         fn test_fails_if_caller_is_not_owner() {
-            let yas_factory = deploy(OWNER());
+            let yas_factory = deploy(OWNER(), ONE_CLASS_HASH());
             set_contract_address(OTHER());
             yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(2, false));
         }
@@ -208,7 +230,7 @@ mod YASFactoryTests {
         #[should_panic(expected: ('fee cannot be gt 1000000', 'ENTRYPOINT_FAILED'))]
         fn test_fails_if_fee_is_too_large() {
             set_contract_address(OWNER());
-            let yas_factory = deploy(OWNER());
+            let yas_factory = deploy(OWNER(), ONE_CLASS_HASH());
 
             yas_factory.enable_fee_amount(1000000, IntegerTrait::<i32>::new(20, false));
         }
@@ -218,7 +240,7 @@ mod YASFactoryTests {
         #[should_panic(expected: ('wrong tick_spacing (0<ts<16384)', 'ENTRYPOINT_FAILED'))]
         fn test_fails_if_tick_spacing_is_too_large() {
             set_contract_address(OWNER());
-            let yas_factory = deploy(OWNER());
+            let yas_factory = deploy(OWNER(), ONE_CLASS_HASH());
 
             yas_factory.enable_fee_amount(500, IntegerTrait::<i32>::new(16834, false));
         }
@@ -228,7 +250,7 @@ mod YASFactoryTests {
         #[should_panic(expected: ('wrong tick_spacing (0<ts<16384)', 'ENTRYPOINT_FAILED'))]
         fn test_fails_if_tick_spacing_is_too_small() {
             set_contract_address(OWNER());
-            let yas_factory = deploy(OWNER());
+            let yas_factory = deploy(OWNER(), ONE_CLASS_HASH());
 
             yas_factory.enable_fee_amount(500, IntegerTrait::<i32>::new(0, false));
         }
@@ -238,7 +260,7 @@ mod YASFactoryTests {
         #[should_panic(expected: ('fee amount already initialized', 'ENTRYPOINT_FAILED'))]
         fn test_fails_if_already_initialized() {
             set_contract_address(OWNER());
-            let yas_factory = deploy(OWNER());
+            let yas_factory = deploy(OWNER(), ONE_CLASS_HASH());
 
             yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(5, false));
             yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(10, false));
@@ -248,7 +270,7 @@ mod YASFactoryTests {
         #[available_gas(20000000)]
         fn test_set_fee_amount_in_the_mapping() {
             set_contract_address(OWNER());
-            let yas_factory = deploy(OWNER());
+            let yas_factory = deploy(OWNER(), ONE_CLASS_HASH());
             yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(5, false));
 
             assert(
@@ -261,7 +283,7 @@ mod YASFactoryTests {
         #[available_gas(20000000)]
         fn test_emits_event() {
             set_contract_address(OWNER());
-            let yas_factory = deploy(OWNER());
+            let yas_factory = deploy(OWNER(), ONE_CLASS_HASH());
 
             // Clean up the 4 events emitted by the deploy
             clean_events(yas_factory.contract_address);
