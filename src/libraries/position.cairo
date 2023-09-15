@@ -98,18 +98,18 @@ mod Position {
             };
 
             // calculate accumulated fees
-            let max_u128_plus_one: u128 = BoundedInt::max() + 1;
+            let max_u128: u128 = BoundedInt::max();
             let tokens_owed_0: u128 = mul_div(
                 fee_growth_inside_0_X128 - position.fee_growth_inside_0_last_X128,
                 position.liquidity.into(),
-                max_u128_plus_one.into()
+                max_u128.into()
             )
                 .try_into()
                 .unwrap();
             let tokens_owed_1: u128 = mul_div(
                 fee_growth_inside_1_X128 - position.fee_growth_inside_1_last_X128,
                 position.liquidity.into(),
-                max_u128_plus_one.into()
+                max_u128.into()
             )
                 .try_into()
                 .unwrap();
@@ -127,6 +127,15 @@ mod Position {
                 position.tokens_owed_0 += tokens_owed_0;
                 position.tokens_owed_1 += tokens_owed_1;
             }
+            self.positions.write(hashed_key, position);
+        }
+    }
+
+    #[generate_trait]
+    impl InternalImpl of InternalTrait {
+        fn set_position(ref self: ContractState, position_key: PositionKey, info: Info) {
+            let hashed_key = generate_hashed_position_key(@position_key);
+            self.positions.write(hashed_key, info);
         }
     }
 }
