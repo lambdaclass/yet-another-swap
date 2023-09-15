@@ -136,6 +136,18 @@ mod BitShift {
             *self / pow(2, n.into()).try_into().unwrap()
         }
     }
+
+    impl U8BitShift of BitShiftTrait<u8> {
+        #[inline(always)]
+        fn shl(self: @u8, n: u8) -> u8 {
+            *self * pow(2, n.into()).try_into().unwrap()
+        }
+
+        #[inline(always)]
+        fn shr(self: @u8, n: u8) -> u8 {
+            *self / pow(2, n.into()).try_into().unwrap()
+        }
+    }
 }
 
 /// Raise a number to a power.
