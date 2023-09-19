@@ -53,12 +53,14 @@ trait IYASFactory<TContractState> {
 
 #[starknet::contract]
 mod YASFactory {
-    use core::starknet::SyscallResultTrait;
-    use core::zeroable::Zeroable;
     use super::IYASFactory;
-    use starknet::{ContractAddress, ClassHash, get_caller_address, get_contract_address};
-    use starknet::syscalls::deploy_syscall;
+    
     use poseidon::poseidon_hash_span;
+    use starknet::SyscallResultTrait;
+    use starknet::syscalls::deploy_syscall;
+    use starknet::{ContractAddress, ClassHash, get_caller_address, get_contract_address};
+    use zeroable::Zeroable;
+    
     use yas::contracts::yas_pool::{YASPool, IYASPool, IYASPoolDispatcher, IYASPoolDispatcherTrait};
     use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
     use yas::utils::math_utils::ContractAddressPartialOrd;
