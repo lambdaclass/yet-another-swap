@@ -98,12 +98,12 @@ Follow the steps below to set up a testnet smart wallet using `starkli`:
 
 By following the previous two steps, you should now have a account funded on the Goerli testnet.
 
-Now we have to deploy the simple YASFactory contract to the Testnet.
+Now we have to deploy the simple YASFactory and YASPool contract to the Testnet.
 
 On Starknet, the deployment process is in two steps:
 
 - Declaring the class of your contract, or sending your contract’s code to the network
-- Deploying a contract, or creating an instance of the code you previously declared
+- Deploying a contract or creating an instance of the previously declared code with the necessary parameters
 
 1. Build the project:
     ```bash
@@ -113,10 +113,14 @@ On Starknet, the deployment process is in two steps:
     ```bash
     make declare
     ```
-    Copy the declare Class Hash provided to use in the following step.
+    Copy the declared hashes from the Factory and the Pool for the following step.
 3. Deploy:
    ```bash"
-   make deploy CLASS_HASH="<CLASS_HASH>" CTOR_ARGS="<CTOR_ARGS>"
+   // FACTORY_CLASS_HASH: Include the class hash of the YASFactory declare.
+   // OWNER_ADDRESS: Include a Starknet address.
+   // POOL_CLASS_HASH: Include the class hash of the YASPool declare.
+
+   make deploy CLASS_HASH=<FACTORY_CLASS_HASH> CTOR_ARGS=<OWNER_ADDRESS> <POOL_CLASS_HASH>
    ```
 
 ## Version Specifications
