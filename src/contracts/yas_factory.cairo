@@ -63,9 +63,6 @@ mod YASFactory {
     use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
     use yas::utils::math_utils::ContractAddressPartialOrd;
 
-    // TODO: REMOVE
-    use debug::PrintTrait;
-
     #[event]
     #[derive(Drop, starknet::Event)]
     enum Event {
