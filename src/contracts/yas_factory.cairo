@@ -230,7 +230,7 @@ mod YASFactory {
             fee: u32,
             tick_spacing: @i32
         ) -> Array<felt252> {
-            let mut calldata: Array<felt252> = Default::default();
+            let mut calldata = array![];
             calldata.append(get_contract_address().into());
             Serde::serialize(token_0, ref calldata);
             Serde::serialize(token_1, ref calldata);
