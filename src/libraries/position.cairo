@@ -53,7 +53,7 @@ mod Position {
     use hash::{HashStateTrait, HashStateExTrait};
     use poseidon::PoseidonTrait;
 
-    use yas::libraries::liquidity_math::LiquidityMath::{add_delta};
+    use yas::libraries::liquidity_math::LiquidityMath::add_delta;
     use yas::numbers::signed_integer::{i128::i128, integer_trait::IntegerTrait};
     use yas::utils::math_utils::FullMath::mul_div;
 
