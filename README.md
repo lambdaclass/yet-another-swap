@@ -120,7 +120,7 @@ On Starknet, the deployment process is in two steps:
    // OWNER_ADDRESS: Include a Starknet address.
    // POOL_CLASS_HASH: Include the class hash of the YASPool declare.
 
-   make deploy CLASS_HASH=<FACTORY_CLASS_HASH> CTOR_ARGS=<OWNER_ADDRESS> <POOL_CLASS_HASH>
+   make deploy CLASS_HASH="<FACTORY_CLASS_HASH>" CTOR_ARGS="<OWNER_ADDRESS> <POOL_CLASS_HASH>"
    ```
 
 ## Version Specifications
