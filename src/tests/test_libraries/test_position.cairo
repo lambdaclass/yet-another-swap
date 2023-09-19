@@ -13,13 +13,9 @@ mod PositionTests {
     mod Get {
         use super::{STATE, OWNER};
 
-        use yas::libraries::position::Info;
-        use yas::libraries::position::Position::{PositionImpl, InternalImpl};
-        use yas::libraries::position::PositionKey;
+        use yas::libraries::position::{Info, PositionKey, Position::{PositionImpl, InternalImpl}};
 
         use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
-
-        use debug::PrintTrait;
 
 
         #[test]
@@ -43,7 +39,7 @@ mod PositionTests {
 
             InternalImpl::set_position(ref state, position_key, info);
 
-            let position: Info = PositionImpl::get(@state, position_key);
+            let position = PositionImpl::get(@state, position_key);
 
             assert(position.liquidity == 100, 'liquidity');
             assert(position.fee_growth_inside_0_last_X128 == 20, 'fee_growth_inside_0_last_X128');
@@ -75,13 +71,9 @@ mod PositionTests {
     mod Update {
         use super::{STATE, OWNER};
 
-        use yas::libraries::position::Info;
-        use yas::libraries::position::Position::{PositionImpl, InternalImpl};
-        use yas::libraries::position::PositionKey;
+        use yas::libraries::position::{Info, PositionKey, Position::{PositionImpl, InternalImpl}};
 
         use yas::numbers::signed_integer::{i32::i32, i128::i128, integer_trait::IntegerTrait};
-
-        use debug::PrintTrait;
 
         #[test]
         #[available_gas(30000000)]
@@ -96,10 +88,10 @@ mod PositionTests {
             };
 
             // should be zero or negative to make it panic
-            let liquidity_delta: i128 = IntegerTrait::<i128>::new(0, false);
+            let liquidity_delta = IntegerTrait::<i128>::new(0, false);
 
-            let fee_growth_inside_0_X128: u256 = 0;
-            let fee_growth_inside_1_X128: u256 = 0;
+            let fee_growth_inside_0_X128 = 0;
+            let fee_growth_inside_1_X128 = 0;
 
             let position = PositionImpl::update(
                 ref state,
@@ -131,10 +123,10 @@ mod PositionTests {
 
             InternalImpl::set_position(ref state, position_key, info);
 
-            let liquidity_delta: i128 = IntegerTrait::<i128>::new(0, false);
+            let liquidity_delta = IntegerTrait::<i128>::new(0, false);
 
-            let fee_growth_inside_0_X128: u256 = 0;
-            let fee_growth_inside_1_X128: u256 = 0;
+            let fee_growth_inside_0_X128 = 0;
+            let fee_growth_inside_1_X128 = 0;
 
             PositionImpl::update(
                 ref state,
@@ -164,10 +156,10 @@ mod PositionTests {
                 tick_upper: IntegerTrait::<i32>::new(10, false),
             };
 
-            let liquidity_delta: i128 = IntegerTrait::<i128>::new(100, false);
+            let liquidity_delta = IntegerTrait::<i128>::new(100, false);
 
-            let fee_growth_inside_0_X128: u256 = 0;
-            let fee_growth_inside_1_X128: u256 = 0;
+            let fee_growth_inside_0_X128 = 0;
+            let fee_growth_inside_1_X128 = 0;
 
             PositionImpl::update(
                 ref state,
