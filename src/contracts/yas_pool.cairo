@@ -1,12 +1,14 @@
 use yas::numbers::signed_integer::i32::i32;
-use yas::numbers::fixed_point::implementations::impl_64x96::{FP64x96Impl, FixedType};
+use yas::numbers::fixed_point::implementations::impl_64x96::{
+    FP64x96Impl, FP64x96PartialEq, FixedType
+};
 
 #[starknet::interface]
 trait IYASPool<TContractState> {
     fn initialize(ref self: TContractState, sqrt_price_X96: FixedType);
 }
 
-#[derive(Serde, Copy, Drop, starknet::Store)]
+#[derive(Serde, Copy, Drop, PartialEq, starknet::Store)]
 struct Slot0 {
     // the current price
     sqrt_price_X96: FixedType,
@@ -87,8 +89,14 @@ mod YASPool {
             let tick = TickMath::get_tick_at_sqrt_ratio(sqrt_price_X96);
 
             self.slot_0.write(Slot0 { sqrt_price_X96, tick, fee_protocol: 0, unlocked: true });
-            
             self.emit(Initialize { sqrt_price_X96, tick });
+        }
+    }
+
+    #[generate_trait]
+    impl InternalImpl of InternalTrait {
+        fn slot_0(self: @ContractState) -> Slot0 {
+            self.slot_0.read()
         }
     }
 }
