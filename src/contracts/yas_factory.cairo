@@ -54,13 +54,13 @@ trait IYASFactory<TContractState> {
 #[starknet::contract]
 mod YASFactory {
     use super::IYASFactory;
-    
+
     use poseidon::poseidon_hash_span;
     use starknet::SyscallResultTrait;
     use starknet::syscalls::deploy_syscall;
     use starknet::{ContractAddress, ClassHash, get_caller_address, get_contract_address};
     use zeroable::Zeroable;
-    
+
     use yas::contracts::yas_pool::{YASPool, IYASPool, IYASPoolDispatcher, IYASPoolDispatcherTrait};
     use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
     use yas::utils::math_utils::ContractAddressPartialOrd;
@@ -139,6 +139,14 @@ mod YASFactory {
             .emit(
                 FeeAmountEnabled { fee: 10000, tick_spacing: IntegerTrait::<i32>::new(200, false) }
             );
+
+        // value derived from a simple proportion. 
+        // fee %0.01 -> tick_spacing 2
+        self.fee_amount_tick_spacing.write(100, IntegerTrait::<i32>::new(2, false));
+        self
+            .emit(
+                FeeAmountEnabled { fee: 100, tick_spacing: IntegerTrait::<i32>::new(2, false) }
+        );
     }
 
     #[external(v0)]
@@ -201,7 +209,8 @@ mod YASFactory {
             // TickBitmap#nextInitializedTickWithinOneWord overflows int24 container from a valid tick
             // 16384 ticks represents a >5x price change with ticks of 1 bips
             assert(
-                tick_spacing > Zeroable::zero() && tick_spacing < IntegerTrait::<i32>::new(16384, false),
+                tick_spacing > Zeroable::zero()
+                    && tick_spacing < IntegerTrait::<i32>::new(16384, false),
                 'wrong tick_spacing (0<ts<16384)'
             );
             assert(self.fee_amount_tick_spacing(fee).is_zero(), 'fee amount already initialized');

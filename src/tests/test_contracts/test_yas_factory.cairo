@@ -3,7 +3,7 @@ mod YASFactoryTests {
     use starknet::syscalls::deploy_syscall;
     use starknet::testing::pop_log;
     use starknet::{ContractAddress, ClassHash, contract_address_const, class_hash_const};
-    
+
     use yas::contracts::yas_factory::{
         YASFactory, YASFactory::OwnerChanged, YASFactory::FeeAmountEnabled, IYASFactory,
         IYASFactoryDispatcher, IYASFactoryDispatcherTrait
@@ -29,7 +29,7 @@ mod YASFactoryTests {
     fn clean_events(address: ContractAddress) {
         let mut i = 0;
         loop {
-            if i == 4 {
+            if i == 5 {
                 break;
             }
             pop_log::<OwnerChanged>(address);
@@ -39,7 +39,7 @@ mod YASFactoryTests {
 
     mod Constructor {
         use super::{clean_events, deploy};
-        use yas::tests::utils::constants::Constants::{
+        use yas::tests::utils::constants::FactoryConstants::{
             OTHER, OWNER, ZERO, POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing
         };
         use yas::contracts::yas_factory::{
@@ -51,6 +51,8 @@ mod YASFactoryTests {
         };
         use yas::numbers::signed_integer::{integer_trait::IntegerTrait, i32::i32};
 
+
+        use debug::PrintTrait;
         #[test]
         #[available_gas(20000000)]
         #[should_panic(expected: ('pool class hash can not be zero', 'CONSTRUCTOR_FAILED'))]
@@ -87,6 +89,13 @@ mod YASFactoryTests {
                 fee_amount_high == IntegerTrait::<i32>::new(tick_spacing(FeeAmount::HIGH), false),
                 'fee high doesnt set correctly'
             );
+
+
+            let fee_amount_custom = yas_factory.fee_amount_tick_spacing(fee_amount(FeeAmount::CUSTOM));
+            assert(
+                fee_amount_custom == IntegerTrait::<i32>::new(tick_spacing(FeeAmount::CUSTOM), false),
+                'fee custom doesnt set correctly'
+            );
         }
 
         #[test]
@@ -107,6 +116,9 @@ mod YASFactoryTests {
             );
 
             let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
+            'event'.print();
+            event.fee.print();
+            event.tick_spacing.mag.print();
             assert(event.fee == fee_amount(FeeAmount::MEDIUM), 'wrong med fee event');
             assert(
                 event.tick_spacing.mag == tick_spacing(FeeAmount::MEDIUM),
@@ -119,12 +131,19 @@ mod YASFactoryTests {
                 event.tick_spacing.mag == tick_spacing(FeeAmount::HIGH),
                 'wrong high tick_spacing event'
             );
+
+            let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
+            assert(event.fee == fee_amount(FeeAmount::CUSTOM), 'wrong custom fee event');
+            assert(
+                event.tick_spacing.mag == tick_spacing(FeeAmount::CUSTOM),
+                'wrong custom tick_spacing event'
+            );
         }
     }
 
     mod CreatePool {
         use super::{clean_events, deploy};
-        use yas::tests::utils::constants::Constants::{
+        use yas::tests::utils::constants::FactoryConstants::{
             OTHER, OWNER, TOKEN_A, TOKEN_B, ZERO, POOL_CLASS_HASH, FeeAmount, fee_amount,
             tick_spacing
         };
@@ -287,7 +306,7 @@ mod YASFactoryTests {
 
     mod SetOwner {
         use super::{clean_events, deploy};
-        use yas::tests::utils::constants::Constants::{OTHER, OWNER, POOL_CLASS_HASH};
+        use yas::tests::utils::constants::FactoryConstants::{OTHER, OWNER, POOL_CLASS_HASH};
         use yas::contracts::yas_factory::{
             YASFactory, YASFactory::OwnerChanged, IYASFactory, IYASFactoryDispatcher,
             IYASFactoryDispatcherTrait
@@ -335,7 +354,7 @@ mod YASFactoryTests {
 
     mod SetEnableFeeAmount {
         use super::{clean_events, deploy};
-        use yas::tests::utils::constants::Constants::{
+        use yas::tests::utils::constants::FactoryConstants::{
             OTHER, OWNER, POOL_CLASS_HASH, TOKEN_A, TOKEN_B, FeeAmount, fee_amount
         };
         use yas::contracts::yas_factory::{
@@ -391,8 +410,8 @@ mod YASFactoryTests {
             set_contract_address(OWNER());
             let yas_factory = deploy(OWNER(), POOL_CLASS_HASH());
 
-            yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(5, false));
-            yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(10, false));
+            yas_factory.enable_fee_amount(50, IntegerTrait::<i32>::new(1, false));
+            yas_factory.enable_fee_amount(50, IntegerTrait::<i32>::new(10, false));
         }
 
         #[test]
@@ -400,10 +419,10 @@ mod YASFactoryTests {
         fn test_set_fee_amount_in_the_mapping() {
             set_contract_address(OWNER());
             let yas_factory = deploy(OWNER(), POOL_CLASS_HASH());
-            yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(5, false));
+            yas_factory.enable_fee_amount(50, IntegerTrait::<i32>::new(1, false));
 
             assert(
-                yas_factory.fee_amount_tick_spacing(100) == IntegerTrait::<i32>::new(5, false),
+                yas_factory.fee_amount_tick_spacing(50) == IntegerTrait::<i32>::new(1, false),
                 'wrong tick spacing for amount'
             );
         }
@@ -417,14 +436,14 @@ mod YASFactoryTests {
             // Clean up the 4 events emitted by the deploy
             clean_events(yas_factory.contract_address);
 
-            yas_factory.enable_fee_amount(100, IntegerTrait::<i32>::new(5, false));
+            yas_factory.enable_fee_amount(50, IntegerTrait::<i32>::new(1, false));
 
             // Verify FeeAmountEnabled event emitted
             let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
-            assert(event.fee == 100, 'fee event should be 100');
+            assert(event.fee == 50, 'fee event should be 50');
             assert(
-                event.tick_spacing == IntegerTrait::<i32>::new(5, false),
-                'tick_spacing event should be 5'
+                event.tick_spacing == IntegerTrait::<i32>::new(1, false),
+                'tick_spacing event should be 1'
             );
         }
 
