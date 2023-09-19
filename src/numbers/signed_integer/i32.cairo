@@ -199,6 +199,20 @@ impl i32TryIntou128 of TryInto<i32, u128> {
     }
 }
 
+impl i32Zeroable of Zeroable<i32> {
+    fn zero() -> i32 {
+        IntegerTrait::<i32>::new(0, false)
+    }
+    #[inline(always)]
+    fn is_zero(self: i32) -> bool {
+        self == i32Zeroable::zero()
+    }
+    #[inline(always)]
+    fn is_non_zero(self: i32) -> bool {
+        self != i32Zeroable::zero()
+    }
+}
+
 // Checks if the given i32 integer is zero and has the correct sign.
 // # Arguments
 // * `x` - The i32 integer to check.

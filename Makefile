@@ -6,11 +6,14 @@ build:
 	scarb build
 
 declare: 
-	starkli declare target/dev/yas_AMM.sierra.json --keystore ~/.starkli-wallets/keystore.json --account ~/.starkli-wallets/account.json
+	@echo "Declare YAS Pool contract"
+	starkli declare target/dev/yas_YASPool.sierra.json --keystore ~/.starkli-wallets/keystore.json --account ~/.starkli-wallets/account.json
+	
+	@echo "Declare YAS Factory contract"
+	starkli declare target/dev/yas_YASFactory.sierra.json --keystore ~/.starkli-wallets/keystore.json --account ~/.starkli-wallets/account.json
 
-CLASS_HASH:=
 deploy:
-	starkli deploy $(CLASS_HASH) --keystore ~/.starkli-wallets/keystore.json  --account ~/.starkli-wallets/account.json
+	starkli deploy $(CLASS_HASH) $(CTOR_ARGS) --keystore ~/.starkli-wallets/keystore.json  --account ~/.starkli-wallets/account.json
 
 test:
 	scarb test
