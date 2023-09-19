@@ -209,7 +209,7 @@ impl i32Zeroable of Zeroable<i32> {
     }
     #[inline(always)]
     fn is_non_zero(self: i32) -> bool {
-        !self.is_zero()
+        self != i32Zeroable::zero()
     }
 }
 
