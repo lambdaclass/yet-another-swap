@@ -1,4 +1,4 @@
-mod Constants {
+mod FactoryConstants {
     use starknet::{ContractAddress, ClassHash, contract_address_const, class_hash_const};
     use yas::contracts::yas_pool::{YASPool, IYASPool, IYASPoolDispatcher, IYASPoolDispatcherTrait};
 
@@ -27,6 +27,7 @@ mod Constants {
     }
 
     enum FeeAmount {
+        CUSTOM: (),
         LOW: (),
         MEDIUM: (),
         HIGH: ()
@@ -34,6 +35,7 @@ mod Constants {
 
     fn fee_amount(fee_type: FeeAmount) -> u32 {
         match fee_type {
+            FeeAmount::CUSTOM => 100,
             FeeAmount::LOW => 500,
             FeeAmount::MEDIUM => 3000,
             FeeAmount::HIGH => 10000,
@@ -42,6 +44,7 @@ mod Constants {
 
     fn tick_spacing(fee_type: FeeAmount) -> u32 {
         match fee_type {
+            FeeAmount::CUSTOM => 2,
             FeeAmount::LOW => 10,
             FeeAmount::MEDIUM => 60,
             FeeAmount::HIGH => 200,
