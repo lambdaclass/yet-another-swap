@@ -197,15 +197,14 @@ mod YASFactory {
             self.assert_only_owner();
             assert(fee < 1000000, 'fee cannot be gt 1000000');
 
-            let zero = IntegerTrait::<i32>::new(0, false);
             // tick spacing is capped at 16384 to prevent the situation where tick_spacing is so large that
             // TickBitmap#nextInitializedTickWithinOneWord overflows int24 container from a valid tick
             // 16384 ticks represents a >5x price change with ticks of 1 bips
             assert(
-                tick_spacing > zero && tick_spacing < IntegerTrait::<i32>::new(16384, false),
+                tick_spacing > Zeroable::zero() && tick_spacing < IntegerTrait::<i32>::new(16384, false),
                 'wrong tick_spacing (0<ts<16384)'
             );
-            assert(self.fee_amount_tick_spacing(fee) == zero, 'fee amount already initialized');
+            assert(self.fee_amount_tick_spacing(fee).is_zero(), 'fee amount already initialized');
 
             self.fee_amount_tick_spacing.write(fee, tick_spacing);
             self.emit(FeeAmountEnabled { fee, tick_spacing });
