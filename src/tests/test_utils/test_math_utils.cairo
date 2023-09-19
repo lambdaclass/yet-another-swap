@@ -592,7 +592,7 @@ mod ModSubtractionTests {
 mod ContractAddressPartialOrdTest {
     use starknet::{ContractAddress, contract_address_const};
     use yas::utils::math_utils::ContractAddressPartialOrd;
-    
+
     #[test]
     #[available_gas(2000000)]
     fn test_contract_address_gt() {
@@ -615,11 +615,11 @@ mod ContractAddressPartialOrdTest {
         let a = contract_address_const::<5>();
         let b = contract_address_const::<5>();
         assert(a <= b, 'a should be <= b');
-        assert(!(a < b) , 'a should not be < b');
+        assert(!(a < b), 'a should not be < b');
 
         let b = contract_address_const::<6>();
         assert(a <= b, 'a should be <= b');
-        assert(a < b , 'a should be < b');
+        assert(a < b, 'a should be < b');
     }
 
     #[test]
@@ -628,10 +628,10 @@ mod ContractAddressPartialOrdTest {
         let a = contract_address_const::<5>();
         let b = contract_address_const::<5>();
         assert(a >= b, 'a should be >= b');
-        assert(!(a > b) , 'a should not be > b');
+        assert(!(a > b), 'a should not be > b');
 
         let a = contract_address_const::<6>();
         assert(a >= b, 'a should be >= b');
-        assert(a > b , 'a should be > b');
+        assert(a > b, 'a should be > b');
     }
 }
