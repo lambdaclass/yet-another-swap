@@ -1,14 +1,15 @@
 mod YASFactoryTests {
-    use core::starknet::SyscallResultTrait;
-    use core::result::ResultTrait;
+    use starknet::SyscallResultTrait;
     use starknet::syscalls::deploy_syscall;
     use starknet::testing::pop_log;
     use starknet::{ContractAddress, ClassHash, contract_address_const, class_hash_const};
+    
     use yas::contracts::yas_factory::{
         YASFactory, YASFactory::OwnerChanged, YASFactory::FeeAmountEnabled, IYASFactory,
         IYASFactoryDispatcher, IYASFactoryDispatcherTrait
     };
     use yas::numbers::signed_integer::i32::i32;
+
 
     fn deploy(deployer: ContractAddress, pool_class_hash: ClassHash) -> IYASFactoryDispatcher {
         let (address, _) = deploy_syscall(
