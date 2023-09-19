@@ -63,7 +63,7 @@ mod YASFactory {
 
     use yas::contracts::yas_pool::{YASPool, IYASPool, IYASPoolDispatcher, IYASPoolDispatcherTrait};
     use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
-    use yas::utils::math_utils::ContractAddressPartialOrd;
+    use yas::utils::utils::ContractAddressPartialOrd;
 
     #[event]
     #[derive(Drop, starknet::Event)]
