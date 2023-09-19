@@ -56,12 +56,15 @@ mod YASFactory {
     use core::starknet::SyscallResultTrait;
     use core::zeroable::Zeroable;
     use super::IYASFactory;
-    use starknet::{ContractAddress, ClassHash, get_caller_address};
+    use starknet::{ContractAddress, ClassHash, get_caller_address, get_contract_address};
     use starknet::syscalls::deploy_syscall;
     use poseidon::poseidon_hash_span;
     use yas::contracts::yas_pool::{YASPool, IYASPool, IYASPoolDispatcher, IYASPoolDispatcherTrait};
     use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
     use yas::utils::math_utils::ContractAddressPartialOrd;
+
+    // TODO: REMOVE
+    use debug::PrintTrait;
 
     #[event]
     #[derive(Drop, starknet::Event)]
@@ -159,6 +162,9 @@ mod YASFactory {
             ref self: ContractState, token_a: ContractAddress, token_b: ContractAddress, fee: u32
         ) -> ContractAddress {
             assert(token_a != token_b, 'tokens must be different');
+            assert(
+                token_a.is_non_zero() && token_b.is_non_zero(), 'tokens addresses cannot be zero'
+            );
 
             let (token_0, token_1) = if token_a < token_b {
                 (token_a, token_b)
@@ -169,21 +175,20 @@ mod YASFactory {
             let tick_spacing = self.fee_amount_tick_spacing(fee);
             assert(tick_spacing.is_non_zero(), 'tick spacing not initialized');
 
-            assert(self.pool(token_0, token_1, fee).is_zero(), 'token pair already initialized');
+            assert(self.pool(token_0, token_1, fee).is_zero(), 'token pair already created');
 
             let contract_address_salt = self.generate_salt(@token_0, @token_1);
+            let calldata = self.serialize_calldata(@token_0, @token_1, fee, @tick_spacing);
 
             let (pool, _) = deploy_syscall(
-                self.pool_class_hash.read(),
-                contract_address_salt,
-                array![token_0.into(), token_1.into(), fee.into()].span(),
-                false
+                self.pool_class_hash.read(), contract_address_salt, calldata.span(), false
             )
                 .unwrap_syscall();
 
             self.pool.write((token_0, token_1, fee), pool);
             // populate mapping in the reverse direction, deliberate choice to avoid the cost of comparing addresses
             self.pool.write((token_1, token_0, fee), pool);
+
             self.emit(PoolCreated { token_0, token_1, fee, tick_spacing, pool });
 
             pool
@@ -218,6 +223,23 @@ mod YASFactory {
     impl InternalFunctions of InternalFunctionsTrait {
         fn assert_only_owner(self: @ContractState) {
             assert(get_caller_address() == self.owner(), 'only owner can do this action!');
+        }
+
+        fn serialize_calldata(
+            self: @ContractState,
+            token_0: @ContractAddress,
+            token_1: @ContractAddress,
+            fee: u32,
+            tick_spacing: @i32
+        ) -> Array<felt252> {
+            let mut calldata: Array<felt252> = Default::default();
+            calldata.append(get_contract_address().into());
+            Serde::serialize(token_0, ref calldata);
+            Serde::serialize(token_1, ref calldata);
+            calldata.append(fee.into());
+            Serde::serialize(tick_spacing, ref calldata);
+
+            calldata
         }
 
         fn generate_salt(
