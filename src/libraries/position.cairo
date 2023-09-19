@@ -1,9 +1,5 @@
 use starknet::ContractAddress;
-
-use yas::numbers::signed_integer::{i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait};
-use hash::{HashStateTrait, HashStateExTrait};
-use poseidon::PoseidonTrait;
-use poseidon::poseidon_hash_span;
+use yas::numbers::signed_integer::{i32::i32, i128::i128, integer_trait::IntegerTrait};
 
 
 // info stored for each user's position
