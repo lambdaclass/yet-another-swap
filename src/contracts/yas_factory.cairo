@@ -143,10 +143,7 @@ mod YASFactory {
         // value derived from a simple proportion. 
         // fee %0.01 -> tick_spacing 2
         self.fee_amount_tick_spacing.write(100, IntegerTrait::<i32>::new(2, false));
-        self
-            .emit(
-                FeeAmountEnabled { fee: 100, tick_spacing: IntegerTrait::<i32>::new(2, false) }
-        );
+        self.emit(FeeAmountEnabled { fee: 100, tick_spacing: IntegerTrait::<i32>::new(2, false) });
     }
 
     #[external(v0)]
@@ -184,8 +181,8 @@ mod YASFactory {
 
             assert(self.pool(token_0, token_1, fee).is_zero(), 'token pair already created');
 
-            let contract_address_salt = self.generate_salt(@token_0, @token_1);
-            let calldata = self.serialize_calldata(@token_0, @token_1, fee, @tick_spacing);
+            let contract_address_salt = generate_salt(@token_0, @token_1);
+            let calldata = serialize_calldata(@token_0, @token_1, fee, @tick_spacing);
 
             let (pool, _) = deploy_syscall(
                 self.pool_class_hash.read(), contract_address_salt, calldata.span(), false
@@ -231,31 +228,25 @@ mod YASFactory {
         fn assert_only_owner(self: @ContractState) {
             assert(get_caller_address() == self.owner(), 'only owner can do this action!');
         }
+    }
 
-        fn serialize_calldata(
-            self: @ContractState,
-            token_0: @ContractAddress,
-            token_1: @ContractAddress,
-            fee: u32,
-            tick_spacing: @i32
-        ) -> Array<felt252> {
-            let mut calldata = array![];
-            calldata.append(get_contract_address().into());
-            Serde::serialize(token_0, ref calldata);
-            Serde::serialize(token_1, ref calldata);
-            calldata.append(fee.into());
-            Serde::serialize(tick_spacing, ref calldata);
+    fn serialize_calldata(
+        token_0: @ContractAddress, token_1: @ContractAddress, fee: u32, tick_spacing: @i32
+    ) -> Array<felt252> {
+        let mut calldata = array![];
+        calldata.append(get_contract_address().into());
+        Serde::serialize(token_0, ref calldata);
+        Serde::serialize(token_1, ref calldata);
+        calldata.append(fee.into());
+        Serde::serialize(tick_spacing, ref calldata);
 
-            calldata
-        }
+        calldata
+    }
 
-        fn generate_salt(
-            self: @ContractState, token_0: @ContractAddress, token_1: @ContractAddress
-        ) -> felt252 {
-            let mut data = array![];
-            Serde::serialize(token_0, ref data);
-            Serde::serialize(token_1, ref data);
-            poseidon_hash_span(data.span())
-        }
+    fn generate_salt(token_0: @ContractAddress, token_1: @ContractAddress) -> felt252 {
+        let mut data = array![];
+        Serde::serialize(token_0, ref data);
+        Serde::serialize(token_1, ref data);
+        poseidon_hash_span(data.span())
     }
 }
