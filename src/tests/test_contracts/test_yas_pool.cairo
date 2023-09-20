@@ -55,14 +55,14 @@ mod YASPoolTests {
         use starknet::testing::pop_log;
 
         use yas::contracts::yas_pool::{
-            Slot0, IYASPoolDispatcherTrait, YASPool::{YASPoolImpl, InternalImpl, Initialize}
+            IYASPoolDispatcherTrait, YASPool::{YASPoolImpl, InternalImpl, Initialize, Slot0}
         };
         use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96Sub, FP64x96PartialEq, FixedType, FixedTrait
         };
         use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
         use yas::libraries::tick_math::TickMath::{MAX_SQRT_RATIO, MIN_SQRT_RATIO};
-        use yas::utils::math_utils::pow;
+        use yas::utils::{math_utils::pow, utils::Slot0PartialEq};
         use yas::tests::utils::constants::PoolConstants::{
             FACTORY_ADDRESS, TOKEN_A, TOKEN_B, STATE, min_tick, max_tick
         };

@@ -8,21 +8,9 @@ trait IYASPool<TContractState> {
     fn initialize(ref self: TContractState, sqrt_price_X96: FixedType);
 }
 
-#[derive(Serde, Copy, Drop, PartialEq, starknet::Store)]
-struct Slot0 {
-    // the current price
-    sqrt_price_X96: FixedType,
-    // the current tick
-    tick: i32,
-    // represented as an integer denominator (1/x)%
-    fee_protocol: u8,
-    // whether the pool is locked
-    unlocked: bool
-}
-
 #[starknet::contract]
 mod YASPool {
-    use super::{IYASPool, Slot0};
+    use super::IYASPool;
 
     use starknet::ContractAddress;
 
@@ -31,6 +19,19 @@ mod YASPool {
         FP64x96Impl, FP64x96Zeroable, FixedType
     };
     use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+
+
+    #[derive(Serde, Copy, Drop, starknet::Store)]
+    struct Slot0 {
+        // the current price
+        sqrt_price_X96: FixedType,
+        // the current tick
+        tick: i32,
+        // represented as an integer denominator (1/x)%
+        fee_protocol: u8,
+        // whether the pool is locked
+        unlocked: bool
+    }
 
     #[event]
     #[derive(Drop, starknet::Event)]
@@ -85,12 +86,16 @@ mod YASPool {
         /// @dev price is represented as a sqrt(amount_token_1/amount_token_0) Q64.96 value
         /// @param sqrt_price_X96 the initial sqrt price of the pool as a Q64.96
         fn initialize(ref self: ContractState, sqrt_price_X96: FixedType) {
-            let slot_0_price = self.slot_0.read().sqrt_price_X96;
-            assert(slot_0_price.is_zero(), 'AI');
-            let tick = TickMath::get_tick_at_sqrt_ratio(sqrt_price_X96);
+            let mut slot_0 = self.slot_0.read();
+            assert(slot_0.sqrt_price_X96.is_zero(), 'AI');
 
-            self.slot_0.write(Slot0 { sqrt_price_X96, tick, fee_protocol: 0, unlocked: true });
-            self.emit(Initialize { sqrt_price_X96, tick });
+            slot_0.sqrt_price_X96 = sqrt_price_X96;
+            slot_0.tick = TickMath::get_tick_at_sqrt_ratio(sqrt_price_X96);
+            slot_0.fee_protocol = 0;
+            slot_0.unlocked = true;
+            self.slot_0.write(slot_0);
+
+            self.emit(Initialize { sqrt_price_X96, tick: slot_0.tick });
         }
     }
 
