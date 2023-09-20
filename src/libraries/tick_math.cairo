@@ -22,9 +22,14 @@ mod TickMath {
     }
 
     /// The minimum value that can be returned from `get_sqrt_ratio_at_tick`. Equivalent to get_sqrt_ratio_at_tick(MIN_TICK).
-    const MIN_SQRT_RATIO: u256 = 4295128739;
+    fn MIN_SQRT_RATIO() -> FixedType {
+        FixedTrait::new(4295128739, false)
+    }
+
     /// The maximum value that can be returned from `get_sqrt_ratio_at_tick`. Equivalent to get_sqrt_ratio_at_tick(MAX_TICK).
-    const MAX_SQRT_RATIO: u256 = 1461446703485210103287273052203988822378723970342;
+    fn MAX_SQRT_RATIO() -> FixedType {
+        FixedTrait::new(1461446703485210103287273052203988822378723970342, false)
+    }
 
     /// Calculates sqrt(1.0001^tick) * 2^96
     /// Throws if |tick| > max tick
@@ -143,8 +148,7 @@ mod TickMath {
     fn get_tick_at_sqrt_ratio(sqrt_priceX96: FixedType) -> i32 {
         // second inequality must be < because the price can never reach the price at the max tick
         assert(
-            sqrt_priceX96 >= FixedTrait::new(MIN_SQRT_RATIO, false)
-                && sqrt_priceX96 < FixedTrait::new(MAX_SQRT_RATIO, false),
+            sqrt_priceX96 >= MIN_SQRT_RATIO() && sqrt_priceX96 < MAX_SQRT_RATIO(),
             'R' // TODO: review this error in the future. This is the original error from UniswapV3.
         );
         let ratio = sqrt_priceX96.mag.shl(32);
