@@ -62,10 +62,11 @@ mod YASPoolTests {
         };
         use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
         use yas::libraries::tick_math::TickMath::{MAX_SQRT_RATIO, MIN_SQRT_RATIO};
-        use yas::utils::{math_utils::pow, utils::Slot0PartialEq};
         use yas::tests::utils::constants::PoolConstants::{
-            FACTORY_ADDRESS, TOKEN_A, TOKEN_B, STATE, min_tick, max_tick
+            FACTORY_ADDRESS, TOKEN_A, TOKEN_B, STATE, min_tick, max_tick, encode_price_sqrt_1_1,
+            encode_price_sqrt_1_2
         };
+        use yas::utils::{math_utils::pow, utils::Slot0PartialEq};
 
         #[test]
         #[available_gas(200000000)]
@@ -75,8 +76,7 @@ mod YASPoolTests {
                 FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), 5, IntegerTrait::<i32>::new(1, false)
             );
 
-            // sqrt_price_X96 is the result of encode_price_sqrt(1, 1) on v3-core typescript impl. 
-            let sqrt_price_X96 = FixedTrait::new(79228162514264337593543950336, false);
+            let sqrt_price_X96 = encode_price_sqrt_1_1();
             yas_pool.initialize(sqrt_price_X96);
 
             // initialize again with same values
@@ -173,8 +173,7 @@ mod YASPoolTests {
         fn test_sets_initial_variables() {
             let mut state = STATE();
 
-            // sqrt_price_X96 is the result of encode_price_sqrt(1, 2) on v3-core typescript impl. 
-            let sqrt_price_X96 = FP64x96Impl::new(56022770974786139918731938227 - 1, false);
+            let sqrt_price_X96 = encode_price_sqrt_1_2();
             YASPoolImpl::initialize(ref state, sqrt_price_X96);
 
             let expected = Slot0 {
@@ -194,8 +193,7 @@ mod YASPoolTests {
                 FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), 5, IntegerTrait::<i32>::new(1, false)
             );
 
-            // sqrt_price_X96 is the result of encode_price_sqrt(1, 2) on v3-core typescript impl. 
-            let sqrt_price_X96 = FP64x96Impl::new(56022770974786139918731938227 - 1, false);
+            let sqrt_price_X96 = encode_price_sqrt_1_2();
             let tick = IntegerTrait::<i32>::new(6932, true);
             yas_pool.initialize(sqrt_price_X96);
 
