@@ -4,6 +4,7 @@ use yas::numbers::fixed_point::implementations::impl_64x96::FixedType;
 
 #[starknet::interface]
 trait IYASPool<TContractState> {
+    fn initialize(ref self: TContractState, sqrt_price_X96: FixedType);
     fn swap(
         ref self: TContractState,
         recipient: ContractAddress,
@@ -25,7 +26,7 @@ mod YASPool {
     use yas::libraries::tick_bitmap::TickBitmap;
     use yas::libraries::tick_math::TickMath;
     use yas::numbers::fixed_point::implementations::impl_64x96::{
-        FixedType, FP64x96PartialOrd, FP64x96PartialEq
+        FixedType, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable
     };
     use yas::numbers::signed_integer::{
         i32::i32, i64::i64, i128::i128, i256::i256, integer_trait::IntegerTrait
@@ -38,7 +39,18 @@ mod YASPool {
     #[event]
     #[derive(Drop, starknet::Event)]
     enum Event {
+        Initialize: Initialize,
         SwapExecuted: SwapExecuted
+    }
+
+    /// @notice Emitted exactly once by a pool when #initialize is first called on the pool
+    /// @dev Mint/Burn/Swap cannot be emitted by the pool before Initialize
+    /// @param sqrt_price_X96 The initial sqrt price of the pool, as a Q64.96
+    /// @param tick The initial tick of the pool, i.e. log base 1.0001 of the starting price of the pool
+    #[derive(Drop, starknet::Event)]
+    struct Initialize {
+        sqrt_price_X96: FixedType,
+        tick: i32
     }
 
     #[derive(Drop, starknet::Event)]
@@ -165,6 +177,24 @@ mod YASPool {
 
     #[external(v0)]
     impl YASPoolImpl of IYASPool<ContractState> {
+       /// @notice Sets the initial price for the pool
+       /// @dev price is represented as a sqrt(amount_token_1/amount_token_0) Q64.96 value
+       /// @param sqrt_price_X96 the initial sqrt price of the pool as a Q64.96
+       fn initialize(ref self: ContractState, sqrt_price_X96: FixedType) {
+           // The initialize function should only be called once. To ensure this,
+           // we verify that the price is not initialized.
+           let mut slot_0 = self.slot_0.read();
+           assert(slot_0.sqrt_price_X96.is_zero(), 'AI');
+
+           slot_0.sqrt_price_X96 = sqrt_price_X96;
+           slot_0.tick = TickMath::get_tick_at_sqrt_ratio(sqrt_price_X96);
+           slot_0.fee_protocol = 0;
+           slot_0.unlocked = true;
+           self.slot_0.write(slot_0);
+
+           self.emit(Initialize { sqrt_price_X96, tick: slot_0.tick });
+       }
+
         /// @inheritdoc IUniswapV3PoolActions
         fn swap(
             ref self: ContractState,
@@ -317,7 +347,7 @@ mod YASPool {
                             } else {
                                 state.fee_growth_global_X128
                             },
-                            cache.seconds_per_liquidity_cumulative_X128, // TODO: 
+                            cache.seconds_per_liquidity_cumulative_X128, // TODO:
                             cache.tick_cumulative,
                             cache.block_timestamp
                         );
@@ -410,6 +440,13 @@ mod YASPool {
             self.slot_0.write(slot_0);
 
             (amount_0, amount_0)
+        }
+    }
+
+    #[generate_trait]
+    impl InternalImpl of InternalTrait {
+        fn get_slot_0(self: @ContractState) -> Slot0 {
+            self.slot_0.read()
         }
     }
 }
