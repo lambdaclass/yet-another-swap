@@ -119,10 +119,10 @@ mod YASPool {
     }
 
     #[derive(Copy, Drop, Serde, starknet::Store)]
-    // accumulated protocol fees in token0/token1 units
+    // accumulated protocol fees in token_0/token_1 units
     struct ProtocolFees {
-        token0: u128,
-        token1: u128
+        token_0: u128,
+        token_1: u128
     }
 
     #[storage]
@@ -363,14 +363,14 @@ mod YASPool {
                 self.fee_growth_global_0X128.write(state.fee_growth_global_X128);
                 if state.protocol_fee > 0 {
                     let mut protocol_fees = self.protocol_fees.read();
-                    protocol_fees.token0 += state.protocol_fee;
+                    protocol_fees.token_0 += state.protocol_fee;
                     self.protocol_fees.write(protocol_fees);
                 }
             } else {
                 self.fee_growth_global_1X128.write(state.fee_growth_global_X128);
                 if state.protocol_fee > 0 {
                     let mut protocol_fees = self.protocol_fees.read();
-                    protocol_fees.token1 += state.protocol_fee;
+                    protocol_fees.token_1 += state.protocol_fee;
                     self.protocol_fees.write(protocol_fees);
                 }
             }
@@ -382,11 +382,11 @@ mod YASPool {
             };
 
             // do the transfers and collect payment
-            if zero_for_one { // if (amount_1 < 0) TransferHelper.safeTransfer(token1, recipient, uint256(-amount1));
+            if zero_for_one { // if (amount_1 < 0) TransferHelper.safeTransfer(token_1, recipient, uint256(-amount1));
             // uint256 balance0Before = balance0();
             // IUniswapV3SwapCallback(msg.sender).uniswapV3SwapCallback(amount0, amount1, data);
             // require(balance0Before.add(uint256(amount0)) <= balance0(), 'IIA');
-            } else { // if (amount_0 < 0) TransferHelper.safeTransfer(token0, recipient, uint256(-amount0));
+            } else { // if (amount_0 < 0) TransferHelper.safeTransfer(token_0, recipient, uint256(-amount0));
             // uint256 balance1Before = balance1();
             // IUniswapV3SwapCallback(msg.sender).uniswapV3SwapCallback(amount0, amount1, data);
             // require(balance1Before.add(uint256(amount1)) <= balance1(), 'IIA');
