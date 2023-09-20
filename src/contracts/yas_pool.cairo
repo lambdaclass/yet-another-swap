@@ -230,7 +230,6 @@ mod YASPool {
 
             // continue swapping as long as we haven't used the entire input/output and haven't reached the price limit
             loop {
-                
                 if state.amount_specified_remaining.is_non_zero()
                     && state.sqrt_price_X96 != sqrt_price_limit_X96 {
                     break;
