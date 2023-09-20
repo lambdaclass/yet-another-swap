@@ -177,23 +177,23 @@ mod YASPool {
 
     #[external(v0)]
     impl YASPoolImpl of IYASPool<ContractState> {
-       /// @notice Sets the initial price for the pool
-       /// @dev price is represented as a sqrt(amount_token_1/amount_token_0) Q64.96 value
-       /// @param sqrt_price_X96 the initial sqrt price of the pool as a Q64.96
-       fn initialize(ref self: ContractState, sqrt_price_X96: FixedType) {
-           // The initialize function should only be called once. To ensure this,
-           // we verify that the price is not initialized.
-           let mut slot_0 = self.slot_0.read();
-           assert(slot_0.sqrt_price_X96.is_zero(), 'AI');
+        /// @notice Sets the initial price for the pool
+        /// @dev price is represented as a sqrt(amount_token_1/amount_token_0) Q64.96 value
+        /// @param sqrt_price_X96 the initial sqrt price of the pool as a Q64.96
+        fn initialize(ref self: ContractState, sqrt_price_X96: FixedType) {
+            // The initialize function should only be called once. To ensure this,
+            // we verify that the price is not initialized.
+            let mut slot_0 = self.slot_0.read();
+            assert(slot_0.sqrt_price_X96.is_zero(), 'AI');
 
-           slot_0.sqrt_price_X96 = sqrt_price_X96;
-           slot_0.tick = TickMath::get_tick_at_sqrt_ratio(sqrt_price_X96);
-           slot_0.fee_protocol = 0;
-           slot_0.unlocked = true;
-           self.slot_0.write(slot_0);
+            slot_0.sqrt_price_X96 = sqrt_price_X96;
+            slot_0.tick = TickMath::get_tick_at_sqrt_ratio(sqrt_price_X96);
+            slot_0.fee_protocol = 0;
+            slot_0.unlocked = true;
+            self.slot_0.write(slot_0);
 
-           self.emit(Initialize { sqrt_price_X96, tick: slot_0.tick });
-       }
+            self.emit(Initialize { sqrt_price_X96, tick: slot_0.tick });
+        }
 
         /// @inheritdoc IUniswapV3PoolActions
         fn swap(
