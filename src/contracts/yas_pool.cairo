@@ -175,7 +175,7 @@ mod YASPool {
             sqrt_price_limit_X96: FixedType,
         // TODO:  bytes calldata data
         ) -> (i256, i256) {
-            assert(amount_specified != IntegerTrait::<i256>::new(0, false), 'AS');
+            assert(amount_specified.is_non_zero(), 'AS');
 
             let slot_0_start: Slot0 = self.slot_0.read();
 
@@ -206,11 +206,11 @@ mod YASPool {
                 computed_latest_observation: false
             };
 
-            let exact_input: bool = amount_specified > IntegerTrait::<i256>::new(0, false);
+            let exact_input: bool = amount_specified > Zeroable::zero();
 
             let mut state = SwapState {
                 amount_specified_remaining: amount_specified,
-                amount_calculated: IntegerTrait::<i256>::new(0, false),
+                amount_calculated: Zeroable::zero(),
                 sqrt_price_X96: slot_0_start.sqrt_price_X96,
                 tick: slot_0_start.tick,
                 fee_growth_global_X128: if zero_for_one {
@@ -230,7 +230,8 @@ mod YASPool {
 
             // continue swapping as long as we haven't used the entire input/output and haven't reached the price limit
             loop {
-                if state.amount_specified_remaining != IntegerTrait::<i256>::new(0, false)
+                
+                if state.amount_specified_remaining.is_non_zero()
                     && state.sqrt_price_X96 != sqrt_price_limit_X96 {
                     break;
                 }
