@@ -86,6 +86,8 @@ mod YASPool {
         /// @dev price is represented as a sqrt(amount_token_1/amount_token_0) Q64.96 value
         /// @param sqrt_price_X96 the initial sqrt price of the pool as a Q64.96
         fn initialize(ref self: ContractState, sqrt_price_X96: FixedType) {
+            // The initialize function should only be called once. To ensure this, 
+            // we verify that the price is not initialized.
             let mut slot_0 = self.slot_0.read();
             assert(slot_0.sqrt_price_X96.is_zero(), 'AI');
 
