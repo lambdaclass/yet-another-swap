@@ -51,8 +51,6 @@ mod YASFactoryTests {
         };
         use yas::numbers::signed_integer::{integer_trait::IntegerTrait, i32::i32};
 
-
-        use debug::PrintTrait;
         #[test]
         #[available_gas(20000000)]
         #[should_panic(expected: ('pool class hash can not be zero', 'CONSTRUCTOR_FAILED'))]
@@ -72,6 +70,15 @@ mod YASFactoryTests {
         fn test_initial_enabled_fee_amounts() {
             let yas_factory = deploy(OWNER(), POOL_CLASS_HASH());
 
+            let fee_amount_custom = yas_factory
+                .fee_amount_tick_spacing(fee_amount(FeeAmount::CUSTOM));
+            assert(
+                fee_amount_custom == IntegerTrait::<i32>::new(
+                    tick_spacing(FeeAmount::CUSTOM), false
+                ),
+                'fee custom doesnt set correctly'
+            );
+
             let fee_amount_low = yas_factory.fee_amount_tick_spacing(fee_amount(FeeAmount::LOW));
             assert(
                 fee_amount_low == IntegerTrait::<i32>::new(tick_spacing(FeeAmount::LOW), false),
@@ -89,15 +96,6 @@ mod YASFactoryTests {
                 fee_amount_high == IntegerTrait::<i32>::new(tick_spacing(FeeAmount::HIGH), false),
                 'fee high doesnt set correctly'
             );
-
-            let fee_amount_custom = yas_factory
-                .fee_amount_tick_spacing(fee_amount(FeeAmount::CUSTOM));
-            assert(
-                fee_amount_custom == IntegerTrait::<i32>::new(
-                    tick_spacing(FeeAmount::CUSTOM), false
-                ),
-                'fee custom doesnt set correctly'
-            );
         }
 
         #[test]
@@ -111,6 +109,13 @@ mod YASFactoryTests {
             assert(event.new_owner == OWNER(), 'event new owner should be OWNER');
 
             let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
+            assert(event.fee == fee_amount(FeeAmount::CUSTOM), 'wrong custom fee event');
+            assert(
+                event.tick_spacing.mag == tick_spacing(FeeAmount::CUSTOM),
+                'wrong custom tick_spacing event'
+            );
+
+            let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
             assert(event.fee == fee_amount(FeeAmount::LOW), 'wrong low fee event');
             assert(
                 event.tick_spacing.mag == tick_spacing(FeeAmount::LOW),
@@ -118,9 +123,6 @@ mod YASFactoryTests {
             );
 
             let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
-            'event'.print();
-            event.fee.print();
-            event.tick_spacing.mag.print();
             assert(event.fee == fee_amount(FeeAmount::MEDIUM), 'wrong med fee event');
             assert(
                 event.tick_spacing.mag == tick_spacing(FeeAmount::MEDIUM),
@@ -132,13 +134,6 @@ mod YASFactoryTests {
             assert(
                 event.tick_spacing.mag == tick_spacing(FeeAmount::HIGH),
                 'wrong high tick_spacing event'
-            );
-
-            let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
-            assert(event.fee == fee_amount(FeeAmount::CUSTOM), 'wrong custom fee event');
-            assert(
-                event.tick_spacing.mag == tick_spacing(FeeAmount::CUSTOM),
-                'wrong custom tick_spacing event'
             );
         }
     }
