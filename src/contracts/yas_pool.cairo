@@ -1,7 +1,5 @@
 use yas::numbers::signed_integer::i32::i32;
-use yas::numbers::fixed_point::implementations::impl_64x96::{
-    FP64x96Impl, FP64x96PartialEq, FixedType
-};
+use yas::numbers::fixed_point::implementations::impl_64x96::FixedType;
 
 #[starknet::interface]
 trait IYASPool<TContractState> {
