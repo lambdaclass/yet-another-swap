@@ -186,6 +186,20 @@ impl FP64x96TryIntoU32 of TryInto<FixedType, u32> {
     }
 }
 
+impl FP64x96Zeroable of Zeroable<FixedType> {
+    fn zero() -> FixedType {
+        FP64x96Impl::new(0, false)
+    }
+    #[inline(always)]
+    fn is_zero(self: FixedType) -> bool {
+        self.mag == Zeroable::zero()
+    }
+    #[inline(always)]
+    fn is_non_zero(self: FixedType) -> bool {
+        !self.is_zero()
+    }
+}
+
 /// INTERNAL
 
 fn _felt_sign(a: felt252) -> bool {

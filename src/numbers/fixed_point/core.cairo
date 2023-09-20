@@ -1,5 +1,5 @@
 /// A struct representing a fixed point number.
-#[derive(Serde, Copy, Drop)]
+#[derive(Serde, Copy, Drop, starknet::Store)]
 struct FixedType {
     mag: u256,
     sign: bool
