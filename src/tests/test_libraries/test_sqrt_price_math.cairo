@@ -326,7 +326,10 @@ mod TestSqrtPriceMath {
     }
 
     mod GetAmount0Delta {
-        use super::{encode_price_sqrt_1_1, encode_price_sqrt_2_1, encode_price_sqrt_121_100, encode_price_sqrt_pow_2_90_1, encode_price_sqrt_pow_2_96_1};
+        use super::{
+            encode_price_sqrt_1_1, encode_price_sqrt_2_1, encode_price_sqrt_121_100,
+            encode_price_sqrt_pow_2_90_1, encode_price_sqrt_pow_2_96_1
+        };
 
         use yas::libraries::sqrt_price_math::SqrtPriceMath;
         use yas::numbers::fixed_point::implementations::impl_64x96::{
@@ -441,7 +444,7 @@ mod TestSqrtPriceMath {
         fn test_returns_0_dot_1_amount_1_for_price_1_to_1_dot_21() {
             let price_a = encode_price_sqrt_1_1();
             let price_b = encode_price_sqrt_121_100();
-                
+
             let liquidity: u128 = expand_to_18_decimals(1).try_into().unwrap();
 
             let actual = SqrtPriceMath::get_amount_1_delta(price_a, price_b, liquidity, true);
@@ -464,7 +467,7 @@ mod TestSqrtPriceMath {
     // Due to issues with the calculations, the implementation of encode_sqrt_price(a, b)
     // was removed in favor of using constant values. What we are interested in testing are the 
     // methods of the SqrtPriceMath library.
-    
+
     // returns result of encode_price_sqrt(1, 1) on v3-core typescript impl. 
     fn encode_price_sqrt_1_1() -> FixedType {
         FixedTrait::new(79228162514264337593543950336, false)
@@ -489,7 +492,7 @@ mod TestSqrtPriceMath {
     fn encode_price_sqrt_pow_2_96_1() -> FixedType {
         FixedTrait::new(22300745198530623480214298539844178181255951, false)
     }
-    
+
     fn expand_to_18_decimals(n: u256) -> u256 {
         n * pow(10, 18)
     }
