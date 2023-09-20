@@ -253,24 +253,16 @@ mod YASPool {
                 // get the price for the next tick
                 let step_sqrt_price_next_X96 = TickMath::get_sqrt_ratio_at_tick(step_tick_next);
 
-                // TODO: refactor
-                let bandera = if zero_for_one {
-                    step_sqrt_price_next_X96 < sqrt_price_limit_X96
-                } else {
-                    step_sqrt_price_next_X96 > sqrt_price_limit_X96
-                };
-
-                let bandera = if bandera {
-                    sqrt_price_limit_X96
-                } else {
-                    step_sqrt_price_next_X96
-                };
-
                 // compute values to swap to the target tick, price limit, or point where input/output amount is exhausted
                 let (ret_sqrt_price_X96, step_amount_in, step_amount_out, mut step_fee_amount) =
                     SwapMath::compute_swap_step(
                     state.sqrt_price_X96,
-                    bandera,
+                    if (zero_for_one && step_sqrt_price_next_X96 < sqrt_price_limit_X96)
+                        || (!zero_for_one && step_sqrt_price_next_X96 > sqrt_price_limit_X96) {
+                        sqrt_price_limit_X96
+                    } else {
+                        step_sqrt_price_next_X96
+                    },
                     state.liquidity,
                     state.amount_specified_remaining,
                     self.fee.read()
