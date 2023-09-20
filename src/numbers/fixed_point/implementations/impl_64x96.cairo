@@ -192,7 +192,7 @@ impl FP64x96Zeroable of Zeroable<FixedType> {
     }
     #[inline(always)]
     fn is_zero(self: FixedType) -> bool {
-        self.mag == 0
+        self.mag == Zeroable::zero()
     }
     #[inline(always)]
     fn is_non_zero(self: FixedType) -> bool {
