@@ -4,7 +4,6 @@ use yas::numbers::fixed_point::implementations::impl_64x96::FixedType;
 
 #[starknet::interface]
 trait IYASPool<TContractState> {
-    fn initialize(ref self: TContractState);
     fn swap(
         ref self: TContractState,
         recipient: ContractAddress,
@@ -33,6 +32,8 @@ mod YASPool {
     };
     use yas::utils::math_utils::FullMath;
     use yas::utils::math_utils::BitShift::BitShiftTrait;
+
+    const Q128: u256 = 0x100000000000000000000000000000000;
 
     #[event]
     #[derive(Drop, starknet::Event)]
@@ -71,7 +72,7 @@ mod YASPool {
         // liquidity at the beginning of the swap
         liquidity_start: u128,
         // the timestamp of the current block
-        block_timestamp: u32,
+        block_timestamp: u64,
         // the current value of the tick accumulator, computed only if we cross an initialized tick
         tick_cumulative: i64,
         // the current value of seconds per liquidity accumulator, computed only if we cross an initialized tick
@@ -165,9 +166,7 @@ mod YASPool {
 
     #[external(v0)]
     impl YASPoolImpl of IYASPool<ContractState> {
-        fn initialize(ref self: ContractState) { // TODO: implement
-        }
-
+        
         /// @inheritdoc IUniswapV3PoolActions
         fn swap(
             ref self: ContractState,
@@ -197,7 +196,7 @@ mod YASPool {
 
             let cache = SwapCache {
                 liquidity_start: self.liquidity.read(),
-                block_timestamp: 0, // TODO: get_block_timestamp()
+                block_timestamp: get_block_timestamp(),
                 fee_protocol: if zero_for_one {
                     slot_0_start.fee_protocol % 16
                 } else {
@@ -307,7 +306,7 @@ mod YASPool {
                         .fee_growth_global_X128 +=
                             FullMath::mul_div(
                                 step_fee_amount,
-                                0x100000000000000000000000000000000_u256, // TODO
+                                Q128,
                                 step_fee_amount
                             );
                 };
@@ -316,8 +315,8 @@ mod YASPool {
                 if state.sqrt_price_X96 == step_sqrt_price_next_X96 {
                     // if the tick is initialized, run the tick transition
                     if step_initialized {
-                        // crosses an initialized tick
 
+                        // crosses an initialized tick
                         let mut liquidity_net: i128 = Tick::TickImpl::cross(
                             ref state_tick,
                             step_tick_next,
@@ -339,7 +338,7 @@ mod YASPool {
                         // if we're moving leftward, we interpret liquidityNet as the opposite sign
                         // safe because liquidityNet cannot be type(int128).min
                         if zero_for_one {
-                            liquidity_net = -liquidity_net
+                            liquidity_net = -liquidity_net;
                         };
 
                         state.liquidity = LiquidityMath::add_delta(state.liquidity, liquidity_net);
@@ -420,7 +419,7 @@ mod YASPool {
                 );
             self.unlocked.write(true);
 
-            (IntegerTrait::<i256>::new(1, false), IntegerTrait::<i256>::new(1, false))
+            (amount_0, amount_0)
         }
     }
 }
