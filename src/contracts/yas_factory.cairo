@@ -59,7 +59,6 @@ mod YASFactory {
     use starknet::SyscallResultTrait;
     use starknet::syscalls::deploy_syscall;
     use starknet::{ContractAddress, ClassHash, get_caller_address, get_contract_address};
-    use zeroable::Zeroable;
 
     use yas::contracts::yas_pool::{YASPool, IYASPool, IYASPoolDispatcher, IYASPoolDispatcherTrait};
     use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
@@ -119,8 +118,13 @@ mod YASFactory {
         self.owner.write(owner);
         self.emit(OwnerChanged { old_owner: Zeroable::zero(), new_owner: owner });
 
-        assert(!pool_class_hash.is_zero(), 'pool class hash can not be zero');
+        assert(pool_class_hash.is_non_zero(), 'pool class hash can not be zero');
         self.pool_class_hash.write(pool_class_hash);
+
+        // value derived from a simple proportion. 
+        // fee %0.01 -> tick_spacing 2
+        self.fee_amount_tick_spacing.write(100, IntegerTrait::<i32>::new(2, false));
+        self.emit(FeeAmountEnabled { fee: 100, tick_spacing: IntegerTrait::<i32>::new(2, false) });
 
         // fee %0.05 -> tick_spacing 10
         self.fee_amount_tick_spacing.write(500, IntegerTrait::<i32>::new(10, false));
@@ -139,11 +143,6 @@ mod YASFactory {
             .emit(
                 FeeAmountEnabled { fee: 10000, tick_spacing: IntegerTrait::<i32>::new(200, false) }
             );
-
-        // value derived from a simple proportion. 
-        // fee %0.01 -> tick_spacing 2
-        self.fee_amount_tick_spacing.write(100, IntegerTrait::<i32>::new(2, false));
-        self.emit(FeeAmountEnabled { fee: 100, tick_spacing: IntegerTrait::<i32>::new(2, false) });
     }
 
     #[external(v0)]
