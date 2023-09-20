@@ -202,7 +202,7 @@ mod YASPool {
                     slot_0_start.fee_protocol.shr(4)
                 },
                 seconds_per_liquidity_cumulative_X128: 0,
-                tick_cumulative: IntegerTrait::<i64>::new(0, false),
+                tick_cumulative: Zeroable::zero(),
                 computed_latest_observation: false
             };
 
