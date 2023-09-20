@@ -413,8 +413,6 @@ mod TestSqrtPriceMath {
         use yas::tests::test_libraries::test_sqrt_price_math::TestSqrtPriceMath::expand_to_18_decimals;
         use yas::utils::math_utils::pow;
 
-        use debug::PrintTrait;
-
         // returns 0 if liquidity is 0
         #[test]
         #[available_gas(20000000)]
@@ -449,8 +447,6 @@ mod TestSqrtPriceMath {
 
             let actual = SqrtPriceMath::get_amount_1_delta(price_a, price_b, liquidity, true);
 
-            'actual'.print();
-            actual.print();
             assert(actual == 100000000000000000, 'wrong 1delta amount price');
 
             let actual_rounded_down = SqrtPriceMath::get_amount_1_delta(
