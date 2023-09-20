@@ -7,33 +7,6 @@ mod YASPoolTests {
         i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
     };
 
-    // TODO: Use from constants.cairo and remove this
-    fn FACTORY_ADDRESS() -> ContractAddress {
-        contract_address_const::<'FACTORY'>()
-    }
-
-    fn TOKEN_A() -> ContractAddress {
-        contract_address_const::<'TOKEN_A'>()
-    }
-
-    fn TOKEN_B() -> ContractAddress {
-        contract_address_const::<'TOKEN_B'>()
-    }
-
-    fn STATE() -> YASPool::ContractState {
-        YASPool::contract_state_for_testing()
-    }
-
-    fn max_tick(tick_spacing: i32) -> i32 {
-        let MAX_TICK = IntegerTrait::<i32>::new(887272, false);
-        i32_div_no_round(MAX_TICK, tick_spacing) * tick_spacing
-    }
-
-    fn min_tick(tick_spacing: i32) -> i32 {
-        let MIN_TICK = IntegerTrait::<i32>::new(887272, true);
-        i32_div_no_round(MIN_TICK, tick_spacing) * tick_spacing
-    }
-
     fn deploy(
         factory: ContractAddress,
         token_0: ContractAddress,
@@ -57,14 +30,15 @@ mod YASPoolTests {
     }
 
     mod Constructor {
-        use super::{FACTORY_ADDRESS, TOKEN_A, TOKEN_B};
         use super::deploy;
+
         use starknet::{contract_address_const, ContractAddress};
 
         use yas::contracts::yas_pool::{
             YASPool, IYASPool, IYASPoolDispatcher, IYASPoolDispatcherTrait
         };
         use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+        use yas::tests::utils::constants::PoolConstants::{FACTORY_ADDRESS, TOKEN_A, TOKEN_B};
 
         #[test]
         #[available_gas(2000000000000)]
@@ -76,9 +50,7 @@ mod YASPoolTests {
     }
 
     mod Initialize {
-        use super::{deploy, min_tick, max_tick, STATE};
-        // migrate to constants.cairo
-        use super::{FACTORY_ADDRESS, TOKEN_A, TOKEN_B};
+        use super::deploy;
 
         use starknet::testing::pop_log;
 
@@ -91,6 +63,9 @@ mod YASPoolTests {
         use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
         use yas::libraries::tick_math::TickMath::{MAX_SQRT_RATIO, MIN_SQRT_RATIO};
         use yas::utils::math_utils::pow;
+        use yas::tests::utils::constants::PoolConstants::{
+            FACTORY_ADDRESS, TOKEN_A, TOKEN_B, STATE, min_tick, max_tick
+        };
 
         #[test]
         #[available_gas(200000000)]
