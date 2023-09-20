@@ -146,7 +146,7 @@ mod YASPoolTests {
                 unlocked: true
             };
 
-            assert(InternalImpl::slot_0(@state) == expected, 'slot 0 wrong initialization');
+            assert(InternalImpl::get_slot_0(@state) == expected, 'slot 0 wrong initialization');
         }
 
         #[test]
@@ -165,7 +165,7 @@ mod YASPoolTests {
                 unlocked: true
             };
 
-            assert(InternalImpl::slot_0(@state) == expected, 'slot 0 wrong initialization')
+            assert(InternalImpl::get_slot_0(@state) == expected, 'slot 0 wrong initialization')
         }
 
         #[test]
@@ -184,7 +184,7 @@ mod YASPoolTests {
                 unlocked: true
             };
 
-            assert(InternalImpl::slot_0(@state) == expected, 'slot 0 wrong initialization')
+            assert(InternalImpl::get_slot_0(@state) == expected, 'slot 0 wrong initialization')
         }
 
         #[test]

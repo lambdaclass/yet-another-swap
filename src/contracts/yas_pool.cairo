@@ -95,7 +95,7 @@ mod YASPool {
 
     #[generate_trait]
     impl InternalImpl of InternalTrait {
-        fn slot_0(self: @ContractState) -> Slot0 {
+        fn get_slot_0(self: @ContractState) -> Slot0 {
             self.slot_0.read()
         }
     }
