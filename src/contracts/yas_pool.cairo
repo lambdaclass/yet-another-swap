@@ -85,7 +85,8 @@ mod YASPool {
         /// @dev price is represented as a sqrt(amount_token_1/amount_token_0) Q64.96 value
         /// @param sqrt_price_X96 the initial sqrt price of the pool as a Q64.96
         fn initialize(ref self: ContractState, sqrt_price_X96: FixedType) {
-            assert(self.slot_0.read().sqrt_price_X96.is_zero(), 'AI');
+            let slot_0_price = self.slot_0.read().sqrt_price_X96;
+            assert(slot_0_price.is_zero(), 'AI');
             let tick = TickMath::get_tick_at_sqrt_ratio(sqrt_price_X96);
 
             self.slot_0.write(Slot0 { sqrt_price_X96, tick, fee_protocol: 0, unlocked: true });
