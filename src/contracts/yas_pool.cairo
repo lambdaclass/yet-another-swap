@@ -137,8 +137,7 @@ mod YASPool {
         fee_growth_global_0X128: u256,
         fee_growth_global_1X128: u256,
         protocol_fees: ProtocolFees,
-        tick_spacing: i32,
-        unlocked: bool
+        tick_spacing: i32
     }
 
     #[constructor]
@@ -191,7 +190,9 @@ mod YASPool {
                 'SPL'
             );
 
-            self.unlocked.write(false);
+            let mut slot_0 = self.slot_0.read();
+            slot_0.unlocked = false;
+            self.slot_0.write(slot_0);
 
             let cache = SwapCache {
                 liquidity_start: self.liquidity.read(),
@@ -403,7 +404,10 @@ mod YASPool {
                         tick: state.tick
                     }
                 );
-            self.unlocked.write(true);
+
+            let mut slot_0 = self.slot_0.read();
+            slot_0.unlocked = true;
+            self.slot_0.write(slot_0);
 
             (amount_0, amount_0)
         }
