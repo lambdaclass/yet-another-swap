@@ -166,7 +166,6 @@ mod YASPool {
 
     #[external(v0)]
     impl YASPoolImpl of IYASPool<ContractState> {
-        
         /// @inheritdoc IUniswapV3PoolActions
         fn swap(
             ref self: ContractState,
@@ -304,18 +303,13 @@ mod YASPool {
                 if state.liquidity > 0 {
                     state
                         .fee_growth_global_X128 +=
-                            FullMath::mul_div(
-                                step_fee_amount,
-                                Q128,
-                                step_fee_amount
-                            );
+                            FullMath::mul_div(step_fee_amount, Q128, step_fee_amount);
                 };
 
                 // shift tick if we reached the next price
                 if state.sqrt_price_X96 == step_sqrt_price_next_X96 {
                     // if the tick is initialized, run the tick transition
                     if step_initialized {
-
                         // crosses an initialized tick
                         let mut liquidity_net: i128 = Tick::TickImpl::cross(
                             ref state_tick,
