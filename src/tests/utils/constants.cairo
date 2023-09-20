@@ -51,3 +51,38 @@ mod FactoryConstants {
         }
     }
 }
+
+mod PoolConstants {
+    use starknet::{ContractAddress, contract_address_const};
+
+    use yas::contracts::yas_pool::{YASPool, IYASPool, IYASPoolDispatcher, IYASPoolDispatcherTrait};
+    use yas::numbers::signed_integer::{
+        i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
+    };
+
+    fn FACTORY_ADDRESS() -> ContractAddress {
+        contract_address_const::<'FACTORY'>()
+    }
+
+    fn TOKEN_A() -> ContractAddress {
+        contract_address_const::<'TOKEN_A'>()
+    }
+
+    fn TOKEN_B() -> ContractAddress {
+        contract_address_const::<'TOKEN_B'>()
+    }
+
+    fn STATE() -> YASPool::ContractState {
+        YASPool::contract_state_for_testing()
+    }
+
+    fn max_tick(tick_spacing: i32) -> i32 {
+        let MAX_TICK = IntegerTrait::<i32>::new(887272, false);
+        i32_div_no_round(MAX_TICK, tick_spacing) * tick_spacing
+    }
+
+    fn min_tick(tick_spacing: i32) -> i32 {
+        let MIN_TICK = IntegerTrait::<i32>::new(887272, true);
+        i32_div_no_round(MIN_TICK, tick_spacing) * tick_spacing
+    }
+}
