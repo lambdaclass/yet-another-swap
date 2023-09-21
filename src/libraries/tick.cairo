@@ -123,7 +123,7 @@ mod Tick {
                 .ticks
                 .write(
                     hashed_tick,
-                    Info::default()
+                    Default::default()
                 );
         }
 
