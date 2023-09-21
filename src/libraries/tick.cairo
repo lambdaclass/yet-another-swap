@@ -119,12 +119,7 @@ mod Tick {
         /// @param tick The tick that will be cleared
         fn clear(ref self: ContractState, tick: i32) {
             let hashed_tick = PoseidonTrait::new().update_with(tick).finalize();
-            self
-                .ticks
-                .write(
-                    hashed_tick,
-                    Default::default()
-                );
+            self.ticks.write(hashed_tick,Default::default());
         }
 
         /// @notice Transitions to next tick as needed by price movement
