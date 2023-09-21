@@ -11,14 +11,19 @@ trait IYASPool<TContractState> {
         zero_for_one: bool,
         amount_specified: i256,
         sqrt_price_limit_X96: FixedType,
-    // bytes calldata data
+        data: Array<felt252>
     ) -> (i256, i256);
 }
 
 #[starknet::contract]
 mod YASPool {
     use super::IYASPool;
-    use starknet::{ContractAddress, get_block_timestamp, get_caller_address};
+    use yas::interfaces::interface_ERC20::{IERC20DispatcherTrait, IERC20Dispatcher};
+    use yas::interfaces::interface_yas_swap_callback::{
+        IYASSwapCallbackDispatcherTrait, IYASSwapCallbackDispatcher
+    };
+
+    use starknet::{ContractAddress, get_block_timestamp, get_caller_address, get_contract_address};
 
     use yas::libraries::liquidity_math::LiquidityMath;
     use yas::libraries::swap_math::SwapMath;
@@ -73,8 +78,6 @@ mod YASPool {
         // the current protocol fee as a percentage of the swap fee taken on withdrawal
         // represented as an integer denominator (1/x)%
         fee_protocol: u8,
-        // whether the pool is locked
-        unlocked: bool
     }
 
     #[derive(Copy, Drop)]
@@ -149,7 +152,8 @@ mod YASPool {
         fee_growth_global_0X128: u256,
         fee_growth_global_1X128: u256,
         protocol_fees: ProtocolFees,
-        tick_spacing: i32
+        tick_spacing: i32,
+        unlocked: bool
     }
 
     #[constructor]
@@ -189,26 +193,27 @@ mod YASPool {
             slot_0.sqrt_price_X96 = sqrt_price_X96;
             slot_0.tick = TickMath::get_tick_at_sqrt_ratio(sqrt_price_X96);
             slot_0.fee_protocol = 0;
-            slot_0.unlocked = true;
             self.slot_0.write(slot_0);
+
+            self.unlocked.write(true);
 
             self.emit(Initialize { sqrt_price_X96, tick: slot_0.tick });
         }
 
-        /// @inheritdoc IUniswapV3PoolActions
         fn swap(
             ref self: ContractState,
             recipient: ContractAddress,
             zero_for_one: bool,
             amount_specified: i256,
             sqrt_price_limit_X96: FixedType,
-        // TODO:  bytes calldata data
+            data: Array<felt252>
         ) -> (i256, i256) {
             assert(amount_specified.is_non_zero(), 'AS');
 
             let slot_0_start: Slot0 = self.slot_0.read();
 
-            assert(slot_0_start.unlocked, 'LOK');
+            let mut unlocked = self.unlocked.read();
+            assert(unlocked, 'LOK');
             assert(
                 if zero_for_one {
                     sqrt_price_limit_X96 < slot_0_start.sqrt_price_X96
@@ -220,9 +225,8 @@ mod YASPool {
                 'SPL'
             );
 
-            let mut slot_0 = self.slot_0.read();
-            slot_0.unlocked = false;
-            self.slot_0.write(slot_0);
+            unlocked = false;
+            self.unlocked.write(unlocked);
 
             let cache = SwapCache {
                 liquidity_start: self.liquidity.read(),
@@ -412,14 +416,34 @@ mod YASPool {
             };
 
             // do the transfers and collect payment
-            if zero_for_one { // if (amount_1 < 0) TransferHelper.safeTransfer(token_1, recipient, uint256(-amount1));
-            // uint256 balance0Before = balance0();
-            // IUniswapV3SwapCallback(msg.sender).uniswapV3SwapCallback(amount0, amount1, data);
-            // require(balance0Before.add(uint256(amount0)) <= balance0(), 'IIA');
-            } else { // if (amount_0 < 0) TransferHelper.safeTransfer(token_0, recipient, uint256(-amount0));
-            // uint256 balance1Before = balance1();
-            // IUniswapV3SwapCallback(msg.sender).uniswapV3SwapCallback(amount0, amount1, data);
-            // require(balance1Before.add(uint256(amount1)) <= balance1(), 'IIA');
+            if zero_for_one {
+                if amount_1 < Zeroable::zero() {
+                    IERC20Dispatcher { contract_address: self.token_1.read() }
+                        .transfer(recipient, amount_1.mag); // TODO: uint256(-amount1)
+                };
+
+                let balance_0_before: u256 = self.balance_0();
+
+                let callback_contract = get_caller_address();
+                assert(is_valid_callback_contract(callback_contract), 'invalid callback_contract');
+                let dispatcher = IYASSwapCallbackDispatcher { contract_address: callback_contract };
+                dispatcher.yas_swap_callback(amount_0, amount_1, data);
+
+                assert(balance_0_before + amount_0.mag <= self.balance_0(), 'IIA');
+            } else {
+                if amount_0 < Zeroable::zero() {
+                    IERC20Dispatcher { contract_address: self.token_0.read() }
+                        .transfer(recipient, amount_0.mag); // TODO: uint256(-amount0)
+                }
+
+                let balance_1_before: u256 = self.balance_1();
+
+                let callback_contract = get_caller_address();
+                assert(is_valid_callback_contract(callback_contract), 'invalid callback_contract');
+                let dispatcher = IYASSwapCallbackDispatcher { contract_address: callback_contract };
+                dispatcher.yas_swap_callback(amount_0, amount_1, data);
+
+                assert(balance_1_before + amount_1.mag <= self.balance_1(), 'IIA');
             }
 
             self
@@ -435,9 +459,7 @@ mod YASPool {
                     }
                 );
 
-            let mut slot_0 = self.slot_0.read();
-            slot_0.unlocked = true;
-            self.slot_0.write(slot_0);
+            self.unlocked.write(true);
 
             (amount_0, amount_0)
         }
@@ -448,5 +470,19 @@ mod YASPool {
         fn get_slot_0(self: @ContractState) -> Slot0 {
             self.slot_0.read()
         }
+
+        fn balance_0(self: @ContractState) -> u256 {
+            IERC20Dispatcher { contract_address: self.token_0.read() }
+                .balance_of(get_contract_address())
+        }
+
+        fn balance_1(self: @ContractState) -> u256 {
+            IERC20Dispatcher { contract_address: self.token_1.read() }
+                .balance_of(get_contract_address())
+        }
+    }
+
+    fn is_valid_callback_contract(callback_contract: ContractAddress) -> bool {
+        callback_contract.is_non_zero()
     }
 }
