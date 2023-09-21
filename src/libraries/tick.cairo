@@ -23,6 +23,21 @@ struct Info {
     initialized: bool
 }
 
+impl DefaultInfo of Default<Info> {
+    fn default() -> Info {
+        Info {
+                liquidity_gross: 0,
+                liquidity_net: IntegerTrait::<i128>::new(0, false),
+                fee_growth_outside_0X128: 0,
+                fee_growth_outside_1X128: 0,
+                tick_cumulative_outside: IntegerTrait::<i64>::new(0, false),
+                seconds_per_liquidity_outside_X128: 0,
+                seconds_outside: 0,
+                initialized: false
+            }
+    }
+}
+
 #[starknet::interface]
 trait ITick<TContractState> {
     fn tick_spacing_to_max_liquidity_per_tick(self: @TContractState, tick_spacing: i32) -> u128;
@@ -108,16 +123,7 @@ mod Tick {
                 .ticks
                 .write(
                     hashed_tick,
-                    Info {
-                        liquidity_gross: 0,
-                        liquidity_net: IntegerTrait::<i128>::new(0, false),
-                        fee_growth_outside_0X128: 0,
-                        fee_growth_outside_1X128: 0,
-                        tick_cumulative_outside: IntegerTrait::<i64>::new(0, false),
-                        seconds_per_liquidity_outside_X128: 0,
-                        seconds_outside: 0,
-                        initialized: false
-                    }
+                    Info::default()
                 );
         }
 
