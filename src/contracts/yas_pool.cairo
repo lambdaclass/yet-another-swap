@@ -326,7 +326,7 @@ mod YASPool {
                 if state.liquidity > 0 {
                     state
                         .fee_growth_global_X128 +=
-                            FullMath::mul_div(step_fee_amount, Q128, step_fee_amount);
+                            FullMath::mul_div(step_fee_amount, Q128, state.liquidity.into());
                 };
 
                 // shift tick if we reached the next price
