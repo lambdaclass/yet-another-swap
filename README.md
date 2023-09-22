@@ -149,3 +149,36 @@ On Starknet, the deployment process is in two steps:
  This project is licensed under the Apache 2.0 license.
  See [LICENSE](./LICENSE) for more information.
 
+## Contributors ✨
+
+Thanks goes to these wonderful people
+([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="25%"><a href="https://github.com/rcatalan98"><img src="https://avatars.githubusercontent.com/u/13773225?v=4" width="100px;" alt="Roberto Catalan "/><br /><sub><b>Roberto Catalan </b></sub></a><br /><a href="https://github.com/lambdaclass/yet-another-swap/commits?author=rcatalan98" title="Code">💻</a></td>
+      <td align="center" valign="top" width="25%"><a href="https://github.com/dpinones"><img src="https://avatars.githubusercontent.com/u/30808181?v=4" width="100px;" alt="Damián Piñones "/><br /><sub><b>Damián Piñones </b></sub></a><br /><a href="https://github.com/lambdaclass/yet-another-swap/commits?author=dpinones" title="Code">💻</a></td>
+      <td align="center" valign="top" width="25%"><a href="https://github.com/dubzn"><img src="https://avatars.githubusercontent.com/u/58611754?v=4" width="100px;" alt="Santiago Galván (Dub) "/><br /><sub><b>Santiago Galván (Dub) </b></sub></a><br /><a href="https://github.com/lambdaclass/yet-another-swap/commits?author=dubzn" title="Code">💻</a></td>
+      <td align="center" valign="top" width="25%"><a href="https://github.com/SantiagoPittella"><img src="https://avatars.githubusercontent.com/u/87827390?v=4" width="100px;" alt="Santiago Pittella "/><br /><sub><b>Santiago Pittella </b></sub></a><br /><a href="https://github.com/lambdaclass/yet-another-swap/commits?author=SantiagoPittella" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="25%"><a href="https://github.com/FranFiuba"><img src="https://avatars.githubusercontent.com/u/5733366?v=4" width="100px;" alt="Francisco Strambini "/><br /><sub><b>Francisco Strambini </b></sub></a><br /><a href="https://github.com/lambdaclass/yet-another-swap/commits?author=FranFiuba" title="Code">💻</a></td>
+      <td align="center" valign="top" width="25%"><a href="https://github.com/WiseMrMusa"><img src="https://avatars.githubusercontent.com/u/37452594?s=96&v=4" width="100px;" alt="Musa AbdulKareem "/><br /><sub><b>Musa AbdulKareem </b></sub></a><br /><a href="https://github.com/lambdaclass/yet-another-swap/commits?author=WiseMrMusa" title="Code">💻</a></td>
+      <td align="center" valign="top" width="25%"><a href="https://github.com/0xd3bs"><img src="https://avatars.githubusercontent.com/u/6605280?v=4" width="100px;" alt="dblanco "/><br /><sub><b>dblanco </b></sub></a><br /><a href="https://github.com/lambdaclass/yet-another-swap/commits?author=0xd3bs" title="Code">💻</a></td>
+      <td align="center" valign="top" width="25%"><a href="https://github.com/Nadai2010"><img src="https://avatars.githubusercontent.com/u/112663528?v=4" width="100px;" alt="Nadai "/><br /><sub><b>Nadai </b></sub></a><br /><a href="https://github.com/lambdaclass/yet-another-swap/commits?author=Nadai2010" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the
+[all-contributors](https://github.com/all-contributors/all-contributors)
+specification. Contributions of any kind welcome!
