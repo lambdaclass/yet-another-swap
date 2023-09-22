@@ -29,7 +29,10 @@ mod YASPool {
     use yas::libraries::swap_math::SwapMath;
     use yas::libraries::tick::Tick;
     use yas::libraries::tick_bitmap::TickBitmap;
-    use yas::libraries::tick_math::TickMath;
+    use yas::libraries::tick_math::TickMath::{
+        get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_SQRT_RATIO, MAX_SQRT_RATIO, MIN_TICK,
+        MAX_TICK
+    };
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FixedType, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable
     };
@@ -191,7 +194,7 @@ mod YASPool {
             assert(slot_0.sqrt_price_X96.is_zero(), 'AI');
 
             slot_0.sqrt_price_X96 = sqrt_price_X96;
-            slot_0.tick = TickMath::get_tick_at_sqrt_ratio(sqrt_price_X96);
+            slot_0.tick = get_tick_at_sqrt_ratio(sqrt_price_X96);
             slot_0.fee_protocol = 0;
             self.slot_0.write(slot_0);
 
@@ -215,10 +218,10 @@ mod YASPool {
             assert(
                 if zero_for_one {
                     sqrt_price_limit_X96 < slot_0_start.sqrt_price_X96
-                        && sqrt_price_limit_X96 > TickMath::MIN_SQRT_RATIO()
+                        && sqrt_price_limit_X96 > get_sqrt_ratio_at_tick(MIN_TICK())
                 } else {
                     sqrt_price_limit_X96 > slot_0_start.sqrt_price_X96
-                        && sqrt_price_limit_X96 < TickMath::MAX_SQRT_RATIO()
+                        && sqrt_price_limit_X96 < get_sqrt_ratio_at_tick(MAX_TICK())
                 },
                 'SPL'
             );
@@ -275,14 +278,14 @@ mod YASPool {
                 );
 
                 // ensure that we do not overshoot the min/max tick, as the tick bitmap is not aware of these bounds
-                if step_tick_next < TickMath::MIN_TICK() {
-                    step_tick_next = TickMath::MIN_TICK();
-                } else if step_tick_next > TickMath::MAX_TICK() {
-                    step_tick_next = TickMath::MAX_TICK();
+                if step_tick_next < MIN_TICK() {
+                    step_tick_next = MIN_TICK();
+                } else if step_tick_next > MAX_TICK() {
+                    step_tick_next = MAX_TICK();
                 };
 
                 // get the price for the next tick
-                let step_sqrt_price_next_X96 = TickMath::get_sqrt_ratio_at_tick(step_tick_next);
+                let step_sqrt_price_next_X96 = get_sqrt_ratio_at_tick(step_tick_next);
 
                 // compute values to swap to the target tick, price limit, or point where input/output amount is exhausted
                 let (ret_sqrt_price_X96, step_amount_in, step_amount_out, mut step_fee_amount) =
@@ -370,7 +373,7 @@ mod YASPool {
                             };
                 } else if state.sqrt_price_X96 != step_sqrt_price_start_X96 {
                     // recompute unless we're on a lower tick boundary (i.e. already transitioned ticks), and haven't moved
-                    state.tick = TickMath::get_tick_at_sqrt_ratio(state.sqrt_price_X96);
+                    state.tick = get_tick_at_sqrt_ratio(state.sqrt_price_X96);
                 };
             };
 
@@ -478,12 +481,12 @@ mod YASPool {
 
         fn balance_0(self: @ContractState) -> u256 {
             IERC20Dispatcher { contract_address: self.token_0.read() }
-                .balance_of(get_contract_address())
+                .balanceOf(get_contract_address())
         }
 
         fn balance_1(self: @ContractState) -> u256 {
             IERC20Dispatcher { contract_address: self.token_1.read() }
-                .balance_of(get_contract_address())
+                .balanceOf(get_contract_address())
         }
     }
 

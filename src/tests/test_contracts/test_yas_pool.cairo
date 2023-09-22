@@ -103,7 +103,7 @@ mod YASPoolTests {
                 FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), 5, IntegerTrait::<i32>::new(1, false)
             );
 
-            let sqrt_price_X96 = MIN_SQRT_RATIO() - FixedTrait::from_unscaled_felt(1);
+            let sqrt_price_X96 = FixedTrait::new(MIN_SQRT_RATIO - 1, false);
             yas_pool.initialize(sqrt_price_X96);
         }
 
@@ -127,7 +127,7 @@ mod YASPoolTests {
                 FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), 5, IntegerTrait::<i32>::new(1, false)
             );
 
-            let sqrt_price_X96 = MAX_SQRT_RATIO();
+            let sqrt_price_X96 = FixedTrait::new(MAX_SQRT_RATIO, false);
             yas_pool.initialize(sqrt_price_X96);
         }
 
@@ -136,11 +136,11 @@ mod YASPoolTests {
         fn test_can_be_initialized_at_min_sqrt_ratio() {
             let mut state = STATE();
 
-            let sqrt_price_X96 = MIN_SQRT_RATIO();
+            let sqrt_price_X96 = FixedTrait::new(MIN_SQRT_RATIO, false);
             YASPoolImpl::initialize(ref state, sqrt_price_X96);
 
             let expected = Slot0 {
-                sqrt_price_X96: MIN_SQRT_RATIO(),
+                sqrt_price_X96: FixedTrait::new(MIN_SQRT_RATIO, false),
                 tick: min_tick(IntegerTrait::<i32>::new(1, false)),
                 fee_protocol: 0
             };
@@ -153,7 +153,7 @@ mod YASPoolTests {
         fn test_can_be_initialized_at_max_sqrt_ratio_minus_1() {
             let mut state = STATE();
 
-            let sqrt_price_X96 = MAX_SQRT_RATIO() - FixedTrait::from_unscaled_felt(1);
+            let sqrt_price_X96 = FP64x96Impl::new(MAX_SQRT_RATIO - 1, false);
             YASPoolImpl::initialize(ref state, sqrt_price_X96);
 
             let expected = Slot0 {

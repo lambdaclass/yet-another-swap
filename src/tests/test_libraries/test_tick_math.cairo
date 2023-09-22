@@ -72,7 +72,7 @@ mod TickMathTest {
         #[available_gas(200000000)]
         fn test_get_sqrt_ratio_at_tick_min_sqrt_ratio() {
             assert(
-                get_sqrt_ratio_at_tick(MIN_TICK()) == MIN_SQRT_RATIO(),
+                get_sqrt_ratio_at_tick(MIN_TICK()) == FixedTrait::new(MIN_SQRT_RATIO, false),
                 'wrong ratio tick MIN_SQRT_RATIO'
             );
         }
@@ -81,7 +81,7 @@ mod TickMathTest {
         #[available_gas(200000000)]
         fn test_get_sqrt_ratio_at_tick_max_sqrt_ratio() {
             assert(
-                get_sqrt_ratio_at_tick(MAX_TICK()) == MAX_SQRT_RATIO(),
+                get_sqrt_ratio_at_tick(MAX_TICK()) == FixedTrait::new(MAX_SQRT_RATIO, false),
                 'wrong ratio tick MAX_SQRT_RATIO'
             );
         }
@@ -182,7 +182,7 @@ mod TickMathTest {
             get_sqrt_ratio_at_tick,
         };
         use yas::numbers::fixed_point::implementations::impl_64x96::{
-            FP64x96Impl, FP64x96PartialOrd, FP64x96Add, FP64x96Sub
+            FP64x96Impl, FP64x96PartialOrd
         };
         use yas::numbers::fixed_point::core::{FixedTrait, FixedType};
         use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
@@ -191,7 +191,7 @@ mod TickMathTest {
         #[available_gas(2000000000)]
         #[should_panic(expected: ('R',))]
         fn test_panics_too_low() {
-            let input = MIN_SQRT_RATIO() - FixedTrait::from_unscaled_felt(1);
+            let input = FixedTrait::new(MIN_SQRT_RATIO - 1, false);
             get_tick_at_sqrt_ratio(input);
         }
 
@@ -199,14 +199,14 @@ mod TickMathTest {
         #[available_gas(2000000000)]
         #[should_panic(expected: ('R',))]
         fn test_panics_too_high() {
-            let input = MAX_SQRT_RATIO() + FixedTrait::from_unscaled_felt(1);
+            let input = FixedTrait::new(MAX_SQRT_RATIO + 1, false);
             get_tick_at_sqrt_ratio(input);
         }
 
         #[test]
         #[available_gas(2000000000)]
         fn test_ratio_min_tick() {
-            let input = MIN_SQRT_RATIO();
+            let input = FixedTrait::new(MIN_SQRT_RATIO, false);
             let res = get_tick_at_sqrt_ratio(input);
             assert(res == MIN_TICK(), 'wrong tick at MIN_TICK');
         }
@@ -234,7 +234,7 @@ mod TickMathTest {
         #[test]
         #[available_gas(2000000000)]
         fn test_ratio_closest_to_max_tick() {
-            let input = MAX_SQRT_RATIO() - FixedTrait::from_unscaled_felt(1);
+            let input = FixedTrait::new(MAX_SQRT_RATIO - 1, false);
             let res = get_tick_at_sqrt_ratio(input);
             assert(
                 res == MAX_TICK() - IntegerTrait::<i32>::new(1, false),
@@ -268,7 +268,7 @@ mod TickMathTest {
         #[available_gas(200000000000)]
         fn test_check_within_ranges_get_tick_at_sqrt_ratio() {
             _test_check_within_ranges_get_tick_at_sqrt_ratio(
-                MIN_SQRT_RATIO(),
+                FixedTrait::new(MIN_SQRT_RATIO, false),
                 IntegerTrait::<i32>::new(887272, true),
                 'diff 1',
                 'ratio >= ratio_of_tick 1',
@@ -363,7 +363,7 @@ mod TickMathTest {
             );
 
             _test_check_within_ranges_get_tick_at_sqrt_ratio(
-                MAX_SQRT_RATIO() - FixedTrait::from_unscaled_felt(1),
+                FixedTrait::new(MAX_SQRT_RATIO - 1, false),
                 IntegerTrait::<i32>::new(887272, false),
                 'diff 13',
                 'ratio >= ratio_of_tick 13',
