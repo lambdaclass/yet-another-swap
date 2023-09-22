@@ -458,7 +458,7 @@ mod YASPool {
                     }
                 );
             self.unlock();
-            (amount_0, amount_0)
+            (amount_0, amount_1)
         }
     }
 

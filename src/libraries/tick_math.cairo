@@ -23,7 +23,6 @@ mod TickMath {
 
     /// The minimum value that can be returned from `get_sqrt_ratio_at_tick`. Equivalent to get_sqrt_ratio_at_tick(MIN_TICK).
     const MIN_SQRT_RATIO: u256 = 4295128739;
-
     /// The maximum value that can be returned from `get_sqrt_ratio_at_tick`. Equivalent to get_sqrt_ratio_at_tick(MAX_TICK).
     const MAX_SQRT_RATIO: u256 = 1461446703485210103287273052203988822378723970342;
 
