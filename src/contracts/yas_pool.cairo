@@ -132,7 +132,7 @@ mod YASPool {
         {
             check_ticks(params.tick_lower, params.tick_upper);
 
-            let mut slot_0 = self.slot_0.read();
+            let slot_0 = self.slot_0.read();
 
             let position = update_position(
                 params.owner,
