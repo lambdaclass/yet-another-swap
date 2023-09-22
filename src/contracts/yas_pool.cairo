@@ -334,7 +334,7 @@ mod YASPool {
                     // if the tick is initialized, run the tick transition
                     if step_initialized {
                         // crosses an initialized tick
-                        let mut liquidity_net: i128 = Tick::TickImpl::cross(
+                        let mut liquidity_net = Tick::TickImpl::cross(
                             ref state_tick,
                             step_tick_next,
                             if zero_for_one {
