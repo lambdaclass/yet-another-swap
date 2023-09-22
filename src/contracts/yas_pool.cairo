@@ -1,5 +1,5 @@
 use starknet::ContractAddress;
-use yas::numbers::signed_integer::i256::i256;
+use yas::numbers::signed_integer::i256::{i256, u256Intoi256};
 use yas::numbers::fixed_point::implementations::impl_64x96::FixedType;
 
 #[starknet::interface]
@@ -91,12 +91,6 @@ mod YASPool {
         liquidity_start: u128,
         // the timestamp of the current block
         block_timestamp: u64,
-        // the current value of the tick accumulator, computed only if we cross an initialized tick
-        tick_cumulative: i64,
-        // the current value of seconds per liquidity accumulator, computed only if we cross an initialized tick
-        seconds_per_liquidity_cumulative_X128: u256,
-        // whether we've computed and cached the above two accumulators
-        computed_latest_observation: bool
     }
 
     // the top level state of the swap, the results of which are recorded in storage at the end
@@ -234,10 +228,7 @@ mod YASPool {
                     slot_0_start.fee_protocol % 16
                 } else {
                     slot_0_start.fee_protocol.shr(4)
-                },
-                seconds_per_liquidity_cumulative_X128: 0,
-                tick_cumulative: Zeroable::zero(),
-                computed_latest_observation: false
+                }
             };
 
             let exact_input = amount_specified > Zeroable::zero();
@@ -308,12 +299,9 @@ mod YASPool {
                     state
                         .amount_specified_remaining -=
                             IntegerTrait::<i256>::new(step_amount_in + step_fee_amount, false);
-                    state.amount_calculated = state.amount_calculated
-                        - IntegerTrait::<i256>::new(step_amount_out, false);
+                    state.amount_calculated -= step_amount_out.into();
                 } else {
-                    state
-                        .amount_specified_remaining +=
-                            IntegerTrait::<i256>::new(step_amount_out, false);
+                    state.amount_specified_remaining += step_amount_out.into();
                     state.amount_calculated = state.amount_calculated
                         + IntegerTrait::<i256>::new(step_amount_in + step_fee_amount, false);
                 };
@@ -350,9 +338,9 @@ mod YASPool {
                             } else {
                                 state.fee_growth_global_X128
                             },
-                            cache.seconds_per_liquidity_cumulative_X128, // TODO:
-                            cache.tick_cumulative,
-                            cache.block_timestamp
+                            0, // TODO: Remove in the future
+                            IntegerTrait::<i64>::new(0, false),
+                            0
                         );
 
                         // if we're moving leftward, we interpret liquidityNet as the opposite sign
