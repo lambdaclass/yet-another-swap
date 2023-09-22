@@ -203,4 +203,69 @@ mod YASPoolTests {
             assert(event.tick == tick, 'wrong event value tick');
         }
     }
+
+    mod CheckTicks {
+        use yas::contracts::yas_pool::YASPool;
+        use yas::libraries::tick_math::TickMath;
+        use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+
+        #[test]
+        #[available_gas(60000)]
+        fn test_valid_ticks() {
+            let tick_lower = IntegerTrait::<i32>::new(100, true);
+            let tick_upper = IntegerTrait::<i32>::new(100, false);
+            YASPool::check_ticks(tick_lower, tick_upper);
+        }
+
+        #[test]
+        #[available_gas(60000)]
+        fn test_valid_tick_lower() {
+            let tick_lower = TickMath::MIN_TICK();
+            let tick_upper = IntegerTrait::<i32>::new(100, false);
+            YASPool::check_ticks(tick_lower, tick_upper);
+        }
+
+        #[test]
+        #[available_gas(60000)]
+        fn test_valid_tick_upper() {
+            let tick_lower = IntegerTrait::<i32>::new(100, true);
+            let tick_upper = TickMath::MAX_TICK();
+            YASPool::check_ticks(tick_lower, tick_upper);
+        }
+
+        #[test]
+        #[available_gas(60000)]
+        #[should_panic(expected: ('TLU',))]
+        fn test_tick_upper_lower_invalid() {
+            let tick_lower = IntegerTrait::<i32>::new(100, false);
+            let tick_upper = IntegerTrait::<i32>::new(100, true);
+            YASPool::check_ticks(tick_lower, tick_upper);
+        }
+
+        #[test]
+        #[available_gas(60000)]
+        #[should_panic(expected: ('TLM',))]
+        fn test_invalid_min_tick() {
+            let tick_lower = TickMath::MIN_TICK() - IntegerTrait::<i32>::new(1, false);
+            let tick_upper = TickMath::MIN_TICK();
+            YASPool::check_ticks(tick_lower, tick_upper);
+        }
+
+        #[test]
+        #[available_gas(60000)]
+        #[should_panic(expected: ('TUM',))]
+        fn test_invalid_max_tick() {
+            let tick_lower = TickMath::MAX_TICK();
+            let tick_upper = TickMath::MAX_TICK() + IntegerTrait::<i32>::new(1, false);
+            YASPool::check_ticks(tick_lower, tick_upper);
+        }
+
+        #[test]
+        #[available_gas(60000)]
+        fn test_valid_min_max_ticks() {
+            let tick_lower = TickMath::MIN_TICK();
+            let tick_upper = TickMath::MAX_TICK();
+            YASPool::check_ticks(tick_lower, tick_upper);
+        }
+    }
 }
