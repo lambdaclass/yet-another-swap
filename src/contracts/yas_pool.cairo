@@ -142,12 +142,9 @@ mod YASPool {
                 slot_0.tick
             );
 
-            let mut amount_0 = IntegerTrait::<i256>::new(0, false);
-            let mut amount_1 = IntegerTrait::<i256>::new(0, false); // TODO: implement zeroable i256
-            if params
-                .liquidity_delta != IntegerTrait::<i128>::new(
-                    0, false
-                ) { // TODO: implement zeroable i128
+            let mut amount_0 = Zeroable::zero();
+            let mut amount_1 = Zeroable::zero();
+            if params.liquidity_delta.is_non_zero() {
                 if slot_0.tick < params.tick_lower {
                     // current tick is below the passed range; liquidity can only become in range by crossing from left to
                     // right, when we'll need _more_ token0 (it's becoming more valuable) so user must provide it
@@ -159,7 +156,6 @@ mod YASPool {
                         );
                 } else if (slot_0.tick < params.tick_upper) {
                     // current tick is inside the passed range
-                    let liquidity_before = self.liquidity.read();
 
                     amount_0 =
                         SqrtPriceMath::get_amount_0_delta_signed_token(
@@ -174,9 +170,9 @@ mod YASPool {
                             params.liquidity_delta
                         );
 
-                    self
-                        .liquidity
-                        .write(LiquidityMath::add_delta(liquidity_before, params.liquidity_delta));
+                    let mut liquidity = self.liquidity.read();
+                    liquidity = LiquidityMath::add_delta(liquidity, params.liquidity_delta);
+                    self.liquidity.write(liquidity);
                 } else {
                     // current tick is above the passed range; liquidity can only become in range by crossing from right to
                     // left, when we'll need _more_ token1 (it's becoming more valuable) so user must provide it
