@@ -154,7 +154,7 @@ mod YASPool {
                             TickMath::get_sqrt_ratio_at_tick(params.tick_upper),
                             params.liquidity_delta
                         );
-                } else if (slot_0.tick < params.tick_upper) {
+                } else if slot_0.tick < params.tick_upper {
                     // current tick is inside the passed range
 
                     amount_0 =
