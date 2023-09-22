@@ -210,10 +210,8 @@ mod YASPool {
         ) -> (i256, i256) {
             assert(amount_specified.is_non_zero(), 'AS');
 
-            let slot_0_start: Slot0 = self.slot_0.read();
+            let slot_0_start = self.slot_0.read();
 
-            let mut unlocked = self.unlocked.read();
-            assert(unlocked, 'LOK');
             assert(
                 if zero_for_one {
                     sqrt_price_limit_X96 < slot_0_start.sqrt_price_X96
@@ -224,9 +222,7 @@ mod YASPool {
                 },
                 'SPL'
             );
-
-            unlocked = false;
-            self.unlocked.write(unlocked);
+            self.check_and_lock();
 
             let cache = SwapCache {
                 liquidity_start: self.liquidity.read(),
@@ -241,7 +237,7 @@ mod YASPool {
                 computed_latest_observation: false
             };
 
-            let exact_input: bool = amount_specified > Zeroable::zero();
+            let exact_input = amount_specified > Zeroable::zero();
 
             let mut state = SwapState {
                 amount_specified_remaining: amount_specified,
@@ -321,7 +317,7 @@ mod YASPool {
 
                 // if the protocol fee is on, calculate how much is owed, decrement feeAmount, and increment protocolFee
                 if cache.fee_protocol > 0 {
-                    let delta: u256 = step_fee_amount / cache.fee_protocol.into();
+                    let delta = step_fee_amount / cache.fee_protocol.into();
                     step_fee_amount -= delta;
                     state.protocol_fee += delta.try_into().unwrap();
                 };
@@ -458,9 +454,7 @@ mod YASPool {
                         tick: state.tick
                     }
                 );
-
-            self.unlocked.write(true);
-
+            self.unlock();
             (amount_0, amount_0)
         }
     }
@@ -469,6 +463,17 @@ mod YASPool {
     impl InternalImpl of InternalTrait {
         fn get_slot_0(self: @ContractState) -> Slot0 {
             self.slot_0.read()
+        }
+
+        fn check_and_lock(ref self: ContractState) {
+            let unlocked = self.unlocked.read();
+            assert(unlocked, 'LOK');
+            self.unlocked.write(false);
+        }
+
+        fn unlock(ref self: ContractState) {
+            let locked = self.unlocked.read();
+            self.unlocked.write(true);
         }
 
         fn balance_0(self: @ContractState) -> u256 {
