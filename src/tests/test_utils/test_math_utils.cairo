@@ -321,7 +321,8 @@ mod BitShift {
         let n = IntegerTrait::<i256>::new(1, false);
         let two_i256 = IntegerTrait::<i256>::new(2, false);
         let expected_result_right = IntegerTrait::<i256>::new(
-            28948022309329048855892746252171976963317496166410141009864396001978282409983, false
+            28948022309329048855892746252171976963317496166410141009864396001978282409983
+            , false
         );
         let expected_result_left = x.shr(n);
         assert(x.shr(n) == expected_result_right, 'MAX >> 1');
