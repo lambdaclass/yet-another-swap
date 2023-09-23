@@ -316,13 +316,12 @@ mod BitShift {
     #[should_panic]
     fn test_shift_left_i256_MAX() {
         let x = IntegerTrait::<i256>::new(
-            57896044618658097711785492504343953926634992332820282019728792003956564819967
-            , false);
+            57896044618658097711785492504343953926634992332820282019728792003956564819967, false
++        );
         let n = IntegerTrait::<i256>::new(1, false);
         let two_i256 = IntegerTrait::<i256>::new(2, false);
         let expected_result_right = IntegerTrait::<i256>::new(
-            28948022309329048855892746252171976963317496166410141009864396001978282409983
-            , false
+            28948022309329048855892746252171976963317496166410141009864396001978282409983, false
         );
         let expected_result_left = x.shr(n);
         assert(x.shr(n) == expected_result_right, 'MAX >> 1');
