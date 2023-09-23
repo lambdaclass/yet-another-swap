@@ -238,8 +238,8 @@ mod BitShift {
             28948022309329048855892746252171976963317496166410141009864396001978282409984, false
         );
         assert(x.shr(n) == expected_result_right, '1 >> 254 == 0');
-    // THIS TEST FAILS WITH INT OUT RANGE.
-    // assert(x.shl(n) == expected_result_left, '1 << 254');
+        // THIS TEST FAILS WITH INT OUT RANGE.
+        assert(x.shl(n) == expected_result_left, '1 << 254');
     }
 
     #[test]
@@ -313,19 +313,21 @@ mod BitShift {
 
     #[test]
     #[available_gas(20000000)]
+    #[should_panic]
     fn test_shift_left_i256_MAX() {
-        let x = IntegerTrait::<i256>::new((BoundedInt::max() / 2) - 1, false);
-
+        let x = IntegerTrait::<i256>::new(
+            57896044618658097711785492504343953926634992332820282019728792003956564819967
+            , false);
         let n = IntegerTrait::<i256>::new(1, false);
+        let two_i256 = IntegerTrait::<i256>::new(2, false);
         let expected_result_right = IntegerTrait::<i256>::new(
             28948022309329048855892746252171976963317496166410141009864396001978282409983, false
         );
-        let expected_result_left = IntegerTrait::<i256>::new(
-            57896044618658097711785492504343953926634992332820282019728792003956564819964, false
-        );
+        let expected_result_left = x.shr(n);
         assert(x.shr(n) == expected_result_right, 'MAX >> 1');
         // THIS IS AN ERROR AND SHOULD BE INVALID.
-        assert(x.shl(n) == expected_result_left, 'MAX << 1');
+        // This should panic with 'int: Out of range'
+        assert(x.shl(n) == x * two_i256, 'MAX << 1');
     // let n = IntegerTrait::<i256>::new(2, false);
     // let expected_result_right = IntegerTrait::<i256>::new(
     //     14474011154664524427946373126085988481658748083205070504932198000989141204991, false
