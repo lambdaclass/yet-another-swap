@@ -317,7 +317,7 @@ mod BitShift {
     fn test_shift_left_i256_MAX() {
         let x = IntegerTrait::<i256>::new(
             57896044618658097711785492504343953926634992332820282019728792003956564819967, false
-+        );
+        );
         let n = IntegerTrait::<i256>::new(1, false);
         let two_i256 = IntegerTrait::<i256>::new(2, false);
         let expected_result_right = IntegerTrait::<i256>::new(
