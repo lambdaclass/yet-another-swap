@@ -77,7 +77,9 @@ mod YASFactory {
     /// @param new_owner The owner after the owner was changed   
     #[derive(Drop, starknet::Event)]
     struct OwnerChanged {
+        #[key]
         old_owner: ContractAddress,
+        #[key]
         new_owner: ContractAddress
     }
 
@@ -101,7 +103,9 @@ mod YASFactory {
     /// @param tick_spacing The minimum number of ticks between initialized ticks for pools created with the given fee
     #[derive(Drop, starknet::Event)]
     struct FeeAmountEnabled {
+        #[key]
         fee: u32,
+        #[key]
         tick_spacing: i32
     }
 

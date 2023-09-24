@@ -1,7 +1,7 @@
 mod YASFactoryTests {
     use starknet::SyscallResultTrait;
     use starknet::syscalls::deploy_syscall;
-    use starknet::testing::pop_log;
+    use yas::utils::utils::pop_log_with_key;
     use starknet::{ContractAddress, ClassHash, contract_address_const, class_hash_const};
 
     use yas::contracts::yas_factory::{
@@ -32,7 +32,7 @@ mod YASFactoryTests {
             if i == 5 {
                 break;
             }
-            pop_log::<OwnerChanged>(address);
+            pop_log_with_key::<OwnerChanged>(address);
             i += 1;
         }
     }
@@ -47,8 +47,9 @@ mod YASFactoryTests {
             IYASFactoryDispatcher, IYASFactoryDispatcherTrait
         };
         use starknet::{
-            contract_address_const, class_hash_const, testing::{set_contract_address, pop_log}
+            contract_address_const, class_hash_const, testing::{set_contract_address}
         };
+        use yas::utils::utils::pop_log_with_key;
         use yas::numbers::signed_integer::{integer_trait::IntegerTrait, i32::i32};
 
         #[test]
@@ -103,33 +104,32 @@ mod YASFactoryTests {
         fn test_emits_all_events() {
             set_contract_address(OWNER());
             let yas_factory = deploy(OWNER(), POOL_CLASS_HASH());
-
-            let event = pop_log::<OwnerChanged>(yas_factory.contract_address).unwrap();
+            let event = pop_log_with_key::<OwnerChanged>(yas_factory.contract_address).unwrap();
             assert(event.old_owner == ZERO(), 'event old owner should be ZERO');
             assert(event.new_owner == OWNER(), 'event new owner should be OWNER');
 
-            let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
+            let event = pop_log_with_key::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
             assert(event.fee == fee_amount(FeeAmount::CUSTOM), 'wrong custom fee event');
             assert(
                 event.tick_spacing.mag == tick_spacing(FeeAmount::CUSTOM),
                 'wrong custom tick_spacing event'
             );
 
-            let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
+            let event = pop_log_with_key::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
             assert(event.fee == fee_amount(FeeAmount::LOW), 'wrong low fee event');
             assert(
                 event.tick_spacing.mag == tick_spacing(FeeAmount::LOW),
                 'wrong low tick_spacing event'
             );
 
-            let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
+            let event = pop_log_with_key::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
             assert(event.fee == fee_amount(FeeAmount::MEDIUM), 'wrong med fee event');
             assert(
                 event.tick_spacing.mag == tick_spacing(FeeAmount::MEDIUM),
                 'wrong med tick_spacing event'
             );
 
-            let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
+            let event = pop_log_with_key::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
             assert(event.fee == fee_amount(FeeAmount::HIGH), 'wrong high fee event');
             assert(
                 event.tick_spacing.mag == tick_spacing(FeeAmount::HIGH),
@@ -148,7 +148,7 @@ mod YASFactoryTests {
             YASFactory, YASFactory::PoolCreated, IYASFactory, IYASFactoryDispatcher,
             IYASFactoryDispatcherTrait
         };
-        use starknet::testing::{pop_log, set_contract_address};
+        use starknet::testing::{pop_log,set_contract_address};
         use starknet::call_contract_syscall;
 
         use yas::numbers::signed_integer::i32::i32;
@@ -308,7 +308,8 @@ mod YASFactoryTests {
             YASFactory, YASFactory::OwnerChanged, IYASFactory, IYASFactoryDispatcher,
             IYASFactoryDispatcherTrait
         };
-        use starknet::testing::{pop_log, set_contract_address};
+        use starknet::testing::{set_contract_address};
+         use yas::utils::utils::pop_log_with_key;
         use yas::numbers::signed_integer::i32::i32;
 
         #[test]
@@ -343,7 +344,7 @@ mod YASFactoryTests {
             yas_factory.set_owner(OTHER());
 
             // Verify OwnerChanged event emitted
-            let event = pop_log::<OwnerChanged>(yas_factory.contract_address).unwrap();
+            let event = pop_log_with_key::<OwnerChanged>(yas_factory.contract_address).unwrap();
             assert(event.old_owner == OWNER(), 'event old owner should be OWNER');
             assert(event.new_owner == OTHER(), 'event new owner should be OTHER');
         }
@@ -358,7 +359,8 @@ mod YASFactoryTests {
             YASFactory, YASFactory::FeeAmountEnabled, YASFactory::PoolCreated, IYASFactory,
             IYASFactoryDispatcher, IYASFactoryDispatcherTrait
         };
-        use starknet::testing::{pop_log, set_contract_address};
+        use starknet::testing::{ set_contract_address};
+         use yas::utils::utils::pop_log_with_key;
         use yas::numbers::signed_integer::{integer_trait::IntegerTrait, i32::i32};
 
         #[test]
@@ -436,7 +438,7 @@ mod YASFactoryTests {
             yas_factory.enable_fee_amount(50, IntegerTrait::<i32>::new(1, false));
 
             // Verify FeeAmountEnabled event emitted
-            let event = pop_log::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
+            let event = pop_log_with_key::<FeeAmountEnabled>(yas_factory.contract_address).unwrap();
             assert(event.fee == 50, 'fee event should be 50');
             assert(
                 event.tick_spacing == IntegerTrait::<i32>::new(1, false),
@@ -463,10 +465,10 @@ mod YASFactoryTests {
             assert(pool_token_b_token_a == pool_deployed, 'wrong pool in reverse result');
 
             // Skip FeeAmountEnabled event emitted
-            pop_log::<FeeAmountEnabled>(yas_factory_contract_address);
+            pop_log_with_key::<FeeAmountEnabled>(yas_factory_contract_address);
 
             // Verify PoolCreated event emitted
-            let event = pop_log::<PoolCreated>(yas_factory.contract_address).unwrap();
+            let event = pop_log_with_key::<PoolCreated>(yas_factory.contract_address).unwrap();
             assert(event.token_0 == TOKEN_A(), 'event token_0 should be TOKEN_A');
             assert(event.token_1 == TOKEN_B(), 'event token_1 should be TOKEN_B');
             assert(event.fee == 250, 'event fee should be 250');
