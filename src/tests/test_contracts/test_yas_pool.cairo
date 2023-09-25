@@ -228,7 +228,7 @@ mod YASPoolTests {
 
         #[test]
         #[available_gas(200000000)]
-        fn test_giving_zero_liquidity_when_call_update_position_then_position_is_updated() {
+        fn test_add_liquidity_when_call_update_position_then_position_is_updated() {
             let mut pool_state = YASPool::contract_state_for_testing();
             let mut position_state = YASPool::contract_state_for_testing().get_position_state();
             let mut tick_state = YASPool::contract_state_for_testing().get_tick_state();
