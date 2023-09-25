@@ -20,7 +20,6 @@ mod YASPool {
     };
     use yas::numbers::signed_integer::{i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait};
 
-
     #[derive(Serde, Copy, Drop, starknet::Store)]
     struct Slot0 {
         // the current price
@@ -111,6 +110,48 @@ mod YASPool {
             self.slot_0.read()
         }
 
+        fn get_bitmap_state(self: ContractState) -> TickBitmap::ContractState {
+            TickBitmap::unsafe_new_contract_state()
+        }
+
+        fn get_tick_state(self: ContractState) -> Tick::ContractState {
+            Tick::unsafe_new_contract_state()
+        }
+
+        fn get_position_state(self: ContractState) -> Position::ContractState {
+            Position::unsafe_new_contract_state()
+        }
+
+        fn set_tokens(ref self: ContractState, token_0: ContractAddress, token_1: ContractAddress) {
+            self.token_0.write(token_0);
+            self.token_1.write(token_1);
+        }
+
+        fn set_fee(ref self: ContractState, fee: u32) {
+            self.fee.write(fee);
+        }
+
+        fn set_max_liquidity_per_tick(ref self: ContractState, max_liquidity_per_tick: u128) {
+            self.max_liquidity_per_tick.write(max_liquidity_per_tick);
+        }
+
+        fn set_tick_spacing(ref self: ContractState, tick_spacing: i32) {
+            self.tick_spacing.write(tick_spacing);
+        }
+
+        fn set_slot_0(ref self: ContractState, slot_0: Slot0) {
+            self.slot_0.write(slot_0);
+        }
+
+        fn set_fee_growth_globals(
+            ref self: ContractState,
+            fee_growth_global_0_X_128: u256,
+            fee_growth_global_1_X_128: u256
+        ) {
+            self.fee_growth_global_0_X_128.write(fee_growth_global_0_X_128);
+            self.fee_growth_global_1_X_128.write(fee_growth_global_1_X_128);
+        }
+
         /// @dev Gets and updates a position with the given liquidity delta
         /// @param owner the owner of the position
         /// @param tick_lower the lower tick of the position's tick range
@@ -125,7 +166,6 @@ mod YASPool {
 
             // SLOAD for gas optimization
             let _fee_growth_global_0_X_128 = self.fee_growth_global_0_X_128.read();
-
             let _fee_growth_global_1_X_128 = self.fee_growth_global_1_X_128.read();
 
             let _max_liquidity_per_tick = self.max_liquidity_per_tick.read();
@@ -135,7 +175,8 @@ mod YASPool {
             let mut flipped_upper = false;
 
             if liquidity_delta.is_non_zero() {
-                // block time in .sol is type u32, but in starknet its u64
+                // TODO: modify block_time from Tick::update() 
+                // since block time in .sol is type u32, but in starknet its u64
                 let time = starknet::get_block_timestamp().try_into().unwrap();
 
                 flipped_lower =
@@ -146,8 +187,6 @@ mod YASPool {
                         liquidity_delta,
                         _fee_growth_global_0_X_128,
                         _fee_growth_global_1_X_128,
-                        Zeroable::zero(), // secondsPerLiquidityCumulativeX128
-                        IntegerTrait::<i64>::new(0, false), // tickCumulative
                         time,
                         false,
                         _max_liquidity_per_tick
@@ -161,8 +200,6 @@ mod YASPool {
                         liquidity_delta,
                         _fee_growth_global_0_X_128,
                         _fee_growth_global_1_X_128,
-                        Zeroable::zero(), // secondsPerLiquidityCumulativeX128
-                        IntegerTrait::<i64>::new(0, false), // tickCumulative
                         time,
                         true,
                         _max_liquidity_per_tick
