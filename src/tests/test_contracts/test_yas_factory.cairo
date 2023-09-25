@@ -46,9 +46,7 @@ mod YASFactoryTests {
             YASFactory, YASFactory::OwnerChanged, YASFactory::FeeAmountEnabled, IYASFactory,
             IYASFactoryDispatcher, IYASFactoryDispatcherTrait
         };
-        use starknet::{
-            contract_address_const, class_hash_const, testing::{set_contract_address}
-        };
+        use starknet::{contract_address_const, class_hash_const, testing::{set_contract_address}};
         use yas::utils::utils::pop_log_with_key;
         use yas::numbers::signed_integer::{integer_trait::IntegerTrait, i32::i32};
 
@@ -148,7 +146,7 @@ mod YASFactoryTests {
             YASFactory, YASFactory::PoolCreated, IYASFactory, IYASFactoryDispatcher,
             IYASFactoryDispatcherTrait
         };
-        use starknet::testing::{pop_log,set_contract_address};
+        use starknet::testing::{pop_log, set_contract_address};
         use starknet::call_contract_syscall;
 
         use yas::numbers::signed_integer::i32::i32;
@@ -309,7 +307,7 @@ mod YASFactoryTests {
             IYASFactoryDispatcherTrait
         };
         use starknet::testing::{set_contract_address};
-         use yas::utils::utils::pop_log_with_key;
+        use yas::utils::utils::pop_log_with_key;
         use yas::numbers::signed_integer::i32::i32;
 
         #[test]
@@ -359,8 +357,8 @@ mod YASFactoryTests {
             YASFactory, YASFactory::FeeAmountEnabled, YASFactory::PoolCreated, IYASFactory,
             IYASFactoryDispatcher, IYASFactoryDispatcherTrait
         };
-        use starknet::testing::{ set_contract_address};
-         use yas::utils::utils::pop_log_with_key;
+        use starknet::testing::{set_contract_address};
+        use yas::utils::utils::pop_log_with_key;
         use yas::numbers::signed_integer::{integer_trait::IntegerTrait, i32::i32};
 
         #[test]
