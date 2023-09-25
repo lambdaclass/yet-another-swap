@@ -203,4 +203,80 @@ mod YASPoolTests {
             assert(event.tick == tick, 'wrong event value tick');
         }
     }
+
+    mod UpdatePosition {
+        use super::deploy;
+
+        use integer::BoundedInt;
+
+        use yas::contracts::yas_pool::{
+            IYASPoolDispatcherTrait, YASPool, YASPool::InternalTrait,
+            YASPool::{YASPoolImpl, InternalImpl, Initialize, Slot0}
+        };
+        use yas::numbers::signed_integer::{
+            i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait
+        };
+        use yas::tests::utils::constants::PoolConstants::{
+            FACTORY_ADDRESS, TOKEN_A, TOKEN_B, STATE, min_tick, max_tick, encode_price_sqrt_1_1,
+            encode_price_sqrt_1_2
+        };
+        use yas::tests::utils::constants::FactoryConstants::{OWNER};
+        use yas::libraries::{
+            tick::{Tick, Tick::TickImpl},
+            position::{Info, Position, Position::PositionImpl, PositionKey}
+        };
+
+        #[test]
+        #[available_gas(200000000)]
+        fn test_giving_zero_liquidity_when_call_update_position_then_position_is_updated() {
+            let mut pool_state = YASPool::contract_state_for_testing();
+            let mut position_state = YASPool::contract_state_for_testing().get_position_state();
+            let mut tick_state = YASPool::contract_state_for_testing().get_tick_state();
+
+            // Setup YASPool
+            pool_state.set_tokens(TOKEN_A(), TOKEN_B());
+            pool_state.set_fee(500);
+            pool_state.set_tick_spacing(IntegerTrait::<i32>::new(1, false));
+            pool_state.set_max_liquidity_per_tick(BoundedInt::max());
+            pool_state.set_fee_growth_globals(0, 0);
+
+            // Setup and set Position
+            let position_key = PositionKey {
+                owner: OWNER(),
+                tick_lower: Zeroable::zero(),
+                tick_upper: IntegerTrait::<i32>::new(10, false),
+            };
+            let position_info = Info {
+                liquidity: 1000,
+                fee_growth_inside_0_last_X128: 0,
+                fee_growth_inside_1_last_X128: 0,
+                tokens_owed_0: 0,
+                tokens_owed_1: 0,
+            };
+            Position::InternalImpl::set_position(ref position_state, position_key, position_info);
+
+
+            // Setup and set tick
+            let tick = IntegerTrait::<i32>::new(10, false);
+            let tick_info = Tick::Info {
+                fee_growth_outside_0X128: 0,
+                fee_growth_outside_1X128: 0,
+                liquidity_gross: 100,
+                liquidity_net: IntegerTrait::<i128>::new(0, false),
+                seconds_per_liquidity_outside_X128: 0,
+                tick_cumulative_outside: IntegerTrait::<i64>::new(0, false),
+                seconds_outside: 0,
+                initialized: true
+            };
+            Tick::InternalImpl::set_tick(ref tick_state, tick, tick_info);
+
+            // add 100 of liq into position
+            let delta_liquidity = IntegerTrait::<i128>::new(100, false);
+            let result = InternalImpl::update_position(
+                @pool_state, position_key, delta_liquidity, tick
+            );
+
+            assert(result.liquidity == 1100, 'wrong liquidity');
+        }
+    }
 }
