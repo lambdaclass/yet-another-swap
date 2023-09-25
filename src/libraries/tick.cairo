@@ -66,8 +66,6 @@ trait ITick<TContractState> {
         liquidity_delta: i128,
         fee_growth_global_0X128: u256,
         fee_growth_global_1X128: u256,
-        seconds_per_liquidity_cumulative_X128: u256,
-        tick_cumulative: i64,
         time: u32,
         upper: bool,
         max_liquidity: u128
@@ -229,8 +227,6 @@ mod Tick {
             liquidity_delta: i128,
             fee_growth_global_0X128: u256,
             fee_growth_global_1X128: u256,
-            seconds_per_liquidity_cumulative_X128: u256,
-            tick_cumulative: i64,
             time: u32,
             upper: bool,
             max_liquidity: u128
@@ -252,8 +248,6 @@ mod Tick {
                 if (tick <= tick_current) {
                     info.fee_growth_outside_0X128 = fee_growth_global_0X128;
                     info.fee_growth_outside_1X128 = fee_growth_global_1X128;
-                    info.seconds_per_liquidity_outside_X128 = seconds_per_liquidity_cumulative_X128;
-                    info.tick_cumulative_outside = tick_cumulative;
                     info.seconds_outside = time;
                 }
                 info.initialized = true;
