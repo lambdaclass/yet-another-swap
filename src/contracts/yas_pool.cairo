@@ -112,24 +112,6 @@ mod YASPool {
         liquidity: u128
     }
 
-    // TODO: remove
-    struct StepComputations {
-        // the price at the beginning of the step
-        sqrt_price_start_X96: u256,
-        // the next tick to swap to from the current tick in the swap direction
-        tick_next: i32,
-        // whether tickNext is initialized or not
-        initialized: bool,
-        // sqrt(price) for the next tick (1/0)
-        sqrt_price_next_X96: u256,
-        // how much is being swapped in in this step
-        amount_in: u256,
-        // how much is being swapped out
-        amount_out: u256,
-        // how much fee is being paid in
-        fee_amount: u256
-    }
-
     #[derive(Copy, Drop, Serde, starknet::Store)]
     // accumulated protocol fees in token_0/token_1 units
     struct ProtocolFees {
