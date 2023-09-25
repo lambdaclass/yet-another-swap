@@ -49,7 +49,8 @@ mod YASPool {
         FixedType, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable
     };
     use yas::numbers::signed_integer::{
-        i32::i32, i64::i64, i128::{i128, u128Intoi128}, i256::{i256, i256TryIntou256}, integer_trait::IntegerTrait
+        i32::i32, i64::i64, i128::{i128, u128Intoi128}, i256::{i256, i256TryIntou256},
+        integer_trait::IntegerTrait
     };
     use yas::utils::math_utils::Constants::Q128;
     use yas::utils::math_utils::FullMath;
@@ -473,11 +474,11 @@ mod YASPool {
 
             assert(amount > 0, 'amount must be greater than 0');
             let (_, amount_0, amount_1) = modify_position(
-                    ModifyPositionParams {
-                        position_key: PositionKey { owner: recipient, tick_lower, tick_upper },
-                        liquidity_delta: amount.into()
-                    }
-                );
+                ModifyPositionParams {
+                    position_key: PositionKey { owner: recipient, tick_lower, tick_upper },
+                    liquidity_delta: amount.into()
+                }
+            );
 
             let amount_0: u256 = amount_0.try_into().unwrap();
             let amount_1: u256 = amount_1.try_into().unwrap();
