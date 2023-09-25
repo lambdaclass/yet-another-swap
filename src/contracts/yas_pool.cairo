@@ -13,7 +13,7 @@ mod YASPool {
     use starknet::ContractAddress;
 
     use yas::libraries::liquidity_math::LiquidityMath;
-    use yas::libraries::position::Info;
+    use yas::libraries::position::{Info, PositionKey};
     use yas::libraries::sqrt_price_math::SqrtPriceMath;
     use yas::libraries::{tick::Tick, tick_math::TickMath};
     use yas::numbers::fixed_point::implementations::impl_64x96::{
@@ -37,11 +37,7 @@ mod YASPool {
 
     #[derive(Serde, Copy, Drop)]
     struct ModifyPositionParams {
-        // the address that owns the position
-        owner: ContractAddress,
-        // the lower and upper tick of the position
-        tick_lower: i32,
-        tick_upper: i32,
+        position_key: PositionKey,
         // any change in liquidity
         liquidity_delta: i128
     }
@@ -130,14 +126,14 @@ mod YASPool {
             ref self: ContractState, params: ModifyPositionParams
         ) -> (Info, i256, i256) // TODO: noDelegateCall
         {
-            check_ticks(params.tick_lower, params.tick_upper);
+            check_ticks(params.position_key.tick_lower, params.position_key.tick_upper);
 
             let slot_0 = self.slot_0.read();
 
             let position = update_position(
-                params.owner,
-                params.tick_lower,
-                params.tick_upper,
+                params.position_key.owner,
+                params.position_key.tick_lower,
+                params.position_key.tick_upper,
                 params.liquidity_delta,
                 slot_0.tick
             );
@@ -145,27 +141,27 @@ mod YASPool {
             let mut amount_0 = Zeroable::zero();
             let mut amount_1 = Zeroable::zero();
             if params.liquidity_delta.is_non_zero() {
-                if slot_0.tick < params.tick_lower {
+                if slot_0.tick < params.position_key.tick_lower {
                     // current tick is below the passed range; liquidity can only become in range by crossing from left to
                     // right, when we'll need _more_ token0 (it's becoming more valuable) so user must provide it
                     amount_0 =
                         SqrtPriceMath::get_amount_0_delta_signed_token(
-                            TickMath::get_sqrt_ratio_at_tick(params.tick_lower),
-                            TickMath::get_sqrt_ratio_at_tick(params.tick_upper),
+                            TickMath::get_sqrt_ratio_at_tick(params.position_key.tick_lower),
+                            TickMath::get_sqrt_ratio_at_tick(params.position_key.tick_upper),
                             params.liquidity_delta
                         );
-                } else if slot_0.tick < params.tick_upper {
+                } else if slot_0.tick < params.position_key.tick_upper {
                     // current tick is inside the passed range
 
                     amount_0 =
                         SqrtPriceMath::get_amount_0_delta_signed_token(
                             slot_0.sqrt_price_X96,
-                            TickMath::get_sqrt_ratio_at_tick(params.tick_upper),
+                            TickMath::get_sqrt_ratio_at_tick(params.position_key.tick_upper),
                             params.liquidity_delta
                         );
                     amount_1 =
                         SqrtPriceMath::get_amount_1_delta_signed_token(
-                            TickMath::get_sqrt_ratio_at_tick(params.tick_lower),
+                            TickMath::get_sqrt_ratio_at_tick(params.position_key.tick_lower),
                             slot_0.sqrt_price_X96,
                             params.liquidity_delta
                         );
@@ -178,8 +174,8 @@ mod YASPool {
                     // left, when we'll need _more_ token1 (it's becoming more valuable) so user must provide it
                     amount_1 =
                         SqrtPriceMath::get_amount_1_delta_signed_token(
-                            TickMath::get_sqrt_ratio_at_tick(params.tick_lower),
-                            TickMath::get_sqrt_ratio_at_tick(params.tick_upper),
+                            TickMath::get_sqrt_ratio_at_tick(params.position_key.tick_lower),
+                            TickMath::get_sqrt_ratio_at_tick(params.position_key.tick_upper),
                             params.liquidity_delta
                         );
                 }
