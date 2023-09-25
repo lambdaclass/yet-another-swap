@@ -1,5 +1,9 @@
 use integer::BoundedInt;
 
+mod Constants {
+    const Q128: u256 = 0x100000000000000000000000000000000;
+}
+
 mod FullMath {
     use integer::{
         BoundedInt, u256_wide_mul, u256_safe_divmod, u512_safe_div_rem_by_u256, u256_try_as_non_zero

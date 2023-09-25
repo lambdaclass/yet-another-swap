@@ -39,10 +39,9 @@ mod YASPool {
     use yas::numbers::signed_integer::{
         i32::i32, i64::i64, i128::i128, i256::i256, integer_trait::IntegerTrait
     };
+    use yas::utils::math_utils::Constants::Q128;
     use yas::utils::math_utils::FullMath;
     use yas::utils::math_utils::BitShift::BitShiftTrait;
-
-    const Q128: u256 = 0x100000000000000000000000000000000;
 
     #[event]
     #[derive(Drop, starknet::Event)]
