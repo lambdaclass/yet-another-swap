@@ -255,7 +255,6 @@ mod YASPoolTests {
             };
             Position::InternalImpl::set_position(ref position_state, position_key, position_info);
 
-
             // Setup and set tick
             let tick = IntegerTrait::<i32>::new(10, false);
             let tick_info = Tick::Info {
