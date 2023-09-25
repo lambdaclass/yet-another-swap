@@ -27,8 +27,8 @@ mod YASPool {
 
     use yas::libraries::liquidity_math::LiquidityMath;
     use yas::libraries::swap_math::SwapMath;
-    use yas::libraries::tick::Tick;
-    use yas::libraries::tick_bitmap::TickBitmap;
+    use yas::libraries::tick::{Tick, Tick::TickImpl};
+    use yas::libraries::tick_bitmap::{TickBitmap, TickBitmap::TickBitmapImpl};
     use yas::libraries::tick_math::TickMath::{
         get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_SQRT_RATIO, MAX_SQRT_RATIO, MIN_TICK,
         MAX_TICK
@@ -171,9 +171,7 @@ mod YASPool {
         let state_tick = Tick::unsafe_new_contract_state();
         self
             .liquidity_per_tick
-            .write(
-                Tick::TickImpl::tick_spacing_to_max_liquidity_per_tick(@state_tick, tick_spacing)
-            );
+            .write(TickImpl::tick_spacing_to_max_liquidity_per_tick(@state_tick, tick_spacing));
     }
 
     #[external(v0)]
@@ -225,8 +223,10 @@ mod YASPool {
                 liquidity_start: self.liquidity.read(),
                 block_timestamp: get_block_timestamp(),
                 fee_protocol: if zero_for_one {
+                    // calculate feeProtocol0
                     slot_0_start.fee_protocol % 16
                 } else {
+                    // calculate feeProtocol1
                     slot_0_start.fee_protocol.shr(4)
                 }
             };
@@ -264,7 +264,7 @@ mod YASPool {
 
                 // TODO: test mut
                 let (mut step_tick_next, step_initialized) =
-                    TickBitmap::TickBitmapImpl::next_initialized_tick_within_one_word(
+                    TickBitmapImpl::next_initialized_tick_within_one_word(
                     @state_tick_bitmap, state.tick, self.tick_spacing.read(), zero_for_one
                 );
 
@@ -325,7 +325,7 @@ mod YASPool {
                     // if the tick is initialized, run the tick transition
                     if step_initialized {
                         // crosses an initialized tick
-                        let mut liquidity_net = Tick::TickImpl::cross(
+                        let mut liquidity_net = TickImpl::cross(
                             ref state_tick,
                             step_tick_next,
                             if zero_for_one {
