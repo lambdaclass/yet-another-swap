@@ -238,7 +238,6 @@ mod Tick {
             let liquidity_gross_after: u128 = LiquidityMath::add_delta(
                 liquidity_gross_before, liquidity_delta
             );
-
             assert(liquidity_gross_after <= max_liquidity, 'LO');
 
             let flipped = (liquidity_gross_after == 0) != (liquidity_gross_before == 0);

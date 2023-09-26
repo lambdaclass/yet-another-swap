@@ -63,6 +63,10 @@ mod PoolConstants {
         FP64x96Impl, FixedType, FixedTrait
     };
 
+    fn OWNER() -> ContractAddress {
+        contract_address_const::<'OWNER'>()
+    }
+
     fn FACTORY_ADDRESS() -> ContractAddress {
         contract_address_const::<'FACTORY'>()
     }
