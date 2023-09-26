@@ -163,6 +163,20 @@ impl i128Neg of Neg<i128> {
     }
 }
 
+impl i128Zeroable of Zeroable<i128> {
+    fn zero() -> i128 {
+        IntegerTrait::<i128>::new(0, false)
+    }
+    #[inline(always)]
+    fn is_zero(self: i128) -> bool {
+        self == Zeroable::zero()
+    }
+    #[inline(always)]
+    fn is_non_zero(self: i128) -> bool {
+        self != Zeroable::zero()
+    }
+}
+
 
 // Checks if the given i128 integer is zero and has the correct sign.
 // # Arguments

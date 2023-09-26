@@ -109,12 +109,16 @@ On Starknet, the deployment process is in two steps:
     ```bash
     make build
     ```
-2. Declare:
+2. Start Local Testnet
+    ```bash
+    make start-katana
+    ```
+3. Declare:
     ```bash
     make declare
     ```
     Copy the declared hashes from the Factory and the Pool for the following step.
-3. Deploy:
+4. Deploy:
    ```bash"
    // FACTORY_CLASS_HASH: Include the class hash of the YASFactory declare.
    // OWNER_ADDRESS: Include a Starknet address.
