@@ -21,23 +21,22 @@ mod YASPool {
 
     use starknet::{ContractAddress, get_block_timestamp, get_caller_address, get_contract_address};
 
-    use yas::libraries::{
-        tick::{Tick, Tick::TickImpl}, tick_bitmap::{TickBitmap, TickBitmap::TickBitmapImpl},
-        tick_math::TickMath::{get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_TICK, MAX_TICK},
-        position::{Position, Position::PositionImpl, PositionKey, Info}
+    use yas::interfaces::interface_ERC20::{IERC20DispatcherTrait, IERC20Dispatcher};
+    use yas::interfaces::interface_yas_swap_callback::{
+        IYASSwapCallbackDispatcherTrait, IYASSwapCallbackDispatcher
     };
+    use yas::libraries::liquidity_math::LiquidityMath;
+    use yas::libraries::tick::{Tick, Tick::TickImpl};
+    use yas::libraries::tick_bitmap::{TickBitmap, TickBitmap::TickBitmapImpl};
+    use yas::libraries::tick_math::TickMath::{get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_TICK, MAX_TICK};
+    use yas::libraries::position::{Position, Position::PositionImpl, PositionKey, Info};
+    use yas::libraries::swap_math::SwapMath;
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FixedType, FixedTrait, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable
     };
     use yas::numbers::signed_integer::{
         i32::i32, i64::i64, i128::i128, i256::i256, integer_trait::IntegerTrait
     };
-    use yas::interfaces::interface_ERC20::{IERC20DispatcherTrait, IERC20Dispatcher};
-    use yas::interfaces::interface_yas_swap_callback::{
-        IYASSwapCallbackDispatcherTrait, IYASSwapCallbackDispatcher
-    };
-    use yas::libraries::liquidity_math::LiquidityMath;
-    use yas::libraries::swap_math::SwapMath;
     use yas::utils::math_utils::Constants::Q128;
     use yas::utils::math_utils::FullMath;
     use yas::utils::math_utils::BitShift::BitShiftTrait;
