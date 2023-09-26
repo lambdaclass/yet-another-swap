@@ -47,6 +47,12 @@ impl i32Into of Into<i128, felt252> {
     }
 }
 
+impl u128Intoi128 of Into<u128, i128> {
+    fn into(self: u128) -> i128 {
+        IntegerTrait::<i128>::new(self, false)
+    }
+}
+
 // Implements the Add trait for i128.
 impl i128Add of Add<i128> {
     fn add(lhs: i128, rhs: i128) -> i128 {

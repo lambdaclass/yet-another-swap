@@ -1,5 +1,5 @@
 use starknet::ContractAddress;
-use yas::numbers::signed_integer::i256::{i256, u256Intoi256};
+use yas::numbers::signed_integer::{i32::i32, i256::i256};
 use yas::numbers::fixed_point::implementations::impl_64x96::FixedType;
 
 #[starknet::interface]
@@ -13,6 +13,14 @@ trait IYASPool<TContractState> {
         sqrt_price_limit_X96: FixedType,
         data: Array<felt252>
     ) -> (i256, i256);
+    fn mint(
+        ref self: TContractState,
+        recipient: ContractAddress,
+        tick_lower: i32,
+        tick_upper: i32,
+        amount: u128,
+        data: Array<felt252>
+    ) -> (u256, u256);
 }
 
 #[starknet::contract]
@@ -22,6 +30,9 @@ mod YASPool {
     use starknet::{ContractAddress, get_block_timestamp, get_caller_address, get_contract_address};
 
     use yas::interfaces::interface_ERC20::{IERC20DispatcherTrait, IERC20Dispatcher};
+    use yas::interfaces::interface_yas_mint_callback::{
+        IYASMintCallbackDispatcherTrait, IYASMintCallbackDispatcher
+    };
     use yas::interfaces::interface_yas_swap_callback::{
         IYASSwapCallbackDispatcherTrait, IYASSwapCallbackDispatcher
     };
@@ -38,7 +49,8 @@ mod YASPool {
         FixedType, FixedTrait, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable
     };
     use yas::numbers::signed_integer::{
-        i32::i32, i64::i64, i128::i128, i256::i256, integer_trait::IntegerTrait
+        i32::i32, i64::i64, i128::{i128, u128Intoi128}, i256::{i256, i256TryIntou256},
+        integer_trait::IntegerTrait
     };
     use yas::utils::math_utils::Constants::Q128;
     use yas::utils::math_utils::FullMath;
@@ -48,7 +60,8 @@ mod YASPool {
     #[derive(Drop, starknet::Event)]
     enum Event {
         Initialize: Initialize,
-        SwapExecuted: SwapExecuted
+        SwapExecuted: SwapExecuted,
+        Mint: Mint,
     }
 
     /// @notice Emitted exactly once by a pool when #initialize is first called on the pool
@@ -70,6 +83,17 @@ mod YASPool {
         sqrt_price_X96: FixedType,
         liquidity: u128,
         tick: i32
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct Mint {
+        sender: ContractAddress,
+        recipient: ContractAddress,
+        tick_lower: i32,
+        tick_upper: i32,
+        amount: u128,
+        amount_0: u256,
+        amount_1: u256
     }
 
     #[derive(Copy, Drop, Serde, starknet::Store)]
@@ -433,6 +457,69 @@ mod YASPool {
                         sqrt_price_X96: state.sqrt_price_X96,
                         liquidity: state.liquidity,
                         tick: state.tick
+                    }
+                );
+            self.unlock();
+            (amount_0, amount_1)
+        }
+
+        fn mint(
+            ref self: ContractState,
+            recipient: ContractAddress,
+            tick_lower: i32,
+            tick_upper: i32,
+            amount: u128,
+            data: Array<felt252>
+        ) -> (u256, u256) {
+            self.check_and_lock();
+
+            assert(amount > 0, 'amount must be greater than 0');
+            let (_, amount_0, amount_1) = self
+                .modify_position(
+                    ModifyPositionParams {
+                        position_key: PositionKey { owner: recipient, tick_lower, tick_upper },
+                        liquidity_delta: amount.into()
+                    }
+                );
+
+            let amount_0: u256 = amount_0.try_into().unwrap();
+            let amount_1: u256 = amount_1.try_into().unwrap();
+
+            let balance_0_before = if amount_0 > 0 {
+                self.balance_0()
+            } else {
+                0
+            };
+
+            let balance_1_before = if amount_1 > 0 {
+                self.balance_1()
+            } else {
+                0
+            };
+
+            let callback_contract = get_caller_address();
+            assert(is_valid_callback_contract(callback_contract), 'invalid callback_contract');
+            let dispatcher = IYASMintCallbackDispatcher { contract_address: callback_contract };
+            dispatcher.yas_mint_callback(amount_0, amount_1, data);
+
+            if amount_0 > 0 {
+                assert(balance_0_before + amount_0 <= self.balance_0(), 'M0');
+            }
+
+            if amount_1 > 0 {
+                assert(balance_1_before + amount_1 <= self.balance_1(), 'M1');
+            }
+
+            self
+                .emit(
+                    Mint {
+                        sender: get_caller_address(),
+                        recipient,
+                        tick_lower,
+                        tick_upper,
+                        amount,
+                        amount_0,
+                        amount_1
                     }
                 );
             self.unlock();
