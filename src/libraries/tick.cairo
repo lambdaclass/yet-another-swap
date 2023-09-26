@@ -121,12 +121,13 @@ mod Tick {
         }
 
         /// @notice Transitions to next tick as needed by price movement
+        /// The parameters seconds_per_liquidity_cumulative_X128 and tick_cumulative 
+        /// were removed because the module related to the Oracle is not yet implemented
+        ///
         /// @param self The mapping containing all tick information for initialized ticks
         /// @param tick The destination tick of the transition
         /// @param fee_growth_global_0X128 The all-time global fee growth, per unit of liquidity, in token0
         /// @param fee_growth_global_1X128 The all-time global fee growth, per unit of liquidity, in token1
-        /// @param seconds_per_liquidity_cumulative_X128 The current seconds per liquidity
-        /// @param tick_cumulative The tick * time elapsed since the pool was first initialized
         /// @param time The current block.timestamp
         /// @return liquidity_net The amount of liquidity added (subtracted) when tick is crossed from left to right (right to left)
         fn cross(
@@ -273,6 +274,18 @@ mod Tick {
         fn set_tick(ref self: ContractState, tick: i32, info: Info) {
             let hashed_tick = PoseidonTrait::new().update_with(tick).finalize();
             self.ticks.write(hashed_tick, info);
+        }
+
+        fn set_ticks(ref self: ContractState, ticks: Array<i32>, infos: Array<Info>) {
+            assert(ticks.len() == infos.len(), 'ticks & infos must have eq len');
+            let mut i = 0;
+            loop {
+                if i > ticks.len() - 1 {
+                    break;
+                }
+                InternalImpl::set_tick(ref self, *(ticks.at(i)), *(infos.at(i)));
+                i += 1;
+            };
         }
 
         fn get_tick(self: @ContractState, tick: i32) -> Info {
