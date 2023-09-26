@@ -473,12 +473,13 @@ mod YASPool {
             self.check_and_lock();
 
             assert(amount > 0, 'amount must be greater than 0');
-            let (_, amount_0, amount_1) = modify_position(
-                ModifyPositionParams {
-                    position_key: PositionKey { owner: recipient, tick_lower, tick_upper },
-                    liquidity_delta: amount.into()
-                }
-            );
+            let (_, amount_0, amount_1) = self
+                .modify_position(
+                    ModifyPositionParams {
+                        position_key: PositionKey { owner: recipient, tick_lower, tick_upper },
+                        liquidity_delta: amount.into()
+                    }
+                );
 
             let amount_0: u256 = amount_0.try_into().unwrap();
             let amount_1: u256 = amount_1.try_into().unwrap();
@@ -525,6 +526,26 @@ mod YASPool {
 
     #[generate_trait]
     impl InternalImpl of InternalTrait {
+        /// @dev Effect some changes to a position
+        /// @param params the position details and the change to the position's liquidity to effect
+        /// @return position a storage pointer referencing the position with the given owner and tick range
+        /// @return amount0 the amount of token0 owed to the pool, negative if the pool should pay the recipient
+        /// @return amount1 the amount of token1 owed to the pool, negative if the pool should pay the recipient
+        // TODO: mock
+        fn modify_position(
+            ref self: ContractState, params: ModifyPositionParams
+        ) -> (Info, i256, i256) {
+            let info = Info {
+                liquidity: 100,
+                fee_growth_inside_0_last_X128: 20,
+                fee_growth_inside_1_last_X128: 20,
+                tokens_owed_0: 10,
+                tokens_owed_1: 10,
+            };
+            let zero: i256 = Zeroable::zero();
+            (info, zero, zero)
+        }
+
         fn get_slot_0(self: @ContractState) -> Slot0 {
             self.slot_0.read()
         }
@@ -553,18 +574,5 @@ mod YASPool {
 
     fn is_valid_callback_contract(callback_contract: ContractAddress) -> bool {
         callback_contract.is_non_zero()
-    }
-
-    // TODO: mock
-    fn modify_position(params: ModifyPositionParams) -> (Info, i256, i256) {
-        let info = Info {
-            liquidity: 100,
-            fee_growth_inside_0_last_X128: 20,
-            fee_growth_inside_1_last_X128: 20,
-            tokens_owed_0: 10,
-            tokens_owed_1: 10,
-        };
-        let zero: i256 = Zeroable::zero();
-        (info, zero, zero)
     }
 }
