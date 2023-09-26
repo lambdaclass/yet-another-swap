@@ -485,15 +485,17 @@ mod YASPool {
             let amount_0: u256 = amount_0.try_into().unwrap();
             let amount_1: u256 = amount_1.try_into().unwrap();
 
-            let mut balance_0_before = 0;
-            if amount_0 > 0 {
-                balance_0_before = self.balance_0();
-            }
+            let balance_0_before = if amount_0 > 0 {
+                self.balance_0()
+            } else {
+                0
+            };
 
-            let mut balance_1_before = 0;
-            if amount_1 > 0 {
-                balance_1_before = self.balance_1();
-            }
+            let balance_1_before = if amount_1 > 0 {
+                self.balance_1()
+            } else {
+                0
+            };
 
             let callback_contract = get_caller_address();
             assert(is_valid_callback_contract(callback_contract), 'invalid callback_contract');
