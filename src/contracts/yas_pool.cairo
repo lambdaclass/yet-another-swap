@@ -530,10 +530,9 @@ mod YASPool {
             PositionImpl::get(@position_state, position_key)
         }
 
-        fn get_slot_0(self: @ContractState) -> Slot0 {
-            self.slot_0.read()
-        }
-
+        // These functions are solely for testing purposes. In these cases, we access the states of
+        // the contracts to configure them before performing any specific tests. It is also 
+        // possible to validate whether the storage of these contracts was modified correctly
         fn get_bitmap_state(self: ContractState) -> TickBitmap::ContractState {
             TickBitmap::unsafe_new_contract_state()
         }
@@ -550,7 +549,6 @@ mod YASPool {
             self.token_0.write(token_0);
             self.token_1.write(token_1);
         }
-
         fn set_fee(ref self: ContractState, fee: u32) {
             self.fee.write(fee);
         }
@@ -593,6 +591,10 @@ mod YASPool {
         fn balance_1(self: @ContractState) -> u256 {
             IERC20Dispatcher { contract_address: self.token_1.read() }
                 .balanceOf(get_contract_address())
+        }
+
+        fn get_slot_0(self: @ContractState) -> Slot0 {
+            self.slot_0.read()
         }
     }
 
