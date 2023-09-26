@@ -313,8 +313,8 @@ mod BitShift {
 
     #[test]
     #[available_gas(20000000)]
-    #[should_panic]
-    fn test_shift_left_i256_MAX() {
+    #[should_panic(expected: ('int: out of range',))]
+    fn test_fail_shift_left_i256_MAX() {
         let x = IntegerTrait::<i256>::new(((BoundedInt::max() - 1) / 2) - 1, false);
         let n = IntegerTrait::<i256>::new(1, false);
         let two_i256 = IntegerTrait::<i256>::new(2, false);
@@ -324,78 +324,21 @@ mod BitShift {
         let expected_result_left = x.shr(n);
         assert(x.shr(n) == expected_result_right, 'MAX >> 1');
         // THIS IS AN ERROR AND SHOULD BE INVALID.
-        // This should panic with 'int: Out of range'
+        // This should panic with 'int: out of range'
         assert(x.shl(n) == x * two_i256, 'MAX << 1');
-    // let n = IntegerTrait::<i256>::new(2, false);
-    // let expected_result_right = IntegerTrait::<i256>::new(
-    //     14474011154664524427946373126085988481658748083205070504932198000989141204991, false
-    // );
-    // let expected_result_left = IntegerTrait::<i256>::new(0, false);
-    // assert(x.shr(n) == expected_result_right, 'MAX >> 2');
-    // assert(x.shl(n) == expected_result_left, 'MAX << 2');
-
-    // let n = IntegerTrait::<i256>::new(128, false);
-    // let expected_result_right = IntegerTrait::<i256>::new(
-    //     170141183460469231731687303715884105728, false
-    // );
-    // let expected_result_left = IntegerTrait::<i256>::new(0, false);
-    // assert(x.shr(n) == expected_result_right, 'MAX >> 128');
-    // assert(x.shl(n) == expected_result_left, 'MAX << 128');
-
-    // let n = IntegerTrait::<i256>::new(254, false);
-    // let expected_result_right = IntegerTrait::<i256>::new(2, false);
-    // let expected_result_left = IntegerTrait::<i256>::new(0, false);
-    // assert(x.shr(n) == expected_result_right, 'MAX >> 254');
-    // assert(x.shl(n) == expected_result_left, 'MAX << 254');
-
-    // let n = IntegerTrait::<i256>::new(255, false);
-    // let expected_result_right = IntegerTrait::<i256>::new(1, false);
-    // let expected_result_left = IntegerTrait::<i256>::new(0, false);
-    // assert(x.shr(n) == expected_result_right, 'MAX >> 255');
-    // assert(x.shl(n) == expected_result_left, 'MAX << 255');
     }
 
     #[test]
     #[available_gas(20000000)]
-    fn test_shift_left_i256_MIN() {
+    #[should_panic(expected: ('u256_mul Overflow',))]
+    fn test_fail_shift_left_i256_MIN() {
         // We need to specify left shifts overflow behavior.
-        let x = IntegerTrait::<i256>::new(BoundedInt::max() / 2, true);
-
+        let x = IntegerTrait::<i256>::new((BoundedInt::max() - 1) / 2, true);
         let n = IntegerTrait::<i256>::new(1, false);
-        let expected_result_right = IntegerTrait::<i256>::new(
-            28948022309329048855892746252171976963317496166410141009864396001978282409984, true
-        );
-        // assert(x.shr(n) == expected_result_right, 'MIN >> 1');
-        // let expected_result_left = IntegerTrait::<i256>::new(115792089237316195423570985008687907853269984665640564039457584007913129639934, true);
-        // assert(x.shl(n) == expected_result_left, 'MIN << 1');
-
-        let n = IntegerTrait::<i256>::new(2, false);
-        let expected_result_right = IntegerTrait::<i256>::new(
-            14474011154664524427946373126085988481658748083205070504932198000989141204992, true
-        );
-        // assert(x.shr(n) == expected_result_right, 'MIN >> 2');
-        // let expected_result_left = IntegerTrait::<i256>::new(0, true);
-        // assert(x.shl(n) == expected_result_left, 'MIN << 2');
-
-        let n = IntegerTrait::<i256>::new(128, false);
-        let expected_result_right = IntegerTrait::<i256>::new(
-            170141183460469231731687303715884105728, true
-        );
-        // assert(x.shr(n) == expected_result_right, 'MIN >> 128');
-        // let expected_result_left = IntegerTrait::<i256>::new(0, true);
-        // assert(x.shl(n) == expected_result_left, 'MIN << 128');
-
-        let n = IntegerTrait::<i256>::new(254, false);
-        let expected_result_right = IntegerTrait::<i256>::new(2, true);
-        // assert(x.shr(n) == expected_result_right, 'MIN >> 254');
-        // let expected_result_left = IntegerTrait::<i256>::new(0, true);
-        // assert(x.shl(n) == expected_result_left, 'MIN << 254');
-
-        let n = IntegerTrait::<i256>::new(255, false);
-        let expected_result_right = IntegerTrait::<i256>::new(1, true);
-    //assert(x.shr(n) == expected_result_right, 'MIN >> 255');
-    // let expected_result_left = IntegerTrait::<i256>::new(0, true);
-    // assert(x.shl(n) == expected_result_left, 'MIN << 255');
+        let two_i256 = IntegerTrait::<i256>::new(2, false);
+        let expected_result_right = x / two_i256;
+        // This should panic with 'u256_mul Overflow'
+        assert(x.shr(n) == expected_result_right, 'MIN >> 1');
     }
 
 
