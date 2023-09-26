@@ -92,13 +92,6 @@ mod TickTests {
             let result = InternalImpl::get_tick(@state, tick_id);
             assert(result.fee_growth_outside_0X128 == 6, 'fee_growth_0X128 should be 6');
             assert(result.fee_growth_outside_1X128 == 7, 'fee_growth_1X128 should be 7');
-            assert(
-                result.seconds_per_liquidity_outside_X128 == 3, 'sec_per_liqui_X128 should be 3'
-            );
-            assert(
-                result.tick_cumulative_outside == IntegerTrait::<i64>::new(9, false),
-                'tick_cumulative should be 9'
-            );
             assert(result.seconds_outside == 3, 'seconds_outside should be 3');
         }
 
@@ -557,8 +550,6 @@ mod TickTests {
                 0,
                 0,
                 0,
-                IntegerTrait::<i64>::new(0, false),
-                0,
                 false,
                 3
             );
@@ -578,8 +569,6 @@ mod TickTests {
                 0,
                 0,
                 0,
-                IntegerTrait::<i64>::new(0, false),
-                0,
                 false,
                 3
             );
@@ -591,8 +580,6 @@ mod TickTests {
                 IntegerTrait::<i128>::new(1, false),
                 0,
                 0,
-                0,
-                IntegerTrait::<i64>::new(0, false),
                 0,
                 false,
                 3
@@ -614,8 +601,6 @@ mod TickTests {
                 0,
                 0,
                 0,
-                IntegerTrait::<i64>::new(0, false),
-                0,
                 false,
                 3
             );
@@ -627,8 +612,6 @@ mod TickTests {
                 IntegerTrait::<i128>::new(1, true),
                 0,
                 0,
-                0,
-                IntegerTrait::<i64>::new(0, false),
                 0,
                 false,
                 3
@@ -650,8 +633,6 @@ mod TickTests {
                 0,
                 0,
                 0,
-                IntegerTrait::<i64>::new(0, false),
-                0,
                 false,
                 3
             );
@@ -663,8 +644,6 @@ mod TickTests {
                 IntegerTrait::<i128>::new(1, true),
                 0,
                 0,
-                0,
-                IntegerTrait::<i64>::new(0, false),
                 0,
                 false,
                 3
@@ -687,8 +666,6 @@ mod TickTests {
                 0,
                 0,
                 0,
-                IntegerTrait::<i64>::new(0, false),
-                0,
                 false,
                 3
             );
@@ -701,8 +678,6 @@ mod TickTests {
                 0,
                 0,
                 0,
-                IntegerTrait::<i64>::new(0, false),
-                0,
                 true,
                 3
             );
@@ -714,8 +689,6 @@ mod TickTests {
                 IntegerTrait::<i128>::new(1, false),
                 0,
                 0,
-                0,
-                IntegerTrait::<i64>::new(0, false),
                 0,
                 false,
                 3
@@ -735,8 +708,6 @@ mod TickTests {
                 0,
                 0,
                 0,
-                IntegerTrait::<i64>::new(0, false),
-                0,
                 false,
                 10
             );
@@ -748,8 +719,6 @@ mod TickTests {
                 IntegerTrait::<i128>::new(1, false),
                 0,
                 0,
-                0,
-                IntegerTrait::<i64>::new(0, false),
                 0,
                 true,
                 10
@@ -763,8 +732,6 @@ mod TickTests {
                 0,
                 0,
                 0,
-                IntegerTrait::<i64>::new(0, false),
-                0,
                 true,
                 10
             );
@@ -776,8 +743,6 @@ mod TickTests {
                 IntegerTrait::<i128>::new(1, false),
                 0,
                 0,
-                0,
-                IntegerTrait::<i64>::new(0, false),
                 0,
                 false,
                 10
@@ -807,8 +772,6 @@ mod TickTests {
                 0,
                 0,
                 0,
-                IntegerTrait::<i64>::new(0, false),
-                0,
                 false,
                 max_u128
             );
@@ -820,8 +783,6 @@ mod TickTests {
                 IntegerTrait::<i128>::new((max_u128 / 2) - 1, false),
                 0,
                 0,
-                0,
-                IntegerTrait::<i64>::new(0, false),
                 0,
                 false,
                 max_u128
@@ -842,8 +803,6 @@ mod TickTests {
                 IntegerTrait::<i128>::new(1, false),
                 1,
                 2,
-                3,
-                IntegerTrait::<i64>::new(4, false),
                 5,
                 false,
                 max_liquidity
@@ -852,13 +811,6 @@ mod TickTests {
             let result = InternalImpl::get_tick(@state, tick_id);
             assert(result.fee_growth_outside_0X128 == 1, 'fee_growth_0X128 should be 1');
             assert(result.fee_growth_outside_1X128 == 2, 'fee_growth_1X128 should be 2');
-            assert(
-                result.seconds_per_liquidity_outside_X128 == 3, 'sec_per_liqui_X128 should be 3'
-            );
-            assert(
-                result.tick_cumulative_outside == IntegerTrait::<i64>::new(4, false),
-                'tick_cumulative should be 4'
-            );
             assert(result.seconds_outside == 5, 'seconds_outside should be 5');
             assert(result.initialized == true, 'initialized should be true');
         }
@@ -876,8 +828,6 @@ mod TickTests {
                 IntegerTrait::<i128>::new(1, false),
                 1,
                 2,
-                3,
-                IntegerTrait::<i64>::new(4, false),
                 5,
                 false,
                 max_liquidity
@@ -889,8 +839,6 @@ mod TickTests {
                 IntegerTrait::<i128>::new(1, false),
                 6,
                 7,
-                8,
-                IntegerTrait::<i64>::new(9, false),
                 10,
                 false,
                 max_liquidity
@@ -900,13 +848,6 @@ mod TickTests {
             let result = InternalImpl::get_tick(@state, tick_id);
             assert(result.fee_growth_outside_0X128 == 1, 'fee_growth_0X128 should be 1');
             assert(result.fee_growth_outside_1X128 == 2, 'fee_growth_1X128 should be 2');
-            assert(
-                result.seconds_per_liquidity_outside_X128 == 3, 'sec_per_liqui_X128 should be 3'
-            );
-            assert(
-                result.tick_cumulative_outside == IntegerTrait::<i64>::new(4, false),
-                'tick_cumulative should be 4'
-            );
             assert(result.seconds_outside == 5, 'seconds_outside should be 5');
             assert(result.initialized == true, 'initialized should be true');
         }
@@ -924,8 +865,6 @@ mod TickTests {
                 IntegerTrait::<i128>::new(1, false),
                 1,
                 2,
-                3,
-                IntegerTrait::<i64>::new(4, false),
                 5,
                 false,
                 max_liquidity
