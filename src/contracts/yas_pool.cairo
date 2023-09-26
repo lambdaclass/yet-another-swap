@@ -446,7 +446,6 @@ mod YASPool {
             let mut tick_state = Tick::unsafe_new_contract_state();
             let mut position_state = Position::unsafe_new_contract_state();
 
-            // SLOAD for gas optimization
             let _fee_growth_global_0_X128 = self.fee_growth_global_0_X128.read();
             let _fee_growth_global_1_X128 = self.fee_growth_global_1_X128.read();
 
@@ -457,8 +456,6 @@ mod YASPool {
             let mut flipped_upper = false;
 
             if liquidity_delta.is_non_zero() {
-                // TODO: modify block_time from Tick::update() 
-                // since block time in .sol is type u32, but in starknet its u64
                 let time = get_block_timestamp();
 
                 flipped_lower =
