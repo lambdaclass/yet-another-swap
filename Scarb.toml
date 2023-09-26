@@ -9,4 +9,7 @@ repository = "https://github.com/lambdaclass/yet-another-swap/"
 starknet = ">=2.2.0"
 
 [[target.starknet-contract]]
+sierra = true
 
+[cairo]
+sierra-replace-ids = true
