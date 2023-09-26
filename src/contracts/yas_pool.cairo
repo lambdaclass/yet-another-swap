@@ -126,7 +126,12 @@ mod YASPool {
             ref self: ContractState, params: ModifyPositionParams
         ) -> (Info, i256, i256) // TODO: noDelegateCall
         {
-            check_ticks(params.position_key.tick_lower, params.position_key.tick_upper);
+            match check_ticks(params.position_key.tick_lower, params.position_key.tick_upper) {
+                Result::Ok(()) => {},
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
+            }
 
             let slot_0 = self.slot_0.read();
 
@@ -185,10 +190,17 @@ mod YASPool {
     }
 
     /// @dev Common checks for valid tick inputs.
-    fn check_ticks(tick_lower: i32, tick_upper: i32) {
-        assert(tick_lower < tick_upper, 'TLU');
-        assert(tick_lower >= TickMath::MIN_TICK(), 'TLM');
-        assert(tick_upper <= TickMath::MAX_TICK(), 'TUM');
+    fn check_ticks(tick_lower: i32, tick_upper: i32) -> Result<(), felt252> {
+        if !(tick_lower < tick_upper) {
+            return Result::Err('TLU');
+        }
+        if !(tick_lower >= TickMath::MIN_TICK()) {
+            return Result::Err('TLM');
+        }
+        if !(tick_upper <= TickMath::MAX_TICK()) {
+            return Result::Err('TUM');
+        }
+        Result::Ok(())
     }
 
     // TODO: mock
