@@ -13,7 +13,7 @@ declare:
 	starkli declare target/dev/yas_YASFactory.sierra.json --keystore ~/.starkli-wallets/keystore.json --account ~/.starkli-wallets/account.json
 
 deploy:
-	starkli deploy $(CLASS_HASH) $(CTOR_ARGS) --keystore ~/.starkli-wallets/keystore.json  --account ~/.starkli-wallets/account.json
+	cargo run --bin deploy
 
 test:
 	scarb test
