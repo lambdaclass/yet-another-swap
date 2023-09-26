@@ -276,14 +276,14 @@ mod Tick {
             self.ticks.write(hashed_tick, info);
         }
 
-        fn set_ticks(ref self: ContractState, ticks: Array<i32>, infos: Array<Info>) {
-            assert(ticks.len() == infos.len(), 'ticks & infos must have eq len');
+        fn set_ticks(ref self: ContractState, ticks: Array<i32>, ticks_info: Array<Info>) {
+            assert(ticks.len() == ticks_info.len(), 'ticks & info must have same len');
             let mut i = 0;
             loop {
                 if i > ticks.len() - 1 {
                     break;
                 }
-                InternalImpl::set_tick(ref self, *(ticks.at(i)), *(infos.at(i)));
+                InternalImpl::set_tick(ref self, *(ticks.at(i)), *(ticks_info.at(i)));
                 i += 1;
             };
         }
