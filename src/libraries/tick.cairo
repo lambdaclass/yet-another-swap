@@ -17,7 +17,7 @@ struct Info {
     seconds_per_liquidity_outside_X128: u256,
     // the seconds spent on the other side of the tick (relative to the current tick)
     // only has relative meaning, not absolute — the value depends on when the tick is initialized
-    seconds_outside: u32,
+    seconds_outside: u64,
     // true if the tick is initialized, i.e. the value is exactly equivalent to the expression liquidityGross != 0
     // these 8 bits are set to prevent fresh sstores when crossing newly initialized ticks
     initialized: bool
@@ -49,7 +49,7 @@ trait ITick<TContractState> {
         fee_growth_global_1X128: u256,
         seconds_per_liquidity_cumulative_X128: u256,
         tick_cumulative: i64,
-        time: u32
+        time: u64
     ) -> i128;
     fn get_fee_growth_inside(
         self: @TContractState,
@@ -66,7 +66,7 @@ trait ITick<TContractState> {
         liquidity_delta: i128,
         fee_growth_global_0X128: u256,
         fee_growth_global_1X128: u256,
-        time: u32,
+        time: u64,
         upper: bool,
         max_liquidity: u128
     ) -> bool;
@@ -136,7 +136,7 @@ mod Tick {
             fee_growth_global_1X128: u256,
             seconds_per_liquidity_cumulative_X128: u256,
             tick_cumulative: i64,
-            time: u32
+            time: u64
         ) -> i128 {
             let hashed_tick = PoseidonTrait::new().update_with(tick).finalize();
             let mut info: Info = self.ticks.read(hashed_tick);
@@ -227,7 +227,7 @@ mod Tick {
             liquidity_delta: i128,
             fee_growth_global_0X128: u256,
             fee_growth_global_1X128: u256,
-            time: u32,
+            time: u64,
             upper: bool,
             max_liquidity: u128
         ) -> bool {
