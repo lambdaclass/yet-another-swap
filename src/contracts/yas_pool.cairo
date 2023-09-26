@@ -26,13 +26,14 @@ mod YASPool {
         IYASSwapCallbackDispatcherTrait, IYASSwapCallbackDispatcher
     };
     use yas::libraries::liquidity_math::LiquidityMath;
+    use yas::libraries::position::{Position, Position::PositionImpl, PositionKey, Info};
+    use yas::libraries::sqrt_price_math::SqrtPriceMath;
+    use yas::libraries::swap_math::SwapMath;
     use yas::libraries::tick::{Tick, Tick::TickImpl};
     use yas::libraries::tick_bitmap::{TickBitmap, TickBitmap::TickBitmapImpl};
     use yas::libraries::tick_math::TickMath::{
         get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_TICK, MAX_TICK
     };
-    use yas::libraries::position::{Position, Position::PositionImpl, PositionKey, Info};
-    use yas::libraries::swap_math::SwapMath;
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FixedType, FixedTrait, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable
     };
@@ -116,6 +117,13 @@ mod YASPool {
     struct ProtocolFees {
         token_0: u128,
         token_1: u128
+    }
+
+    #[derive(Serde, Copy, Drop)]
+    struct ModifyPositionParams {
+        position_key: PositionKey,
+        // any change in liquidity
+        liquidity_delta: i128
     }
 
     #[storage]
@@ -526,12 +534,78 @@ mod YASPool {
                 }
             }
 
-            // read again to obtain Info with changes in the update step 
+            // read again to obtain Info with changes in the update step
             PositionImpl::get(@position_state, position_key)
         }
 
+        /// @dev Effect some changes to a position
+        /// @param params the position details and the change to the position's liquidity to effect
+        /// @return position a storage pointer referencing the position with the given owner and tick range
+        /// @return amount0 the amount of token0 owed to the pool, negative if the pool should pay the recipient
+        /// @return amount1 the amount of token1 owed to the pool, negative if the pool should pay the recipient
+        fn modify_position(
+            ref self: ContractState, params: ModifyPositionParams
+        ) -> (Info, i256, i256) // TODO: noDelegateCall
+        {
+            match check_ticks(params.position_key.tick_lower, params.position_key.tick_upper) {
+                Result::Ok(()) => {},
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
+            }
+
+            let slot_0 = self.slot_0.read();
+
+            let position = self
+                .update_position(params.position_key, params.liquidity_delta, slot_0.tick);
+
+            let mut amount_0 = Zeroable::zero();
+            let mut amount_1 = Zeroable::zero();
+            if params.liquidity_delta.is_non_zero() {
+                if slot_0.tick < params.position_key.tick_lower {
+                    // current tick is below the passed range; liquidity can only become in range by crossing from left to
+                    // right, when we'll need _more_ token0 (it's becoming more valuable) so user must provide it
+                    amount_0 =
+                        SqrtPriceMath::get_amount_0_delta_signed_token(
+                            get_sqrt_ratio_at_tick(params.position_key.tick_lower),
+                            get_sqrt_ratio_at_tick(params.position_key.tick_upper),
+                            params.liquidity_delta
+                        );
+                } else if slot_0.tick < params.position_key.tick_upper {
+                    // current tick is inside the passed range
+
+                    amount_0 =
+                        SqrtPriceMath::get_amount_0_delta_signed_token(
+                            slot_0.sqrt_price_X96,
+                            get_sqrt_ratio_at_tick(params.position_key.tick_upper),
+                            params.liquidity_delta
+                        );
+                    amount_1 =
+                        SqrtPriceMath::get_amount_1_delta_signed_token(
+                            get_sqrt_ratio_at_tick(params.position_key.tick_lower),
+                            slot_0.sqrt_price_X96,
+                            params.liquidity_delta
+                        );
+
+                    let mut liquidity = self.liquidity.read();
+                    liquidity = LiquidityMath::add_delta(liquidity, params.liquidity_delta);
+                    self.liquidity.write(liquidity);
+                } else {
+                    // current tick is above the passed range; liquidity can only become in range by crossing from right to
+                    // left, when we'll need _more_ token1 (it's becoming more valuable) so user must provide it
+                    amount_1 =
+                        SqrtPriceMath::get_amount_1_delta_signed_token(
+                            get_sqrt_ratio_at_tick(params.position_key.tick_lower),
+                            get_sqrt_ratio_at_tick(params.position_key.tick_upper),
+                            params.liquidity_delta
+                        );
+                }
+            }
+            (position, amount_0, amount_1)
+        }
+
         // These functions are solely for testing purposes. In these cases, we access the states of
-        // the contracts to configure them before performing any specific tests. It is also 
+        // the contracts to configure them before performing any specific tests. It is also
         // possible to validate whether the storage of these contracts was modified correctly
         fn get_bitmap_state(self: ContractState) -> TickBitmap::ContractState {
             TickBitmap::unsafe_new_contract_state()
@@ -572,6 +646,10 @@ mod YASPool {
             self.fee_growth_global_1_X128.write(fee_growth_global_1_X128);
         }
 
+        fn get_slot_0(self: @ContractState) -> Slot0 {
+            self.slot_0.read()
+        }
+
         fn check_and_lock(ref self: ContractState) {
             let unlocked = self.unlocked.read();
             assert(unlocked, 'LOK');
@@ -592,13 +670,23 @@ mod YASPool {
             IERC20Dispatcher { contract_address: self.token_1.read() }
                 .balanceOf(get_contract_address())
         }
-
-        fn get_slot_0(self: @ContractState) -> Slot0 {
-            self.slot_0.read()
-        }
     }
 
     fn is_valid_callback_contract(callback_contract: ContractAddress) -> bool {
         callback_contract.is_non_zero()
+    }
+
+    /// @dev Common checks for valid tick inputs.
+    fn check_ticks(tick_lower: i32, tick_upper: i32) -> Result<(), felt252> {
+        if !(tick_lower < tick_upper) {
+            return Result::Err('TLU');
+        }
+        if !(tick_lower >= MIN_TICK()) {
+            return Result::Err('TLM');
+        }
+        if !(tick_upper <= MAX_TICK()) {
+            return Result::Err('TUM');
+        }
+        Result::Ok(())
     }
 }

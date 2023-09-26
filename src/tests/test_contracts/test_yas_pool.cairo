@@ -361,10 +361,110 @@ mod YASPoolTests {
                 mock_tick_infos(infos_len: 10)
             );
 
-            // mocked Tick::Info has 100 of liquidity gross, 
+            // mocked Tick::Info has 100 of liquidity gross,
             // we set 1500 for max_liq so 1501 should panic
             let delta_liquidity = IntegerTrait::<i128>::new(1401, false);
             InternalImpl::update_position(@pool_state, position_key, delta_liquidity, tick);
+        }
+    }
+
+    mod CheckTicks {
+        use yas::contracts::yas_pool::YASPool;
+        use yas::libraries::tick_math::TickMath;
+        use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+
+        #[test]
+        #[available_gas(60000)]
+        fn test_valid_ticks() {
+            let tick_lower = IntegerTrait::<i32>::new(100, true);
+            let tick_upper = IntegerTrait::<i32>::new(100, false);
+            match YASPool::check_ticks(tick_lower, tick_upper) {
+                Result::Ok(()) => {},
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
+            }
+        }
+
+        #[test]
+        #[available_gas(60000)]
+        fn test_valid_tick_lower() {
+            let tick_lower = TickMath::MIN_TICK();
+            let tick_upper = IntegerTrait::<i32>::new(100, false);
+            match YASPool::check_ticks(tick_lower, tick_upper) {
+                Result::Ok(()) => {},
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
+            }
+        }
+
+        #[test]
+        #[available_gas(60000)]
+        fn test_valid_tick_upper() {
+            let tick_lower = IntegerTrait::<i32>::new(100, true);
+            let tick_upper = TickMath::MAX_TICK();
+            match YASPool::check_ticks(tick_lower, tick_upper) {
+                Result::Ok(()) => {},
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
+            }
+        }
+
+        #[test]
+        #[available_gas(60000)]
+        #[should_panic(expected: ('TLU',))]
+        fn test_tick_upper_lower_invalid() {
+            let tick_lower = IntegerTrait::<i32>::new(100, false);
+            let tick_upper = IntegerTrait::<i32>::new(100, true);
+            match YASPool::check_ticks(tick_lower, tick_upper) {
+                Result::Ok(()) => {},
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
+            }
+        }
+
+        #[test]
+        #[available_gas(60000)]
+        #[should_panic(expected: ('TLM',))]
+        fn test_invalid_min_tick() {
+            let tick_lower = TickMath::MIN_TICK() - IntegerTrait::<i32>::new(1, false);
+            let tick_upper = TickMath::MIN_TICK();
+            match YASPool::check_ticks(tick_lower, tick_upper) {
+                Result::Ok(()) => {},
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
+            }
+        }
+
+        #[test]
+        #[available_gas(60000)]
+        #[should_panic(expected: ('TUM',))]
+        fn test_invalid_max_tick() {
+            let tick_lower = TickMath::MAX_TICK();
+            let tick_upper = TickMath::MAX_TICK() + IntegerTrait::<i32>::new(1, false);
+            match YASPool::check_ticks(tick_lower, tick_upper) {
+                Result::Ok(()) => {},
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
+            }
+        }
+
+        #[test]
+        #[available_gas(60000)]
+        fn test_valid_min_max_ticks() {
+            let tick_lower = TickMath::MIN_TICK();
+            let tick_upper = TickMath::MAX_TICK();
+            match YASPool::check_ticks(tick_lower, tick_upper) {
+                Result::Ok(()) => {},
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
+            }
         }
     }
 
