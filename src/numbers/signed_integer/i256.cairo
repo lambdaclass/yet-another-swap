@@ -150,6 +150,12 @@ impl i256TryIntou256 of TryInto<i256, u256> {
     }
 }
 
+impl u256Intoi256 of Into<u256, i256> {
+    fn into(self: u256) -> i256 {
+        IntegerTrait::<i256>::new(self, false)
+    }
+}
+
 impl i256Zeroable of Zeroable<i256> {
     fn zero() -> i256 {
         IntegerTrait::<i256>::new(0, false)

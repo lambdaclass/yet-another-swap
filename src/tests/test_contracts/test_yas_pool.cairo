@@ -142,8 +142,7 @@ mod YASPoolTests {
             let expected = Slot0 {
                 sqrt_price_X96: FixedTrait::new(MIN_SQRT_RATIO, false),
                 tick: min_tick(IntegerTrait::<i32>::new(1, false)),
-                fee_protocol: 0,
-                unlocked: true
+                fee_protocol: 0
             };
 
             assert(InternalImpl::get_slot_0(@state) == expected, 'slot 0 wrong initialization');
@@ -161,8 +160,7 @@ mod YASPoolTests {
                 sqrt_price_X96: sqrt_price_X96,
                 tick: max_tick(IntegerTrait::<i32>::new(1, false))
                     - IntegerTrait::<i32>::new(1, false),
-                fee_protocol: 0,
-                unlocked: true
+                fee_protocol: 0
             };
 
             assert(InternalImpl::get_slot_0(@state) == expected, 'slot 0 wrong initialization')
@@ -177,10 +175,7 @@ mod YASPoolTests {
             YASPoolImpl::initialize(ref state, sqrt_price_X96);
 
             let expected = Slot0 {
-                sqrt_price_X96,
-                tick: IntegerTrait::<i32>::new(6932, true),
-                fee_protocol: 0,
-                unlocked: true
+                sqrt_price_X96, tick: IntegerTrait::<i32>::new(6932, true), fee_protocol: 0
             };
 
             assert(InternalImpl::get_slot_0(@state) == expected, 'slot 0 wrong initialization')
