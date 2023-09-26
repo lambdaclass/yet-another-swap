@@ -28,7 +28,9 @@ mod YASPool {
     use yas::libraries::liquidity_math::LiquidityMath;
     use yas::libraries::tick::{Tick, Tick::TickImpl};
     use yas::libraries::tick_bitmap::{TickBitmap, TickBitmap::TickBitmapImpl};
-    use yas::libraries::tick_math::TickMath::{get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_TICK, MAX_TICK};
+    use yas::libraries::tick_math::TickMath::{
+        get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_TICK, MAX_TICK
+    };
     use yas::libraries::position::{Position, Position::PositionImpl, PositionKey, Info};
     use yas::libraries::swap_math::SwapMath;
     use yas::numbers::fixed_point::implementations::impl_64x96::{
