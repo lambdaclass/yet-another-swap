@@ -446,10 +446,10 @@ mod YASPool {
             let mut tick_state = Tick::unsafe_new_contract_state();
             let mut position_state = Position::unsafe_new_contract_state();
 
-            let _fee_growth_global_0_X128 = self.fee_growth_global_0_X128.read();
-            let _fee_growth_global_1_X128 = self.fee_growth_global_1_X128.read();
+            let fee_growth_global_0_X128 = self.fee_growth_global_0_X128.read();
+            let fee_growth_global_1_X128 = self.fee_growth_global_1_X128.read();
 
-            let _max_liquidity_per_tick = self.max_liquidity_per_tick.read();
+            let max_liquidity_per_tick = self.max_liquidity_per_tick.read();
 
             // if we need to update the ticks, do it
             let mut flipped_lower = false;
@@ -464,11 +464,11 @@ mod YASPool {
                         position_key.tick_lower,
                         tick,
                         liquidity_delta,
-                        _fee_growth_global_0_X128,
-                        _fee_growth_global_1_X128,
+                        fee_growth_global_0_X128,
+                        fee_growth_global_1_X128,
                         time,
                         false,
-                        _max_liquidity_per_tick
+                        max_liquidity_per_tick
                     );
 
                 flipped_upper =
@@ -477,11 +477,11 @@ mod YASPool {
                         position_key.tick_upper,
                         tick,
                         liquidity_delta,
-                        _fee_growth_global_0_X128,
-                        _fee_growth_global_1_X128,
+                        fee_growth_global_0_X128,
+                        fee_growth_global_1_X128,
                         time,
                         true,
-                        _max_liquidity_per_tick
+                        max_liquidity_per_tick
                     );
             }
 
@@ -503,8 +503,8 @@ mod YASPool {
                 position_key.tick_lower,
                 position_key.tick_upper,
                 tick,
-                _fee_growth_global_0_X128,
-                _fee_growth_global_1_X128
+                fee_growth_global_0_X128,
+                fee_growth_global_1_X128
             );
 
             PositionImpl::update(
