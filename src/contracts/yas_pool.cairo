@@ -20,15 +20,18 @@ mod YASPool {
     use super::IYASPool;
 
     use starknet::{ContractAddress, get_block_timestamp, get_caller_address, get_contract_address};
-    
+
     use yas::libraries::{
         tick::{Tick, Tick::TickImpl}, tick_bitmap::{TickBitmap, TickBitmap::TickBitmapImpl},
-        tick_math::TickMath::{get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_TICK, MAX_TICK}, position::{Position, Position::PositionImpl, PositionKey, Info}
+        tick_math::TickMath::{get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_TICK, MAX_TICK},
+        position::{Position, Position::PositionImpl, PositionKey, Info}
     };
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FixedType, FixedTrait, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable
     };
-    use yas::numbers::signed_integer::{i32::i32, i64::i64, i128::i128, i256::i256, integer_trait::IntegerTrait};
+    use yas::numbers::signed_integer::{
+        i32::i32, i64::i64, i128::i128, i256::i256, integer_trait::IntegerTrait
+    };
     use yas::interfaces::interface_ERC20::{IERC20DispatcherTrait, IERC20Dispatcher};
     use yas::interfaces::interface_yas_swap_callback::{
         IYASSwapCallbackDispatcherTrait, IYASSwapCallbackDispatcher
@@ -430,7 +433,6 @@ mod YASPool {
 
     #[generate_trait]
     impl InternalImpl of InternalTrait {
-
         /// @dev Gets and updates a position with the given liquidity delta
         /// @param owner the owner of the position
         /// @param tick_lower the lower tick of the position's tick range
@@ -568,9 +570,7 @@ mod YASPool {
         }
 
         fn set_fee_growth_globals(
-            ref self: ContractState,
-            fee_growth_global_0_X128: u256,
-            fee_growth_global_1_X128: u256
+            ref self: ContractState, fee_growth_global_0_X128: u256, fee_growth_global_1_X128: u256
         ) {
             self.fee_growth_global_0_X128.write(fee_growth_global_0_X128);
             self.fee_growth_global_1_X128.write(fee_growth_global_1_X128);
