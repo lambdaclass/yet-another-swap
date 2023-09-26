@@ -18,13 +18,13 @@ trait IYASPool<TContractState> {
 #[starknet::contract]
 mod YASPool {
     use super::IYASPool;
+
+    use starknet::{ContractAddress, get_block_timestamp, get_caller_address, get_contract_address};
+
     use yas::interfaces::interface_ERC20::{IERC20DispatcherTrait, IERC20Dispatcher};
     use yas::interfaces::interface_yas_swap_callback::{
         IYASSwapCallbackDispatcherTrait, IYASSwapCallbackDispatcher
     };
-
-    use starknet::{ContractAddress, get_block_timestamp, get_caller_address, get_contract_address};
-
     use yas::libraries::liquidity_math::LiquidityMath;
     use yas::libraries::position::{Info, PositionKey};
     use yas::libraries::sqrt_price_math::SqrtPriceMath;
@@ -32,11 +32,12 @@ mod YASPool {
     use yas::libraries::tick::{Tick, Tick::TickImpl};
     use yas::libraries::tick_bitmap::{TickBitmap, TickBitmap::TickBitmapImpl};
     use yas::libraries::tick_math::TickMath::{
-        get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_SQRT_RATIO, MAX_SQRT_RATIO, MIN_TICK,
-        MAX_TICK
+        get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_TICK, MAX_TICK
     };
+    use yas::libraries::position::{Position, Position::PositionImpl, PositionKey, Info};
+    use yas::libraries::swap_math::SwapMath;
     use yas::numbers::fixed_point::implementations::impl_64x96::{
-        FixedType, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable
+        FixedType, FixedTrait, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable
     };
     use yas::numbers::signed_integer::{
         i32::i32, i64::i64, i128::i128, i256::i256, integer_trait::IntegerTrait
@@ -133,11 +134,11 @@ mod YASPool {
         token_0: ContractAddress,
         token_1: ContractAddress,
         fee: u32,
-        liquidity_per_tick: u128,
+        max_liquidity_per_tick: u128,
         slot_0: Slot0,
         liquidity: u128,
-        fee_growth_global_0X128: u256,
-        fee_growth_global_1X128: u256,
+        fee_growth_global_0_X128: u256,
+        fee_growth_global_1_X128: u256,
         protocol_fees: ProtocolFees,
         tick_spacing: i32,
         unlocked: bool
@@ -156,12 +157,13 @@ mod YASPool {
         self.token_0.write(token_0);
         self.token_1.write(token_1);
         self.fee.write(fee);
+        self.tick_spacing.write(tick_spacing);
 
         //TODO: temporary component syntax
-        let state_tick = Tick::unsafe_new_contract_state();
+        let state = Tick::unsafe_new_contract_state();
         self
-            .liquidity_per_tick
-            .write(TickImpl::tick_spacing_to_max_liquidity_per_tick(@state_tick, tick_spacing));
+            .max_liquidity_per_tick
+            .write(TickImpl::tick_spacing_to_max_liquidity_per_tick(@state, tick_spacing));
     }
 
     #[external(v0)]
@@ -229,9 +231,9 @@ mod YASPool {
                 sqrt_price_X96: slot_0_start.sqrt_price_X96,
                 tick: slot_0_start.tick,
                 fee_growth_global_X128: if zero_for_one {
-                    self.fee_growth_global_0X128.read()
+                    self.fee_growth_global_0_X128.read()
                 } else {
-                    self.fee_growth_global_1X128.read()
+                    self.fee_growth_global_1_X128.read()
                 },
                 protocol_fee: 0,
                 liquidity: cache.liquidity_start
@@ -321,10 +323,10 @@ mod YASPool {
                             if zero_for_one {
                                 state.fee_growth_global_X128
                             } else {
-                                self.fee_growth_global_0X128.read()
+                                self.fee_growth_global_0_X128.read()
                             },
                             if zero_for_one {
-                                self.fee_growth_global_1X128.read()
+                                self.fee_growth_global_1_X128.read()
                             } else {
                                 state.fee_growth_global_X128
                             },
@@ -371,14 +373,14 @@ mod YASPool {
             // update fee growth global and, if necessary, protocol fees
             // overflow is acceptable, protocol has to withdraw before it hits type(uint128).max fees
             if zero_for_one {
-                self.fee_growth_global_0X128.write(state.fee_growth_global_X128);
+                self.fee_growth_global_0_X128.write(state.fee_growth_global_X128);
                 if state.protocol_fee > 0 {
                     let mut protocol_fees = self.protocol_fees.read();
                     protocol_fees.token_0 += state.protocol_fee;
                     self.protocol_fees.write(protocol_fees);
                 }
             } else {
-                self.fee_growth_global_1X128.write(state.fee_growth_global_X128);
+                self.fee_growth_global_1_X128.write(state.fee_growth_global_X128);
                 if state.protocol_fee > 0 {
                     let mut protocol_fees = self.protocol_fees.read();
                     protocol_fees.token_1 += state.protocol_fee;
@@ -447,17 +449,95 @@ mod YASPool {
         /// @param tick_lower the lower tick of the position's tick range
         /// @param tick_upper the upper tick of the position's tick range
         /// @param tick the current tick, passed to avoid sloads
-        // TODO: mock
         fn update_position(
             self: @ContractState, position_key: PositionKey, liquidity_delta: i128, tick: i32
         ) -> Info {
-            Info {
-                liquidity: 100,
-                fee_growth_inside_0_last_X128: 20,
-                fee_growth_inside_1_last_X128: 20,
-                tokens_owed_0: 10,
-                tokens_owed_1: 10,
+            let mut tick_bitmap_state = TickBitmap::unsafe_new_contract_state();
+            let mut tick_state = Tick::unsafe_new_contract_state();
+            let mut position_state = Position::unsafe_new_contract_state();
+
+            let fee_growth_global_0_X128 = self.fee_growth_global_0_X128.read();
+            let fee_growth_global_1_X128 = self.fee_growth_global_1_X128.read();
+
+            let max_liquidity_per_tick = self.max_liquidity_per_tick.read();
+
+            // if we need to update the ticks, do it
+            let mut flipped_lower = false;
+            let mut flipped_upper = false;
+
+            if liquidity_delta.is_non_zero() {
+                let time = get_block_timestamp();
+
+                flipped_lower =
+                    TickImpl::update(
+                        ref tick_state,
+                        position_key.tick_lower,
+                        tick,
+                        liquidity_delta,
+                        fee_growth_global_0_X128,
+                        fee_growth_global_1_X128,
+                        time,
+                        false,
+                        max_liquidity_per_tick
+                    );
+
+                flipped_upper =
+                    TickImpl::update(
+                        ref tick_state,
+                        position_key.tick_upper,
+                        tick,
+                        liquidity_delta,
+                        fee_growth_global_0_X128,
+                        fee_growth_global_1_X128,
+                        time,
+                        true,
+                        max_liquidity_per_tick
+                    );
             }
+
+            if flipped_lower {
+                TickBitmapImpl::flip_tick(
+                    ref tick_bitmap_state, position_key.tick_lower, self.tick_spacing.read()
+                );
+            }
+
+            if flipped_upper {
+                TickBitmapImpl::flip_tick(
+                    ref tick_bitmap_state, position_key.tick_upper, self.tick_spacing.read()
+                );
+            }
+
+            let (fee_growth_inside_0_X128, fee_growth_inside_1_X128) =
+                TickImpl::get_fee_growth_inside(
+                @tick_state,
+                position_key.tick_lower,
+                position_key.tick_upper,
+                tick,
+                fee_growth_global_0_X128,
+                fee_growth_global_1_X128
+            );
+
+            PositionImpl::update(
+                ref position_state,
+                position_key,
+                liquidity_delta,
+                fee_growth_inside_0_X128,
+                fee_growth_inside_1_X128
+            );
+
+            // clear any tick data that is no longer needed
+            if liquidity_delta < Zeroable::zero() {
+                if flipped_lower {
+                    TickImpl::clear(ref tick_state, position_key.tick_lower);
+                }
+
+                if flipped_upper {
+                    TickImpl::clear(ref tick_state, position_key.tick_upper);
+                }
+            }
+
+            // read again to obtain Info with changes in the update step
+            PositionImpl::get(@position_state, position_key)
         }
 
         /// @dev Effect some changes to a position
@@ -524,6 +604,48 @@ mod YASPool {
                 }
             }
             (position, amount_0, amount_1)
+        }
+
+        // These functions are solely for testing purposes. In these cases, we access the states of
+        // the contracts to configure them before performing any specific tests. It is also
+        // possible to validate whether the storage of these contracts was modified correctly
+        fn get_bitmap_state(self: ContractState) -> TickBitmap::ContractState {
+            TickBitmap::unsafe_new_contract_state()
+        }
+
+        fn get_tick_state(self: ContractState) -> Tick::ContractState {
+            Tick::unsafe_new_contract_state()
+        }
+
+        fn get_position_state(self: ContractState) -> Position::ContractState {
+            Position::unsafe_new_contract_state()
+        }
+
+        fn set_tokens(ref self: ContractState, token_0: ContractAddress, token_1: ContractAddress) {
+            self.token_0.write(token_0);
+            self.token_1.write(token_1);
+        }
+        fn set_fee(ref self: ContractState, fee: u32) {
+            self.fee.write(fee);
+        }
+
+        fn set_max_liquidity_per_tick(ref self: ContractState, max_liquidity_per_tick: u128) {
+            self.max_liquidity_per_tick.write(max_liquidity_per_tick);
+        }
+
+        fn set_tick_spacing(ref self: ContractState, tick_spacing: i32) {
+            self.tick_spacing.write(tick_spacing);
+        }
+
+        fn set_slot_0(ref self: ContractState, slot_0: Slot0) {
+            self.slot_0.write(slot_0);
+        }
+
+        fn set_fee_growth_globals(
+            ref self: ContractState, fee_growth_global_0_X128: u256, fee_growth_global_1_X128: u256
+        ) {
+            self.fee_growth_global_0_X128.write(fee_growth_global_0_X128);
+            self.fee_growth_global_1_X128.write(fee_growth_global_1_X128);
         }
 
         fn get_slot_0(self: @ContractState) -> Slot0 {
