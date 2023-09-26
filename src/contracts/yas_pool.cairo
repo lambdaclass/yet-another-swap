@@ -117,6 +117,24 @@ mod YASPool {
             self.slot_0.read()
         }
 
+        /// @dev Gets and updates a position with the given liquidity delta
+        /// @param owner the owner of the position
+        /// @param tick_lower the lower tick of the position's tick range
+        /// @param tick_upper the upper tick of the position's tick range
+        /// @param tick the current tick, passed to avoid sloads
+        // TODO: mock
+        fn update_position(
+            self: @ContractState, position_key: PositionKey, liquidity_delta: i128, tick: i32
+        ) -> Info {
+            Info {
+                liquidity: 100,
+                fee_growth_inside_0_last_X128: 20,
+                fee_growth_inside_1_last_X128: 20,
+                tokens_owed_0: 10,
+                tokens_owed_1: 10,
+            }
+        }
+
         /// @dev Effect some changes to a position
         /// @param params the position details and the change to the position's liquidity to effect
         /// @return position a storage pointer referencing the position with the given owner and tick range
@@ -135,13 +153,8 @@ mod YASPool {
 
             let slot_0 = self.slot_0.read();
 
-            let position = update_position(
-                params.position_key.owner,
-                params.position_key.tick_lower,
-                params.position_key.tick_upper,
-                params.liquidity_delta,
-                slot_0.tick
-            );
+            let position = self
+                .update_position(params.position_key, params.liquidity_delta, slot_0.tick);
 
             let mut amount_0 = Zeroable::zero();
             let mut amount_1 = Zeroable::zero();
@@ -201,18 +214,5 @@ mod YASPool {
             return Result::Err('TUM');
         }
         Result::Ok(())
-    }
-
-    // TODO: mock
-    fn update_position(
-        owner: ContractAddress, tick_lower: i32, tick_upper: i32, liquidity_delta: i128, tick: i32
-    ) -> Info {
-        Info {
-            liquidity: 100,
-            fee_growth_inside_0_last_X128: 20,
-            fee_growth_inside_1_last_X128: 20,
-            tokens_owed_0: 10,
-            tokens_owed_1: 10,
-        }
     }
 }
