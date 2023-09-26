@@ -26,7 +26,7 @@ mod YASPool {
         IYASSwapCallbackDispatcherTrait, IYASSwapCallbackDispatcher
     };
     use yas::libraries::liquidity_math::LiquidityMath;
-    use yas::libraries::position::{Info, PositionKey};
+    use yas::libraries::position::{Position, Position::PositionImpl, PositionKey, Info};
     use yas::libraries::sqrt_price_math::SqrtPriceMath;
     use yas::libraries::swap_math::SwapMath;
     use yas::libraries::tick::{Tick, Tick::TickImpl};
@@ -34,8 +34,6 @@ mod YASPool {
     use yas::libraries::tick_math::TickMath::{
         get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_TICK, MAX_TICK
     };
-    use yas::libraries::position::{Position, Position::PositionImpl, PositionKey, Info};
-    use yas::libraries::swap_math::SwapMath;
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FixedType, FixedTrait, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable
     };
