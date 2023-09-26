@@ -442,7 +442,6 @@ mod YASPool {
 
     #[generate_trait]
     impl InternalImpl of InternalTrait {
-
         /// @dev Gets and updates a position with the given liquidity delta
         /// @param owner the owner of the position
         /// @param tick_lower the lower tick of the position's tick range
@@ -490,8 +489,8 @@ mod YASPool {
                     // right, when we'll need _more_ token0 (it's becoming more valuable) so user must provide it
                     amount_0 =
                         SqrtPriceMath::get_amount_0_delta_signed_token(
-                            TickMath::get_sqrt_ratio_at_tick(params.position_key.tick_lower),
-                            TickMath::get_sqrt_ratio_at_tick(params.position_key.tick_upper),
+                            get_sqrt_ratio_at_tick(params.position_key.tick_lower),
+                            get_sqrt_ratio_at_tick(params.position_key.tick_upper),
                             params.liquidity_delta
                         );
                 } else if slot_0.tick < params.position_key.tick_upper {
@@ -500,12 +499,12 @@ mod YASPool {
                     amount_0 =
                         SqrtPriceMath::get_amount_0_delta_signed_token(
                             slot_0.sqrt_price_X96,
-                            TickMath::get_sqrt_ratio_at_tick(params.position_key.tick_upper),
+                            get_sqrt_ratio_at_tick(params.position_key.tick_upper),
                             params.liquidity_delta
                         );
                     amount_1 =
                         SqrtPriceMath::get_amount_1_delta_signed_token(
-                            TickMath::get_sqrt_ratio_at_tick(params.position_key.tick_lower),
+                            get_sqrt_ratio_at_tick(params.position_key.tick_lower),
                             slot_0.sqrt_price_X96,
                             params.liquidity_delta
                         );
@@ -518,8 +517,8 @@ mod YASPool {
                     // left, when we'll need _more_ token1 (it's becoming more valuable) so user must provide it
                     amount_1 =
                         SqrtPriceMath::get_amount_1_delta_signed_token(
-                            TickMath::get_sqrt_ratio_at_tick(params.position_key.tick_lower),
-                            TickMath::get_sqrt_ratio_at_tick(params.position_key.tick_upper),
+                            get_sqrt_ratio_at_tick(params.position_key.tick_lower),
+                            get_sqrt_ratio_at_tick(params.position_key.tick_upper),
                             params.liquidity_delta
                         );
                 }
@@ -562,10 +561,10 @@ mod YASPool {
         if !(tick_lower < tick_upper) {
             return Result::Err('TLU');
         }
-        if !(tick_lower >= TickMath::MIN_TICK()) {
+        if !(tick_lower >= MIN_TICK()) {
             return Result::Err('TLM');
         }
-        if !(tick_upper <= TickMath::MAX_TICK()) {
+        if !(tick_upper <= MAX_TICK()) {
             return Result::Err('TUM');
         }
         Result::Ok(())
