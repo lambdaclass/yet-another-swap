@@ -42,7 +42,6 @@ impl Slot0PartialEq of PartialEq<Slot0> {
         (*lhs.sqrt_price_X96) == (*rhs.sqrt_price_X96)
             && (*lhs.tick) == (*rhs.tick)
             && lhs.fee_protocol == rhs.fee_protocol
-            && lhs.unlocked == rhs.unlocked
     }
     #[inline(always)]
     fn ne(lhs: @Slot0, rhs: @Slot0) -> bool {

@@ -157,6 +157,19 @@ impl i64Neg of Neg<i64> {
     }
 }
 
+impl i64Zeroable of Zeroable<i64> {
+    fn zero() -> i64 {
+        IntegerTrait::<i64>::new(0, false)
+    }
+    #[inline(always)]
+    fn is_zero(self: i64) -> bool {
+        self == i64Zeroable::zero()
+    }
+    #[inline(always)]
+    fn is_non_zero(self: i64) -> bool {
+        self != i64Zeroable::zero()
+    }
+}
 
 // Checks if the given i64 integer is zero and has the correct sign.
 // # Arguments
