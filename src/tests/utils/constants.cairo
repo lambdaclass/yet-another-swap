@@ -67,6 +67,10 @@ mod PoolConstants {
         contract_address_const::<'OWNER'>()
     }
 
+    fn CALLER() -> ContractAddress {
+        contract_address_const::<'CALLER'>()
+    }
+
     fn FACTORY_ADDRESS() -> ContractAddress {
         contract_address_const::<'FACTORY'>()
     }

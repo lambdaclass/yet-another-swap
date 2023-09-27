@@ -16,8 +16,6 @@ mod YASPoolTests {
     };
     use yas::tests::utils::constants::PoolConstants::OWNER;
 
-    use debug::PrintTrait;
-
     fn deploy(
         factory: ContractAddress,
         token_0: ContractAddress,
@@ -466,6 +464,146 @@ mod YASPoolTests {
                 },
             }
         }
+    }
+
+    mod Swap {
+        use super::{deploy, mock_contract_states};
+
+        use starknet::{ContractAddress, SyscallResultTrait, contract_address_const};
+        use starknet::syscalls::deploy_syscall;
+
+        use yas::contracts::yas_pool::{
+            YASPool, YASPool::ContractState, YASPool::YASPoolImpl, YASPool::InternalImpl, IYASPool,
+            IYASPoolDispatcher, IYASPoolDispatcherTrait
+        };
+        use yas::numbers::fixed_point::implementations::impl_64x96::{
+            FP64x96Impl, FixedType, FixedTrait
+        };
+        use yas::libraries::tick::{Tick, Tick::TickImpl};
+        use yas::libraries::tick_math::{TickMath::MIN_TICK, TickMath::MAX_TICK};
+        use yas::libraries::position::{Info, Position, Position::PositionImpl, PositionKey};
+        use yas::tests::utils::constants::PoolConstants::{CALLER, TOKEN_A, TOKEN_B};
+        use yas::tests::utils::erc20::{ERC20, ERC20::ERC20Impl, IERC20Dispatcher};
+        use starknet::testing::{pop_log, set_contract_address};
+
+        use debug::PrintTrait;
+
+        fn deploy_erc20(
+            name: felt252, symbol: felt252
+        ) -> IERC20Dispatcher {
+            let mut calldata = array![name, symbol];
+            Serde::serialize(@u256 {high: 0, low: 1}, ref calldata);
+            calldata.append(POOL_ADDRESS().into());
+
+            let (address, _) = deploy_syscall(
+                ERC20::TEST_CLASS_HASH.try_into().unwrap(),
+                0,
+                calldata.span(),
+                true
+            )
+                .unwrap_syscall();
+
+            return IERC20Dispatcher { contract_address: address };
+        }
+
+        fn POOL_ADDRESS() -> ContractAddress  {
+            contract_address_const::<'CALLER'>()
+        }
+
+        fn before_each() -> YASPool::ContractState {
+            set_contract_address(POOL_ADDRESS());
+            let mut pool_state = YASPool::contract_state_for_testing();
+            let token_0 = deploy_erc20('YAS0', '$YAS0');
+            let token_1 = deploy_erc20('YAS1', '$YAS1');
+
+            // let encode_price_sqrt_1_10 = FP64x96Impl::new(25054144837504793118641380156, false);
+            'CONTRACT TOKEN_0:'.print();
+            token_0.contract_address.print();
+            token_1.contract_address.print();
+            pool_state.set_tokens(token_0.contract_address, token_1.contract_address);
+            pool_state.set_fee(500);
+            pool_state.set_fee(10);
+            pool_state.set_max_liquidity_per_tick(20000);
+
+            // YASPoolImpl::initialize(ref pool_state, encode_price_sqrt_1_10);
+            // YASPoolImpl::mint(ref pool_state, CALLER(), MIN_TICK(), MAX_TICK(), 3161, array![]);
+
+            pool_state
+        }
+        // TODO: 'fails if not initialized'
+        // TODO: 'initialize the pool at price of 10:1'
+
+        mod FailureCases {
+            use super::{before_each, mock_contract_states};
+
+            // TODO: 'fails if tickLower greater than tickUpper'
+            #[test]
+            #[available_gas(2000000)]
+            fn test_fails_tick_lower_greater_than_tick_upper() {
+            }
+            // TODO: 'fails if tickLower less than min tick'
+            // TODO: 'fails if tickUpper greater than max tick'
+            // TODO: 'fails if amount exceeds the max'
+            // TODO: 'fails if total amount at tick exceeds the max'
+            // TODO: 'fails if amount is 0'
+        }
+
+        mod SuccessCases {
+            // TODO: 'initial balances'
+            // TODO: 'initial tick'
+            mod AboveCurrentPrice {
+                use super::super::{before_each, mock_contract_states, POOL_ADDRESS};
+
+                use yas::contracts::yas_pool::{
+                    YASPool, YASPool::ContractState, YASPool::InternalImpl
+                };
+
+                use starknet::testing::{pop_log, set_contract_address};
+                use yas::tests::utils::constants::PoolConstants::CALLER;
+                
+                use debug::PrintTrait;
+                // TODO: 'transfers token0 only'
+                #[test]
+                #[available_gas(20000000)]
+                fn test_transfers_token_0_only() {
+                    let pool_state = before_each();
+                    set_contract_address(POOL_ADDRESS());
+                    let balance_token_0 = YASPool::InternalImpl::balance_0(@pool_state);
+                    let balance_token_1 = YASPool::InternalImpl::balance_1(@pool_state);
+
+                    'balance_token_0'.print();
+                    balance_token_0.print();
+                    'balance_token_1'.print();
+                    balance_token_1.print();
+                    assert(balance_token_0 == 9996, 'wrong balance token 0');
+                    assert(balance_token_1 == 1000, 'wrong balance token 1');
+                }
+                // TODO: 'max tick with max leverage'
+                // TODO: 'works for max tick'
+                // TODO: 'removing works'
+                // TODO: 'adds liquidity to liquidityGross'
+                // TODO: 'removes liquidity from liquidityGross'
+                // TODO: 'clears tick lower if last position is removed'
+                // TODO: 'clears tick upper if last position is removed'
+                // TODO: 'only clears the tick that is not used at all'
+            }
+
+            mod IncludingCurrentPrice {// TODO: 'price within range: transfers current price of both tokens'
+            // TODO: 'initializes lower tick'
+            // TODO: 'initializes upper tick'
+            // TODO: 'works for min/max tick'
+            // TODO: 'removing works'
+            }
+
+            mod BelowCurrentPrice {// TODO: 'transfers token1 only'
+            // TODO: 'min tick with max leverage'
+            // TODO: 'works for min tick'
+            // TODO: 'removing works'
+            }
+        }
+    // TODO: 'protocol fees accumulate as expected during swap'
+    // TODO: 'positions are protected before protocol fee is turned on'
+    // TODO: 'poke is not allowed on uninitialized position'
     }
 
     fn init_default(ref pool_state: ContractState) {
