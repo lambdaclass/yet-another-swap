@@ -166,8 +166,13 @@ On Starknet, the deployment process is in two steps:
     make build
     ```
 
-2. Declare and Deploy: Using [deploy.rs](./scripts/deploy.rs) script, we
-   sequentially declare and deploy the contracts
+2. Start Local Testnet
+    ```bash
+    make start-katana
+    ```
+3. Declare and Deploy: Using [deploy.rs](./scripts/deploy.rs) script, we
+   sequentially declare and deploy the contracts. Local deployment needs
+   `katana` running. The account used for deployment is a pre-funded one.
 
 -   When running in development for the first time
 
@@ -175,7 +180,7 @@ On Starknet, the deployment process is in two steps:
     ./scripts/make_with_env.sh deploy
     ```
 
--   After filling [.env](./.env) file
+-   After the [.env](./.env) file is created, you may edit the values and run
 
     ```bash
     make deploy

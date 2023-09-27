@@ -66,8 +66,6 @@ trait ITick<TContractState> {
         liquidity_delta: i128,
         fee_growth_global_0X128: u256,
         fee_growth_global_1X128: u256,
-        seconds_per_liquidity_cumulative_X128: u256,
-        tick_cumulative: i64,
         time: u64,
         upper: bool,
         max_liquidity: u128
@@ -123,12 +121,13 @@ mod Tick {
         }
 
         /// @notice Transitions to next tick as needed by price movement
+        /// The parameters seconds_per_liquidity_cumulative_X128 and tick_cumulative 
+        /// were removed because the module related to the Oracle is not yet implemented
+        ///
         /// @param self The mapping containing all tick information for initialized ticks
         /// @param tick The destination tick of the transition
         /// @param fee_growth_global_0X128 The all-time global fee growth, per unit of liquidity, in token0
         /// @param fee_growth_global_1X128 The all-time global fee growth, per unit of liquidity, in token1
-        /// @param seconds_per_liquidity_cumulative_X128 The current seconds per liquidity
-        /// @param tick_cumulative The tick * time elapsed since the pool was first initialized
         /// @param time The current block.timestamp
         /// @return liquidity_net The amount of liquidity added (subtracted) when tick is crossed from left to right (right to left)
         fn cross(
@@ -229,8 +228,6 @@ mod Tick {
             liquidity_delta: i128,
             fee_growth_global_0X128: u256,
             fee_growth_global_1X128: u256,
-            seconds_per_liquidity_cumulative_X128: u256,
-            tick_cumulative: i64,
             time: u64,
             upper: bool,
             max_liquidity: u128
@@ -242,7 +239,6 @@ mod Tick {
             let liquidity_gross_after: u128 = LiquidityMath::add_delta(
                 liquidity_gross_before, liquidity_delta
             );
-
             assert(liquidity_gross_after <= max_liquidity, 'LO');
 
             let flipped = (liquidity_gross_after == 0) != (liquidity_gross_before == 0);
@@ -252,8 +248,6 @@ mod Tick {
                 if (tick <= tick_current) {
                     info.fee_growth_outside_0X128 = fee_growth_global_0X128;
                     info.fee_growth_outside_1X128 = fee_growth_global_1X128;
-                    info.seconds_per_liquidity_outside_X128 = seconds_per_liquidity_cumulative_X128;
-                    info.tick_cumulative_outside = tick_cumulative;
                     info.seconds_outside = time;
                 }
                 info.initialized = true;
@@ -280,6 +274,18 @@ mod Tick {
         fn set_tick(ref self: ContractState, tick: i32, info: Info) {
             let hashed_tick = PoseidonTrait::new().update_with(tick).finalize();
             self.ticks.write(hashed_tick, info);
+        }
+
+        fn set_ticks(ref self: ContractState, ticks: Array<i32>, ticks_info: Array<Info>) {
+            assert(ticks.len() == ticks_info.len(), 'ticks & info must have same len');
+            let mut i = 0;
+            loop {
+                if i > ticks.len() - 1 {
+                    break;
+                }
+                InternalImpl::set_tick(ref self, *(ticks.at(i)), *(ticks_info.at(i)));
+                i += 1;
+            };
         }
 
         fn get_tick(self: @ContractState, tick: i32) -> Info {

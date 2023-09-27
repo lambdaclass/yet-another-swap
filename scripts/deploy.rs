@@ -150,7 +150,7 @@ async fn main() -> Result<()> {
     println!("Contract Address: {}", format!("{:#064x}", deployed_address));
 
     // Estimate the deployment fee and deploy the contract.
-    let estimated_fee = contract_deployment.estimate_fee().await?.overall_fee;
+    let estimated_fee = contract_deployment.estimate_fee().await?.overall_fee * 3 / 2; // add buffer
     let tx = contract_deployment.max_fee(estimated_fee.into()).send().await?.transaction_hash;
     println!("Transaction Hash: {}", format!("{:#064x}", tx));
 

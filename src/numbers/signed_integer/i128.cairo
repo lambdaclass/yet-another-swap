@@ -47,6 +47,12 @@ impl i32Into of Into<i128, felt252> {
     }
 }
 
+impl u128Intoi128 of Into<u128, i128> {
+    fn into(self: u128) -> i128 {
+        IntegerTrait::<i128>::new(self, false)
+    }
+}
+
 // Implements the Add trait for i128.
 impl i128Add of Add<i128> {
     fn add(lhs: i128, rhs: i128) -> i128 {
@@ -154,6 +160,20 @@ impl i128PartialOrd of PartialOrd<i128> {
 impl i128Neg of Neg<i128> {
     fn neg(a: i128) -> i128 {
         i128_neg(a)
+    }
+}
+
+impl i128Zeroable of Zeroable<i128> {
+    fn zero() -> i128 {
+        IntegerTrait::<i128>::new(0, false)
+    }
+    #[inline(always)]
+    fn is_zero(self: i128) -> bool {
+        self == Zeroable::zero()
+    }
+    #[inline(always)]
+    fn is_non_zero(self: i128) -> bool {
+        self != Zeroable::zero()
     }
 }
 
