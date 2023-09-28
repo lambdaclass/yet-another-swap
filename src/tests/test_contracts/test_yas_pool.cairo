@@ -472,6 +472,7 @@ mod YASPoolTests {
 
         use starknet::{ContractAddress, SyscallResultTrait, contract_address_const};
         use starknet::syscalls::deploy_syscall;
+        use starknet::testing::{set_contract_address, set_caller_address};
 
         use yas::contracts::yas_pool::{
             YASPool, YASPool::ContractState, YASPool::YASPoolImpl, YASPool::InternalImpl, IYASPool,
@@ -483,11 +484,13 @@ mod YASPoolTests {
         use yas::libraries::tick::{Tick, Tick::TickImpl};
         use yas::libraries::tick_math::{TickMath::MIN_TICK, TickMath::MAX_TICK};
         use yas::libraries::position::{Info, Position, Position::PositionImpl, PositionKey};
+        use yas::tests::yas_mint_callback::{YASMintCallback, IYASMintCallbackDispatcher, IYASMintCallbackDispatcherTrait};
         use yas::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B};
         use yas::tests::utils::constants::FactoryConstants::{FeeAmount, fee_amount, tick_spacing};
         use yas::tests::utils::erc20::{ERC20, ERC20::ERC20Impl, IERC20Dispatcher};
-        use starknet::testing::set_contract_address;
-        use yas::numbers::signed_integer::{i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait};
+        use yas::numbers::signed_integer::{
+            i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
+        };
         use debug::PrintTrait;
 
         fn deploy_erc20(
@@ -505,6 +508,15 @@ mod YASPoolTests {
             return IERC20Dispatcher { contract_address: address };
         }
 
+        fn deploy_mint_callback() -> IYASMintCallbackDispatcher {
+            let (address, _) = deploy_syscall(
+                YASMintCallback::TEST_CLASS_HASH.try_into().unwrap(), 0, array![].span(), true
+            )
+                .unwrap_syscall();
+
+            return IYASMintCallbackDispatcher { contract_address: address };
+        }
+
         fn POOL_ADDRESS() -> ContractAddress {
             contract_address_const::<'POOL_ADDRESS'>()
         }
@@ -518,24 +530,25 @@ mod YASPoolTests {
 
             let encode_price_sqrt_1_10 = FP64x96Impl::new(25054144837504793118641380156, false);
             let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
-        
+
             pool_state.set_tokens(token_0.contract_address, token_1.contract_address);
             pool_state.set_fee(fee_amount(FeeAmount::MEDIUM));
             pool_state.set_tick_spacing(tick_spacing);
             pool_state
                 .set_max_liquidity_per_tick(
-                    TickImpl::tick_spacing_to_max_liquidity_per_tick(
-                        @tick_state, tick_spacing
-                    )
+                    TickImpl::tick_spacing_to_max_liquidity_per_tick(@tick_state, tick_spacing)
                 );
 
             YASPoolImpl::initialize(ref pool_state, encode_price_sqrt_1_10);
             let min_tick = i32_div_no_round(MIN_TICK(), tick_spacing) * tick_spacing;
             let max_tick = i32_div_no_round(MAX_TICK(), tick_spacing) * tick_spacing;
-
-            YASPoolImpl::mint(
-                ref pool_state, POOL_ADDRESS(), min_tick, max_tick, 3161, array![]
-            );
+            
+            let mint_callback_contract = deploy_mint_callback(); 
+                    
+            // mock get_contract_address() syscall
+            set_caller_address(mint_callback_contract.contract_address);
+            set_contract_address(POOL_ADDRESS());
+            YASPoolImpl::mint(ref pool_state, POOL_ADDRESS(), min_tick, max_tick, 3161, array![]);
             'aft'.print();
 
             pool_state
@@ -561,13 +574,13 @@ mod YASPoolTests {
             // TODO: 'initial balances'
             // TODO: 'initial tick'
             mod AboveCurrentPrice {
-                use super::super::{before_each, mock_contract_states, POOL_ADDRESS};
+                use super::super::{before_each, mock_contract_states, deploy_mint_callback, POOL_ADDRESS};
 
                 use yas::contracts::yas_pool::{
                     YASPool, YASPool::ContractState, YASPool::InternalImpl
                 };
 
-                use starknet::testing::{pop_log, set_contract_address};
+                use starknet::testing::{set_contract_address, set_caller_address};
                 use yas::tests::utils::constants::PoolConstants::CALLER;
 
                 use debug::PrintTrait;
@@ -575,10 +588,9 @@ mod YASPoolTests {
                 #[test]
                 #[available_gas(200000000)]
                 fn test_transfers_token_0_only() {
-                    let pool_state = before_each();
-
-                    // mock get_contract_address() syscall
-                    set_contract_address(POOL_ADDRESS());
+                    // let pool_state = before_each();
+                    let pool_state = YASPool::contract_state_for_testing();
+               
 
                     // ask balance of Pool address
                     let balance_token_0 = YASPool::InternalImpl::balance_0(@pool_state);
