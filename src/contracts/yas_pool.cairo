@@ -56,6 +56,9 @@ mod YASPool {
     use yas::utils::math_utils::FullMath;
     use yas::utils::math_utils::BitShift::BitShiftTrait;
 
+    // TODO: REMOVE
+    use debug::PrintTrait;
+
     #[event]
     #[derive(Drop, starknet::Event)]
     enum Event {
@@ -471,9 +474,11 @@ mod YASPool {
             amount: u128,
             data: Array<felt252>
         ) -> (u256, u256) {
+            'self.check_and_lock()'.print();
             self.check_and_lock();
 
             assert(amount > 0, 'amount must be greater than 0');
+            'self.modify_position()'.print();
             let (_, amount_0, amount_1) = self
                 .modify_position(
                     ModifyPositionParams {
@@ -482,6 +487,7 @@ mod YASPool {
                     }
                 );
 
+            'amount_0'.print();
             let amount_0: u256 = amount_0.try_into().unwrap();
             let amount_1: u256 = amount_1.try_into().unwrap();
 
@@ -491,25 +497,30 @@ mod YASPool {
                 0
             };
 
+            'balance_1_before'.print();
             let balance_1_before = if amount_1 > 0 {
                 self.balance_1()
             } else {
                 0
             };
 
+            'callback_contract'.print();
             let callback_contract = get_caller_address();
             assert(is_valid_callback_contract(callback_contract), 'invalid callback_contract');
             let dispatcher = IYASMintCallbackDispatcher { contract_address: callback_contract };
             dispatcher.yas_mint_callback(amount_0, amount_1, data);
 
+            'amount_0 > 0'.print();
             if amount_0 > 0 {
                 assert(balance_0_before + amount_0 <= self.balance_0(), 'M0');
             }
 
+            'amount_1 > 0'.print();
             if amount_1 > 0 {
                 assert(balance_1_before + amount_1 <= self.balance_1(), 'M1');
             }
 
+            'emit'.print();
             self
                 .emit(
                     Mint {
@@ -579,19 +590,21 @@ mod YASPool {
                         max_liquidity_per_tick
                     );
             }
-
+            'flipped_lower'.print();
             if flipped_lower {
                 TickBitmapImpl::flip_tick(
                     ref tick_bitmap_state, position_key.tick_lower, self.tick_spacing.read()
                 );
             }
 
+            'flipped_upper'.print();
             if flipped_upper {
                 TickBitmapImpl::flip_tick(
                     ref tick_bitmap_state, position_key.tick_upper, self.tick_spacing.read()
                 );
             }
 
+            'get_fee_growth_inside'.print();
             let (fee_growth_inside_0_X128, fee_growth_inside_1_X128) =
                 TickImpl::get_fee_growth_inside(
                 @tick_state,
@@ -602,6 +615,7 @@ mod YASPool {
                 fee_growth_global_1_X128
             );
 
+            'PositionImpl::update'.print();
             PositionImpl::update(
                 ref position_state,
                 position_key,
@@ -610,6 +624,7 @@ mod YASPool {
                 fee_growth_inside_1_X128
             );
 
+            'liquidity_delta < zero'.print();
             // clear any tick data that is no longer needed
             if liquidity_delta < Zeroable::zero() {
                 if flipped_lower {
@@ -621,6 +636,10 @@ mod YASPool {
                 }
             }
 
+            'PositionImpl::get'.print();
+            position_key.owner.print();
+            position_key.tick_lower.mag.print();
+            position_key.tick_upper.mag.print();
             // read again to obtain Info with changes in the update step
             PositionImpl::get(@position_state, position_key)
         }
@@ -642,14 +661,18 @@ mod YASPool {
             }
 
             let slot_0 = self.slot_0.read();
-
+            'update_position()'.print();
             let position = self
                 .update_position(params.position_key, params.liquidity_delta, slot_0.tick);
+            'aft update_position()'.print();
 
             let mut amount_0 = Zeroable::zero();
             let mut amount_1 = Zeroable::zero();
+            'params.liquidity_delta'.print();
             if params.liquidity_delta.is_non_zero() {
                 if slot_0.tick < params.position_key.tick_lower {
+                    'slot_0.tick < pos_key.lower'.print();
+
                     // current tick is below the passed range; liquidity can only become in range by crossing from left to
                     // right, when we'll need _more_ token0 (it's becoming more valuable) so user must provide it
                     amount_0 =
@@ -660,6 +683,7 @@ mod YASPool {
                         );
                 } else if slot_0.tick < params.position_key.tick_upper {
                     // current tick is inside the passed range
+                    'slot_0.tick < pos_key.t_upper'.print();
 
                     amount_0 =
                         SqrtPriceMath::get_amount_0_delta_signed_token(
@@ -675,6 +699,7 @@ mod YASPool {
                         );
 
                     let mut liquidity = self.liquidity.read();
+                    'LiquidityMath::add_delta'.print();
                     liquidity = LiquidityMath::add_delta(liquidity, params.liquidity_delta);
                     self.liquidity.write(liquidity);
                 } else {

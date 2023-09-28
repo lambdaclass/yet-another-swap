@@ -467,6 +467,7 @@ mod YASPoolTests {
     }
 
     mod Swap {
+        use yas::contracts::yas_pool::YASPool::InternalTrait;
         use super::{deploy, mock_contract_states};
 
         use starknet::{ContractAddress, SyscallResultTrait, contract_address_const};
@@ -482,51 +483,60 @@ mod YASPoolTests {
         use yas::libraries::tick::{Tick, Tick::TickImpl};
         use yas::libraries::tick_math::{TickMath::MIN_TICK, TickMath::MAX_TICK};
         use yas::libraries::position::{Info, Position, Position::PositionImpl, PositionKey};
-        use yas::tests::utils::constants::PoolConstants::{CALLER, TOKEN_A, TOKEN_B};
+        use yas::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B};
+        use yas::tests::utils::constants::FactoryConstants::{FeeAmount, fee_amount, tick_spacing};
         use yas::tests::utils::erc20::{ERC20, ERC20::ERC20Impl, IERC20Dispatcher};
-        use starknet::testing::{pop_log, set_contract_address};
-
+        use starknet::testing::set_contract_address;
+        use yas::numbers::signed_integer::{i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait};
         use debug::PrintTrait;
 
         fn deploy_erc20(
-            name: felt252, symbol: felt252
+            name: felt252, symbol: felt252, initial_supply: u256, recipent: ContractAddress
         ) -> IERC20Dispatcher {
             let mut calldata = array![name, symbol];
-            Serde::serialize(@u256 {high: 0, low: 1}, ref calldata);
-            calldata.append(POOL_ADDRESS().into());
+            Serde::serialize(@initial_supply, ref calldata);
+            calldata.append(recipent.into());
 
             let (address, _) = deploy_syscall(
-                ERC20::TEST_CLASS_HASH.try_into().unwrap(),
-                0,
-                calldata.span(),
-                true
+                ERC20::TEST_CLASS_HASH.try_into().unwrap(), 0, calldata.span(), true
             )
                 .unwrap_syscall();
 
             return IERC20Dispatcher { contract_address: address };
         }
 
-        fn POOL_ADDRESS() -> ContractAddress  {
-            contract_address_const::<'CALLER'>()
+        fn POOL_ADDRESS() -> ContractAddress {
+            contract_address_const::<'POOL_ADDRESS'>()
         }
 
         fn before_each() -> YASPool::ContractState {
             set_contract_address(POOL_ADDRESS());
             let mut pool_state = YASPool::contract_state_for_testing();
-            let token_0 = deploy_erc20('YAS0', '$YAS0');
-            let token_1 = deploy_erc20('YAS1', '$YAS1');
+            let mut tick_state = YASPool::contract_state_for_testing().get_tick_state();
+            let token_0 = deploy_erc20('YAS0', '$YAS0', 9996, POOL_ADDRESS());
+            let token_1 = deploy_erc20('YAS1', '$YAS1', 1000, POOL_ADDRESS());
 
-            // let encode_price_sqrt_1_10 = FP64x96Impl::new(25054144837504793118641380156, false);
-            'CONTRACT TOKEN_0:'.print();
-            token_0.contract_address.print();
-            token_1.contract_address.print();
+            let encode_price_sqrt_1_10 = FP64x96Impl::new(25054144837504793118641380156, false);
+            let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
+        
             pool_state.set_tokens(token_0.contract_address, token_1.contract_address);
-            pool_state.set_fee(500);
-            pool_state.set_fee(10);
-            pool_state.set_max_liquidity_per_tick(20000);
+            pool_state.set_fee(fee_amount(FeeAmount::MEDIUM));
+            pool_state.set_tick_spacing(tick_spacing);
+            pool_state
+                .set_max_liquidity_per_tick(
+                    TickImpl::tick_spacing_to_max_liquidity_per_tick(
+                        @tick_state, tick_spacing
+                    )
+                );
 
-            // YASPoolImpl::initialize(ref pool_state, encode_price_sqrt_1_10);
-            // YASPoolImpl::mint(ref pool_state, CALLER(), MIN_TICK(), MAX_TICK(), 3161, array![]);
+            YASPoolImpl::initialize(ref pool_state, encode_price_sqrt_1_10);
+            let min_tick = i32_div_no_round(MIN_TICK(), tick_spacing) * tick_spacing;
+            let max_tick = i32_div_no_round(MAX_TICK(), tick_spacing) * tick_spacing;
+
+            YASPoolImpl::mint(
+                ref pool_state, POOL_ADDRESS(), min_tick, max_tick, 3161, array![]
+            );
+            'aft'.print();
 
             pool_state
         }
@@ -539,13 +549,12 @@ mod YASPoolTests {
             // TODO: 'fails if tickLower greater than tickUpper'
             #[test]
             #[available_gas(2000000)]
-            fn test_fails_tick_lower_greater_than_tick_upper() {
-            }
-            // TODO: 'fails if tickLower less than min tick'
-            // TODO: 'fails if tickUpper greater than max tick'
-            // TODO: 'fails if amount exceeds the max'
-            // TODO: 'fails if total amount at tick exceeds the max'
-            // TODO: 'fails if amount is 0'
+            fn test_fails_tick_lower_greater_than_tick_upper() {}
+        // TODO: 'fails if tickLower less than min tick'
+        // TODO: 'fails if tickUpper greater than max tick'
+        // TODO: 'fails if amount exceeds the max'
+        // TODO: 'fails if total amount at tick exceeds the max'
+        // TODO: 'fails if amount is 0'
         }
 
         mod SuccessCases {
@@ -560,14 +569,18 @@ mod YASPoolTests {
 
                 use starknet::testing::{pop_log, set_contract_address};
                 use yas::tests::utils::constants::PoolConstants::CALLER;
-                
+
                 use debug::PrintTrait;
-                // TODO: 'transfers token0 only'
+
                 #[test]
-                #[available_gas(20000000)]
+                #[available_gas(200000000)]
                 fn test_transfers_token_0_only() {
                     let pool_state = before_each();
+
+                    // mock get_contract_address() syscall
                     set_contract_address(POOL_ADDRESS());
+
+                    // ask balance of Pool address
                     let balance_token_0 = YASPool::InternalImpl::balance_0(@pool_state);
                     let balance_token_1 = YASPool::InternalImpl::balance_1(@pool_state);
 
@@ -578,24 +591,24 @@ mod YASPoolTests {
                     assert(balance_token_0 == 9996, 'wrong balance token 0');
                     assert(balance_token_1 == 1000, 'wrong balance token 1');
                 }
-                // TODO: 'max tick with max leverage'
-                // TODO: 'works for max tick'
-                // TODO: 'removing works'
-                // TODO: 'adds liquidity to liquidityGross'
-                // TODO: 'removes liquidity from liquidityGross'
-                // TODO: 'clears tick lower if last position is removed'
-                // TODO: 'clears tick upper if last position is removed'
-                // TODO: 'only clears the tick that is not used at all'
+            // TODO: 'max tick with max leverage'
+            // TODO: 'works for max tick'
+            // TODO: 'removing works'
+            // TODO: 'adds liquidity to liquidityGross'
+            // TODO: 'removes liquidity from liquidityGross'
+            // TODO: 'clears tick lower if last position is removed'
+            // TODO: 'clears tick upper if last position is removed'
+            // TODO: 'only clears the tick that is not used at all'
             }
 
-            mod IncludingCurrentPrice {// TODO: 'price within range: transfers current price of both tokens'
+            mod IncludingCurrentPrice { // TODO: 'price within range: transfers current price of both tokens'
             // TODO: 'initializes lower tick'
             // TODO: 'initializes upper tick'
             // TODO: 'works for min/max tick'
             // TODO: 'removing works'
             }
 
-            mod BelowCurrentPrice {// TODO: 'transfers token1 only'
+            mod BelowCurrentPrice { // TODO: 'transfers token1 only'
             // TODO: 'min tick with max leverage'
             // TODO: 'works for min tick'
             // TODO: 'removing works'
