@@ -312,31 +312,63 @@ async fn main() -> Result<()> {
                 FieldElement::from(1_u64),
                 FieldElement::from(887220_u64),
                 FieldElement::from(0_u64),
-                FieldElement::from(3161_u32),
+                FieldElement::from(3161_u128),
             ],
         }])
         .send()
         .await?;
     println!("Transaction Hash: {}", format!("{:#064x}", mint_result.transaction_hash));
 
-    // println!("\n==> Swap()");
-    // let swap_result = account
-    //     .execute(vec![Call {
-    //         to: router_address,
-    //         selector: get_selector_from_name("swap").unwrap(),
-    //         calldata: vec![
-    //             create_pool_result[0],
-    //             owner_address,
-    //             FieldElement::from(887220_u64),
-    //             FieldElement::from(1_u64),
-    //             FieldElement::from(887220_u64),
-    //             FieldElement::from(0_u64),
-    //             FieldElement::from(3161_u32),
-    //         ],
-    //     }])
-    //     .send()
-    //     .await?;
-    // println!("Transaction Hash: {}", format!("{:#064x}", swap_result.transaction_hash));
+    let old_balance = jsonrpc_client()
+        .call(
+            FunctionCall {
+                contract_address: token_0,
+                entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
+                calldata: vec![
+                    owner_address
+                ],
+            },
+            BlockId::Tag(BlockTag::Latest),
+        )
+        .await
+        .expect("Error calling contract");
+
+    println!("\n==> Swap()");
+    let swap_result = account
+        .execute(vec![Call {
+            to: router_address,
+            selector: get_selector_from_name("swap_exact_0_for_1").unwrap(),
+            calldata: vec![
+                create_pool_result[0],
+                FieldElement::from(1_u64),
+                FieldElement::ZERO,
+                owner_address,
+                FieldElement::from(1000000000000000000_u128), //encode_price_sqrt_1_10
+                FieldElement::ZERO,
+                FieldElement::ZERO
+            ],
+        }])
+        .send()
+        .await?;
+    println!("Transaction Hash: {}", format!("{:#064x}", swap_result.transaction_hash));
+
+    println!("\n==> balanceOf()");
+    let balance_result = jsonrpc_client()
+        .call(
+            FunctionCall {
+                contract_address: token_0,
+                entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
+                calldata: vec![
+                    owner_address
+                ],
+            },
+            BlockId::Tag(BlockTag::Latest),
+        )
+        .await
+        .expect("Error calling contract");
+
+    println!("Old user balance: {}", format!("{:#064x}", old_balance[1]));
+    println!("New user balance: {}", format!("{:#064x}", balance_result[1]));
 
     Ok(())
 }
