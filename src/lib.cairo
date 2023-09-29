@@ -62,6 +62,5 @@ mod tests {
     mod utils {
         mod constants;
         mod erc20;
-        mod interface;
     }
 }
