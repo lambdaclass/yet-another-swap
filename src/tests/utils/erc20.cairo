@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts for Cairo v0.7.0 (token/erc20/erc20.cairo)
 use starknet::ContractAddress;
-use debug::PrintTrait;
 
 #[starknet::interface]
 trait IERC20<TState> {
@@ -61,8 +60,6 @@ mod ERC20 {
     use integer::BoundedInt;
     use starknet::ContractAddress;
     use starknet::get_caller_address;
-
-    use debug::PrintTrait;
 
     #[storage]
     struct Storage {
@@ -266,7 +263,6 @@ mod ERC20 {
         ) {
             assert(!sender.is_zero(), Errors::TRANSFER_FROM_ZERO);
             assert(!recipient.is_zero(), Errors::TRANSFER_TO_ZERO);
-            self.ERC20_balances.read(sender).print();
             self.ERC20_balances.write(sender, self.ERC20_balances.read(sender) - amount);
             self.ERC20_balances.write(recipient, self.ERC20_balances.read(recipient) + amount);
             self.emit(Transfer { from: sender, to: recipient, value: amount });
