@@ -490,7 +490,7 @@ mod YASPoolTests {
         use yas::libraries::position::{Info, Position, Position::PositionImpl, PositionKey};
         use yas::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B};
         use yas::tests::utils::constants::FactoryConstants::{FeeAmount, fee_amount, tick_spacing};
-        use yas::tests::utils::erc20::{ERC20, ERC20::ERC20Impl, IERC20Dispatcher};
+        use yas::contracts::yas_erc20::{ERC20, ERC20::ERC20Impl, IERC20Dispatcher};
         use yas::numbers::signed_integer::{
             i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
         };
@@ -520,7 +520,7 @@ mod YASPoolTests {
                     YASPool, YASPool::ContractState, YASPool::InternalImpl, IYASPool,
                     IYASPoolDispatcher, IYASPoolDispatcherTrait
                 };
-                use yas::tests::utils::erc20::IERC20DispatcherTrait;
+                use yas::contracts::yas_erc20::IERC20DispatcherTrait;
 
                 #[test]
                 #[available_gas(200000000)]
@@ -577,7 +577,7 @@ mod YASPoolTests {
     use yas::tests::utils::constants::FactoryConstants::{
         POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing
     };
-    use yas::tests::utils::erc20::{
+    use yas::contracts::yas_erc20::{
         ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
     };
 
