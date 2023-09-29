@@ -3,10 +3,11 @@ use std::{env, fs};
 
 use dotenv::dotenv;
 use eyre::Result;
-use starknet::accounts::{Account, ConnectedAccount, ExecutionEncoding, SingleOwnerAccount};
+use starknet::accounts::{Account, Call, ConnectedAccount, ExecutionEncoding, SingleOwnerAccount};
 use starknet::contract::ContractFactory;
 use starknet::core::types::contract::SierraClass;
-use starknet::core::types::{BlockId, BlockTag, FieldElement, StarknetError};
+use starknet::core::utils::get_selector_from_name;
+use starknet::core::types::{BlockId, BlockTag, FieldElement, FunctionCall, StarknetError};
 use starknet::providers::jsonrpc::{HttpTransport, JsonRpcClient};
 use starknet::providers::{MaybeUnknownErrorCode, Provider, ProviderError, StarknetErrorWithMessage};
 use starknet::signers::{LocalWallet, SigningKey};
@@ -108,7 +109,7 @@ async fn declare_contract(
 
     // Declare the contract class if it is not already declared.
     if !is_already_declared(account.provider(), &class_hash).await? {
-        println!("==> Declaring Contract: {contract_name}");
+        println!("\n==> Declaring Contract: {contract_name}");
         let flattened_class = contract_artifact.flatten()?;
         account.declare(Arc::new(flattened_class), class_hash).send().await?;
         println!("Declared Class Hash: {}", format!("{:#064x}", class_hash));
@@ -131,31 +132,250 @@ async fn main() -> Result<()> {
     let account = initialize_starknet_account(signer, account_address).await?;
 
     // Declare the contract classes if they are not already declared.
-    let pool_class_hash = declare_contract(&account, "YASPool").await?;
+    let erc20_class_hash = declare_contract(&account, "ERC20").await?;
     let factory_class_hash = declare_contract(&account, "YASFactory").await?;
+    let pool_class_hash = declare_contract(&account, "YASPool").await?;
+    let router_class_hash = declare_contract(&account, "YASRouter").await?;
 
-    let token_0 = declare_contract(&account, "YASToken0").await?;
-    let token_1 = declare_contract(&account, "YASToken1").await?;
+    let unique = true;
+    let owner_address = FieldElement::from_hex_be(&env::var("OWNER_ADDRESS").expect("OWNER_ADDRESS not set"))
+        .expect("Invalid Owner Address");
+    
+    let (token_0, token_1) = deploy_erc20(owner_address, &account, erc20_class_hash).await?;
 
     // Instantiate the contract factory.
     let salt = account.get_nonce().await?;
-    let contract_factory = ContractFactory::new(factory_class_hash, account);
-    let owner_address = FieldElement::from_hex_be(&env::var("OWNER_ADDRESS").expect("OWNER_ADDRESS not set"))
-        .expect("Invalid Owner Address");
-    let unique = true;
-    println!(
-        "==> Deploying Factory Contract\nOWNER_ADDRESS: {:#064x}\nPOOL_CLASS_HASH: {:#064x}\nSALT: {}\nUNIQUE: {}",
-        owner_address, pool_class_hash, salt, unique
-    );
-
-    let contract_deployment = contract_factory.deploy(vec![owner_address, pool_class_hash], salt, unique);
-    let deployed_address = contract_deployment.deployed_address();
-    println!("Contract Address: {}", format!("{:#064x}", deployed_address));
+    let yas_factory_contract_factory = ContractFactory::new(factory_class_hash, &account);
+    println!("\n==> Deploying Factory Contract");
+    let contract_deployment = yas_factory_contract_factory.deploy(vec![owner_address, pool_class_hash], salt, unique);
+    let factory_address = contract_deployment.deployed_address();
+    println!("Factory Contract Address: {}", format!("{:#064x}", factory_address));
 
     // Estimate the deployment fee and deploy the contract.
     let estimated_fee = contract_deployment.estimate_fee().await?.overall_fee * 3 / 2; // add buffer
     let tx = contract_deployment.max_fee(estimated_fee.into()).send().await?.transaction_hash;
     println!("Transaction Hash: {}", format!("{:#064x}", tx));
 
+    // Instantiate the contract factory.
+    let salt = account.get_nonce().await?;
+    let yas_router_contract_factory = ContractFactory::new(router_class_hash, &account);
+    println!("\n==> Deploying Router Contract");
+    let contract_deployment = yas_router_contract_factory.deploy(vec![], salt, unique);
+    let router_address = contract_deployment.deployed_address();
+    println!("Router Contract Address: {}", format!("{:#064x}", router_address));
+
+    // Estimate the deployment fee and deploy the contract.
+    let estimated_fee = contract_deployment.estimate_fee().await?.overall_fee * 3 / 2; // add buffer
+    let tx = contract_deployment.max_fee(estimated_fee.into()).send().await?.transaction_hash;
+    println!("Transaction Hash: {}", format!("{:#064x}", tx));
+
+    // println!("\n==> Approve");
+    // account
+    //     .execute(vec![Call {
+    //         to: token_0,
+    //         selector: get_selector_from_name("approve").unwrap(),
+    //         calldata: vec![
+    //             router_address,
+    //             owner_address,
+    //             FieldElement::ZERO,
+    //             FieldElement::from(500_u32),
+    //         ],
+    //     }])
+    //     .send()
+    //     .await
+    //     .unwrap();
+
+    // jsonrpc_client()
+    //     .call(
+    //         FunctionCall {
+    //             contract_address: token_0,
+    //             entry_point_selector: get_selector_from_name("approve").unwrap(),
+    //             calldata: vec![
+    //                 router_address,
+    //                 owner_address,
+    //                 FieldElement::from_dec_str("1000000000000000000000").unwrap(),
+    //                 FieldElement::ZERO,
+    //             ],
+    //         },
+    //         BlockId::Tag(BlockTag::Latest),
+    //     )
+    //     .await
+    //     .expect("Error calling contract");
+
+    // account
+    //     .execute(vec![Call {
+    //         to: token_1,
+    //         selector: get_selector_from_name("approve").unwrap(),
+    //         calldata: vec![
+    //             router_address,
+    //             owner_address,
+    //             FieldElement::from(0_u32),
+    //             FieldElement::from(999999_u32),
+    //         ],
+    //     }])
+    //     .send()
+    //     .await
+    //     .unwrap();
+    //
+    // jsonrpc_client()
+    //     .call(
+    //         FunctionCall {
+    //             contract_address: token_1,
+    //             entry_point_selector: get_selector_from_name("create_pool").unwrap(),
+    //             calldata: vec![
+    //                 router_address,
+    //                 owner_address,
+    //                 FieldElement::from(0_u32),
+    //                 FieldElement::from(999999_u32),
+    //             ],
+    //         },
+    //         BlockId::Tag(BlockTag::Latest),
+    //     )
+    //     .await
+    //     .expect("Error calling contract");
+
+    println!("\n==> Creating Pool TYAS0 & TYAS1");
+    let invoke_result = account
+        .execute(vec![Call {
+            to: factory_address,
+            selector: get_selector_from_name("create_pool").unwrap(),
+            calldata: vec![
+                token_0,
+                token_1,
+                FieldElement::from(500_u32),
+            ],
+        }])
+        .send()
+        .await
+        .unwrap();
+
+    let create_pool_result = jsonrpc_client()
+        .call(
+            FunctionCall {
+                contract_address: factory_address,
+                entry_point_selector: get_selector_from_name("create_pool").unwrap(),
+                calldata: vec![
+                    token_0,
+                    token_1,
+                    FieldElement::from(500_u32),
+                ],
+            },
+            BlockId::Tag(BlockTag::Latest),
+        )
+        .await
+        .expect("Error calling contract");
+
+    println!("Pool created by Factory: {:#064x}", create_pool_result[0]);
+    println!("Transaction Hash: {}", format!("{:#064x}", invoke_result.transaction_hash));
+
+    println!("\n==> Initialize Pool");
+    let invoke_result = account
+        .execute(vec![Call {
+            to: create_pool_result[0],
+            selector: get_selector_from_name("initialize").unwrap(),
+            calldata: vec![
+                FieldElement::from(25054144837504793118641380156_u128), //encode_price_sqrt_1_10
+                FieldElement::from(0_u128),
+                FieldElement::from(0_u128)
+            ],
+        }])
+        .send()
+        .await?;
+
+    jsonrpc_client()
+        .call(
+            FunctionCall {
+                contract_address: create_pool_result[0],
+                entry_point_selector: get_selector_from_name("initialize").unwrap(),
+                calldata: vec![
+                    FieldElement::from(25054144837504793118641380156_u128), //encode_price_sqrt_1_10
+                    FieldElement::from(0_u128),
+                    FieldElement::from(0_u128)
+                ],
+            },
+            BlockId::Tag(BlockTag::Latest),
+        )
+        .await
+        .expect("Error calling contract");
+
+    println!("Transaction Hash: {}", format!("{:#064x}", invoke_result.transaction_hash));
+
+    println!("\n==> Mint()");
+    let mint_result = account
+        .execute(vec![Call {
+            to: router_address,
+            selector: get_selector_from_name("mint").unwrap(),
+            calldata: vec![
+                create_pool_result[0],
+                owner_address,
+                FieldElement::from(887220_u64),
+                FieldElement::from(1_u64),
+                FieldElement::from(887220_u64),
+                FieldElement::from(0_u64),
+                FieldElement::from(3161_u32),
+            ],
+        }])
+        .send()
+        .await?;
+    println!("Transaction Hash: {}", format!("{:#064x}", mint_result.transaction_hash));
+
+    // println!("\n==> Swap()");
+    // let swap_result = account
+    //     .execute(vec![Call {
+    //         to: router_address,
+    //         selector: get_selector_from_name("swap").unwrap(),
+    //         calldata: vec![
+    //             create_pool_result[0],
+    //             owner_address,
+    //             FieldElement::from(887220_u64),
+    //             FieldElement::from(1_u64),
+    //             FieldElement::from(887220_u64),
+    //             FieldElement::from(0_u64),
+    //             FieldElement::from(3161_u32),
+    //         ],
+    //     }])
+    //     .send()
+    //     .await?;
+    // println!("Transaction Hash: {}", format!("{:#064x}", swap_result.transaction_hash));
+
     Ok(())
+}
+
+/// Deploy ERC20 Contract.
+///
+/// # Arguments
+///
+/// * `name` - The name of the ERC20 token.
+/// * `symbol` - The symbol of the ERC20 token.
+/// * `total_supply` - The total supply of the ERC20 token.
+/// * `recipient` - The initial recipient of the total supply.
+///
+/// # Returns
+///
+/// This function returns a `Result` indicating success or an error.
+async fn deploy_erc20(
+    recipient: FieldElement,
+    account: &SingleOwnerAccount<JsonRpcClient<HttpTransport>, LocalWallet>,
+    erc20_class_hash: FieldElement
+) -> Result<(FieldElement, FieldElement)> {
+   // Instantiate the contract factory.
+    let erc20_factory = ContractFactory::new(erc20_class_hash, account);
+    println!(
+        "\n==> Deploying ERC20 Contracts",
+    );
+    let unique = true;
+    let salt = account.get_nonce().await?;
+    let erc20_token_0_contract_deployment = erc20_factory.deploy(vec![FieldElement::from_hex_be("0x5459415330").unwrap(), FieldElement::from_hex_be("0x2459415330").unwrap(), FieldElement::from(0_u32), FieldElement::from_hex_be("0x3b9ac9ff").unwrap(), recipient], salt, unique);
+    let erc20_token_0_deployed_address = erc20_token_0_contract_deployment.deployed_address();
+    println!("Token TYAS0 Address: {}", format!("{:#064x}", erc20_token_0_deployed_address));
+    let estimated_fee = erc20_token_0_contract_deployment.estimate_fee().await?.overall_fee * 3 / 2;
+    erc20_token_0_contract_deployment.max_fee(estimated_fee.into()).send().await?.transaction_hash;
+
+    let erc20_token_1_contract_deployment = erc20_factory.deploy(vec![FieldElement::from_hex_be("0x5459415331").unwrap(), FieldElement::from_hex_be("0x2459415331").unwrap(), FieldElement::from(0_u32), FieldElement::from_hex_be("0x3b9ac9ff").unwrap(), recipient], salt, unique);
+    let erc20_token_1_deployed_address = erc20_token_1_contract_deployment.deployed_address();
+    println!("Token TYAS1 Address: {}", format!("{:#064x}", erc20_token_1_deployed_address));
+    let estimated_fee = erc20_token_1_contract_deployment.estimate_fee().await?.overall_fee * 3 / 2;
+    erc20_token_1_contract_deployment.max_fee(estimated_fee.into()).send().await?.transaction_hash;
+
+    Ok((erc20_token_0_deployed_address, erc20_token_1_deployed_address))
 }
