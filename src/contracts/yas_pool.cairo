@@ -182,7 +182,6 @@ mod YASPool {
         self.token_1.write(token_1);
         self.fee.write(fee);
         self.tick_spacing.write(tick_spacing);
-
         //TODO: temporary component syntax
         let state = Tick::unsafe_new_contract_state();
         self
@@ -481,7 +480,7 @@ mod YASPool {
             amount: u128,
             data: Array<felt252>
         ) -> (u256, u256) {
-            // self.check_and_lock();
+            self.check_and_lock();
 
             assert(amount > 0, 'amount must be greater than 0');
             let (_, amount_0, amount_1) = self
@@ -533,7 +532,7 @@ mod YASPool {
                         amount_1
                     }
                 );
-            // self.unlock();
+            self.unlock();
             (amount_0, amount_1)
         }
     }
@@ -747,7 +746,7 @@ mod YASPool {
 
         fn check_and_lock(ref self: ContractState) {
             let unlocked = self.unlocked.read();
-            assert(!unlocked, 'LOK');
+            assert(unlocked, 'LOK');
             self.unlocked.write(false);
         }
 
