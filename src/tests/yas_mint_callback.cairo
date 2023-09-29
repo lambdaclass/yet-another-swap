@@ -59,7 +59,6 @@ mod YASMintCallback {
                 );
         }
 
-
         fn yas_mint_callback(
             ref self: ContractState, amount_0_owed: u256, amount_1_owed: u256, data: Array<felt252>
         ) {
