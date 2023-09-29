@@ -134,6 +134,9 @@ async fn main() -> Result<()> {
     let pool_class_hash = declare_contract(&account, "YASPool").await?;
     let factory_class_hash = declare_contract(&account, "YASFactory").await?;
 
+    let token_0 = declare_contract(&account, "YASToken0").await?;
+    let token_1 = declare_contract(&account, "YASToken1").await?;
+
     // Instantiate the contract factory.
     let salt = account.get_nonce().await?;
     let contract_factory = ContractFactory::new(factory_class_hash, account);
