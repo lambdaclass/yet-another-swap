@@ -479,15 +479,15 @@ mod YASPoolTests {
         use yas::contracts::yas_factory::{
             YASFactory, IYASFactory, IYASFactoryDispatcher, IYASFactoryDispatcherTrait
         };
+        use yas::contracts::yas_router::{
+            YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
+        };
         use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FixedType, FixedTrait
         };
         use yas::libraries::tick::{Tick, Tick::TickImpl};
         use yas::libraries::tick_math::{TickMath::MIN_TICK, TickMath::MAX_TICK};
         use yas::libraries::position::{Info, Position, Position::PositionImpl, PositionKey};
-        use yas::tests::yas_mint_callback::{
-            YASMintCallback, IYASMintCallbackDispatcher, IYASMintCallbackDispatcherTrait
-        };
         use yas::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B};
         use yas::tests::utils::constants::FactoryConstants::{FeeAmount, fee_amount, tick_spacing};
         use yas::tests::utils::erc20::{ERC20, ERC20::ERC20Impl, IERC20Dispatcher};
@@ -572,9 +572,7 @@ mod YASPoolTests {
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FixedType, FixedTrait
     };
-    use yas::tests::yas_mint_callback::{
-        YASMintCallback, IYASMintCallbackDispatcher, IYASMintCallbackDispatcherTrait
-    };
+    use yas::contracts::yas_router::{YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait};
     use yas::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET};
     use yas::tests::utils::constants::FactoryConstants::{
         POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing
@@ -634,13 +632,13 @@ mod YASPoolTests {
         return IERC20Dispatcher { contract_address: address };
     }
 
-    fn deploy_mint_callback() -> IYASMintCallbackDispatcher {
+    fn deploy_mint_callback() -> IYASRouterDispatcher {
         let (address, _) = deploy_syscall(
-            YASMintCallback::TEST_CLASS_HASH.try_into().unwrap(), 0, array![].span(), true
+            YASRouter::TEST_CLASS_HASH.try_into().unwrap(), 0, array![].span(), true
         )
             .unwrap_syscall();
 
-        return IYASMintCallbackDispatcher { contract_address: address };
+        return IYASRouterDispatcher { contract_address: address };
     }
 
     fn deploy_factory(

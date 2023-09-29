@@ -140,11 +140,11 @@ mod YASRouter {
             if amount_0_delta > Zeroable::zero() {
                 let token_0 = IYASPoolDispatcher { contract_address: msg_sender }.token_0();
                 IERC20Dispatcher { contract_address: token_0 }
-                    .transferFrom(sender, msg_sender, amount_0_delta.into());
+                    .transferFrom(sender, msg_sender, amount_0_delta.try_into().unwrap());
             } else if amount_1_delta > Zeroable::zero() {
                 let token_1 = IYASPoolDispatcher { contract_address: msg_sender }.token_1();
                 IERC20Dispatcher { contract_address: token_1 }
-                    .transferFrom(sender, msg_sender, amount_1_delta.into());
+                    .transferFrom(sender, msg_sender, amount_1_delta.try_into().unwrap());
             } else {
                 // if both are not gt 0, both must be 0.
                 assert(

@@ -1,6 +1,7 @@
 mod contracts {
     mod yas_factory;
     mod yas_pool;
+    mod yas_router;
 }
 
 mod interfaces {
@@ -35,7 +36,6 @@ mod tests {
     mod test_contracts {
         mod test_yas_factory;
         mod test_yas_pool;
-        mod yas_router;
     }
 
     mod test_libraries {
