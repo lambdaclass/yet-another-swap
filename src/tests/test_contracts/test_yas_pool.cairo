@@ -464,7 +464,7 @@ mod YASPoolTests {
         }
     }
 
-    mod Swap {
+    mod Mint {
         use yas::contracts::yas_pool::YASPool::InternalTrait;
         use super::{deploy, mock_contract_states};
 
