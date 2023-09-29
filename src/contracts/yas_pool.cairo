@@ -485,7 +485,7 @@ mod YASPool {
             data: Array<felt252>
         ) -> (u256, u256) {
             'self.check_and_lock()'.print();
-            self.check_and_lock();
+            // self.check_and_lock();
 
             assert(amount > 0, 'amount must be greater than 0');
             'self.modify_position()'.print();
@@ -514,8 +514,10 @@ mod YASPool {
                 0
             };
 
-            'callback_contract'.print();
             let callback_contract = get_caller_address();
+            'callback_contract'.print();
+            callback_contract.print();
+
             assert(is_valid_callback_contract(callback_contract), 'invalid callback_contract');
             let dispatcher = IYASMintCallbackDispatcher { contract_address: callback_contract };
             dispatcher.yas_mint_callback(amount_0, amount_1, data);
@@ -543,7 +545,7 @@ mod YASPool {
                         amount_1
                     }
                 );
-            self.unlock();
+            // self.unlock();
             (amount_0, amount_1)
         }
     }
@@ -693,20 +695,21 @@ mod YASPool {
                         );
                 } else if slot_0.tick < params.position_key.tick_upper {
                     // current tick is inside the passed range
-                    'slot_0.tick < pos_key.t_upper'.print();
-
                     amount_0 =
                         SqrtPriceMath::get_amount_0_delta_signed_token(
                             slot_0.sqrt_price_X96,
                             get_sqrt_ratio_at_tick(params.position_key.tick_upper),
                             params.liquidity_delta
                         );
+                    'amount0'.print();
+
                     amount_1 =
                         SqrtPriceMath::get_amount_1_delta_signed_token(
                             get_sqrt_ratio_at_tick(params.position_key.tick_lower),
                             slot_0.sqrt_price_X96,
                             params.liquidity_delta
                         );
+                    'amount1'.print();
 
                     let mut liquidity = self.liquidity.read();
                     'LiquidityMath::add_delta'.print();
@@ -774,7 +777,7 @@ mod YASPool {
 
         fn check_and_lock(ref self: ContractState) {
             let unlocked = self.unlocked.read();
-            assert(unlocked, 'LOK');
+            assert(!unlocked, 'LOK');
             self.unlocked.write(false);
         }
 

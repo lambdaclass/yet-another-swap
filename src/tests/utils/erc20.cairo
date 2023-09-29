@@ -1,27 +1,13 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts for Cairo v0.7.0 (token/erc20/erc20.cairo)
 use starknet::ContractAddress;
+use debug::PrintTrait;
 
 #[starknet::interface]
 trait IERC20<TState> {
     fn name(self: @TState) -> felt252;
     fn symbol(self: @TState) -> felt252;
     fn decimals(self: @TState) -> u8;
-    fn total_supply(self: @TState) -> u256;
-    fn balance_of(self: @TState, account: ContractAddress) -> u256;
-    fn allowance(self: @TState, owner: ContractAddress, spender: ContractAddress) -> u256;
-    fn transfer(ref self: TState, recipient: ContractAddress, amount: u256) -> bool;
-    fn transfer_from(
-        ref self: TState, sender: ContractAddress, recipient: ContractAddress, amount: u256
-    ) -> bool;
-    fn approve(ref self: TState, spender: ContractAddress, amount: u256) -> bool;
-}
-
-#[starknet::interface]
-trait IERC20Camel<TState> {
-    fn name(self: @TState) -> felt252;
-    fn symbol(self: @TState) -> felt252;
-    fn decimals(self: @TState) -> u8;
     fn totalSupply(self: @TState) -> u256;
     fn balanceOf(self: @TState, account: ContractAddress) -> u256;
     fn allowance(self: @TState, owner: ContractAddress, spender: ContractAddress) -> u256;
@@ -30,14 +16,6 @@ trait IERC20Camel<TState> {
         ref self: TState, sender: ContractAddress, recipient: ContractAddress, amount: u256
     ) -> bool;
     fn approve(ref self: TState, spender: ContractAddress, amount: u256) -> bool;
-}
-
-trait IERC20CamelOnly<TState> {
-    fn totalSupply(self: @TState) -> u256;
-    fn balanceOf(self: @TState, account: ContractAddress) -> u256;
-    fn transferFrom(
-        ref self: TState, sender: ContractAddress, recipient: ContractAddress, amount: u256
-    ) -> bool;
 }
 
 #[starknet::interface]
@@ -78,11 +56,13 @@ trait ERC20CamelABI<TState> {
 
 #[starknet::contract]
 mod ERC20 {
-    use super::{IERC20, IERC20CamelOnly};
+    use super::IERC20;
 
     use integer::BoundedInt;
     use starknet::ContractAddress;
     use starknet::get_caller_address;
+
+    use debug::PrintTrait;
 
     #[storage]
     struct Storage {
@@ -153,11 +133,11 @@ mod ERC20 {
             18
         }
 
-        fn total_supply(self: @ContractState) -> u256 {
+        fn totalSupply(self: @ContractState) -> u256 {
             self.ERC20_total_supply.read()
         }
 
-        fn balance_of(self: @ContractState, account: ContractAddress) -> u256 {
+        fn balanceOf(self: @ContractState, account: ContractAddress) -> u256 {
             self.ERC20_balances.read(account)
         }
 
@@ -173,7 +153,7 @@ mod ERC20 {
             true
         }
 
-        fn transfer_from(
+        fn transferFrom(
             ref self: ContractState,
             sender: ContractAddress,
             recipient: ContractAddress,
@@ -189,26 +169,6 @@ mod ERC20 {
             let caller = get_caller_address();
             self._approve(caller, spender, amount);
             true
-        }
-    }
-
-    #[external(v0)]
-    impl ERC20CamelOnlyImpl of IERC20CamelOnly<ContractState> {
-        fn totalSupply(self: @ContractState) -> u256 {
-            ERC20Impl::total_supply(self)
-        }
-
-        fn balanceOf(self: @ContractState, account: ContractAddress) -> u256 {
-            ERC20Impl::balance_of(self, account)
-        }
-
-        fn transferFrom(
-            ref self: ContractState,
-            sender: ContractAddress,
-            recipient: ContractAddress,
-            amount: u256
-        ) -> bool {
-            ERC20Impl::transfer_from(ref self, sender, recipient, amount)
         }
     }
 
@@ -306,6 +266,7 @@ mod ERC20 {
         ) {
             assert(!sender.is_zero(), Errors::TRANSFER_FROM_ZERO);
             assert(!recipient.is_zero(), Errors::TRANSFER_TO_ZERO);
+            self.ERC20_balances.read(sender).print();
             self.ERC20_balances.write(sender, self.ERC20_balances.read(sender) - amount);
             self.ERC20_balances.write(recipient, self.ERC20_balances.read(recipient) + amount);
             self.emit(Transfer { from: sender, to: recipient, value: amount });

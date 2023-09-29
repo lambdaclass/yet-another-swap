@@ -470,7 +470,7 @@ mod YASPoolTests {
         use yas::contracts::yas_pool::YASPool::InternalTrait;
         use super::{deploy, mock_contract_states};
 
-        use starknet::{ContractAddress, SyscallResultTrait, contract_address_const};
+        use starknet::{ContractAddress, ClassHash, SyscallResultTrait, contract_address_const};
         use starknet::syscalls::deploy_syscall;
         use starknet::testing::{set_contract_address, set_caller_address};
 
@@ -478,13 +478,18 @@ mod YASPoolTests {
             YASPool, YASPool::ContractState, YASPool::YASPoolImpl, YASPool::InternalImpl, IYASPool,
             IYASPoolDispatcher, IYASPoolDispatcherTrait
         };
+        use yas::contracts::yas_factory::{
+            YASFactory, IYASFactory, IYASFactoryDispatcher, IYASFactoryDispatcherTrait
+        };
         use yas::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FixedType, FixedTrait
         };
         use yas::libraries::tick::{Tick, Tick::TickImpl};
         use yas::libraries::tick_math::{TickMath::MIN_TICK, TickMath::MAX_TICK};
         use yas::libraries::position::{Info, Position, Position::PositionImpl, PositionKey};
-        use yas::tests::yas_mint_callback::{YASMintCallback, IYASMintCallbackDispatcher, IYASMintCallbackDispatcherTrait};
+        use yas::tests::yas_mint_callback::{
+            YASMintCallback, IYASMintCallbackDispatcher, IYASMintCallbackDispatcherTrait
+        };
         use yas::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B};
         use yas::tests::utils::constants::FactoryConstants::{FeeAmount, fee_amount, tick_spacing};
         use yas::tests::utils::erc20::{ERC20, ERC20::ERC20Impl, IERC20Dispatcher};
@@ -517,6 +522,20 @@ mod YASPoolTests {
             return IYASMintCallbackDispatcher { contract_address: address };
         }
 
+        fn deploy_factory(
+            deployer: ContractAddress, pool_class_hash: ClassHash
+        ) -> IYASFactoryDispatcher {
+            let (address, _) = deploy_syscall(
+                YASFactory::TEST_CLASS_HASH.try_into().unwrap(),
+                0,
+                array![deployer.into(), pool_class_hash.into()].span(),
+                true
+            )
+                .unwrap_syscall();
+
+            return IYASFactoryDispatcher { contract_address: address };
+        }
+
         fn POOL_ADDRESS() -> ContractAddress {
             contract_address_const::<'POOL_ADDRESS'>()
         }
@@ -542,9 +561,9 @@ mod YASPoolTests {
             YASPoolImpl::initialize(ref pool_state, encode_price_sqrt_1_10);
             let min_tick = i32_div_no_round(MIN_TICK(), tick_spacing) * tick_spacing;
             let max_tick = i32_div_no_round(MAX_TICK(), tick_spacing) * tick_spacing;
-            
-            let mint_callback_contract = deploy_mint_callback(); 
-                    
+
+            let mint_callback_contract = deploy_mint_callback();
+
             // mock get_contract_address() syscall
             set_caller_address(mint_callback_contract.contract_address);
             set_contract_address(POOL_ADDRESS());
@@ -552,6 +571,13 @@ mod YASPoolTests {
             'aft'.print();
 
             pool_state
+        }
+
+        fn get_min_tick_and_max_tick() -> (i32, i32) {
+            let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
+            let min_tick = i32_div_no_round(MIN_TICK(), tick_spacing) * tick_spacing;
+            let max_tick = i32_div_no_round(MAX_TICK(), tick_spacing) * tick_spacing;
+            (min_tick, max_tick)
         }
         // TODO: 'fails if not initialized'
         // TODO: 'initialize the pool at price of 10:1'
@@ -574,32 +600,95 @@ mod YASPoolTests {
             // TODO: 'initial balances'
             // TODO: 'initial tick'
             mod AboveCurrentPrice {
-                use super::super::{before_each, mock_contract_states, deploy_mint_callback, POOL_ADDRESS};
-
-                use yas::contracts::yas_pool::{
-                    YASPool, YASPool::ContractState, YASPool::InternalImpl
+                use super::super::{
+                    before_each, deploy_factory, deploy_erc20, get_min_tick_and_max_tick,
+                    mock_contract_states, deploy_mint_callback, POOL_ADDRESS
                 };
 
                 use starknet::testing::{set_contract_address, set_caller_address};
-                use yas::tests::utils::constants::PoolConstants::CALLER;
 
+                use yas::contracts::yas_pool::{
+                    YASPool, YASPool::ContractState, YASPool::InternalImpl, IYASPool,
+                    IYASPoolDispatcher, IYASPoolDispatcherTrait
+                };
+                use yas::contracts::yas_factory::{
+                    YASFactory, IYASFactory, IYASFactoryDispatcher, IYASFactoryDispatcherTrait
+                };
+                
+                use yas::numbers::signed_integer::{
+                    i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
+                };
+                use yas::numbers::fixed_point::implementations::impl_64x96::{
+                    FP64x96Impl, FixedType, FixedTrait
+                };
+                use yas::tests::yas_mint_callback::{
+                    YASMintCallback, IYASMintCallbackDispatcher, IYASMintCallbackDispatcherTrait
+                };
+                use yas::tests::utils::constants::PoolConstants::CALLER;
+                use yas::tests::utils::constants::FactoryConstants::{OWNER, POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing};
+                use yas::tests::utils::erc20::IERC20DispatcherTrait;
+                
                 use debug::PrintTrait;
 
                 #[test]
                 #[available_gas(200000000)]
                 fn test_transfers_token_0_only() {
                     // let pool_state = before_each();
-                    let pool_state = YASPool::contract_state_for_testing();
-               
+                    let mint_callback = deploy_mint_callback();
+
+                    let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH());
+                    set_contract_address(yas_factory.contract_address);
+
+                    let token_0 = deploy_erc20(
+                        'YAS0', '$YAS0', 999999, OWNER()
+                    ); // transfer tokens to owner irrelevant
+                    let token_1 = deploy_erc20('YAS1', '$YAS1', 999999, OWNER());
+
+                    // await mint(wallet.address, minTick, maxTick, 3161)
+
+                    let yas_pool_address = yas_factory
+                        .create_pool(
+                            token_0.contract_address,
+                            token_1.contract_address,
+                            fee_amount(FeeAmount::LOW)
+                        );
+
+                    set_contract_address(OWNER());
+                    token_0.transfer(CALLER(), 3500);
+                    token_1.transfer(CALLER(), 3500);
+                    token_0.transfer(yas_pool_address, 9996);
+                    token_1.transfer(yas_pool_address, 1000);
+                    // 'after transfer'.print();                    
+
+                    // BEFORE EACH {
+                    let (min_tick, max_tick) = get_min_tick_and_max_tick();
+                    '(min_tick, max_tick)'.print();
+                    min_tick.mag.print();
+                    max_tick.mag.print();
+
+                    let encode_price_sqrt_1_10 = FP64x96Impl::new(
+                        25054144837504793118641380156, false
+                    );
+                    IYASPoolDispatcher { contract_address: yas_pool_address }
+                        .initialize(encode_price_sqrt_1_10);
+
+                    // set_contract_address(mint_callback.contract_address);
+                    mint_callback.mint(yas_pool_address, CALLER(), min_tick, max_tick, 3161);
+
+                    // IYASPoolDispatcher { contract_address: yas_pool_address }
+                    //     .mint(CALLER(), min_tick, max_tick, 3161, array![]);
+                    // } 
 
                     // ask balance of Pool address
-                    let balance_token_0 = YASPool::InternalImpl::balance_0(@pool_state);
-                    let balance_token_1 = YASPool::InternalImpl::balance_1(@pool_state);
+                    let balance_token_0 = token_0.balanceOf(yas_pool_address);
+                    let balance_token_1 = token_1.balanceOf(yas_pool_address);
+                    // // let balance_token_0 = YASPool::InternalImpl::balance_0(@pool_state);
+                    // // let balance_token_1 = YASPool::InternalImpl::balance_1(@pool_state);
 
-                    'balance_token_0'.print();
-                    balance_token_0.print();
-                    'balance_token_1'.print();
-                    balance_token_1.print();
+                    // 'balance_token_0'.print();
+                    // balance_token_0.print();
+                    // 'balance_token_1'.print();
+                    // balance_token_1.print();
                     assert(balance_token_0 == 9996, 'wrong balance token 0');
                     assert(balance_token_1 == 1000, 'wrong balance token 1');
                 }
