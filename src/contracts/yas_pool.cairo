@@ -21,6 +21,8 @@ trait IYASPool<TContractState> {
         amount: u128,
         data: Array<felt252>
     ) -> (u256, u256);
+    fn token_0(self: @TContractState) -> ContractAddress;
+    fn token_1(self: @TContractState) -> ContractAddress;
 }
 
 #[starknet::contract]
@@ -180,7 +182,6 @@ mod YASPool {
         self.token_1.write(token_1);
         self.fee.write(fee);
         self.tick_spacing.write(tick_spacing);
-
         //TODO: temporary component syntax
         let state = Tick::unsafe_new_contract_state();
         self
@@ -190,6 +191,14 @@ mod YASPool {
 
     #[external(v0)]
     impl YASPoolImpl of IYASPool<ContractState> {
+        fn token_0(self: @ContractState) -> ContractAddress {
+            self.token_0.read()
+        }
+
+        fn token_1(self: @ContractState) -> ContractAddress {
+            self.token_1.read()
+        }
+
         /// @notice Sets the initial price for the pool
         /// @dev price is represented as a sqrt(amount_token_1/amount_token_0) Q64.96 value
         /// @param sqrt_price_X96 the initial sqrt price of the pool as a Q64.96
@@ -498,6 +507,7 @@ mod YASPool {
             };
 
             let callback_contract = get_caller_address();
+
             assert(is_valid_callback_contract(callback_contract), 'invalid callback_contract');
             let dispatcher = IYASMintCallbackDispatcher { contract_address: callback_contract };
             dispatcher.yas_mint_callback(amount_0, amount_1, data);
@@ -579,7 +589,6 @@ mod YASPool {
                         max_liquidity_per_tick
                     );
             }
-
             if flipped_lower {
                 TickBitmapImpl::flip_tick(
                     ref tick_bitmap_state, position_key.tick_lower, self.tick_spacing.read()
@@ -620,7 +629,6 @@ mod YASPool {
                     TickImpl::clear(ref tick_state, position_key.tick_upper);
                 }
             }
-
             // read again to obtain Info with changes in the update step
             PositionImpl::get(@position_state, position_key)
         }
@@ -642,7 +650,6 @@ mod YASPool {
             }
 
             let slot_0 = self.slot_0.read();
-
             let position = self
                 .update_position(params.position_key, params.liquidity_delta, slot_0.tick);
 
@@ -660,13 +667,13 @@ mod YASPool {
                         );
                 } else if slot_0.tick < params.position_key.tick_upper {
                     // current tick is inside the passed range
-
                     amount_0 =
                         SqrtPriceMath::get_amount_0_delta_signed_token(
                             slot_0.sqrt_price_X96,
                             get_sqrt_ratio_at_tick(params.position_key.tick_upper),
                             params.liquidity_delta
                         );
+
                     amount_1 =
                         SqrtPriceMath::get_amount_1_delta_signed_token(
                             get_sqrt_ratio_at_tick(params.position_key.tick_lower),
@@ -749,6 +756,8 @@ mod YASPool {
         }
 
         fn balance_0(self: @ContractState) -> u256 {
+            let caller = get_caller_address();
+            let contract_address = get_contract_address();
             IERC20Dispatcher { contract_address: self.token_0.read() }
                 .balanceOf(get_contract_address())
         }
