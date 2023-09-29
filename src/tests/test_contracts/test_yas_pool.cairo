@@ -526,7 +526,7 @@ mod YASPoolTests {
                 #[available_gas(200000000)]
                 fn test_transfers_token_0_only() {
                     let (yas_pool, token_0, token_1) = setup();
-                    
+
                     let balance_token_0 = token_0.balanceOf(yas_pool.contract_address);
                     let balance_token_1 = token_1.balanceOf(yas_pool.contract_address);
 
@@ -576,8 +576,12 @@ mod YASPoolTests {
         YASMintCallback, IYASMintCallbackDispatcher, IYASMintCallbackDispatcherTrait
     };
     use yas::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET};
-    use yas::tests::utils::constants::FactoryConstants::{POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing};
-    use yas::tests::utils::erc20::{ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait};
+    use yas::tests::utils::constants::FactoryConstants::{
+        POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing
+    };
+    use yas::tests::utils::erc20::{
+        ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
+    };
 
     fn setup() -> (IYASPoolDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let mint_callback = deploy_mint_callback(); // 0x1
@@ -597,16 +601,12 @@ mod YASPoolTests {
         token_1.approve(mint_callback.contract_address, BoundedInt::max());
         token_0.approve(mint_callback.contract_address, BoundedInt::max());
 
-        let encode_price_sqrt_1_10 = FP64x96Impl::new(
-            25054144837504793118641380156, false
-        );
+        let encode_price_sqrt_1_10 = FP64x96Impl::new(25054144837504793118641380156, false);
 
         let yas_pool_address = yas_factory // 0x5
             .create_pool(
-                token_0.contract_address,
-                token_1.contract_address,
-                fee_amount(FeeAmount::LOW)
-        );
+                token_0.contract_address, token_1.contract_address, fee_amount(FeeAmount::LOW)
+            );
         let yas_pool = IYASPoolDispatcher { contract_address: yas_pool_address };
 
         set_contract_address(OWNER());

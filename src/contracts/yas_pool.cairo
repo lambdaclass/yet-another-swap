@@ -658,7 +658,6 @@ mod YASPool {
             let mut amount_1 = Zeroable::zero();
             if params.liquidity_delta.is_non_zero() {
                 if slot_0.tick < params.position_key.tick_lower {
-
                     // current tick is below the passed range; liquidity can only become in range by crossing from left to
                     // right, when we'll need _more_ token0 (it's becoming more valuable) so user must provide it
                     amount_0 =
