@@ -21,6 +21,8 @@ trait IYASPool<TContractState> {
         amount: u128,
         data: Array<felt252>
     ) -> (u256, u256);
+    fn token_0(self: @TContractState) -> ContractAddress;
+    fn token_1(self: @TContractState) -> ContractAddress;
 }
 
 #[starknet::contract]
@@ -190,6 +192,14 @@ mod YASPool {
 
     #[external(v0)]
     impl YASPoolImpl of IYASPool<ContractState> {
+        fn token_0(self: @ContractState) -> ContractAddress {
+            self.token_0.read()
+        }
+
+        fn token_1(self: @ContractState) -> ContractAddress {
+            self.token_1.read()
+        }
+
         /// @notice Sets the initial price for the pool
         /// @dev price is represented as a sqrt(amount_token_1/amount_token_0) Q64.96 value
         /// @param sqrt_price_X96 the initial sqrt price of the pool as a Q64.96
