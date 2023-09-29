@@ -19,6 +19,7 @@ trait IYASMintCallback<TContractState> {
 
 #[starknet::contract]
 mod YASMintCallback {
+    use core::array::ArrayTrait;
     use super::IYASMintCallback;
 
     use starknet::{ContractAddress, get_caller_address, get_contract_address};
@@ -26,8 +27,6 @@ mod YASMintCallback {
     use yas::contracts::yas_pool::{IYASPoolDispatcher, IYASPoolDispatcherTrait};
     use yas::interfaces::interface_ERC20::{IERC20Dispatcher, IERC20DispatcherTrait};
     use yas::numbers::signed_integer::{integer_trait::IntegerTrait, i32::i32};
-
-    use debug::PrintTrait;
 
     #[event]
     #[derive(Drop, starknet::Event)]
@@ -55,43 +54,34 @@ mod YASMintCallback {
             amount: u128
         ) {
             IYASPoolDispatcher { contract_address: pool }
-                .mint(recipient, tick_lower, tick_upper, amount, array![]);
+                .mint(
+                    recipient, tick_lower, tick_upper, amount, array![get_caller_address().into()]
+                );
         }
 
 
         fn yas_mint_callback(
             self: @ContractState, amount_0_owed: u256, amount_1_owed: u256, data: Array<felt252>
         ) {
-            let sender = get_caller_address();
-            let sender_contract_address = get_contract_address();
+            let msg_sender = get_caller_address();
 
-            'sender'.print();
-            sender.print();
+            // TODO: we need verify if data has a valid ContractAddress
+            let mut sender: ContractAddress = Zeroable::zero();
+            if !data.is_empty() {
+                sender = (*data[0]).try_into().unwrap();
+            }
 
-            'sender_contract_address'.print();
-            sender_contract_address.print();
-
-            // self.emit(MintCallback { amount_0_owed, amount_1_owed });
+            self.emit(MintCallback { amount_0_owed, amount_1_owed });
 
             if amount_0_owed > 0 {
-                let token_0 = IYASPoolDispatcher { contract_address: sender }.token_0();
-                let balance_sender_contract = IERC20Dispatcher { contract_address: token_0 }
-                    .balanceOf(sender_contract_address);
-                'balance_sender_contract token 0'.print();
-                balance_sender_contract.print();
+                let token_0 = IYASPoolDispatcher { contract_address: msg_sender }.token_0();
                 IERC20Dispatcher { contract_address: token_0 }
-                    .transferFrom(sender_contract_address, sender, amount_0_owed);
+                    .transferFrom(sender, msg_sender, amount_0_owed);
             }
             if amount_1_owed > 0 {
-                let token_1 = IYASPoolDispatcher { contract_address: sender }.token_1();
-
-                let balance_sender_contract = IERC20Dispatcher { contract_address: token_1 }
-                    .balanceOf(sender_contract_address);
-                'balance_sender_contract token 1'.print();
-                balance_sender_contract.print();
-
+                let token_1 = IYASPoolDispatcher { contract_address: msg_sender }.token_1();
                 IERC20Dispatcher { contract_address: token_1 }
-                    .transferFrom(sender_contract_address, sender, amount_1_owed);
+                    .transferFrom(sender, msg_sender, amount_1_owed);
             }
         }
     }
