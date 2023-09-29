@@ -35,6 +35,7 @@ mod tests {
     mod test_contracts {
         mod test_yas_factory;
         mod test_yas_pool;
+        mod yas_router;
     }
 
     mod test_libraries {
@@ -63,6 +64,4 @@ mod tests {
         mod erc20;
         mod interface;
     }
-
-    mod yas_mint_callback;
 }
