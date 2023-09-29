@@ -13,7 +13,7 @@ trait IYASMintCallback<TContractState> {
         amount: u128
     );
     fn yas_mint_callback(
-        self: @TContractState, amount_0_owed: u256, amount_1_owed: u256, data: Array<felt252>
+        ref self: TContractState, amount_0_owed: u256, amount_1_owed: u256, data: Array<felt252>
     );
 }
 
@@ -61,7 +61,7 @@ mod YASMintCallback {
 
 
         fn yas_mint_callback(
-            self: @ContractState, amount_0_owed: u256, amount_1_owed: u256, data: Array<felt252>
+            ref self: ContractState, amount_0_owed: u256, amount_1_owed: u256, data: Array<felt252>
         ) {
             let msg_sender = get_caller_address();
 
