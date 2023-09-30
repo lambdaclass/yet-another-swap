@@ -581,6 +581,8 @@ mod YASPoolTests {
         ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
     };
 
+    use debug::PrintTrait;
+
     fn setup() -> (IYASPoolDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let mint_callback = deploy_mint_callback(); // 0x1
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
@@ -612,6 +614,9 @@ mod YASPoolTests {
 
         let (min_tick, max_tick) = get_min_tick_and_max_tick();
         set_contract_address(WALLET());
+        'min_tick.mag'.print();
+        min_tick.mag.print();
+        max_tick.mag.print();
         mint_callback.mint(yas_pool_address, WALLET(), min_tick, max_tick, 3161);
 
         (yas_pool, token_0, token_1)
