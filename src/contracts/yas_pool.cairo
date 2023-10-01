@@ -232,13 +232,10 @@ mod YASPool {
         }
 
         fn flash(ref self: ContractState,amount0: u256,amount1: u256, data: Array<felt252>){
-            let flash_fee0:u256 = self.fee.read().into();
-            let flash_fee1:u256 = self.fee.read().into();
-            let amount_0:u256 =amount0;
-            let amount_1:u256 =amount1; //pass by ref ?
-
-            let fee0:u256 = FullMath::mul_div(amount_0,flash_fee0,1000000); 
-            let fee1:u256 = FullMath::mul_div(amount_1,flash_fee1,1000000);
+            let flash_fee:u256 = self.fee.read().into();
+    
+            let fee0:u256 = FullMath::mul_div(amount0,flash_fee,1000000); 
+            let fee1:u256 = FullMath::mul_div(amount1,flash_fee,1000000);
             let balance0Before:u256 = self.balance_0();
             let balance1Before:u256 = self.balance_1();
 
@@ -247,7 +244,7 @@ mod YASPool {
             if amount0>0 {IERC20Dispatcher{contract_address: self.token_0.read() }.transfer(callback_contract,amount0);}
             if amount1>0 {IERC20Dispatcher{contract_address: self.token_1.read() }.transfer(callback_contract,amount1);}
             let dispatcher = IYASFlashCallbackDispatcher { contract_address: callback_contract};
-            dispatcher.yas_flash_callback(amount_0,amount_1,data);
+            dispatcher.yas_flash_callback(amount0,amount1,data);
 
             assert(self.balance_0() < balance0Before + fee0,"Flash Loan Not Paid" );
             assert(self.balance_1() < balance1Before + fee1,"Flash Loan Not Paid" );
