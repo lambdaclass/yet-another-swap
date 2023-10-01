@@ -76,6 +76,7 @@ mod YASPool {
         Initialize: Initialize,
         SwapExecuted: SwapExecuted,
         Mint: Mint,
+        Flash: Flash,
     }
 
     /// @notice Emitted exactly once by a pool when #initialize is first called on the pool
@@ -106,6 +107,13 @@ mod YASPool {
         tick_lower: i32,
         tick_upper: i32,
         amount: u128,
+        amount_0: u256,
+        amount_1: u256
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct Flash {
+        sender: ContractAddress,
         amount_0: u256,
         amount_1: u256
     }
@@ -248,6 +256,14 @@ mod YASPool {
 
             assert(self.balance_0() < balance0Before + fee0,"Flash Loan Not Paid" );
             assert(self.balance_1() < balance1Before + fee1,"Flash Loan Not Paid" );
+            self
+                .emit(
+                    Flash {
+                        sender: get_caller_address(),
+                        amount_0: amount0,
+                        amount_1: amount1
+                    }
+                );
         }
 
         fn swap(
