@@ -206,6 +206,7 @@ async fn main() -> Result<()> {
     ).await?;
 
     let owner_t0_balance_bf_mint = balance_of(token_0, owner_address).await?;
+    let owner_t1_balance_bf_mint = balance_of(token_1, owner_address).await?;
     println!("\n==> Mint");
     mint(
         &account,
@@ -218,33 +219,45 @@ async fn main() -> Result<()> {
     ).await?;
     thread::sleep(HALF_SEC);
     let owner_t0_balance = balance_of(token_0, owner_address).await?;
-    println!("Owner $YAS0 balance before mint: {}", format!("{:#064x}", owner_t0_balance_bf_mint));
-    println!("Owner $YAS0 balance after mint: {}", format!("{:#064x}", owner_t0_balance));
+    let owner_t1_balance = balance_of(token_1, owner_address).await?;
+    println!("Owner balance before Mint");
+    println!("$YAS0: {}", owner_t0_balance_bf_mint);
+    println!("$YAS1: {}", owner_t1_balance_bf_mint);
+    println!("Owner balance after Mint");
+    println!("$YAS0: {}", owner_t0_balance);
+    println!("$YAS1: {}", owner_t1_balance);
 
-    println!("\n==> Swap");
-    // let swap_result = account
-    //     .execute(vec![Call {
-    //         to: router_address,
-    //         selector: get_selector_from_name("swap_exact_0_for_1").unwrap(),
-    //         calldata: vec![
-    //             pool_address,
-    //             FieldElement::ZERO,
-    //             FieldElement::from_hex_be("0x0de0b6b3a7640000").unwrap(),
-    //             owner_address,
-    //             FieldElement::ZERO,
-    //             FieldElement::from_hex_be("0x1").unwrap(),
-    //             FieldElement::ZERO
-    //         ],
-    //     }])
-    //     .send()
-    //     .await?;
-    // println!("Transaction Hash: {}", format!("{:#064x}", swap_result.transaction_hash));
+    // let owner_t0_balance_bf_swap = balance_of(token_0, owner_address).await?;
+    // let owner_t1_balance_bf_swap = balance_of(token_1, owner_address).await?;
+    // println!("\n==> Swap");
+    // swap(
+    //     &account,
+    //     router_address,
+    //     pool_address,
+    //     owner_address,
+    //     true,
+    //     25054144837504793118641380156,
+    //      0,
+    //     true,
+    //     10000000000000000,
+    //     0,
+    //     POSITIVE
+    // ).await?;
     // thread::sleep(HALF_SEC);
+    // let owner_t0_balance = balance_of(token_0, owner_address).await?;
+    // let owner_t1_balance = balance_of(token_1, owner_address).await?;
+    // println!("Owner balance before Swap");
+    // println!("$YAS0: {}", owner_t0_balance_bf_swap);
+    // println!("$YAS1: {}", owner_t1_balance_bf_swap);
+    // println!("Owner balance after Swap");
+    // println!("$YAS0: {}", owner_t0_balance);
+    // println!("$YAS1: {}", owner_t1_balance);
 
     let pool_t0_balance = balance_of(token_0, pool_address).await?;
     let pool_t1_balance = balance_of(token_1, pool_address).await?;
-    println!("Pool balance $YAS0: {}", format!("{:#064x}", pool_t0_balance));
-    println!("Pool balance $YAS1: {}", format!("{:#064x}", pool_t1_balance));
+    println!("\nPool balance");
+    println!("$YAS0: {}", pool_t0_balance);
+    println!("$YAS1: {}", pool_t1_balance);
 
     Ok(())
 }
@@ -462,5 +475,60 @@ async fn approve_max(
         .send()
         .await?;
     println!("Transaction Hash: {}", format!("{:#064x}", approve_result.transaction_hash));
+    Ok(())
+}
+
+async fn swap(
+    account: &SingleOwnerAccount<JsonRpcClient<HttpTransport>, LocalWallet>,
+    router_address: FieldElement,
+    pool_address: FieldElement,
+    recipient: FieldElement,
+    zero_for_one: bool,
+    amount_specified_low: u128,
+    amount_specified_high: u128,
+    amount_specified_sign: bool,
+    sqrt_price_limit_x96_low: u128,
+    sqrt_price_limit_x96_high: u128,
+    sqrt_price_limit_x96_sign: bool
+) -> Result<()> {
+    let amount_specified_sign_felt =  if amount_specified_sign {
+        FieldElement::from(1_u32)
+    } else {
+        FieldElement::ZERO
+    };
+
+    let zero_for_one_felt = if zero_for_one {
+        FieldElement::from(1_u32)
+    } else {
+        FieldElement::ZERO
+    };
+
+    let sqrt_price_limit_x96_sign_felt = if sqrt_price_limit_x96_sign {
+        FieldElement::from(1_u32)
+    } else {
+        FieldElement::ZERO
+    };
+
+    let swap_result = account
+        .execute(vec![Call {
+            to: router_address,
+            selector: get_selector_from_name("swap").unwrap(),
+            calldata: vec![
+                pool_address,
+                recipient,
+                zero_for_one_felt,
+                // amount specified
+                FieldElement::from(amount_specified_low),
+                FieldElement::from(amount_specified_high),
+                amount_specified_sign_felt,
+                // sqrt_price_limit
+                FieldElement::from(sqrt_price_limit_x96_low),
+                FieldElement::from(sqrt_price_limit_x96_high),
+                sqrt_price_limit_x96_sign_felt,
+            ],
+        }])
+        .send()
+        .await?;
+    println!("Transaction Hash: {}", format!("{:#064x}", swap_result.transaction_hash));
     Ok(())
 }
