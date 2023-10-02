@@ -3,7 +3,6 @@ mod contracts {
     mod yas_factory;
     mod yas_pool;
     mod yas_router;
-    mod yas_erc20;
 }
 
 mod interfaces {
