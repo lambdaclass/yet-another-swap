@@ -478,7 +478,7 @@ async fn approve_max(
     Ok(())
 }
 
-/// Asynchronously initiates a swap on a Uniswap V3 router contract, exchanging one asset for another within a specified liquidity pool.
+/// Asynchronously initiates a swap on a YAS router contract, exchanging one asset for another within a specified liquidity pool.
 ///
 /// # Arguments
 ///
