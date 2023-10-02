@@ -143,9 +143,12 @@ async fn main() -> Result<()> {
     let pool_class_hash = declare_contract(&account, "YASPool").await?;
     let router_class_hash = declare_contract(&account, "YASRouter").await?;
 
+
     let unique = true;
     let owner_address = FieldElement::from_hex_be(&env::var("OWNER_ADDRESS").expect("OWNER_ADDRESS not set"))
         .expect("Invalid Owner Address");
+
+    println!("\n==> Deploying ERC20 Contracts");
     let (token_0, token_1) = deploy_erc20(owner_address, &account, erc20_class_hash).await?;
 
     // Instantiate the contract factory.
@@ -175,106 +178,9 @@ async fn main() -> Result<()> {
     println!("Transaction Hash: {}", format!("{:#064x}", tx));
 
     println!("\n==> Approve");
-    // let approve_tx = approve();
-    // account
-    //     .execute(vec![Call {
-    //         to: token_0,
-    //         selector: get_selector_from_name("approve").unwrap(),
-    //         calldata: vec![
-    //             router_address,
-    //             owner_address,
-    //             FieldElement::ZERO,
-    //             FieldElement::from(500_u32),
-    //         ],
-    //     }])
-    //     .send()
-    //     .await
-    //     .unwrap();
-
-    // jsonrpc_client()
-    //     .call(
-    //         FunctionCall {
-    //             contract_address: token_0,
-    //             entry_point_selector: get_selector_from_name("approve").unwrap(),
-    //             calldata: vec![
-    //                 router_address,
-    //                 owner_address,
-    //                 FieldElement::from_dec_str("1000000000000000000000").unwrap(),
-    //                 FieldElement::ZERO,
-    //             ],
-    //         },
-    //         BlockId::Tag(BlockTag::Latest),
-    //     )
-    //     .await
-    //     .expect("Error calling contract");
-
-    // account
-    //     .execute(vec![Call {
-    //         to: token_1,
-    //         selector: get_selector_from_name("approve").unwrap(),
-    //         calldata: vec![
-    //             router_address,
-    //             owner_address,
-    //             FieldElement::from(0_u32),
-    //             FieldElement::from(999999_u32),
-    //         ],
-    //     }])
-    //     .send()
-    //     .await
-    //     .unwrap();
-    //
-    // jsonrpc_client()
-    //     .call(
-    //         FunctionCall {
-    //             contract_address: token_1,
-    //             entry_point_selector: get_selector_from_name("create_pool").unwrap(),
-    //             calldata: vec![
-    //                 router_address,
-    //                 owner_address,
-    //                 FieldElement::from(0_u32),
-    //                 FieldElement::from(999999_u32),
-    //             ],
-    //         },
-    //         BlockId::Tag(BlockTag::Latest),
-    //     )
-    //     .await
-    //     .expect("Error calling contract");
-
-    // println!("\n==> Creating Pool TYAS0 & TYAS1");
-    // let invoke_result = account
-    //     .execute(vec![Call {
-    //         to: factory_address,
-    //         selector: get_selector_from_name("create_pool").unwrap(),
-    //         calldata: vec![
-    //             token_0,
-    //             token_1,
-    //             FieldElement::from_hex_be("0x0bb8").unwrap(), // 3000
-    //         ],
-    //     }])
-    //     .send()
-    //     .await
-    //     .unwrap();
-    //
-    // let create_pool_result = jsonrpc_client()
-    //     .call(
-    //         FunctionCall {
-    //             contract_address: factory_address,
-    //             entry_point_selector: get_selector_from_name("create_pool").unwrap(),
-    //             calldata: vec![
-    //                 token_0,
-    //                 token_1,
-    //                 FieldElement::from_hex_be("0x0bb8").unwrap(), // 3000
-    //             ],
-    //         },
-    //         BlockId::Tag(BlockTag::Latest),
-    //     )
-    //     .await
-    //     .expect("Error calling contract");
-    //
-    //
-    // println!("Pool created by Factory: {:#064x}", create_pool_result[0]);
-    // // println!("Transaction Hash: {}", format!("{:#064x}", invoke_result.transaction_hash));
-    //
+    approve_max(&account, token_0, router_address).await?;
+    approve_max(&account, token_1, router_address).await?;
+    thread::sleep(HALF_SEC);
 
     // Instantiate the contract factory.
     println!("\n==> Deploying Pool Contract");
@@ -332,8 +238,8 @@ async fn main() -> Result<()> {
     //     }])
     //     .send()
     //     .await?;
-
     // println!("Transaction Hash: {}", format!("{:#064x}", swap_result.transaction_hash));
+    // thread::sleep(HALF_SEC);
 
     let pool_t0_balance = balance_of(token_0, pool_address).await?;
     let pool_t1_balance = balance_of(token_1, pool_address).await?;
@@ -362,9 +268,6 @@ async fn deploy_erc20(
 ) -> Result<(FieldElement, FieldElement)> {
    // Instantiate the contract factory.
     let erc20_factory = ContractFactory::new(erc20_class_hash, account);
-    println!(
-        "\n==> Deploying ERC20 Contracts",
-    );
     let unique = true;
     let salt = account.get_nonce().await?;
     let erc20_token_0_contract_deployment = erc20_factory.deploy(vec![FieldElement::from_hex_be("0x5459415330").unwrap(), FieldElement::from_hex_be("0x2459415330").unwrap(), FieldElement::from_hex_be("0x4e20").unwrap(), FieldElement::ZERO, recipient], salt, unique);
@@ -496,6 +399,16 @@ async fn mint(
     Ok(())
 }
 
+/// Asynchronously retrieves the balance of a specific token for a given wallet address.
+///
+/// # Arguments
+///
+/// * `token_address` - The address of the token for which the balance is to be retrieved.
+/// * `wallet_address` - The address of the wallet for which the token balance is queried.
+///
+/// # Returns
+///
+/// Returns a `Result` containing a `FieldElement` representing the token balance. The `Ok` variant contains the balance on success, and the `Err` variant contains an error description.
 async fn balance_of(
     token_address: FieldElement,
     wallet_address: FieldElement,
@@ -518,4 +431,36 @@ async fn balance_of(
     } else {
         Ok(FieldElement::ZERO)
     }
+}
+
+/// Asynchronously approves spending of an unlimited amount of tokens by a specified account on behalf of the caller.
+///
+/// # Arguments
+///
+/// * `account` - The reference to a `SingleOwnerAccount` with a `JsonRpcClient` and `LocalWallet`.
+/// * `token_address` - The address of the token contract for which approval is granted.
+/// * `wallet_address` - The address of the wallet that is granted approval to spend tokens.
+///
+/// # Returns
+///
+/// Returns a `Result` indicating success or failure. The `Ok(())` variant is returned on success, and the `Err` variant contains an error description.
+async fn approve_max(
+    account: &SingleOwnerAccount<JsonRpcClient<HttpTransport>, LocalWallet>,
+    token_address: FieldElement,
+    wallet_address: FieldElement,
+) -> Result<()> {
+    let approve_result = account
+        .execute(vec![Call {
+            to: token_address,
+            selector: get_selector_from_name("approve").unwrap(),
+            calldata: vec![
+                wallet_address,
+                FieldElement::from(u128::MAX),
+                FieldElement::from(u128::MAX),
+            ],
+        }])
+        .send()
+        .await?;
+    println!("Transaction Hash: {}", format!("{:#064x}", approve_result.transaction_hash));
+    Ok(())
 }
