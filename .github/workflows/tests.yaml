@@ -1,10 +1,10 @@
 name: Tests
 on:
-    merge_group:
-    push:
-        branches: [ main ]
-    pull_request:
-        branches: [ '*' ]
+  merge_group:
+  push:
+    branches: [main]
+  pull_request:
+    branches: ["*"]
 jobs:
   check:
     runs-on: ubuntu-latest
