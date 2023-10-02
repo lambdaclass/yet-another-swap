@@ -225,8 +225,8 @@ mod ERC20 {
             recipient: ContractAddress,
             amount: u256
         ) {
-            assert(!sender.is_zero(), 'sender is zero');
-            assert(!recipient.is_zero(), 'recipient is zero');
+            assert(!sender.is_zero(), Errors::TRANSFER_FROM_ZERO);
+            assert(!recipient.is_zero(), Errors::TRANSFER_TO_ZERO);
             self.ERC20_balances.write(sender, self.ERC20_balances.read(sender) - amount);
             self.ERC20_balances.write(recipient, self.ERC20_balances.read(recipient) + amount);
             self.emit(Transfer { from: sender, to: recipient, value: amount });
