@@ -1,4 +1,5 @@
 mod contracts {
+    mod yas_erc20;
     mod yas_factory;
     mod yas_pool;
     mod yas_router;
