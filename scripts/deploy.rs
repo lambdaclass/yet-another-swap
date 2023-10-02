@@ -291,12 +291,12 @@ async fn main() -> Result<()> {
 
     println!("\n==> Initialize Pool");
     initialize_pool(
+        &account,
         pool_address,
         // encode_price_sqrt_1_10
         25054144837504793118641380156,
         0,
-        POSITIVE,
-        &account
+        POSITIVE
     ).await?;
 
     account
@@ -323,25 +323,16 @@ async fn main() -> Result<()> {
         .await
         .expect("Error calling contract");
 
-    thread::sleep(HALF_SEC);
-    println!("\n==> Mint()");
-    let mint_result = account
-        .execute(vec![Call {
-            to: router_address,
-            selector: get_selector_from_name("mint").unwrap(),
-            calldata: vec![
-                pool_address,
-                owner_address,
-                FieldElement::from(887220_u64),
-                FieldElement::from(1_u64),
-                FieldElement::from(887220_u64),
-                FieldElement::from(0_u64),
-                FieldElement::from(3161_u128),
-            ],
-        }])
-        .send()
-        .await?;
-    println!("Transaction Hash: {}", format!("{:#064x}", mint_result.transaction_hash));
+    println!("\n==> Mint");
+    mint(
+        &account,
+        pool_address,
+        router_address,
+        owner_address,
+        -887220,
+        887220,
+        3161
+    ).await?;
     thread::sleep(HALF_SEC);
 
     // println!("\n==> Swap()");
@@ -466,12 +457,25 @@ async fn deploy_erc20(
     Ok((erc20_token_0_deployed_address, erc20_token_1_deployed_address))
 }
 
+/// Asynchronously initializes a liquidity pool using the provided parameters.
+///
+/// # Arguments
+///
+/// * `account` - The reference to a `SingleOwnerAccount` with a `JsonRpcClient` and `LocalWallet`.
+/// * `pool_address` - The target address of the liquidity pool to be initialized.
+/// * `price_sqrt_low` - The lower bound of the square root of the price in the liquidity pool.
+/// * `price_sqrt_high` - The upper bound of the square root of the price in the liquidity pool.
+/// * `sign` - A boolean flag indicating the sign of the price, where `true` represents negative and `false` represents positive.
+///
+/// # Returns
+///
+/// Returns a `Result` indicating success or failure. The `Ok(())` variant is returned on success, and the `Err` variant contains an error description.
 async fn initialize_pool(
+    account: &SingleOwnerAccount<JsonRpcClient<HttpTransport>, LocalWallet>,
     pool_address: FieldElement,
     price_sqrt_low: u128,
     price_sqrt_high: u128,
     sign: bool,
-    account: &SingleOwnerAccount<JsonRpcClient<HttpTransport>, LocalWallet>,
 ) -> Result<()> {
     let invoke_result = account
         .execute(vec![Call {
@@ -509,5 +513,60 @@ async fn initialize_pool(
         ).await?;
 
     println!("Transaction Hash: {}", invoke_result.transaction_hash);
+    Ok(())
+}
+
+/// Asynchronously mints liquidity tokens by providing liquidity to a specified range in a YAS pool.
+///
+/// # Arguments
+///
+/// * `account` - The reference to a `SingleOwnerAccount` with a `JsonRpcClient` and `LocalWallet`.
+/// * `pool_address` - The target address of the Uniswap V3 liquidity pool.
+/// * `router_address` - The address of the Uniswap V3 router contract.
+/// * `recipient` - The address where the minted liquidity tokens will be sent.
+/// * `tick_lower` - The lower tick limit for the liquidity provision range.
+/// * `tick_upper` - The upper tick limit for the liquidity provision range.
+/// * `amount` - The amount of tokens to be provided as liquidity.
+///
+/// # Returns
+///
+/// Returns a `Result` indicating success or failure. The `Ok(())` variant is returned on success, and the `Err` variant contains an error description.
+async fn mint(
+    account: &SingleOwnerAccount<JsonRpcClient<HttpTransport>, LocalWallet>,
+    pool_address: FieldElement,
+    router_address: FieldElement,
+    recipient: FieldElement,
+    tick_lower: i32,
+    tick_upper: i32,
+    amount: u128,
+) -> Result<()> {
+    let tick_lower_sign = match tick_lower.is_negative() {
+        true =>  FieldElement::from(1_u32),
+        false =>  FieldElement::ZERO,
+    };
+
+    let tick_upper_sign = match tick_upper.is_negative() {
+        true =>  FieldElement::from(1_u32),
+        false =>  FieldElement::ZERO,
+    };
+
+    let mint_result = account
+        .execute(vec![Call {
+            to: router_address,
+            selector: get_selector_from_name("mint").unwrap(),
+            calldata: vec![
+                pool_address,
+                recipient,
+                FieldElement::from(tick_lower.abs() as u32),
+                tick_lower_sign,
+                FieldElement::from(tick_upper.abs() as u32),
+                tick_upper_sign,
+                FieldElement::from(amount),
+            ],
+        }])
+        .send()
+        .await?;
+
+    println!("Transaction Hash: {}", format!("{:#064x}", mint_result.transaction_hash));
     Ok(())
 }
