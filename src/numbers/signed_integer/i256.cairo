@@ -164,7 +164,7 @@ fn i256_check_sign_zero(x: i256) {
 /// Cf: IntegerTrait::new docstring
 fn i256_new(mag: u256, sign: bool) -> i256 {
     if sign == true {
-        assert(mag <= (BoundedInt::max() - 1) / 2, 'int: out of range');
+        assert(mag <= 57896044618658097711785492504343953926634992332820282019728792003956564819968_u256, 'int: out of range');
     } else {
         assert(mag <= ((BoundedInt::max() - 1) / 2 - 1), 'int: out of range');
     }
