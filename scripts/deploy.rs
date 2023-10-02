@@ -334,25 +334,6 @@ async fn initialize_pool(
             ],
         }]).send().await?;
 
-    jsonrpc_client()
-        .call(
-            FunctionCall {
-                contract_address: pool_address,
-                entry_point_selector: get_selector_from_name("initialize").unwrap(),
-                calldata: vec![
-                    // fp mag
-                    FieldElement::from(price_sqrt_low),
-                    FieldElement::from(price_sqrt_high),
-                    // sign
-                    match sign {
-                        NEGATIVE => FieldElement::from(1_u32),
-                        POSITIVE => FieldElement::ZERO,
-                    }
-                ],
-            },
-            BlockId::Tag(BlockTag::Latest),
-        ).await?;
-
     println!("Transaction Hash: {}", invoke_result.transaction_hash);
     Ok(())
 }
