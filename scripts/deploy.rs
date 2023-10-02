@@ -299,30 +299,7 @@ async fn main() -> Result<()> {
         POSITIVE
     ).await?;
 
-    account
-        .execute(vec![Call {
-            to: token_0,
-            selector: get_selector_from_name("balanceOf").unwrap(),
-            calldata: vec![
-                owner_address
-            ],
-        }])
-        .send()
-        .await?;
-    let old_balance = jsonrpc_client()
-        .call(
-            FunctionCall {
-                contract_address: token_0,
-                entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
-                calldata: vec![
-                    owner_address
-                ],
-            },
-            BlockId::Tag(BlockTag::Latest),
-        )
-        .await
-        .expect("Error calling contract");
-
+    let owner_t0_balance_bf_mint = balance_of(token_0, owner_address).await?;
     println!("\n==> Mint");
     mint(
         &account,
@@ -334,8 +311,11 @@ async fn main() -> Result<()> {
         3161
     ).await?;
     thread::sleep(HALF_SEC);
+    let owner_t0_balance = balance_of(token_0, owner_address).await?;
+    println!("Owner $YAS0 balance before mint: {}", format!("{:#064x}", owner_t0_balance_bf_mint));
+    println!("Owner $YAS0 balance after mint: {}", format!("{:#064x}", owner_t0_balance));
 
-    // println!("\n==> Swap()");
+    println!("\n==> Swap");
     // let swap_result = account
     //     .execute(vec![Call {
     //         to: router_address,
@@ -355,65 +335,10 @@ async fn main() -> Result<()> {
 
     // println!("Transaction Hash: {}", format!("{:#064x}", swap_result.transaction_hash));
 
-    // println!("\n==> balanceOf()");
-    // let balance = account
-    //     .execute(vec![Call {
-    //         to: token_0,
-    //         selector: get_selector_from_name("balanceOf").unwrap(),
-    //         calldata: vec![
-    //             owner_address
-    //         ],
-    //     }])
-    //     .send()
-    //     .await?;
-    // println!("balance: {}", balance[0]);
-
-    let balance_result = jsonrpc_client()
-        .call(
-            FunctionCall {
-                contract_address: token_0,
-                entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
-                calldata: vec![
-                    owner_address
-                ],
-            },
-            BlockId::Tag(BlockTag::Latest),
-        )
-        .await
-        .expect("Error calling contract");
-
-    let pool_result = jsonrpc_client()
-        .call(
-            FunctionCall {
-                contract_address: token_0,
-                entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
-                calldata: vec![
-                    pool_address
-                ],
-            },
-            BlockId::Tag(BlockTag::Latest),
-        )
-        .await
-        .expect("Error calling contract");
-
-    let pool1_result = jsonrpc_client()
-        .call(
-            FunctionCall {
-                contract_address: token_1,
-                entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
-                calldata: vec![
-                    pool_address
-                ],
-            },
-            BlockId::Tag(BlockTag::Latest),
-        )
-        .await
-        .expect("Error calling contract");
-
-    println!("Owner old balance $YAS0: {}", format!("{:#064x}", old_balance[0]));
-    println!("Owner new balance $YAS0: {}", format!("{:#064x}", balance_result[0]));
-    println!("Pool balance $YAS0: {}", format!("{:#064x}", pool_result[0]));
-    println!("Pool balance $YAS1: {}", format!("{:#064x}", pool1_result[0]));
+    let pool_t0_balance = balance_of(token_0, pool_address).await?;
+    let pool_t1_balance = balance_of(token_1, pool_address).await?;
+    println!("Pool balance $YAS0: {}", format!("{:#064x}", pool_t0_balance));
+    println!("Pool balance $YAS1: {}", format!("{:#064x}", pool_t1_balance));
 
     Ok(())
 }
@@ -569,4 +494,28 @@ async fn mint(
 
     println!("Transaction Hash: {}", format!("{:#064x}", mint_result.transaction_hash));
     Ok(())
+}
+
+async fn balance_of(
+    token_address: FieldElement,
+    wallet_address: FieldElement,
+) -> Result<FieldElement> {
+    let balance_result = jsonrpc_client()
+        .call(
+            FunctionCall {
+                contract_address: token_address,
+                entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
+                calldata: vec![
+                    wallet_address
+                ],
+            },
+            BlockId::Tag(BlockTag::Latest),
+        )
+        .await?;
+
+    if !balance_result.is_empty() {
+        Ok(balance_result[0])
+    } else {
+        Ok(FieldElement::ZERO)
+    }
 }
