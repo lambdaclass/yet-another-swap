@@ -652,7 +652,7 @@ mod YASPool {
             }
 
             let slot_0 = self.slot_0.read();
-            
+
             let position = self
                 .update_position(params.position_key, params.liquidity_delta, slot_0.tick);
 
