@@ -478,6 +478,25 @@ async fn approve_max(
     Ok(())
 }
 
+/// Asynchronously initiates a swap on a Uniswap V3 router contract, exchanging one asset for another within a specified liquidity pool.
+///
+/// # Arguments
+///
+/// * `account` - The reference to a `SingleOwnerAccount` with a `JsonRpcClient` and `LocalWallet`.
+/// * `router_address` - The address of the Uniswap V3 router contract.
+/// * `pool_address` - The address of the Uniswap V3 liquidity pool.
+/// * `recipient` - The address where the swapped assets will be sent.
+/// * `zero_for_one` - A boolean flag indicating the direction of the swap: `true` for swapping token0 to token1, `false` for token1 to token0.
+/// * `amount_specified_low` - The lower bound of the specified input or output amount for the swap.
+/// * `amount_specified_high` - The upper bound of the specified input or output amount for the swap.
+/// * `amount_specified_sign` - A boolean flag indicating the sign of the specified amount, where `true` represents negative and `false` represents positive.
+/// * `sqrt_price_limit_x96_low` - The lower bound of the square root of the price limit for the swap.
+/// * `sqrt_price_limit_x96_high` - The upper bound of the square root of the price limit for the swap.
+/// * `sqrt_price_limit_x96_sign` - A boolean flag indicating the sign of the square root of the price limit, where `true` represents negative and `false` represents positive.
+///
+/// # Returns
+///
+/// Returns a `Result` indicating success or failure. The `Ok(())` variant is returned on success, and the `Err` variant contains an error description.
 async fn swap(
     account: &SingleOwnerAccount<JsonRpcClient<HttpTransport>, LocalWallet>,
     router_address: FieldElement,
