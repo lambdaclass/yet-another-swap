@@ -199,8 +199,8 @@ async fn main() -> Result<()> {
     initialize_pool(
         &account,
         pool_address,
-        // encode_price_sqrt_1_10
-        25054144837504793118641380156,
+        // encode_price_sqrt_1_1
+        79228162514264337593543950336,
         0,
         POSITIVE
     ).await?;
@@ -215,7 +215,7 @@ async fn main() -> Result<()> {
         owner_address,
         -887220,
         887220,
-        3161
+        2000000000000000000
     ).await?;
     thread::sleep(HALF_SEC);
     let owner_t0_balance = balance_of(token_0, owner_address).await?;
@@ -227,31 +227,32 @@ async fn main() -> Result<()> {
     println!("$YAS0: {}", owner_t0_balance);
     println!("$YAS1: {}", owner_t1_balance);
 
-    // let owner_t0_balance_bf_swap = balance_of(token_0, owner_address).await?;
-    // let owner_t1_balance_bf_swap = balance_of(token_1, owner_address).await?;
-    // println!("\n==> Swap");
-    // swap(
-    //     &account,
-    //     router_address,
-    //     pool_address,
-    //     owner_address,
-    //     true,
-    //     25054144837504793118641380156,
-    //      0,
-    //     true,
-    //     10000000000000000,
-    //     0,
-    //     POSITIVE
-    // ).await?;
-    // thread::sleep(HALF_SEC);
-    // let owner_t0_balance = balance_of(token_0, owner_address).await?;
-    // let owner_t1_balance = balance_of(token_1, owner_address).await?;
-    // println!("Owner balance before Swap");
-    // println!("$YAS0: {}", owner_t0_balance_bf_swap);
-    // println!("$YAS1: {}", owner_t1_balance_bf_swap);
-    // println!("Owner balance after Swap");
-    // println!("$YAS0: {}", owner_t0_balance);
-    // println!("$YAS1: {}", owner_t1_balance);
+    let owner_t0_balance_bf_swap = balance_of(token_0, owner_address).await?;
+    let owner_t1_balance_bf_swap = balance_of(token_1, owner_address).await?;
+    println!("\n==> Swap");
+    println!("500000000000000000 $YAS0 to $YAS1");
+    swap(
+        &account,
+        router_address,
+        pool_address,
+        owner_address,
+        true,
+        500000000000000000,
+         0,
+        true,
+        4295128740,
+        0,
+        POSITIVE
+    ).await?;
+    thread::sleep(HALF_SEC);
+    let owner_t0_balance = balance_of(token_0, owner_address).await?;
+    let owner_t1_balance = balance_of(token_1, owner_address).await?;
+    println!("Owner balance before Swap");
+    println!("$YAS0: {}", owner_t0_balance_bf_swap);
+    println!("$YAS1: {}", owner_t1_balance_bf_swap);
+    println!("Owner balance after Swap");
+    println!("$YAS0: {}", owner_t0_balance);
+    println!("$YAS1: {}", owner_t1_balance);
 
     let pool_t0_balance = balance_of(token_0, pool_address).await?;
     let pool_t1_balance = balance_of(token_1, pool_address).await?;
@@ -283,13 +284,13 @@ async fn deploy_erc20(
     let erc20_factory = ContractFactory::new(erc20_class_hash, account);
     let unique = true;
     let salt = account.get_nonce().await?;
-    let erc20_token_0_contract_deployment = erc20_factory.deploy(vec![FieldElement::from_hex_be("0x5459415330").unwrap(), FieldElement::from_hex_be("0x2459415330").unwrap(), FieldElement::from_hex_be("0x4e20").unwrap(), FieldElement::ZERO, recipient], salt, unique);
+    let erc20_token_0_contract_deployment = erc20_factory.deploy(vec![FieldElement::from_hex_be("0x5459415330").unwrap(), FieldElement::from_hex_be("0x2459415330").unwrap(), FieldElement::from_hex_be("0x3782dace9d900000").unwrap(), FieldElement::ZERO, recipient], salt, unique);
     let erc20_token_0_deployed_address = erc20_token_0_contract_deployment.deployed_address();
     println!("Token TYAS0 Address: {}", format!("{:#064x}", erc20_token_0_deployed_address));
     let estimated_fee = erc20_token_0_contract_deployment.estimate_fee().await?.overall_fee * 3 / 2;
     erc20_token_0_contract_deployment.max_fee(estimated_fee.into()).send().await?.transaction_hash;
 
-    let erc20_token_1_contract_deployment = erc20_factory.deploy(vec![FieldElement::from_hex_be("0x5459415331").unwrap(), FieldElement::from_hex_be("0x2459415331").unwrap(),  FieldElement::from_hex_be("0x4e20").unwrap(), FieldElement::ZERO, recipient], salt, unique);
+    let erc20_token_1_contract_deployment = erc20_factory.deploy(vec![FieldElement::from_hex_be("0x5459415331").unwrap(), FieldElement::from_hex_be("0x2459415331").unwrap(),  FieldElement::from_hex_be("0x3782dace9d900000").unwrap(), FieldElement::ZERO, recipient], salt, unique);
     let erc20_token_1_deployed_address = erc20_token_1_contract_deployment.deployed_address();
     println!("Token TYAS1 Address: {}", format!("{:#064x}", erc20_token_1_deployed_address));
     let estimated_fee = erc20_token_1_contract_deployment.estimate_fee().await?.overall_fee * 3 / 2;
