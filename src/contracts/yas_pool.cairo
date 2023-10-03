@@ -278,8 +278,8 @@ mod YASPool {
 
             // continue swapping as long as we haven't used the entire input/output and haven't reached the price limit
             loop {
-                if state.amount_specified_remaining.is_non_zero()
-                    && state.sqrt_price_X96 != sqrt_price_limit_X96 {
+                if state.amount_specified_remaining.is_zero()
+                    || state.sqrt_price_X96 == sqrt_price_limit_X96 {
                     break;
                 }
 
@@ -756,8 +756,6 @@ mod YASPool {
         }
 
         fn balance_0(self: @ContractState) -> u256 {
-            let caller = get_caller_address();
-            let contract_address = get_contract_address();
             IERC20Dispatcher { contract_address: self.token_0.read() }
                 .balanceOf(get_contract_address())
         }
