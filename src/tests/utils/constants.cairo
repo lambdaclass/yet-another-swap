@@ -67,6 +67,14 @@ mod PoolConstants {
         contract_address_const::<'OWNER'>()
     }
 
+    fn WALLET() -> ContractAddress {
+        contract_address_const::<'WALLET'>()
+    }
+
+    fn POOL_ADDRESS() -> ContractAddress {
+        contract_address_const::<'POOL_ADDRESS'>()
+    }
+
     fn FACTORY_ADDRESS() -> ContractAddress {
         contract_address_const::<'FACTORY'>()
     }
