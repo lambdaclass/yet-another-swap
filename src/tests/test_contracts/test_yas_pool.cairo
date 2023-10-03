@@ -488,7 +488,7 @@ mod YASPoolTests {
         use yas::libraries::tick::{Tick, Tick::TickImpl};
         use yas::libraries::tick_math::{TickMath::MIN_TICK, TickMath::MAX_TICK};
         use yas::libraries::position::{Info, Position, Position::PositionImpl, PositionKey};
-        use yas::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B};
+        use yas::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, WALLET};
         use yas::tests::utils::constants::FactoryConstants::{FeeAmount, fee_amount, tick_spacing};
         use yas::contracts::yas_erc20::{ERC20, ERC20::ERC20Impl, IERC20Dispatcher};
         use yas::numbers::signed_integer::{
@@ -530,8 +530,8 @@ mod YASPoolTests {
                     let balance_token_0 = token_0.balanceOf(yas_pool.contract_address);
                     let balance_token_1 = token_1.balanceOf(yas_pool.contract_address);
 
-                    assert(balance_token_0 == 9996, 'wrong balance token 0');
-                    assert(balance_token_1 == 1000, 'wrong balance token 1');
+                    assert(balance_token_0 == 2000000000000000000, 'wrong balance token 0');
+                    assert(balance_token_1 == 2000000000000000000, 'wrong balance token 1');
                 }
             // TODO: 'max tick with max leverage'
             // TODO: 'works for max tick'
@@ -581,27 +581,24 @@ mod YASPoolTests {
         ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
     };
 
-    use debug::PrintTrait;
-
     fn setup() -> (IYASPoolDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let mint_callback = deploy_mint_callback(); // 0x1
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
 
         // Deploy ERC20 tokens with factory address
-        // set_contract_address(yas_factory.contract_address);
-        let token_0 = deploy_erc20('YAS0', '$YAS0', BoundedInt::max(), OWNER()); // 0x3
-        let token_1 = deploy_erc20('YAS1', '$YAS1', BoundedInt::max(), OWNER()); // 0x4
+        let token_0 = deploy_erc20('YAS0', '$YAS0', 4000000000000000000, OWNER()); // 0x3
+        let token_1 = deploy_erc20('YAS1', '$YAS1', 4000000000000000000, OWNER()); // 0x4
 
         set_contract_address(OWNER());
-        token_0.transfer(WALLET(), 9996);
-        token_1.transfer(WALLET(), 1000);
+        token_0.transfer(WALLET(), 4000000000000000000);
+        token_1.transfer(WALLET(), 4000000000000000000);
 
         // Give permissions to expend WALLET() tokens
         set_contract_address(WALLET());
         token_1.approve(mint_callback.contract_address, BoundedInt::max());
         token_0.approve(mint_callback.contract_address, BoundedInt::max());
 
-        let encode_price_sqrt_1_10 = FP64x96Impl::new(25054144837504793118641380156, false);
+        let encode_price_sqrt_1_1 = FP64x96Impl::new(79228162514264337593543950336, false);
 
         let yas_pool_address = yas_factory // 0x5
             .create_pool(
@@ -610,14 +607,11 @@ mod YASPoolTests {
         let yas_pool = IYASPoolDispatcher { contract_address: yas_pool_address };
 
         set_contract_address(OWNER());
-        yas_pool.initialize(encode_price_sqrt_1_10);
+        yas_pool.initialize(encode_price_sqrt_1_1);
 
         let (min_tick, max_tick) = get_min_tick_and_max_tick();
         set_contract_address(WALLET());
-        'min_tick.mag'.print();
-        min_tick.mag.print();
-        max_tick.mag.print();
-        mint_callback.mint(yas_pool_address, WALLET(), min_tick, max_tick, 3161);
+        mint_callback.mint(yas_pool_address, WALLET(), min_tick, max_tick, 2000000000000000000);
 
         (yas_pool, token_0, token_1)
     }
