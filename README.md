@@ -207,15 +207,15 @@ This demo will perform the following steps:
 
 2. Start Local Testnet
 
-  ```bash
-  make start-katana
-  ```
+   ```bash
+   make start-katana
+   ```
 
 3. Run Local Demo
 
-  ```bash
-  make demo-local
-  ```
+   ```bash
+   make demo-local
+   ```
 
 ## Override `.env` file
 
