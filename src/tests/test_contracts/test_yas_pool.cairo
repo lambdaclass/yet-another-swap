@@ -592,6 +592,10 @@ mod YASPoolTests {
         set_contract_address(OWNER());
         token_0.transfer(WALLET(), 4000000000000000000);
         token_1.transfer(WALLET(), 4000000000000000000);
+        
+        // set_contract_address(yas_factory.contract_address);
+        let token_0 = deploy_erc20('YAS0', '$YAS0', BoundedInt::max(), OWNER()); // 0x3
+        let token_1 = deploy_erc20('YAS1', '$YAS1', BoundedInt::max(), OWNER()); // 0x4
 
         // Give permissions to expend WALLET() tokens
         set_contract_address(WALLET());
