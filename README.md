@@ -167,7 +167,7 @@ On Starknet, the deployment process is in two steps:
    ```
 
 2. Start Local Testnet
-   
+
    ```bash
    make start-katana
    ```
@@ -189,6 +189,7 @@ On Starknet, the deployment process is in two steps:
   ```
 
 ## Run local demo in Katana
+
 This demo will perform the following steps:
 
 - Declaration of the following contracts: ERC20 Token, YASFactory, YASPool, and YASRouter.
