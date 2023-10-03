@@ -1,6 +1,6 @@
 use starknet::ContractAddress;
 
-use yas::numbers::signed_integer::{i32::i32, i256::i256, integer_trait::IntegerTrait};
+use yas::numbers::signed_integer::{i32::i32, i256::i256};
 use yas::numbers::fixed_point::implementations::impl_64x96::FixedType;
 
 #[starknet::interface]
