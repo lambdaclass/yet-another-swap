@@ -282,6 +282,8 @@ Thanks goes to these wonderful people
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Nadai2010"><img src="https://avatars.githubusercontent.com/u/112663528?v=4" width="100px;" alt="Nadai "/><br /><sub><b>Nadai </b></sub></a><br /><a href="https://github.com/lambdaclass/yet-another-swap/commits?author=Nadai2010" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/dbejarano820"><img src="https://avatars.githubusercontent.com/u/58019353?v=4" width="100px;" alt="Daniel Bejarano "/><br /><sub><b>Daniel Bejarano </b></sub></a><br /><a href="https://github.com/lambdaclass/yet-another-swap/commits?author=dbejarano820" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ftupas"><img src="https://avatars.githubusercontent.com/u/35031356?v=4" width="100px;" alt="ftupas "/><br /><sub><b>ftupas </b></sub></a><br /><a href="https://github.com/lambdaclass/yet-another-swap/commits?author=ftupas" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
