@@ -20,3 +20,7 @@ url = "2.2.2"
 [[bin]]
 name = "deploy"
 path = "scripts/deploy.rs"
+
+[[bin]]
+name = "local"
+path = "scripts/local.rs"

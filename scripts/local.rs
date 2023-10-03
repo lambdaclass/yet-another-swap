@@ -1,5 +1,6 @@
 use std::sync::Arc;
-use std::{env, fs};
+use std::{env, fs, thread, time};
+use core::time::Duration;
 
 use dotenv::dotenv;
 use eyre::Result;
@@ -7,7 +8,7 @@ use starknet::accounts::{Account, Call, ConnectedAccount, ExecutionEncoding, Sin
 use starknet::contract::ContractFactory;
 use starknet::core::types::contract::SierraClass;
 use starknet::core::utils::get_selector_from_name;
-use starknet::core::types::{BlockId, BlockTag, FieldElement, StarknetError};
+use starknet::core::types::{BlockId, BlockTag, FieldElement, FunctionCall, StarknetError};
 use starknet::providers::jsonrpc::{HttpTransport, JsonRpcClient};
 use starknet::providers::{MaybeUnknownErrorCode, Provider, ProviderError, StarknetErrorWithMessage};
 use starknet::signers::{LocalWallet, SigningKey};
@@ -18,6 +19,8 @@ const ENCODING: ExecutionEncoding = ExecutionEncoding::Legacy;
 
 const POSITIVE: bool = false;
 const NEGATIVE: bool = true;
+
+const HALF_SEC: Duration = time::Duration::from_millis(500);
 
 /// Create a StarkNet provider.
 /// If the `STARKNET_RPC` environment variable is set, it will be used as the RPC URL.
@@ -197,8 +200,203 @@ async fn initialize_pool(
     Ok(())
 }
 
+/// Asynchronously mints liquidity tokens by providing liquidity to a specified range in a YAS pool.
+///
+/// # Arguments
+///
+/// * `account` - The reference to a `SingleOwnerAccount` with a `JsonRpcClient` and `LocalWallet`.
+/// * `pool_address` - The target address of the Uniswap V3 liquidity pool.
+/// * `router_address` - The address of the Uniswap V3 router contract.
+/// * `recipient` - The address where the minted liquidity tokens will be sent.
+/// * `tick_lower` - The lower tick limit for the liquidity provision range.
+/// * `tick_upper` - The upper tick limit for the liquidity provision range.
+/// * `amount` - The amount of tokens to be provided as liquidity.
+///
+/// # Returns
+///
+/// Returns a `Result` indicating success or failure. The `Ok(())` variant is returned on success, and the `Err` variant contains an error description.
+async fn mint(
+    account: &SingleOwnerAccount<JsonRpcClient<HttpTransport>, LocalWallet>,
+    pool_address: FieldElement,
+    router_address: FieldElement,
+    recipient: FieldElement,
+    tick_lower: i32,
+    tick_upper: i32,
+    amount: u128,
+) -> Result<()> {
+    let tick_lower_sign = match tick_lower.is_negative() {
+        true =>  FieldElement::from(1_u32),
+        false =>  FieldElement::ZERO,
+    };
+
+    let tick_upper_sign = match tick_upper.is_negative() {
+        true =>  FieldElement::from(1_u32),
+        false =>  FieldElement::ZERO,
+    };
+
+    let mint_result = account
+        .execute(vec![Call {
+            to: router_address,
+            selector: get_selector_from_name("mint").unwrap(),
+            calldata: vec![
+                pool_address,
+                recipient,
+                FieldElement::from(tick_lower.abs() as u32),
+                tick_lower_sign,
+                FieldElement::from(tick_upper.abs() as u32),
+                tick_upper_sign,
+                FieldElement::from(amount),
+            ],
+        }])
+        .send()
+        .await?;
+
+    println!("Transaction Hash: {}", format!("{:#064x}", mint_result.transaction_hash));
+    Ok(())
+}
+
+/// Asynchronously retrieves the balance of a specific token for a given wallet address.
+///
+/// # Arguments
+///
+/// * `token_address` - The address of the token for which the balance is to be retrieved.
+/// * `wallet_address` - The address of the wallet for which the token balance is queried.
+///
+/// # Returns
+///
+/// Returns a `Result` containing a `FieldElement` representing the token balance. The `Ok` variant contains the balance on success, and the `Err` variant contains an error description.
+async fn balance_of(
+    token_address: FieldElement,
+    wallet_address: FieldElement,
+) -> Result<FieldElement> {
+    let balance_result = jsonrpc_client()
+        .call(
+            FunctionCall {
+                contract_address: token_address,
+                entry_point_selector: get_selector_from_name("balanceOf").unwrap(),
+                calldata: vec![
+                    wallet_address
+                ],
+            },
+            BlockId::Tag(BlockTag::Latest),
+        )
+        .await?;
+
+    if !balance_result.is_empty() {
+        Ok(balance_result[0])
+    } else {
+        Ok(FieldElement::ZERO)
+    }
+}
+
+/// Asynchronously approves spending of an unlimited amount of tokens by a specified account on behalf of the caller.
+///
+/// # Arguments
+///
+/// * `account` - The reference to a `SingleOwnerAccount` with a `JsonRpcClient` and `LocalWallet`.
+/// * `token_address` - The address of the token contract for which approval is granted.
+/// * `wallet_address` - The address of the wallet that is granted approval to spend tokens.
+///
+/// # Returns
+///
+/// Returns a `Result` indicating success or failure. The `Ok(())` variant is returned on success, and the `Err` variant contains an error description.
+async fn approve_max(
+    account: &SingleOwnerAccount<JsonRpcClient<HttpTransport>, LocalWallet>,
+    token_address: FieldElement,
+    wallet_address: FieldElement,
+) -> Result<()> {
+    let approve_result = account
+        .execute(vec![Call {
+            to: token_address,
+            selector: get_selector_from_name("approve").unwrap(),
+            calldata: vec![
+                wallet_address,
+                FieldElement::from(u128::MAX),
+                FieldElement::from(u128::MAX),
+            ],
+        }])
+        .send()
+        .await?;
+    println!("Transaction Hash: {}", format!("{:#064x}", approve_result.transaction_hash));
+    Ok(())
+}
+
+/// Asynchronously initiates a swap on a YAS router contract, exchanging one asset for another within a specified liquidity pool.
+///
+/// # Arguments
+///
+/// * `account` - The reference to a `SingleOwnerAccount` with a `JsonRpcClient` and `LocalWallet`.
+/// * `router_address` - The address of the Uniswap V3 router contract.
+/// * `pool_address` - The address of the Uniswap V3 liquidity pool.
+/// * `recipient` - The address where the swapped assets will be sent.
+/// * `zero_for_one` - A boolean flag indicating the direction of the swap: `true` for swapping token0 to token1, `false` for token1 to token0.
+/// * `amount_specified_low` - The lower bound of the specified input or output amount for the swap.
+/// * `amount_specified_high` - The upper bound of the specified input or output amount for the swap.
+/// * `amount_specified_sign` - A boolean flag indicating the sign of the specified amount, where `true` represents negative and `false` represents positive.
+/// * `sqrt_price_limit_x96_low` - The lower bound of the square root of the price limit for the swap.
+/// * `sqrt_price_limit_x96_high` - The upper bound of the square root of the price limit for the swap.
+/// * `sqrt_price_limit_x96_sign` - A boolean flag indicating the sign of the square root of the price limit, where `true` represents negative and `false` represents positive.
+///
+/// # Returns
+///
+/// Returns a `Result` indicating success or failure. The `Ok(())` variant is returned on success, and the `Err` variant contains an error description.
+async fn swap(
+    account: &SingleOwnerAccount<JsonRpcClient<HttpTransport>, LocalWallet>,
+    router_address: FieldElement,
+    pool_address: FieldElement,
+    recipient: FieldElement,
+    zero_for_one: bool,
+    amount_specified_low: u128,
+    amount_specified_high: u128,
+    amount_specified_sign: bool,
+    sqrt_price_limit_x96_low: u128,
+    sqrt_price_limit_x96_high: u128,
+    sqrt_price_limit_x96_sign: bool
+) -> Result<()> {
+    let amount_specified_sign_felt =  if amount_specified_sign {
+        FieldElement::from(1_u32)
+    } else {
+        FieldElement::ZERO
+    };
+
+    let zero_for_one_felt = if zero_for_one {
+        FieldElement::from(1_u32)
+    } else {
+        FieldElement::ZERO
+    };
+
+    let sqrt_price_limit_x96_sign_felt = if sqrt_price_limit_x96_sign {
+        FieldElement::from(1_u32)
+    } else {
+        FieldElement::ZERO
+    };
+
+    let swap_result = account
+        .execute(vec![Call {
+            to: router_address,
+            selector: get_selector_from_name("swap").unwrap(),
+            calldata: vec![
+                pool_address,
+                recipient,
+                zero_for_one_felt,
+                // amount specified
+                FieldElement::from(amount_specified_low),
+                FieldElement::from(amount_specified_high),
+                amount_specified_sign_felt,
+                // sqrt_price_limit
+                FieldElement::from(sqrt_price_limit_x96_low),
+                FieldElement::from(sqrt_price_limit_x96_high),
+                sqrt_price_limit_x96_sign_felt,
+            ],
+        }])
+        .send()
+        .await?;
+    println!("Transaction Hash: {}", format!("{:#064x}", swap_result.transaction_hash));
+    Ok(())
+}
+
 #[tokio::main]
-pub async fn main() -> Result<()> {
+async fn main() -> Result<()> {
     dotenv().ok();
 
     // Create signer from private key.
@@ -271,6 +469,68 @@ pub async fn main() -> Result<()> {
         0,
         POSITIVE
     ).await?;
+
+    println!("\n==> Approve");
+    approve_max(&account, token_0, router_address).await?;
+    approve_max(&account, token_1, router_address).await?;
+    thread::sleep(HALF_SEC);
+
+    let owner_t0_balance_bf_mint = balance_of(token_0, owner_address).await?;
+    let owner_t1_balance_bf_mint = balance_of(token_1, owner_address).await?;
+    println!("\n==> Mint");
+    mint(
+        &account,
+        pool_address,
+        router_address,
+        owner_address,
+        -887220,
+        887220,
+        2000000000000000000
+    ).await?;
+    thread::sleep(HALF_SEC);
+
+    let owner_t0_balance = balance_of(token_0, owner_address).await?;
+    let owner_t1_balance = balance_of(token_1, owner_address).await?;
+    println!("Owner balance before Mint");
+    println!("$YAS0: {}", owner_t0_balance_bf_mint);
+    println!("$YAS1: {}", owner_t1_balance_bf_mint);
+    println!("Owner balance after Mint");
+    println!("$YAS0: {}", owner_t0_balance);
+    println!("$YAS1: {}", owner_t1_balance);
+
+    let owner_t0_balance_bf_swap = balance_of(token_0, owner_address).await?;
+    let owner_t1_balance_bf_swap = balance_of(token_1, owner_address).await?;
+    println!("\n==> Swap");
+    println!("500000000000000000 $YAS0 to $YAS1");
+    swap(
+        &account,
+        router_address,
+        pool_address,
+        owner_address,
+        true,
+        500000000000000000,
+         0,
+        true,
+        4295128740,
+        0,
+        POSITIVE
+    ).await?;
+    thread::sleep(HALF_SEC);
+
+    let owner_t0_balance = balance_of(token_0, owner_address).await?;
+    let owner_t1_balance = balance_of(token_1, owner_address).await?;
+    println!("Owner balance before Swap");
+    println!("$YAS0: {}", owner_t0_balance_bf_swap);
+    println!("$YAS1: {}", owner_t1_balance_bf_swap);
+    println!("Owner balance after Swap");
+    println!("$YAS0: {}", owner_t0_balance);
+    println!("$YAS1: {}", owner_t1_balance);
+
+    let pool_t0_balance = balance_of(token_0, pool_address).await?;
+    let pool_t1_balance = balance_of(token_1, pool_address).await?;
+    println!("\nPool balance");
+    println!("$YAS0: {}", pool_t0_balance);
+    println!("$YAS1: {}", pool_t1_balance);
 
     Ok(())
 }
