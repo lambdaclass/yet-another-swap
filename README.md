@@ -160,16 +160,18 @@ On Starknet, the deployment process is in two steps:
 - Deploying a contract or creating an instance of the previously declared code
   with the necessary parameters
 
-1. Build the project:
+1. Build the project
 
    ```bash
    make build
    ```
 
 2. Start Local Testnet
+   
    ```bash
    make start-katana
    ```
+
 3. Declare and Deploy: Using [deploy.rs](./scripts/deploy.rs) script, we
    sequentially declare and deploy the contracts. Local deployment needs
    `katana` running. The account used for deployment is a pre-funded one.
@@ -184,6 +186,35 @@ On Starknet, the deployment process is in two steps:
 
   ```bash
   make deploy
+  ```
+
+## Run local demo in Katana
+This demo will perform the following steps:
+
+- Declaration of the following contracts: ERC20 Token, YASFactory, YASPool, and YASRouter.
+- Deployment of 2 ERC20 Tokens, YASFactory, YASPool, and YASRouter.
+- Initialization of YASPool with a 1:1 token price.
+- Execute approve() for the router to use tokens from the user.
+- Execute mint() within the range [-887220, 887220] with 2000000000000000000 tokens.
+- Execute swap() exchanging 500000000000000000 of token 0 for token 1.
+- Display current balances of both the pool and the user.
+
+1. Build the project
+
+   ```bash
+   make build
+   ```
+
+2. Start Local Testnet
+
+  ```bash
+  make start-katana
+  ```
+
+3. Run Local Demo
+
+  ```bash
+  make demo-local
   ```
 
 ## Override `.env` file
