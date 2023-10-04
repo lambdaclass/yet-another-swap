@@ -1,6 +1,10 @@
 deps: install-dojo
 	curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v  0.7.0 \
 
+fmt:
+	scarb fmt 
+	npx prettier -w .
+
 install-dojo:
 	@echo "Installing Dojo..."
 	@if [ ! -d "${HOME}/.dojo" ]; then mkdir -p ${HOME}/.dojo; fi
