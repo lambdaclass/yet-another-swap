@@ -182,7 +182,6 @@ mod YASPool {
         self.token_1.write(token_1);
         self.fee.write(fee);
         self.tick_spacing.write(tick_spacing);
-
         //TODO: temporary component syntax
         let state = Tick::unsafe_new_contract_state();
         self
@@ -279,8 +278,8 @@ mod YASPool {
 
             // continue swapping as long as we haven't used the entire input/output and haven't reached the price limit
             loop {
-                if state.amount_specified_remaining.is_non_zero()
-                    && state.sqrt_price_X96 != sqrt_price_limit_X96 {
+                if state.amount_specified_remaining.is_zero()
+                    || state.sqrt_price_X96 == sqrt_price_limit_X96 {
                     break;
                 }
 
@@ -508,6 +507,7 @@ mod YASPool {
             };
 
             let callback_contract = get_caller_address();
+
             assert(is_valid_callback_contract(callback_contract), 'invalid callback_contract');
             let dispatcher = IYASMintCallbackDispatcher { contract_address: callback_contract };
             dispatcher.yas_mint_callback(amount_0, amount_1, data);
@@ -589,7 +589,6 @@ mod YASPool {
                         max_liquidity_per_tick
                     );
             }
-
             if flipped_lower {
                 TickBitmapImpl::flip_tick(
                     ref tick_bitmap_state, position_key.tick_lower, self.tick_spacing.read()
@@ -630,7 +629,6 @@ mod YASPool {
                     TickImpl::clear(ref tick_state, position_key.tick_upper);
                 }
             }
-
             // read again to obtain Info with changes in the update step
             PositionImpl::get(@position_state, position_key)
         }
@@ -652,7 +650,6 @@ mod YASPool {
             }
 
             let slot_0 = self.slot_0.read();
-
             let position = self
                 .update_position(params.position_key, params.liquidity_delta, slot_0.tick);
 
@@ -670,13 +667,13 @@ mod YASPool {
                         );
                 } else if slot_0.tick < params.position_key.tick_upper {
                     // current tick is inside the passed range
-
                     amount_0 =
                         SqrtPriceMath::get_amount_0_delta_signed_token(
                             slot_0.sqrt_price_X96,
                             get_sqrt_ratio_at_tick(params.position_key.tick_upper),
                             params.liquidity_delta
                         );
+
                     amount_1 =
                         SqrtPriceMath::get_amount_1_delta_signed_token(
                             get_sqrt_ratio_at_tick(params.position_key.tick_lower),

@@ -27,6 +27,20 @@ trait IYASRouter<TContractState> {
     fn yas_swap_callback(
         ref self: TContractState, amount_0_delta: i256, amount_1_delta: i256, data: Array<felt252>
     );
+    fn swap_exact_0_for_1(
+        self: @TContractState,
+        pool: ContractAddress,
+        amount_in: u256,
+        recipient: ContractAddress,
+        sqrt_price_limit_X96: FixedType
+    ) -> (i256, i256);
+    fn swap_exact_1_for_0(
+        self: @TContractState,
+        pool: ContractAddress,
+        amount_in: u256,
+        recipient: ContractAddress,
+        sqrt_price_limit_X96: FixedType
+    ) -> (i256, i256);
 }
 
 #[starknet::contract]
@@ -37,8 +51,8 @@ mod YASRouter {
 
     use yas::contracts::yas_pool::{IYASPoolDispatcher, IYASPoolDispatcherTrait};
     use yas::interfaces::interface_ERC20::{IERC20Dispatcher, IERC20DispatcherTrait};
-    use yas::numbers::signed_integer::{i32::i32, i256::i256};
     use yas::numbers::fixed_point::implementations::impl_64x96::FixedType;
+    use yas::numbers::signed_integer::{i32::i32, i256::i256, integer_trait::IntegerTrait};
 
     #[event]
     #[derive(Drop, starknet::Event)]
@@ -152,6 +166,39 @@ mod YASRouter {
                     'both amount deltas are negative'
                 );
             }
+        }
+        fn swap_exact_0_for_1(
+            self: @ContractState,
+            pool: ContractAddress,
+            amount_in: u256,
+            recipient: ContractAddress,
+            sqrt_price_limit_X96: FixedType
+        ) -> (i256, i256) {
+            IYASPoolDispatcher { contract_address: pool }
+                .swap(
+                    recipient,
+                    true,
+                    IntegerTrait::<i256>::new(amount_in, false),
+                    sqrt_price_limit_X96,
+                    array![get_caller_address().into()]
+                )
+        }
+
+        fn swap_exact_1_for_0(
+            self: @ContractState,
+            pool: ContractAddress,
+            amount_in: u256,
+            recipient: ContractAddress,
+            sqrt_price_limit_X96: FixedType
+        ) -> (i256, i256) {
+            IYASPoolDispatcher { contract_address: pool }
+                .swap(
+                    recipient,
+                    true,
+                    IntegerTrait::<i256>::new(amount_in, true),
+                    sqrt_price_limit_X96,
+                    array![get_caller_address().into()]
+                )
         }
     }
 }
