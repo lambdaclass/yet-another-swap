@@ -22,6 +22,9 @@ build:
 
 deploy:
 	cargo run --bin deploy
+	
+demo-local:
+	cargo run --bin local
 
 test:
 	scarb test
