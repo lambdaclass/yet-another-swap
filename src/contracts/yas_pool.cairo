@@ -1,6 +1,18 @@
 use starknet::ContractAddress;
 use yas::numbers::signed_integer::{i32::i32, i256::i256};
 use yas::numbers::fixed_point::implementations::impl_64x96::FixedType;
+use yas::libraries::position::{Position, PositionKey, Info};
+
+#[derive(Copy, Drop, Serde, starknet::Store)]
+struct Slot0 {
+    // the current price
+    sqrt_price_X96: FixedType,
+    // the current tick
+    tick: i32,
+    // the current protocol fee as a percentage of the swap fee taken on withdrawal
+    // represented as an integer denominator (1/x)%
+    fee_protocol: u8,
+}
 
 #[starknet::interface]
 trait IYASPool<TContractState> {
@@ -23,11 +35,13 @@ trait IYASPool<TContractState> {
     ) -> (u256, u256);
     fn token_0(self: @TContractState) -> ContractAddress;
     fn token_1(self: @TContractState) -> ContractAddress;
+    fn slot_0(self: @TContractState) -> (FixedType, i32, u8, bool);
+    fn positions(self: @TContractState, position_key: PositionKey) -> Info;
 }
 
 #[starknet::contract]
 mod YASPool {
-    use super::IYASPool;
+    use super::{IYASPool, Slot0};
 
     use starknet::{ContractAddress, get_block_timestamp, get_caller_address, get_contract_address};
 
@@ -96,17 +110,6 @@ mod YASPool {
         amount: u128,
         amount_0: u256,
         amount_1: u256
-    }
-
-    #[derive(Copy, Drop, Serde, starknet::Store)]
-    struct Slot0 {
-        // the current price
-        sqrt_price_X96: FixedType,
-        // the current tick
-        tick: i32,
-        // the current protocol fee as a percentage of the swap fee taken on withdrawal
-        // represented as an integer denominator (1/x)%
-        fee_protocol: u8,
     }
 
     #[derive(Copy, Drop)]
@@ -198,6 +201,16 @@ mod YASPool {
 
         fn token_1(self: @ContractState) -> ContractAddress {
             self.token_1.read()
+        }
+
+        fn slot_0(self: @ContractState) -> (FixedType, i32, u8, bool) {
+            let slot_0 = self.slot_0.read();
+            (slot_0.sqrt_price_X96, slot_0.tick, slot_0.fee_protocol, self.unlocked.read())
+        }
+
+        fn positions(self: @ContractState, position_key: PositionKey) -> Info {
+            let mut position_state = Position::unsafe_new_contract_state();
+            PositionImpl::get(@position_state, position_key)
         }
 
         /// @notice Sets the initial price for the pool
