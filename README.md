@@ -59,6 +59,23 @@ make build
 This command executes the Scarb build process, resulting in the creation of a
 Sierra program.
 
+## Test Project
+
+Run the following command to run all tests:
+
+```bash
+make test
+```
+
+Or you can filter by test keyword,
+
+For example the following will display only tests related to the "Mint" functionality:
+
+```bash
+make test FILTER=Mint
+```
+
+
 ## Setting up a Testnet Smart Wallet
 
 **This guide will help you declare and deploy contracts on a testnet. Please
