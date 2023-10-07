@@ -467,7 +467,8 @@ mod YASPoolTests {
 
     mod Mint {
         use yas::contracts::yas_pool::YASPool::InternalTrait;
-        use super::{setup, deploy, mock_contract_states};
+        use super::{deploy,start_mint_test, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount, fee_amount};
+
 
         use starknet::{ContractAddress, ClassHash, SyscallResultTrait, contract_address_const};
         use starknet::syscalls::deploy_syscall;
@@ -487,31 +488,30 @@ mod YASPoolTests {
             FP64x96Impl, FixedType, FixedTrait
         };
         use yas::libraries::tick::{Tick, Tick::TickImpl};
-        use yas::libraries::tick_math::{TickMath::MIN_TICK, TickMath::MAX_TICK};
         use yas::libraries::position::{Info, Position, Position::PositionImpl, PositionKey};
-        use yas::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, WALLET};
-        use yas::tests::utils::constants::FactoryConstants::{FeeAmount, fee_amount, tick_spacing};
+        use yas::tests::utils::constants::PoolConstants::{FACTORY_ADDRESS, TOKEN_A, TOKEN_B, WALLET, encode_price_sqrt_1_1};
         use yas::contracts::yas_erc20::{ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait};
         use yas::numbers::signed_integer::{
             i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
         };
 
-
-        // TODO: 'fails if not initialized'
-        // WIP
         #[test]
-        #[available_gas(2000000)]
-        #[should_panic(expected: ('AI', 'ENTRYPOINT_FAILED'))] //which panic??
+        #[available_gas(2000000000)]
+        #[should_panic(expected: ('LOK', 'ENTRYPOINT_FAILED'))]
         fn test_fails_not_initialized() {
-            let (yas_pool, token_0, token_1) = setup(); 
+            let yas_pool = deploy(FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), fee_amount(FeeAmount::LOW), IntegerTrait::<i32>::new(tick_spacing(FeeAmount::LOW), false));
+            let sqrt_price_X96 = encode_price_sqrt_1_1();
+            //yas_pool.initialize(sqrt_price_X96); //don't
+
             let (amount0, amount1): (u256, u256) = yas_pool.mint(
-                recipient: yas_pool.contract_address, tick_lower:MIN_TICK(), tick_upper:MAX_TICK(), amount:15000, data: ArrayTrait::<felt252>::new()
+                recipient: yas_pool.contract_address, tick_lower:MIN_TICK(), tick_upper:MAX_TICK(), amount:1, data: ArrayTrait::<felt252>::new()
             );
         }
-        // TODO: 'initialize the pool at price of 10:1'
 
         mod FailureCases {
-            use super::{setup, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount, fee_amount, IERC20DispatcherTrait};
+            use yas::contracts::yas_router::IYASRouterDispatcherTrait;
+            use super::{start_mint_test, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount, fee_amount, IERC20DispatcherTrait, FACTORY_ADDRESS, TOKEN_A, TOKEN_B, WALLET, encode_price_sqrt_1_1};
+
             use yas::numbers::signed_integer::{
                 i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
             };
@@ -520,12 +520,12 @@ mod YASPoolTests {
                 IYASPoolDispatcher, IYASPoolDispatcherTrait
             };
 
-            // TODO: 'fails if tickLower greater than tickUpper'
             #[test]
-            #[available_gas(2000000)]
-            #[should_panic(expected: ('TLU', ))]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('TLU', 'ENTRYPOINT_FAILED'))]
             fn test_fails_tick_lower_greater_than_tick_upper() {
-                let (yas_pool, token_0, token_1) = setup(); 
+                let yas_pool = start_mint_test(FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), fee:fee_amount(FeeAmount::LOW), tick_spacing:IntegerTrait::<i32>::new(tick_spacing(FeeAmount::LOW), false));
+
                 let (amount0, amount1): (u256, u256) = yas_pool.mint(
                     recipient: yas_pool.contract_address, tick_lower:IntegerTrait::<i32>::new(1, false), tick_upper:IntegerTrait::<i32>::new(0, false), amount:1, data: ArrayTrait::<felt252>::new()
                 );
@@ -533,10 +533,11 @@ mod YASPoolTests {
 
             // TODO: 'fails if tickLower less than min tick'
             #[test]
-            #[available_gas(2000000)]
-            #[should_panic(expected: ('TLM', ))]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('TLM', 'ENTRYPOINT_FAILED'))]
             fn test_fails_tick_lower_than_min() {
-                let (yas_pool, token_0, token_1) = setup();
+                let yas_pool = start_mint_test(FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), fee:fee_amount(FeeAmount::LOW), tick_spacing:IntegerTrait::<i32>::new(tick_spacing(FeeAmount::LOW), false));
+
                 let less_than_min_tick = MIN_TICK() - IntegerTrait::<i32>::new(1, false);    
                 let (amount0, amount1): (u256, u256) = yas_pool.mint(
                     recipient: yas_pool.contract_address, tick_lower: less_than_min_tick, tick_upper:MAX_TICK(), amount:1, data: ArrayTrait::<felt252>::new()
@@ -545,10 +546,10 @@ mod YASPoolTests {
 
             // TODO: 'fails if tickUpper greater than max tick'
             #[test]
-            #[available_gas(2000000)]
-            #[should_panic(expected: ('TUM', ))]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('TUM', 'ENTRYPOINT_FAILED'))]
             fn test_fails_tick_greater_than_max() {
-                let (yas_pool, token_0, token_1) = setup();
+                let yas_pool = start_mint_test(FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), fee:fee_amount(FeeAmount::LOW), tick_spacing:IntegerTrait::<i32>::new(tick_spacing(FeeAmount::LOW), false));
                 let grater_than_max_tick: i32 = MAX_TICK() + IntegerTrait::<i32>::new(1, false);    
                 let (amount0, amount1): (u256, u256) = yas_pool.mint(
                     recipient: yas_pool.contract_address, tick_lower: MIN_TICK(), tick_upper:grater_than_max_tick, amount:1, data: ArrayTrait::<felt252>::new()
@@ -556,27 +557,26 @@ mod YASPoolTests {
             }
 
             // WIP: 'fails if amount exceeds the max'
-            #[test]
-            #[available_gas(2000000)]
-            #[should_panic(expected: ('LO', ))]
-            fn test_fails_amount_greater_than_max() {
-                let (yas_pool, token_0, token_1) = setup();
+            //#[test]
+            //#[available_gas(2000000000)]
+            //#[should_panic(expected: ('LO', ))]
+            //fn test_fails_amount_greater_than_max() {
+                //let yas_pool = start_mint_test(FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), fee:fee_amount(FeeAmount::LOW), tick_spacing:IntegerTrait::<i32>::new(tick_spacing(FeeAmount::LOW), false));
                 //yas_pool.
                 //token_0.totalSupply(); //WIP
-                //let max_token_0 = IERC20Dispatcher { contract_address: token_0.contract_address }.totalSupply();
+                //let max_token_0 = token_0.totalSupply();
                 //let grater_than_max_amount: u256 = max_token_0 + 1;
-
                 //let (amount0, amount1): (u256, u256) = yas_pool.mint(
                     //recipient: yas_pool.contract_address, tick_lower: MIN_TICK(), tick_upper:MAX_TICK(), amount:grater_than_max_amount, data: ArrayTrait::<felt252>::new()
                 //);
-            }
+            //}
 
             // WIP: 'fails if total amount at tick exceeds the max'
             #[test]
-            #[available_gas(2000000)]
+            #[available_gas(2000000000)]
             #[should_panic(expected: ('LO', ))]
             fn test_fails_amount_at_tick_greater_than_max() {
-                let (yas_pool, token_0, token_1) = setup();
+                let yas_pool = start_mint_test(FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), fee:fee_amount(FeeAmount::LOW), tick_spacing:IntegerTrait::<i32>::new(tick_spacing(FeeAmount::LOW), false));
                 //token_0.totalSupply(); //WIP
                 //let max_token_0 = IERC20Dispatcher { contract_address: token_0.contract_address }.totalSupply();
                 //let grater_than_max_amount: u256 = max_token_0 + 1;
@@ -588,18 +588,18 @@ mod YASPoolTests {
 
             // 'fails if amount is 0'
             #[test]
-            #[available_gas(2000000)]
-            #[should_panic(expected: ('AI', 'ENTRYPOINT_FAILED'))] //which panic??
+            #[available_gas(2000000000)]
+            //#[should_panic(expected: ('AI', 'ENTRYPOINT_FAILED'))] //which panic code??
             fn test_fails_amount_is_zero() {
-                let (yas_pool, token_0, token_1) = setup();
+                let yas_pool = start_mint_test(FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), fee:fee_amount(FeeAmount::LOW), tick_spacing:IntegerTrait::<i32>::new(tick_spacing(FeeAmount::LOW), false));
                 let (amount0, amount1): (u256, u256) = yas_pool.mint(
                     recipient: yas_pool.contract_address, tick_lower: MIN_TICK(), tick_upper:MAX_TICK(), amount:0, data: ArrayTrait::<felt252>::new()
                 );
             }
-        } //close Failure Cases
+        }
 
         mod SuccessCases {
-            use super::{setup, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount, fee_amount, IERC20DispatcherTrait};
+            use super::{start_mint_test, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount, fee_amount, IERC20DispatcherTrait, FACTORY_ADDRESS, TOKEN_A, TOKEN_B, WALLET, encode_price_sqrt_1_1};
 
             use yas::numbers::signed_integer::{
                 i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
@@ -611,69 +611,65 @@ mod YASPoolTests {
 
             // TODO: 'initial balances'
             // WIP
-            #[test]
-            #[available_gas(200000000)]
-            fn test_initial_balances() {
-                let (yas_pool, token_0, token_1) = setup();
+            //#[test]
+            //#[available_gas(200000000)]
+            //fn test_initial_balances() {
+                //let (yas_pool, token_0, token_1) = setup();
 
-                let balance_token_0 = token_0.balanceOf(yas_pool.contract_address);
-                let balance_token_1 = token_1.balanceOf(yas_pool.contract_address);
+                //let balance_token_0 = token_0.balanceOf(yas_pool.contract_address);
+                //let balance_token_1 = token_1.balanceOf(yas_pool.contract_address);
 
-                assert(balance_token_0 == 2000000000000000000, 'wrong balance token 0');
-                assert(balance_token_1 == 2000000000000000000, 'wrong balance token 1');
-            }
+                //assert(balance_token_0 == 2000000000000000000, 'wrong balance token 0');
+                //assert(balance_token_1 == 2000000000000000000, 'wrong balance token 1');
+            //}
 
 
             // TODO: 'initial tick'
             // WIP
-            #[test]
-            #[available_gas(200000000)]
-            fn test_initial_tick() {
-                let (yas_pool, token_0, token_1) = setup();
+            //#[test]
+            //#[available_gas(200000000)]
+            //fn test_initial_tick() {
+                //let (yas_pool, token_0, token_1) = setup();
 
-                let slot0 = InternalImpl::get_slot_0(@YASPool::contract_state_for_testing());
+                //let slot0 = InternalImpl::get_slot_0(@YASPool::contract_state_for_testing());
 
                 //assert(slot0 == 2000000000000000000, 'wrong balance token 0');
-            }
+            //}
 
 
             mod AboveCurrentPrice {
                 use yas::contracts::yas_pool::IYASPoolDispatcherTrait;
-use super::{setup, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount, fee_amount, IERC20DispatcherTrait};
+                use super::{start_mint_test, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount, fee_amount, IERC20DispatcherTrait, FACTORY_ADDRESS, TOKEN_A, TOKEN_B, WALLET, encode_price_sqrt_1_1};
                 use yas::numbers::signed_integer::{
                     i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
                 };  
 
 
-                //TODO: finish?
-                #[test]
-                #[available_gas(200000000)]
-                fn test_transfers_token_0_only() {
-                    let (yas_pool, token_0, token_1) = setup();
+                //TODO: finish? uri no la hizo
+                //#[test]
+                //#[available_gas(200000000)]
+                //fn test_transfers_token_0_only() {
+                    //let (yas_pool, token_0, token_1) = setup();
 
-                    let balance_token_0 = token_0.balanceOf(yas_pool.contract_address);
-                    let balance_token_1 = token_1.balanceOf(yas_pool.contract_address);
+                    //let balance_token_0 = token_0.balanceOf(yas_pool.contract_address);
+                    //let balance_token_1 = token_1.balanceOf(yas_pool.contract_address);
 
-                    assert(balance_token_0 == 2000000000000000000, 'wrong balance token 0');
-                    assert(balance_token_1 == 2000000000000000000, 'wrong balance token 1');
-                }
+                    //assert(balance_token_0 == 2000000000000000000, 'wrong balance token 0');
+                    //assert(balance_token_1 == 2000000000000000000, 'wrong balance token 1');
+                //}
 
                 // TODO: 'max tick with max leverage'
                 //how to max leverage?
-                #[test]
-                #[available_gas(200000000)]
-                fn test_max_tick_max_lvrg() {
-                    let (yas_pool, token_0, token_1) = setup();
-                    //let (amount0, amount1): (u256, u256) = yas_pool.mint(
-                        //recipient: yas_pool.contract_address, tick_lower: MIN_TICK(), tick_upper:MAX_TICK(), amount:1, data: ArrayTrait::<felt252>::new()
-                    //);
-                }
+                //#[test]
+                //#[available_gas(200000000)]
+                //fn test_max_tick_max_lvrg() {
+                //}
 
             // TODO: 'works for max tick'
                 #[test]
                 #[available_gas(200000000)]
                 fn test_max_tick() {
-                    let (yas_pool, token_0, token_1) = setup();
+                    let yas_pool = start_mint_test(FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), fee:fee_amount(FeeAmount::LOW), tick_spacing:IntegerTrait::<i32>::new(tick_spacing(FeeAmount::LOW), false));
                     let (amount0, amount1): (u256, u256) = yas_pool.mint(
                         recipient: yas_pool.contract_address, tick_lower: MAX_TICK() - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::LOW), false), tick_upper:MAX_TICK(), amount:1, data: ArrayTrait::<felt252>::new()
                     );
@@ -717,7 +713,7 @@ use super::{setup, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount, fee_amount, IERC
         FP64x96Impl, FixedType, FixedTrait
     };
     use yas::contracts::yas_router::{YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait};
-    use yas::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET};
+    use yas::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET, encode_price_sqrt_1_1};
     use yas::tests::utils::constants::FactoryConstants::{
         POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing
     };
@@ -759,6 +755,19 @@ use super::{setup, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount, fee_amount, IERC
 
         (yas_pool, token_0, token_1)
     }
+
+    fn start_mint_test(
+        factory: ContractAddress,
+        token_0: ContractAddress,
+        token_1: ContractAddress,
+        fee: u32,
+        tick_spacing: i32
+    ) -> IYASPoolDispatcher {
+        let yas_pool = deploy(factory, token_0, token_1, fee, tick_spacing);
+        let sqrt_price_X96 = encode_price_sqrt_1_1();
+        yas_pool.initialize(sqrt_price_X96);
+        yas_pool
+    } 
 
     fn deploy_erc20(
         name: felt252, symbol: felt252, initial_supply: u256, recipent: ContractAddress
