@@ -235,6 +235,33 @@ This demo will perform the following steps:
    make demo-local
    ```
 
+## Run demo in Testnet
+
+0. Make sure you have the STARKNET_ACCOUNT and STARKNET_KEYSTORE environment variables declared, you won't be able to deploy on testnet otherwise:
+
+   ```bash
+   STARKNET_KEYSTORE="~/.starkli-wallets/keystore.json"
+   STARKNET_ACCOUNT="~/.starkli-wallets/account.json"
+   ```
+
+1. Build the project
+
+   ```bash
+   make build
+   ```
+
+2. Declare contracts on testnet
+
+   ```bash
+   make declare-testnet
+   ```
+
+3. Deploy those contracts on testnet
+
+   ```bash
+   Work In Progress
+   ```
+
 ## Override `.env` file
 
 To override environment variables in the `.env` file, you may pass them before
