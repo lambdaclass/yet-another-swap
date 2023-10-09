@@ -116,7 +116,9 @@ mod YASNFTPositionManager {
     use openzeppelin::token::erc721::ERC721;
     use openzeppelin::token::erc721::interface::IERC721;
 
-    use starknet::{ContractAddress, get_contract_address, contract_address_const};
+    use starknet::{
+        ContractAddress, get_contract_address, contract_address_const, get_caller_address
+    };
     use yas::numbers::signed_integer::{i32::i32};
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FixedType, FixedTrait, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable
@@ -136,7 +138,8 @@ mod YASNFTPositionManager {
     enum Event {
         IncreaseLiquidity: IncreaseLiquidity,
         DecreaseLiquidity: DecreaseLiquidity,
-        Collect: Collect
+        Collect: Collect,
+        Approval: Approval
     }
 
     #[derive(Drop, starknet::Event)]
@@ -161,6 +164,13 @@ mod YASNFTPositionManager {
         recipient: ContractAddress,
         amount_0_collect: u256,
         amount_1_collect: u256
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct Approval {
+        owner: ContractAddress,
+        to: ContractAddress,
+        token_id: u256,
     }
 
     #[storage]
@@ -205,23 +215,26 @@ mod YASNFTPositionManager {
         }
 
         fn mint(ref self: ContractState, params: MintParams) -> (u256, u128, u256, u256) {
-            let (liquidity, amount_0, amount_1, pool_dispatcher) = add_liquidity(
-                AddLiquidityParams {
-                    token_0: params.token_0,
-                    token_1: params.token_1,
-                    fee: params.fee,
-                    recipient: get_contract_address(),
-                    tick_lower: params.tick_lower,
-                    tick_upper: params.tick_upper,
-                    amount_0_desired: params.amount_0_desired,
-                    amount_1_desired: params.amount_1_desired,
-                    amount_0_min: params.amount_0_min,
-                    amount_1_min: params.amount_1_min
-                }
-            );
+            let (liquidity, amount_0, amount_1, pool_dispatcher) = self
+                .add_liquidity(
+                    AddLiquidityParams {
+                        token_0: params.token_0,
+                        token_1: params.token_1,
+                        fee: params.fee,
+                        recipient: get_contract_address(),
+                        tick_lower: params.tick_lower,
+                        tick_upper: params.tick_upper,
+                        amount_0_desired: params.amount_0_desired,
+                        amount_1_desired: params.amount_1_desired,
+                        amount_0_min: params.amount_0_min,
+                        amount_1_min: params.amount_1_min
+                    }
+                );
 
-            // TODO: mint ERC721
-            //     mint(params.recipient, (tokenId = _nextId++));
+            let token_id = self.next_id.read();
+            self.next_id.write(token_id + 1);
+            let mut state = ERC721::unsafe_new_contract_state();
+            ERC721::InternalImpl::_mint(ref state, params.recipient, token_id);
             let token_id = self.next_id.read() + 1;
 
             let info = pool_dispatcher
@@ -234,13 +247,11 @@ mod YASNFTPositionManager {
                 );
 
             // idempotent set
-            // TODO: 
-            // let pool_id = self
-            //     .cache_pool_key(
-            //         pool_dispatcher.contract_address,
-            //         PoolKey { token_0: params.token_0, token_1: params.token_1, fee: params.fee }
-            //     );
-            let pool_id = 0;
+            let pool_id = self
+                .cache_pool_key(
+                    pool_dispatcher.contract_address,
+                    PoolKey { token_0: params.token_0, token_1: params.token_1, fee: params.fee }
+                );
 
             self
                 .positions
@@ -270,20 +281,21 @@ mod YASNFTPositionManager {
             let mut position = self.positions.read(params.token_id);
             let pool_key = self.pool_id_to_pool_key.read(position.pool_id);
 
-            let (liquidity, amount_0, amount_1, pool_dispatcher) = add_liquidity(
-                AddLiquidityParams {
-                    token_0: pool_key.token_0,
-                    token_1: pool_key.token_1,
-                    fee: pool_key.fee,
-                    tick_lower: position.tick_lower,
-                    tick_upper: position.tick_upper,
-                    amount_0_desired: params.amount_0_desired,
-                    amount_1_desired: params.amount_1_desired,
-                    amount_0_min: params.amount_0_min,
-                    amount_1_min: params.amount_1_min,
-                    recipient: get_contract_address()
-                }
-            );
+            let (liquidity, amount_0, amount_1, pool_dispatcher) = self
+                .add_liquidity(
+                    AddLiquidityParams {
+                        token_0: pool_key.token_0,
+                        token_1: pool_key.token_1,
+                        fee: pool_key.fee,
+                        tick_lower: position.tick_lower,
+                        tick_upper: position.tick_upper,
+                        amount_0_desired: params.amount_0_desired,
+                        amount_1_desired: params.amount_1_desired,
+                        amount_0_min: params.amount_0_min,
+                        amount_1_min: params.amount_1_min,
+                        recipient: get_contract_address()
+                    }
+                );
 
             // this is now updated to the current transaction
             let info = pool_dispatcher
@@ -426,61 +438,63 @@ mod YASNFTPositionManager {
     }
 
     #[generate_trait]
-    impl InternalFunctions of InternalFunctionsTrait { // TODO
+    impl InternalFunctions of InternalFunctionsTrait {
         // @dev Caches a pool key
         fn cache_pool_key(
             ref self: ContractState, pool: ContractAddress, pool_key: PoolKey
         ) -> u128 {
             let mut pool_id = self.pool_ids.read(pool);
             if pool_id == 0 {
-                pool_id = self.next_pool_id.read() + 1;
+                pool_id = self.next_pool_id.read();
+                self.next_pool_id.write(pool_id + 1);
                 self.pool_ids.write(pool, pool_id);
                 self.pool_id_to_pool_key.write(pool_id, pool_key);
             }
             pool_id
         }
-    }
 
-    fn add_liquidity(params: AddLiquidityParams) -> (u128, u256, u256, IYASPoolDispatcher) {
-        let pool_key = PoolKey {
-            token_0: params.token_0, token_1: params.token_1, fee: params.fee
-        };
+        fn add_liquidity(
+            self: @ContractState, params: AddLiquidityParams
+        ) -> (u128, u256, u256, IYASPoolDispatcher) {
+            let pool_key = PoolKey {
+                token_0: params.token_0, token_1: params.token_1, fee: params.fee
+            };
 
-        // TODO:
-        // pool = IUniswapV3Pool(PoolAddress.computeAddress(factory, poolKey));
-        let pool_dispatcher = IYASPoolDispatcher {
-            contract_address: contract_address_const::<'POOL'>()
-        };
+            let pool_address = IYASFactoryDispatcher { contract_address: self.factory.read() }
+                .pool(params.token_0, params.token_1, params.fee); // TODO:
 
-        // compute the liquidity amount
-        let (sqrt_price_X96, _, _, _) = pool_dispatcher.slot_0();
-        let sqrt_ratio_A_X96 = get_sqrt_ratio_at_tick(params.tick_lower);
-        let sqrt_ratio_B_X96 = get_sqrt_ratio_at_tick(params.tick_upper);
+            let pool_dispatcher = IYASPoolDispatcher { contract_address: pool_address };
 
-        // TODO:
-        // let liquidity = LiquidityAmounts.getLiquidityForAmounts(
-        //     sqrtPriceX96,
-        //     sqrtRatioAX96,
-        //     sqrtRatioBX96,
-        //     params.amount0Desired,
-        //     params.amount1Desired
-        // );
-        let liquidity = 0;
+            // compute the liquidity amount
+            let (sqrt_price_X96, _, _, _) = pool_dispatcher.slot_0();
+            let sqrt_ratio_A_X96 = get_sqrt_ratio_at_tick(params.tick_lower);
+            let sqrt_ratio_B_X96 = get_sqrt_ratio_at_tick(params.tick_upper);
 
-        let (amount_0, amount_1) = pool_dispatcher
-            .mint(
-                params.recipient,
-                params.tick_lower,
-                params.tick_upper,
-                liquidity,
-                array![] // TODO: abi.encode(MintCallbackData({poolKey: poolKey, payer: msg.sender}))
+            // TODO:
+            // let liquidity = LiquidityAmounts.getLiquidityForAmounts(
+            //     sqrtPriceX96,
+            //     sqrtRatioAX96,
+            //     sqrtRatioBX96,
+            //     params.amount0Desired,
+            //     params.amount1Desired
+            // );
+            let liquidity = 0;
+
+            let (amount_0, amount_1) = pool_dispatcher
+                .mint(
+                    params.recipient,
+                    params.tick_lower,
+                    params.tick_upper,
+                    liquidity,
+                    array![] // TODO: abi.encode(MintCallbackData({poolKey: poolKey, payer: msg.sender}))
+                );
+
+            assert(
+                amount_0 >= params.amount_0_min && amount_1 >= params.amount_1_min,
+                'Price slippage check'
             );
-
-        assert(
-            amount_0 >= params.amount_0_min && amount_1 >= params.amount_1_min,
-            'Price slippage check'
-        );
-        (liquidity, amount_0, amount_1, pool_dispatcher)
+            (liquidity, amount_0, amount_1, pool_dispatcher)
+        }
     }
 
     #[external(v0)]
@@ -513,8 +527,23 @@ mod YASNFTPositionManager {
             ERC721::ERC721Impl::safe_transfer_from(ref state, from, to, token_id, data);
         }
 
-        // TODO: replace
-        fn approve(ref self: ContractState, to: ContractAddress, token_id: u256) {}
+        // TODO: replace _approve
+        fn approve(ref self: ContractState, to: ContractAddress, token_id: u256) {
+            let state = ERC721::unsafe_new_contract_state();
+            let owner = ERC721::InternalImpl::_owner_of(@state, token_id);
+
+            let caller = get_caller_address();
+            assert(
+                owner == caller || ERC721::ERC721Impl::is_approved_for_all(@state, owner, caller),
+                ERC721::Errors::UNAUTHORIZED
+            );
+
+            let mut position = self.positions.read(token_id);
+            position.operator = to;
+            self.positions.write(token_id, position);
+
+            self.emit(Approval { owner, to, token_id });
+        }
 
         fn set_approval_for_all(
             ref self: ContractState, operator: ContractAddress, approved: bool
