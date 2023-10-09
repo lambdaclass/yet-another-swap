@@ -426,19 +426,19 @@ mod YASNFTPositionManager {
     }
 
     #[generate_trait]
-    impl InternalFunctions of InternalFunctionsTrait {// TODO
-    // @dev Caches a pool key
-    // fn cache_pool_key(
-    //     ref self: ContractState, pool: ContractAddress, pool_key: PoolKey
-    // ) -> u128 {
-    //     let mut pool_id = self.pool_ids.read(pool);
-    //     if pool_id == 0 {
-    //         pool_id = self.next_pool_id.read() + 1;
-    //         self.pool_ids.write(pool, pool_id);
-    //         self.pool_id_to_pool_key.write(pool_id, pool_key);
-    //     }
-    //     pool_id
-    // }
+    impl InternalFunctions of InternalFunctionsTrait { // TODO
+        // @dev Caches a pool key
+        fn cache_pool_key(
+            ref self: ContractState, pool: ContractAddress, pool_key: PoolKey
+        ) -> u128 {
+            let mut pool_id = self.pool_ids.read(pool);
+            if pool_id == 0 {
+                pool_id = self.next_pool_id.read() + 1;
+                self.pool_ids.write(pool, pool_id);
+                self.pool_id_to_pool_key.write(pool_id, pool_key);
+            }
+            pool_id
+        }
     }
 
     fn add_liquidity(params: AddLiquidityParams) -> (u128, u256, u256, IYASPoolDispatcher) {
