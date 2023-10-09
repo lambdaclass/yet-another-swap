@@ -101,9 +101,10 @@ trait IYASNFTPositionManager<TContractState> {
     fn increase_liquidity(
         ref self: TContractState, params: IncreaseLiquidityParams
     ) -> (u128, u256, u256);
-// fn decrease_liquidity(
-//     ref self: TContractState, params: DecreaseLiquidityParams
-// ) -> (u256, u256);
+    // fn decrease_liquidity(
+    //     ref self: TContractState, params: DecreaseLiquidityParams
+    // ) -> (u256, u256);
+    fn factory(self: @TContractState) -> ContractAddress;
 }
 
 #[starknet::contract]
@@ -114,7 +115,8 @@ mod YASNFTPositionManager {
     };
 
     use openzeppelin::token::erc721::ERC721;
-    use openzeppelin::token::erc721::interface::IERC721;
+    use openzeppelin::token::erc721::interface::{IERC721, IERC721Metadata};
+    use openzeppelin::introspection::interface::ISRC5;
 
     use starknet::{
         ContractAddress, get_contract_address, contract_address_const, get_caller_address
@@ -207,6 +209,10 @@ mod YASNFTPositionManager {
 
     #[external(v0)]
     impl YASNFTPositionManagerImpl of IYASNFTPositionManager<ContractState> {
+        fn factory(self: @ContractState) -> ContractAddress {
+            self.factory.read()
+        }
+
         fn positions(self: @ContractState, token_id: u256) -> (Position, PoolKey) {
             let position = self.positions.read(token_id);
             assert(position.pool_id != 0, 'Invalid token ID');
@@ -494,6 +500,35 @@ mod YASNFTPositionManager {
                 'Price slippage check'
             );
             (liquidity, amount_0, amount_1, pool_dispatcher)
+        }
+    }
+
+    // ERC721
+
+    #[external(v0)]
+    impl SRC5Impl of ISRC5<ContractState> {
+        fn supports_interface(self: @ContractState, interface_id: felt252) -> bool {
+            let state = ERC721::unsafe_new_contract_state();
+            ERC721::SRC5Impl::supports_interface(@state, interface_id)
+        }
+    }
+
+    #[external(v0)]
+    impl ERC721MetadataImpl of IERC721Metadata<ContractState> {
+        fn name(self: @ContractState) -> felt252 {
+            let state = ERC721::unsafe_new_contract_state();
+            ERC721::ERC721MetadataImpl::name(@state)
+        }
+
+        fn symbol(self: @ContractState) -> felt252 {
+            let state = ERC721::unsafe_new_contract_state();
+            ERC721::ERC721MetadataImpl::symbol(@state)
+        }
+
+        // TODO: replace
+        fn token_uri(self: @ContractState, token_id: u256) -> felt252 {
+            let state = ERC721::unsafe_new_contract_state();
+            ERC721::ERC721MetadataImpl::token_uri(@state, token_id)
         }
     }
 
