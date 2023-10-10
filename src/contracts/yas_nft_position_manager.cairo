@@ -32,7 +32,7 @@ struct PoolKey {
     fee: u32
 }
 
-#[derive(Copy, Drop, Serde, starknet::Store)]
+#[derive(Drop, Serde)]
 struct MintParams {
     token_0: ContractAddress,
     token_1: ContractAddress,
@@ -47,7 +47,7 @@ struct MintParams {
     deadline: u256
 }
 
-#[derive(Copy, Drop, Serde, starknet::Store)]
+#[derive(Drop, Serde)]
 struct IncreaseLiquidityParams {
     token_id: u256,
     amount_0_desired: u256,
@@ -57,7 +57,7 @@ struct IncreaseLiquidityParams {
     deadline: u256
 }
 
-#[derive(Copy, Drop, Serde, starknet::Store)]
+#[derive(Drop, Serde)]
 struct DecreaseLiquidityParams {
     token_id: u256,
     liquidity: u128,
@@ -66,6 +66,7 @@ struct DecreaseLiquidityParams {
     deadline: u256
 }
 
+#[derive(Drop, Serde)]
 struct AddLiquidityParams {
     token_0: ContractAddress,
     token_1: ContractAddress,
@@ -77,14 +78,6 @@ struct AddLiquidityParams {
     amount_1_desired: u256,
     amount_0_min: u256,
     amount_1_min: u256
-}
-
-#[derive(Copy, Drop, Serde, starknet::Store)]
-struct CollectParams {
-    tokenId: u256,
-    recipient: ContractAddress,
-    amount0Max: u128,
-    amount1Max: u128
 }
 
 #[starknet::interface]
@@ -113,32 +106,31 @@ trait IYASNFTPositionManager<TContractState> {
 #[starknet::contract]
 mod YASNFTPositionManager {
     use super::{
-        IYASNFTPositionManager, AddLiquidityParams, CollectParams, IncreaseLiquidityParams,
+        IYASNFTPositionManager, AddLiquidityParams, IncreaseLiquidityParams,
         DecreaseLiquidityParams, MintParams, Position, PoolKey
     };
-
+    use starknet::{
+        ContractAddress, get_contract_address, contract_address_const, get_caller_address
+    };
     use openzeppelin::token::erc721::ERC721;
     use openzeppelin::token::erc721::interface::{IERC721, IERC721Metadata};
     use openzeppelin::introspection::interface::ISRC5;
 
-    use starknet::{
-        ContractAddress, get_contract_address, contract_address_const, get_caller_address
+    use yas::contracts::yas_pool::{IYASPoolDispatcher, IYASPoolDispatcherTrait};
+    use yas::contracts::yas_factory::{IYASFactoryDispatcher, IYASFactoryDispatcherTrait};
+    use yas::interfaces::interface_ERC20::{IERC20Dispatcher, IERC20DispatcherTrait};
+    use yas::libraries::position::{PositionKey, Info};
+    use yas::libraries::tick_math::TickMath::{
+        get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_TICK, MAX_TICK
     };
-    use yas::numbers::signed_integer::{i32::i32};
     use yas::numbers::fixed_point::implementations::impl_64x96::{
         FixedType, FixedTrait, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable,
         FP64x96Sub, ONE
     };
-    use yas::utils::math_utils::FullMath;
+    use yas::numbers::signed_integer::{i32::i32};
     use yas::utils::math_utils::Constants::Q128;
-    use yas::libraries::tick_math::TickMath::{
-        get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_TICK, MAX_TICK
-    };
-    use yas::contracts::yas_pool::{IYASPoolDispatcher, IYASPoolDispatcherTrait};
-    use yas::contracts::yas_factory::{IYASFactoryDispatcher, IYASFactoryDispatcherTrait};
-    use yas::interfaces::interface_ERC20::{IERC20Dispatcher, IERC20DispatcherTrait};
+    use yas::utils::math_utils::FullMath;
     use yas::utils::utils::ContractAddressPartialOrd;
-    use yas::libraries::position::{PositionKey, Info};
 
     #[event]
     #[derive(Drop, starknet::Event)]
