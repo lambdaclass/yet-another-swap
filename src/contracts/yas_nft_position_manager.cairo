@@ -105,6 +105,9 @@ trait IYASNFTPositionManager<TContractState> {
     //     ref self: TContractState, params: DecreaseLiquidityParams
     // ) -> (u256, u256);
     fn factory(self: @TContractState) -> ContractAddress;
+    fn yas_mint_callback(
+        ref self: TContractState, amount_0_owed: u256, amount_1_owed: u256, data: Array<felt252>
+    );
 }
 
 #[starknet::contract]
@@ -123,7 +126,8 @@ mod YASNFTPositionManager {
     };
     use yas::numbers::signed_integer::{i32::i32};
     use yas::numbers::fixed_point::implementations::impl_64x96::{
-        FixedType, FixedTrait, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable
+        FixedType, FixedTrait, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable,
+        FP64x96Sub, ONE
     };
     use yas::utils::math_utils::FullMath;
     use yas::utils::math_utils::Constants::Q128;
@@ -132,6 +136,7 @@ mod YASNFTPositionManager {
     };
     use yas::contracts::yas_pool::{IYASPoolDispatcher, IYASPoolDispatcherTrait};
     use yas::contracts::yas_factory::{IYASFactoryDispatcher, IYASFactoryDispatcherTrait};
+    use yas::interfaces::interface_ERC20::{IERC20Dispatcher, IERC20DispatcherTrait};
     use yas::utils::utils::ContractAddressPartialOrd;
     use yas::libraries::position::{PositionKey, Info};
 
@@ -141,7 +146,8 @@ mod YASNFTPositionManager {
         IncreaseLiquidity: IncreaseLiquidity,
         DecreaseLiquidity: DecreaseLiquidity,
         Collect: Collect,
-        Approval: Approval
+        Approval: Approval,
+        MintCallback: MintCallback
     }
 
     #[derive(Drop, starknet::Event)]
@@ -175,13 +181,15 @@ mod YASNFTPositionManager {
         token_id: u256,
     }
 
+    #[derive(Drop, starknet::Event)]
+    struct MintCallback {
+        amount_0_owed: u256,
+        amount_1_owed: u256
+    }
+
     #[storage]
     struct Storage {
-        // PeripheryImmutableState
         factory: ContractAddress,
-        WETH9: ContractAddress,
-        token_descriptor: ContractAddress,
-        //
         pool_ids: LegacyMap<ContractAddress, u128>,
         pool_id_to_pool_key: LegacyMap<u128, PoolKey>,
         positions: LegacyMap<u256, Position>,
@@ -190,19 +198,12 @@ mod YASNFTPositionManager {
     }
 
     #[constructor]
-    fn constructor(
-        ref self: ContractState,
-        factory: ContractAddress,
-        WETH9: ContractAddress,
-        token_descriptor: ContractAddress
-    ) {
+    fn constructor(ref self: ContractState, factory: ContractAddress) {
         // TODO: ERC721Permit.sol
         let mut state = ERC721::unsafe_new_contract_state();
         ERC721::InternalImpl::initializer(ref state, 'YAS Positions NFT-V1', 'YAS-V3-POS');
 
         self.factory.write(factory);
-        self.WETH9.write(WETH9);
-        self.token_descriptor.write(token_descriptor);
         self.next_id.write(1);
         self.next_pool_id.write(1);
     }
@@ -441,6 +442,31 @@ mod YASNFTPositionManager {
             }
             pool
         }
+
+        fn yas_mint_callback(
+            ref self: ContractState, amount_0_owed: u256, amount_1_owed: u256, data: Array<felt252>
+        ) {
+            let msg_sender = get_caller_address();
+
+            // TODO: we need verify if data has a valid ContractAddress
+            let mut sender: ContractAddress = Zeroable::zero();
+            if !data.is_empty() {
+                sender = (*data[0]).try_into().unwrap();
+            }
+
+            self.emit(MintCallback { amount_0_owed, amount_1_owed });
+
+            if amount_0_owed > 0 {
+                let token_0 = IYASPoolDispatcher { contract_address: msg_sender }.token_0();
+                IERC20Dispatcher { contract_address: token_0 }
+                    .transferFrom(sender, msg_sender, amount_0_owed);
+            }
+            if amount_1_owed > 0 {
+                let token_1 = IYASPoolDispatcher { contract_address: msg_sender }.token_1();
+                IERC20Dispatcher { contract_address: token_1 }
+                    .transferFrom(sender, msg_sender, amount_1_owed);
+            }
+        }
     }
 
     #[generate_trait]
@@ -467,24 +493,23 @@ mod YASNFTPositionManager {
             };
 
             let pool_address = IYASFactoryDispatcher { contract_address: self.factory.read() }
-                .pool(params.token_0, params.token_1, params.fee); // TODO:
+                .pool(params.token_0, params.token_1, params.fee);
 
             let pool_dispatcher = IYASPoolDispatcher { contract_address: pool_address };
 
             // compute the liquidity amount
             let (sqrt_price_X96, _, _, _) = pool_dispatcher.slot_0();
-            let sqrt_ratio_A_X96 = get_sqrt_ratio_at_tick(params.tick_lower);
-            let sqrt_ratio_B_X96 = get_sqrt_ratio_at_tick(params.tick_upper);
+            let sqrt_ratio_AX96 = get_sqrt_ratio_at_tick(params.tick_lower);
+            let sqrt_ratio_BX96 = get_sqrt_ratio_at_tick(params.tick_upper);
 
             // TODO:
-            // let liquidity = LiquidityAmounts.getLiquidityForAmounts(
-            //     sqrtPriceX96,
-            //     sqrtRatioAX96,
-            //     sqrtRatioBX96,
-            //     params.amount0Desired,
-            //     params.amount1Desired
-            // );
-            let liquidity = 0;
+            let liquidity = get_liquidity_for_amounts(
+                sqrt_price_X96,
+                sqrt_ratio_AX96,
+                sqrt_ratio_BX96,
+                params.amount_0_desired,
+                params.amount_1_desired
+            );
 
             let (amount_0, amount_1) = pool_dispatcher
                 .mint(
@@ -492,7 +517,7 @@ mod YASNFTPositionManager {
                     params.tick_lower,
                     params.tick_upper,
                     liquidity,
-                    array![] // TODO: abi.encode(MintCallbackData({poolKey: poolKey, payer: msg.sender}))
+                    array![get_caller_address().into()]
                 );
 
             assert(
@@ -503,8 +528,84 @@ mod YASNFTPositionManager {
         }
     }
 
-    // ERC721
+    /// @notice Computes the amount of liquidity received for a given amount of token0 and price range
+    /// @dev Calculates amount0 * (sqrt(upper) * sqrt(lower)) / (sqrt(upper) - sqrt(lower))
+    /// @param sqrtRatioAX96 A sqrt price representing the first tick boundary
+    /// @param sqrtRatioBX96 A sqrt price representing the second tick boundary
+    /// @param amount0 The amount0 being sent in
+    /// @return liquidity The amount of returned liquidity
+    fn get_liquidity_for_amount_0(
+        sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, amount_0: u256
+    ) -> u128 {
+        let (sqrt_ratio_AX96, sqrt_ratio_BX96) = if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
+            (sqrt_ratio_BX96, sqrt_ratio_AX96)
+        } else {
+            (sqrt_ratio_AX96, sqrt_ratio_BX96)
+        };
+        // TODO: .mag
+        let intermediate = FullMath::mul_div(sqrt_ratio_AX96.mag, sqrt_ratio_BX96.mag, ONE);
+        FullMath::mul_div(amount_0, intermediate, (sqrt_ratio_BX96 - sqrt_ratio_AX96).mag)
+            .try_into()
+            .unwrap()
+    }
 
+    /// @notice Computes the amount of liquidity received for a given amount of token1 and price range
+    /// @dev Calculates amount1 / (sqrt(upper) - sqrt(lower)).
+    /// @param sqrtRatioAX96 A sqrt price representing the first tick boundary
+    /// @param sqrtRatioBX96 A sqrt price representing the second tick boundary
+    /// @param amount1 The amount1 being sent in
+    /// @return liquidity The amount of returned liquidity
+    fn get_liquidity_for_amount_1(
+        sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, amount_1: u256
+    ) -> u128 {
+        let (sqrt_ratio_AX96, sqrt_ratio_BX96) = if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
+            (sqrt_ratio_BX96, sqrt_ratio_AX96)
+        } else {
+            (sqrt_ratio_AX96, sqrt_ratio_BX96)
+        };
+        // TODO: .mag
+        FullMath::mul_div(amount_1, ONE, (sqrt_ratio_BX96 - sqrt_ratio_AX96).mag)
+            .try_into()
+            .unwrap()
+    }
+
+    /// @notice Computes the maximum amount of liquidity received for a given amount of token0, token1, the current
+    /// pool prices and the prices at the tick boundaries
+    /// @param sqrtRatioX96 A sqrt price representing the current pool prices
+    /// @param sqrtRatioAX96 A sqrt price representing the first tick boundary
+    /// @param sqrtRatioBX96 A sqrt price representing the second tick boundary
+    /// @param amount0 The amount of token0 being sent in
+    /// @param amount1 The amount of token1 being sent in
+    /// @return liquidity The maximum amount of liquidity received
+    fn get_liquidity_for_amounts(
+        sqrt_ratio_X96: FixedType,
+        sqrt_ratio_AX96: FixedType,
+        sqrt_ratio_BX96: FixedType,
+        amount_0: u256,
+        amount_1: u256
+    ) -> u128 {
+        let (sqrt_ratio_AX96, sqrt_ratio_BX96) = if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
+            (sqrt_ratio_BX96, sqrt_ratio_AX96)
+        } else {
+            (sqrt_ratio_AX96, sqrt_ratio_BX96)
+        };
+
+        if sqrt_ratio_X96 <= sqrt_ratio_AX96 {
+            get_liquidity_for_amount_0(sqrt_ratio_AX96, sqrt_ratio_BX96, amount_0)
+        } else if sqrt_ratio_X96 < sqrt_ratio_BX96 {
+            let liquidity_0 = get_liquidity_for_amount_0(sqrt_ratio_X96, sqrt_ratio_BX96, amount_0);
+            let liquidity_1 = get_liquidity_for_amount_1(sqrt_ratio_AX96, sqrt_ratio_X96, amount_1);
+            if liquidity_0 < liquidity_1 {
+                liquidity_0
+            } else {
+                liquidity_1
+            }
+        } else {
+            get_liquidity_for_amount_1(sqrt_ratio_AX96, sqrt_ratio_BX96, amount_1)
+        }
+    }
+
+    // ERC721
     #[external(v0)]
     impl SRC5Impl of ISRC5<ContractState> {
         fn supports_interface(self: @ContractState, interface_id: felt252) -> bool {
@@ -525,10 +626,11 @@ mod YASNFTPositionManager {
             ERC721::ERC721MetadataImpl::symbol(@state)
         }
 
-        // TODO: replace
         fn token_uri(self: @ContractState, token_id: u256) -> felt252 {
             let state = ERC721::unsafe_new_contract_state();
-            ERC721::ERC721MetadataImpl::token_uri(@state, token_id)
+            assert(ERC721::InternalImpl::_exists(@state, token_id), 'ERC721: invalid token ID');
+            // TODO: url
+            1
         }
     }
 
@@ -587,7 +689,6 @@ mod YASNFTPositionManager {
             ERC721::ERC721Impl::set_approval_for_all(ref state, operator, approved);
         }
 
-        // TODO: replace
         fn get_approved(self: @ContractState, token_id: u256) -> ContractAddress {
             let state = ERC721::unsafe_new_contract_state();
             assert(ERC721::InternalImpl::_exists(@state, token_id), 'ERC721: invalid token ID');
