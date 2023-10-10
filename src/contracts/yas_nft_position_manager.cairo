@@ -242,7 +242,6 @@ mod YASNFTPositionManager {
             self.next_id.write(token_id + 1);
             let mut state = ERC721::unsafe_new_contract_state();
             ERC721::InternalImpl::_mint(ref state, params.recipient, token_id);
-            let token_id = self.next_id.read() + 1;
 
             let info = pool_dispatcher
                 .positions(
