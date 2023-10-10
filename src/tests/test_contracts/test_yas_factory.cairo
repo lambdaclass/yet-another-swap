@@ -10,7 +10,6 @@ mod YASFactoryTests {
     };
     use yas::numbers::signed_integer::i32::i32;
 
-
     fn deploy(deployer: ContractAddress, pool_class_hash: ClassHash) -> IYASFactoryDispatcher {
         let (address, _) = deploy_syscall(
             YASFactory::TEST_CLASS_HASH.try_into().unwrap(),
