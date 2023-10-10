@@ -1,10 +1,11 @@
 [package]
-name = "yas_periphery"
+name = "yas_core"
 version = "0.1.0"
 
 [dependencies]
 starknet.workspace = true
-yas_core = { path = "../yas_core" }
+
+[lib]
 
 [[target.starknet-contract]]
 sierra = true

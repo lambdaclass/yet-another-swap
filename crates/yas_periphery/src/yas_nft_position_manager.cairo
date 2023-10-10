@@ -1,5 +1,5 @@
 use starknet::ContractAddress;
-use yas::numbers::signed_integer::i32::i32;
+use yas_core::numbers::signed_integer::i32::i32;
 
 #[starknet::interface]
 trait IYASNFTPositionManager<TContractState> {
@@ -10,7 +10,7 @@ trait IYASNFTPositionManager<TContractState> {
 mod YASNFTPositionManager {
     use super::IYASNFTPositionManager;
 
-    use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+    use yas_core::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
 
     #[storage]
     struct Storage {}
