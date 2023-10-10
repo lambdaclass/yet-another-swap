@@ -1,6 +1,7 @@
 use starknet::ContractAddress;
 use yas::numbers::signed_integer::{i32::i32, i256::i256};
 use yas::numbers::fixed_point::implementations::impl_64x96::FixedType;
+use yas::contracts::yas_pool::YASPool::Slot0;
 
 #[starknet::interface]
 trait IYASPool<TContractState> {
@@ -23,6 +24,9 @@ trait IYASPool<TContractState> {
     ) -> (u256, u256);
     fn token_0(self: @TContractState) -> ContractAddress;
     fn token_1(self: @TContractState) -> ContractAddress;
+    fn slot_0(self: @TContractState) -> Slot0;
+    fn max_liquidity_per_tick(self: @TContractState) -> u128;
+    fn tick_spacing(self: @TContractState) -> i32;
 }
 
 #[starknet::contract]
@@ -198,6 +202,20 @@ mod YASPool {
         fn token_1(self: @ContractState) -> ContractAddress {
             self.token_1.read()
         }
+
+        //TODO added for tests:
+        fn slot_0(self: @ContractState) -> Slot0 {
+            self.slot_0.read()
+        }
+
+        fn max_liquidity_per_tick(self: @ContractState) -> u128 {
+            self.max_liquidity_per_tick.read()
+        }
+
+        fn tick_spacing(self: @ContractState) -> i32 {
+            self.tick_spacing.read()
+        }
+        //TODO added for tests^^
 
         /// @notice Sets the initial price for the pool
         /// @dev price is represented as a sqrt(amount_token_1/amount_token_0) Q64.96 value
