@@ -75,7 +75,6 @@ For example the following will display only tests related to the "Mint" function
 make test FILTER=Mint
 ```
 
-
 ## Setting up a Testnet Smart Wallet
 
 **This guide will help you declare and deploy contracts on a testnet. Please
