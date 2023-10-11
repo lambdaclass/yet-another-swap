@@ -69,8 +69,8 @@ make test
 
 You can also filter test output by using the FILTER parameter, allowing you to narrow down the tests you want to view based on any specific criteria; such as the name of a single test, the name of a module of tests, or even the name of a whole test file. Be careful though, it is CaSe SeNsItIvE !
 
-
 For example, to filter and view only the tests within the "Mint" module:
+
 ```bash
 make test FILTER=Mint
 ```
