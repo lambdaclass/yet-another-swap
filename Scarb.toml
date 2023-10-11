@@ -1,16 +1,15 @@
-[package]
-name = "yas"
+[workspace]
+members = ["crates/*"]
+
+[workspace.package]
+description = "yas"
 version = "0.1.0"
+cairo-version = "2.2.0"
 readme = "README.md"
 repository = "https://github.com/lambdaclass/yet-another-swap/"
-# See more keys and their definitions at https://docs.swmansion.com/scarb/docs/reference/manifest
 
-[dependencies]
+[workspace.dependencies]
 starknet = ">=2.2.0"
 openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.7.0" }
 
-[[target.starknet-contract]]
-sierra = true
-
-[cairo]
-sierra-replace-ids = true
+[[workspace.tool.starknet-contract]]
