@@ -1,0 +1,13 @@
+[package]
+name = "yas_periphery"
+version = "0.1.0"
+
+[dependencies]
+starknet.workspace = true
+yas_core = { path = "../yas_core" }
+
+[[target.starknet-contract]]
+sierra = true
+
+[cairo]
+sierra-replace-ids = true
