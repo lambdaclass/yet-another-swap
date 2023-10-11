@@ -4,6 +4,7 @@ version = "0.1.0"
 
 [dependencies]
 starknet.workspace = true
+openzeppelin.workspace = true
 yas_core = { path = "../yas_core" }
 
 [[target.starknet-contract]]
