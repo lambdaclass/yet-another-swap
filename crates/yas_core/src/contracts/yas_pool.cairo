@@ -1,7 +1,8 @@
 use starknet::ContractAddress;
-use yas_core::numbers::signed_integer::{i32::i32, i256::i256};
+
+use yas_core::libraries::position::{Info, PositionKey};
 use yas_core::numbers::fixed_point::implementations::impl_64x96::FixedType;
-use yas_core::libraries::position::{Position, PositionKey, Info};
+use yas_core::numbers::signed_integer::{i32::i32, i256::i256};
 
 #[derive(Copy, Drop, Serde, starknet::Store)]
 struct Slot0 {

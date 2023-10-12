@@ -82,6 +82,8 @@ struct AddLiquidityParams {
 
 #[starknet::interface]
 trait IYASNFTPositionManager<TContractState> {
+    fn positions(self: @TContractState, token_id: u256) -> (Position, PoolKey);
+    fn factory(self: @TContractState) -> ContractAddress;
     fn create_and_initialize_pool_if_necessary(
         ref self: TContractState,
         token_0: ContractAddress,
@@ -89,15 +91,10 @@ trait IYASNFTPositionManager<TContractState> {
         fee: u32,
         sqrt_price_X96: FixedType
     ) -> ContractAddress;
-    fn positions(self: @TContractState, token_id: u256) -> (Position, PoolKey);
     fn mint(ref self: TContractState, params: MintParams) -> (u256, u128, u256, u256);
     fn increase_liquidity(
         ref self: TContractState, params: IncreaseLiquidityParams
     ) -> (u128, u256, u256);
-    // fn decrease_liquidity(
-    //     ref self: TContractState, params: DecreaseLiquidityParams
-    // ) -> (u256, u256);
-    fn factory(self: @TContractState) -> ContractAddress;
     fn yas_mint_callback(
         ref self: TContractState, amount_0_owed: u256, amount_1_owed: u256, data: Array<felt252>
     );
@@ -359,74 +356,6 @@ mod YASNFTPositionManager {
             (liquidity, amount_0, amount_1)
         }
 
-        // /// @inheritdoc INonfungiblePositionManager
-        // fn decrease_liquidity(
-        //     ref self: ContractState, params: DecreaseLiquidityParams
-        // ) -> (u256, u256) {
-        //     assert(params.liquidity > 0, '');
-        //     let mut position = self.positions.read(params.token_id);
-
-        //     let position_liquidity = position.liquidity;
-        //     assert(position_liquidity >= params.liquidity, '');
-
-        //     let pool_key = self.pool_id_to_pool_key.read(position.pool_id);
-        //     // // IUniswapV3Pool pool = IUniswapV3Pool(PoolAddress.computeAddress(factory, poolKey));
-        //     // let (amount_0, amount_1) = pool.burn(position.tick_lower, position.tick_upper, params.liquidity);
-        //     let (amount_0, amount_1) = (0, 0);
-
-        //     assert(
-        //         amount_0 >= params.amount_0_min && amount_1 >= params.amount_1_min,
-        //         'Price slippage check'
-        //     );
-
-        //     // this is now updated to the current transaction
-        //     // let (_, fee_growth_inside_0_last_X128, fee_growth_inside_1_last_X128, _, _) = pool
-        //     let info = pool.positions(
-        //             PositionKey {
-        //                 owner: get_contract_address(),
-        //                 tick_lower: position.tick_lower,
-        //                 tick_upper: position.tick_upper
-        //             }
-        //         );
-
-        //     position
-        //         .tokens_owed_0 +=
-        //             (amount_0
-        //                 + FullMath::mul_div(
-        //                     info.fee_growth_inside_0_last_X128 - position.fee_growth_inside_0_last_X128,
-        //                     position_liquidity.into(),
-        //                     Q128
-        //                 ))
-        //         .try_into()
-        //         .unwrap();
-
-        //     position
-        //         .tokens_owed_1 +=
-        //             (amount_1
-        //                 + FullMath::mul_div(
-        //                     info.fee_growth_inside_1_lastX128 - position.fee_growth_inside_1_last_X128,
-        //                     position_liquidity,
-        //                     Q128
-        //                 ))
-        //         .try_into()
-        //         .unwrap();
-
-        //     position.fee_growth_inside_0_last_X128 = info.fee_growth_inside_0_last_X128;
-        //     position.fee_growth_inside_1_last_X128 = info.fee_growth_inside_1_last_X128;
-        //     // subtraction is safe because we checked positionLiquidity is gte params.liquidity
-        //     position.liquidity = position_liquidity - params.liquidity;
-
-        //     self.positions.write(params.token_id, position);
-
-        //     self
-        //         .emit(
-        //             DecreaseLiquidity {
-        //                 token_id: params.token_id, liquidity: params.liquidity, amount_0, amount_1
-        //             }
-        //         );
-        //     (amount_0, amount_1)
-        // }
-
         fn create_and_initialize_pool_if_necessary(
             ref self: ContractState,
             token_0: ContractAddress,
@@ -434,7 +363,6 @@ mod YASNFTPositionManager {
             fee: u32,
             sqrt_price_X96: FixedType
         ) -> ContractAddress {
-            assert(token_0 < token_1, '');
             let factory_dispatcher = IYASFactoryDispatcher {
                 contract_address: self.factory.read()
             };
@@ -603,7 +531,6 @@ mod YASNFTPositionManager {
             let sqrt_ratio_AX96 = get_sqrt_ratio_at_tick(params.tick_lower);
             let sqrt_ratio_BX96 = get_sqrt_ratio_at_tick(params.tick_upper);
 
-            // TODO:
             let liquidity = get_liquidity_for_amounts(
                 sqrt_price_X96,
                 sqrt_ratio_AX96,
