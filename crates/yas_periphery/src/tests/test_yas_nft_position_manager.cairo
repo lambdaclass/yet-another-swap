@@ -1,34 +1,31 @@
 mod YASNFTPositionManagerTests {
-    use starknet::{ClassHash, SyscallResultTrait};
-    use starknet::testing::{set_contract_address, set_caller_address};
-    use starknet::{contract_address_const, ContractAddress};
+    use starknet::{ClassHash, ContractAddress, SyscallResultTrait};
     use starknet::syscalls::deploy_syscall;
+    use starknet::testing::{set_contract_address};
     use integer::BoundedInt;
 
-    use yas_core::contracts::yas_factory::{
-        YASFactory, IYASFactory, IYASFactoryDispatcher, IYASFactoryDispatcherTrait
-    };
     use yas_core::contracts::yas_erc20::{
         ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
     };
+    use yas_core::contracts::yas_factory::{
+        YASFactory, IYASFactory, IYASFactoryDispatcher, IYASFactoryDispatcherTrait
+    };
+    use yas_core::libraries::tick_math::{TickMath::MIN_TICK, TickMath::MAX_TICK};
     use yas_core::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FixedType, FixedTrait
     };
-    use yas_core::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET};
-    use yas_core::tests::utils::constants::FactoryConstants::{
-        POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing
+    use yas_core::numbers::signed_integer::{
+        i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
     };
-    use yas_core::tests::utils::constants::FactoryConstants::OWNER;
+    use yas_core::tests::utils::constants::FactoryConstants::{
+        POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing, OWNER
+    };
+    use yas_core::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET};
 
     use yas_periphery::yas_nft_position_manager::{
         YASNFTPositionManager, IYASNFTPositionManager, IYASNFTPositionManagerDispatcher,
         IYASNFTPositionManagerDispatcherTrait, MintParams
     };
-
-    use yas_core::numbers::signed_integer::{
-        i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
-    };
-    use yas_core::libraries::tick_math::{TickMath::MIN_TICK, TickMath::MAX_TICK};
 
     fn setup() -> (IYASNFTPositionManagerDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x1
@@ -100,25 +97,22 @@ mod YASNFTPositionManagerTests {
 
     mod mint {
         use super::{setup, get_min_tick_and_max_tick};
+        use starknet::testing::{set_contract_address};
+
+        use yas_core::contracts::yas_erc20::{
+            ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
+        };
+        use yas_core::numbers::fixed_point::implementations::impl_64x96::{
+            FP64x96Impl, FixedType, FixedTrait
+        };
+        use yas_core::tests::utils::constants::FactoryConstants::{
+            POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing
+        };
+        use yas_core::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, WALLET, OTHER};
 
         use yas_periphery::yas_nft_position_manager::{
             YASNFTPositionManager, IYASNFTPositionManager, IYASNFTPositionManagerDispatcher,
             IYASNFTPositionManagerDispatcherTrait, MintParams, Position, PoolKey
-        };
-        use yas_core::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, WALLET, OTHER};
-
-        use yas_core::tests::utils::constants::FactoryConstants::{
-            POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing
-        };
-
-        use yas_core::numbers::fixed_point::implementations::impl_64x96::{
-            FP64x96Impl, FixedType, FixedTrait
-        };
-
-        use starknet::testing::{set_contract_address, set_caller_address};
-
-        use yas_core::contracts::yas_erc20::{
-            ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
         };
 
         #[test]
@@ -149,7 +143,6 @@ mod YASNFTPositionManagerTests {
 
         #[test]
         #[available_gas(200000000)]
-        // TODO: error transfer ? u256_sub Overflow
         #[should_panic(
             expected: (
                 'u256_sub Overflow',
@@ -227,21 +220,20 @@ mod YASNFTPositionManagerTests {
                     }
                 );
 
-            // TODO: add methods interface nft manager
-            // assert(yas_nft_position_manager.balance_of(other.address) == 1, '');
-            // assert(yas_nft_position_manager.token_of_owner_by_index(other.address, 0) == 1, '');
+            assert(yas_nft_position_manager.balance_of(OTHER()) == 1, 'wrong balance_of OTHER');
+            // assert(yas_nft_position_manager.token_of_owner_by_index(other.address, 0) == 1, ''); // TODO: ERC721Enumerable
 
             let (position, pool_key) = yas_nft_position_manager.positions(1);
-            assert(pool_key.token_0 == token_0.contract_address, '');
-            assert(pool_key.token_1 == token_1.contract_address, '');
-            assert(pool_key.fee == fee_amount(FeeAmount::MEDIUM), '');
-            assert(position.tick_lower == min_tick, '');
-            assert(position.tick_upper == max_tick, '');
-            assert(position.liquidity == 15, '');
-            assert(position.tokens_owed_0 == 0, '');
-            assert(position.tokens_owed_1 == 0, '');
-            assert(position.fee_growth_inside_0_last_X128 == 0, '');
-            assert(position.fee_growth_inside_1_last_X128 == 0, '');
+            assert(pool_key.token_0 == token_0.contract_address, 'wrong token_0');
+            assert(pool_key.token_1 == token_1.contract_address, 'wrong token_1');
+            assert(pool_key.fee == fee_amount(FeeAmount::MEDIUM), 'wrong fee');
+            assert(position.tick_lower == min_tick, 'wrong tick_lower');
+            assert(position.tick_upper == max_tick, 'wrong tick_upper');
+            assert(position.liquidity == 15, 'wrong liquidity');
+            assert(position.tokens_owed_0 == 0, 'wrong tokens_owed_0');
+            assert(position.tokens_owed_1 == 0, 'wrong tokens_owed_1');
+            assert(position.fee_growth_inside_0_last_X128 == 0, 'wrong fee_growth_inside_0');
+            assert(position.fee_growth_inside_1_last_X128 == 0, 'wrong fee_growth_inside_1');
         }
     }
 }

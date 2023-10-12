@@ -101,6 +101,29 @@ trait IYASNFTPositionManager<TContractState> {
     fn yas_mint_callback(
         ref self: TContractState, amount_0_owed: u256, amount_1_owed: u256, data: Array<felt252>
     );
+    // ERC721
+    fn supports_interface(self: @TContractState, interface_id: felt252) -> bool;
+    fn name(self: @TContractState) -> felt252;
+    fn symbol(self: @TContractState) -> felt252;
+    fn token_uri(self: @TContractState, token_id: u256) -> felt252;
+    fn balance_of(self: @TContractState, account: ContractAddress) -> u256;
+    fn owner_of(self: @TContractState, token_id: u256) -> ContractAddress;
+    fn transfer_from(
+        ref self: TContractState, from: ContractAddress, to: ContractAddress, token_id: u256
+    );
+    fn safe_transfer_from(
+        ref self: TContractState,
+        from: ContractAddress,
+        to: ContractAddress,
+        token_id: u256,
+        data: Span<felt252>
+    );
+    fn approve(ref self: TContractState, to: ContractAddress, token_id: u256);
+    fn set_approval_for_all(ref self: TContractState, operator: ContractAddress, approved: bool);
+    fn get_approved(self: @TContractState, token_id: u256) -> ContractAddress;
+    fn is_approved_for_all(
+        self: @TContractState, owner: ContractAddress, operator: ContractAddress
+    ) -> bool;
 }
 
 #[starknet::contract]
@@ -113,8 +136,6 @@ mod YASNFTPositionManager {
         ContractAddress, get_contract_address, contract_address_const, get_caller_address
     };
     use openzeppelin::token::erc721::ERC721;
-    use openzeppelin::token::erc721::interface::{IERC721, IERC721Metadata};
-    use openzeppelin::introspection::interface::ISRC5;
 
     use yas_core::contracts::yas_pool::{IYASPoolDispatcher, IYASPoolDispatcherTrait};
     use yas_core::contracts::yas_factory::{IYASFactoryDispatcher, IYASFactoryDispatcherTrait};
@@ -458,6 +479,95 @@ mod YASNFTPositionManager {
                     .transferFrom(sender, msg_sender, amount_1_owed);
             }
         }
+
+        // ERC721
+        fn supports_interface(self: @ContractState, interface_id: felt252) -> bool {
+            let state = ERC721::unsafe_new_contract_state();
+            ERC721::SRC5Impl::supports_interface(@state, interface_id)
+        }
+
+        fn name(self: @ContractState) -> felt252 {
+            let state = ERC721::unsafe_new_contract_state();
+            ERC721::ERC721MetadataImpl::name(@state)
+        }
+
+        fn symbol(self: @ContractState) -> felt252 {
+            let state = ERC721::unsafe_new_contract_state();
+            ERC721::ERC721MetadataImpl::symbol(@state)
+        }
+
+        fn token_uri(self: @ContractState, token_id: u256) -> felt252 {
+            let state = ERC721::unsafe_new_contract_state();
+            assert(ERC721::InternalImpl::_exists(@state, token_id), 'ERC721: invalid token ID');
+            // TODO: url
+            1
+        }
+
+        fn balance_of(self: @ContractState, account: ContractAddress) -> u256 {
+            let state = ERC721::unsafe_new_contract_state();
+            ERC721::ERC721Impl::balance_of(@state, account)
+        }
+
+        fn owner_of(self: @ContractState, token_id: u256) -> ContractAddress {
+            let state = ERC721::unsafe_new_contract_state();
+            ERC721::ERC721Impl::owner_of(@state, token_id)
+        }
+
+        fn transfer_from(
+            ref self: ContractState, from: ContractAddress, to: ContractAddress, token_id: u256
+        ) {
+            let mut state = ERC721::unsafe_new_contract_state();
+            ERC721::ERC721Impl::transfer_from(ref state, from, to, token_id);
+        }
+
+        fn safe_transfer_from(
+            ref self: ContractState,
+            from: ContractAddress,
+            to: ContractAddress,
+            token_id: u256,
+            data: Span<felt252>
+        ) {
+            let mut state = ERC721::unsafe_new_contract_state();
+            ERC721::ERC721Impl::safe_transfer_from(ref state, from, to, token_id, data);
+        }
+
+        // TODO: replace _approve
+        fn approve(ref self: ContractState, to: ContractAddress, token_id: u256) {
+            let state = ERC721::unsafe_new_contract_state();
+            let owner = ERC721::InternalImpl::_owner_of(@state, token_id);
+
+            let caller = get_caller_address();
+            assert(
+                owner == caller || ERC721::ERC721Impl::is_approved_for_all(@state, owner, caller),
+                ERC721::Errors::UNAUTHORIZED
+            );
+
+            let mut position = self.positions.read(token_id);
+            position.operator = to;
+            self.positions.write(token_id, position);
+
+            self.emit(Approval { owner, to, token_id });
+        }
+
+        fn set_approval_for_all(
+            ref self: ContractState, operator: ContractAddress, approved: bool
+        ) {
+            let mut state = ERC721::unsafe_new_contract_state();
+            ERC721::ERC721Impl::set_approval_for_all(ref state, operator, approved);
+        }
+
+        fn get_approved(self: @ContractState, token_id: u256) -> ContractAddress {
+            let state = ERC721::unsafe_new_contract_state();
+            assert(ERC721::InternalImpl::_exists(@state, token_id), 'ERC721: invalid token ID');
+            self.positions.read(token_id).operator
+        }
+
+        fn is_approved_for_all(
+            self: @ContractState, owner: ContractAddress, operator: ContractAddress
+        ) -> bool {
+            let state = ERC721::unsafe_new_contract_state();
+            ERC721::ERC721Impl::is_approved_for_all(@state, owner, operator)
+        }
     }
 
     #[generate_trait]
@@ -593,104 +703,6 @@ mod YASNFTPositionManager {
             }
         } else {
             get_liquidity_for_amount_1(sqrt_ratio_AX96, sqrt_ratio_BX96, amount_1)
-        }
-    }
-
-    // ERC721
-    #[external(v0)]
-    impl SRC5Impl of ISRC5<ContractState> {
-        fn supports_interface(self: @ContractState, interface_id: felt252) -> bool {
-            let state = ERC721::unsafe_new_contract_state();
-            ERC721::SRC5Impl::supports_interface(@state, interface_id)
-        }
-    }
-
-    #[external(v0)]
-    impl ERC721MetadataImpl of IERC721Metadata<ContractState> {
-        fn name(self: @ContractState) -> felt252 {
-            let state = ERC721::unsafe_new_contract_state();
-            ERC721::ERC721MetadataImpl::name(@state)
-        }
-
-        fn symbol(self: @ContractState) -> felt252 {
-            let state = ERC721::unsafe_new_contract_state();
-            ERC721::ERC721MetadataImpl::symbol(@state)
-        }
-
-        fn token_uri(self: @ContractState, token_id: u256) -> felt252 {
-            let state = ERC721::unsafe_new_contract_state();
-            assert(ERC721::InternalImpl::_exists(@state, token_id), 'ERC721: invalid token ID');
-            // TODO: url
-            1
-        }
-    }
-
-    #[external(v0)]
-    impl IERC721Impl of IERC721<ContractState> {
-        fn balance_of(self: @ContractState, account: ContractAddress) -> u256 {
-            let state = ERC721::unsafe_new_contract_state();
-            ERC721::ERC721Impl::balance_of(@state, account)
-        }
-
-        fn owner_of(self: @ContractState, token_id: u256) -> ContractAddress {
-            let state = ERC721::unsafe_new_contract_state();
-            ERC721::ERC721Impl::owner_of(@state, token_id)
-        }
-
-        fn transfer_from(
-            ref self: ContractState, from: ContractAddress, to: ContractAddress, token_id: u256
-        ) {
-            let mut state = ERC721::unsafe_new_contract_state();
-            ERC721::ERC721Impl::transfer_from(ref state, from, to, token_id);
-        }
-
-        fn safe_transfer_from(
-            ref self: ContractState,
-            from: ContractAddress,
-            to: ContractAddress,
-            token_id: u256,
-            data: Span<felt252>
-        ) {
-            let mut state = ERC721::unsafe_new_contract_state();
-            ERC721::ERC721Impl::safe_transfer_from(ref state, from, to, token_id, data);
-        }
-
-        // TODO: replace _approve
-        fn approve(ref self: ContractState, to: ContractAddress, token_id: u256) {
-            let state = ERC721::unsafe_new_contract_state();
-            let owner = ERC721::InternalImpl::_owner_of(@state, token_id);
-
-            let caller = get_caller_address();
-            assert(
-                owner == caller || ERC721::ERC721Impl::is_approved_for_all(@state, owner, caller),
-                ERC721::Errors::UNAUTHORIZED
-            );
-
-            let mut position = self.positions.read(token_id);
-            position.operator = to;
-            self.positions.write(token_id, position);
-
-            self.emit(Approval { owner, to, token_id });
-        }
-
-        fn set_approval_for_all(
-            ref self: ContractState, operator: ContractAddress, approved: bool
-        ) {
-            let mut state = ERC721::unsafe_new_contract_state();
-            ERC721::ERC721Impl::set_approval_for_all(ref state, operator, approved);
-        }
-
-        fn get_approved(self: @ContractState, token_id: u256) -> ContractAddress {
-            let state = ERC721::unsafe_new_contract_state();
-            assert(ERC721::InternalImpl::_exists(@state, token_id), 'ERC721: invalid token ID');
-            self.positions.read(token_id).operator
-        }
-
-        fn is_approved_for_all(
-            self: @ContractState, owner: ContractAddress, operator: ContractAddress
-        ) -> bool {
-            let state = ERC721::unsafe_new_contract_state();
-            ERC721::ERC721Impl::is_approved_for_all(@state, owner, operator)
         }
     }
 }
