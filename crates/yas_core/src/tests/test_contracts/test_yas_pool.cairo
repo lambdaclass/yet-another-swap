@@ -3,18 +3,18 @@ mod YASPoolTests {
     use starknet::syscalls::deploy_syscall;
     use integer::BoundedInt;
 
-    use yas::contracts::yas_pool::{
+    use yas_core::contracts::yas_pool::{
         YASPool, YASPool::ContractState, YASPool::InternalImpl, IYASPool, IYASPoolDispatcher,
         IYASPoolDispatcherTrait
     };
-    use yas::numbers::signed_integer::{
+    use yas_core::numbers::signed_integer::{
         i32::i32, i32::i32_div_no_round, i64::i64, i128::i128, integer_trait::IntegerTrait
     };
-    use yas::libraries::{
+    use yas_core::libraries::{
         tick::{Tick, Tick::TickImpl},
         position::{Info, Position, Position::PositionImpl, PositionKey}
     };
-    use yas::tests::utils::constants::PoolConstants::OWNER;
+    use yas_core::tests::utils::constants::PoolConstants::OWNER;
 
 
     fn deploy(
@@ -44,11 +44,11 @@ mod YASPoolTests {
 
         use starknet::{contract_address_const, ContractAddress};
 
-        use yas::contracts::yas_pool::{
+        use yas_core::contracts::yas_pool::{
             YASPool, IYASPool, IYASPoolDispatcher, IYASPoolDispatcherTrait
         };
-        use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
-        use yas::tests::utils::constants::PoolConstants::{FACTORY_ADDRESS, TOKEN_A, TOKEN_B};
+        use yas_core::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+        use yas_core::tests::utils::constants::PoolConstants::{FACTORY_ADDRESS, TOKEN_A, TOKEN_B};
 
         //#[test]
         //#[available_gas(2000000000000)]
@@ -63,19 +63,19 @@ mod YASPoolTests {
         use super::deploy;
         use starknet::testing::pop_log;
 
-        use yas::contracts::yas_pool::{
+        use yas_core::contracts::yas_pool::{
             IYASPoolDispatcherTrait, YASPool::{YASPoolImpl, InternalImpl, Initialize, Slot0}
         };
-        use yas::numbers::fixed_point::implementations::impl_64x96::{
+        use yas_core::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96Sub, FP64x96PartialEq, FixedType, FixedTrait
         };
-        use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
-        use yas::libraries::tick_math::TickMath::{MAX_SQRT_RATIO, MIN_SQRT_RATIO};
-        use yas::tests::utils::constants::PoolConstants::{
+        use yas_core::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+        use yas_core::libraries::tick_math::TickMath::{MAX_SQRT_RATIO, MIN_SQRT_RATIO};
+        use yas_core::tests::utils::constants::PoolConstants::{
             FACTORY_ADDRESS, TOKEN_A, TOKEN_B, STATE, min_tick, max_tick, encode_price_sqrt_1_1,
             encode_price_sqrt_1_2
         };
-        use yas::utils::{math_utils::pow, utils::Slot0PartialEq};
+        use yas_core::utils::{math_utils::pow, utils::Slot0PartialEq};
 
         //#[test]
         //#[available_gas(200000000)]
@@ -215,19 +215,19 @@ mod YASPoolTests {
         };
         use integer::BoundedInt;
 
-        use yas::contracts::yas_pool::{
+        use yas_core::contracts::yas_pool::{
             IYASPoolDispatcherTrait, YASPool, YASPool::InternalTrait,
             YASPool::{YASPoolImpl, InternalImpl, Initialize, Slot0}
         };
-        use yas::numbers::signed_integer::{
+        use yas_core::numbers::signed_integer::{
             i32::i32, i64::i64, i128::i128, integer_trait::IntegerTrait
         };
-        use yas::tests::utils::constants::PoolConstants::{
+        use yas_core::tests::utils::constants::PoolConstants::{
             FACTORY_ADDRESS, TOKEN_A, TOKEN_B, STATE, min_tick, max_tick, encode_price_sqrt_1_1,
             encode_price_sqrt_1_2
         };
-        use yas::tests::utils::constants::FactoryConstants::OWNER;
-        use yas::libraries::{
+        use yas_core::tests::utils::constants::FactoryConstants::OWNER;
+        use yas_core::libraries::{
             tick::{Tick, Tick::TickImpl},
             position::{Info, Position, Position::PositionImpl, PositionKey}
         };
@@ -366,9 +366,9 @@ mod YASPoolTests {
     }
 
     mod CheckTicks {
-        use yas::contracts::yas_pool::YASPool;
-        use yas::libraries::tick_math::TickMath;
-        use yas::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
+        use yas_core::contracts::yas_pool::YASPool;
+        use yas_core::libraries::tick_math::TickMath;
+        use yas_core::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
 
         //#[test]
         //#[available_gas(60000)]
@@ -467,7 +467,7 @@ mod YASPoolTests {
 
 
     mod Mint {
-        use yas::contracts::yas_pool::YASPool::InternalTrait;
+        use yas_core::contracts::yas_pool::YASPool::InternalTrait;
         use super::{
             setup, get_min_tick_and_max_tick, deploy, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount,
             fee_amount
@@ -478,39 +478,39 @@ mod YASPoolTests {
         use starknet::syscalls::deploy_syscall;
         use starknet::testing::{set_contract_address, set_caller_address};
 
-        use yas::contracts::yas_pool::{
+        use yas_core::contracts::yas_pool::{
             YASPool, YASPool::ContractState, YASPool::YASPoolImpl, YASPool::InternalImpl, IYASPool,
             IYASPoolDispatcher, IYASPoolDispatcherTrait
         };
-        use yas::contracts::yas_factory::{
+        use yas_core::contracts::yas_factory::{
             YASFactory, IYASFactory, IYASFactoryDispatcher, IYASFactoryDispatcherTrait
         };
-        use yas::contracts::yas_router::{
+        use yas_core::contracts::yas_router::{
             YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
         };
-        use yas::numbers::fixed_point::implementations::impl_64x96::{
+        use yas_core::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FixedType, FixedTrait
         };
-        use yas::libraries::tick::{Tick, Tick::TickImpl};
-        use yas::libraries::position::{Info, Position, Position::PositionImpl, PositionKey};
-        use yas::tests::utils::constants::PoolConstants::{
+        use yas_core::libraries::tick::{Tick, Tick::TickImpl};
+        use yas_core::libraries::position::{Info, Position, Position::PositionImpl, PositionKey};
+        use yas_core::tests::utils::constants::PoolConstants::{
             FACTORY_ADDRESS, TOKEN_A, TOKEN_B, WALLET, STATE, encode_price_sqrt_1_1
         };
-        use yas::contracts::yas_erc20::{
+        use yas_core::contracts::yas_erc20::{
             ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
         };
-        use yas::numbers::signed_integer::{
+        use yas_core::numbers::signed_integer::{
             i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
         };
 
-        use yas::utils::math_utils::{
+        use yas_core::utils::math_utils::{
             FullMath::{div_rounding_up, mul_div, mul_div_rounding_up}, pow
         };
 
 
-        //#[test]
-        //#[available_gas(2000000000)]
-        //#[should_panic(expected: ('LOK', 'ENTRYPOINT_FAILED'))]
+        #[test]
+        #[available_gas(2000000000)]
+        #[should_panic(expected: ('LOK', 'ENTRYPOINT_FAILED'))]
         fn test_fails_not_initialized() {
             let yas_pool = deploy(
                 FACTORY_ADDRESS(),
@@ -541,22 +541,22 @@ mod YASPoolTests {
                 encode_price_sqrt_1_1
             };
 
-            use yas::numbers::signed_integer::{
+            use yas_core::numbers::signed_integer::{
                 i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
             };
-            use yas::contracts::yas_pool::{
+            use yas_core::contracts::yas_pool::{
                 YASPool, YASPool::ContractState, YASPool::YASPoolImpl, YASPool::InternalImpl,
                 IYASPool, IYASPoolDispatcher, IYASPoolDispatcherTrait
             };
-            use yas::contracts::yas_router::{
+            use yas_core::contracts::yas_router::{
                 YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
             };
             use debug::PrintTrait;
 
 
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('TLU', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('TLU', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_tick_lower_greater_than_tick_upper() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
 
@@ -571,9 +571,9 @@ mod YASPoolTests {
             }
 
 
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('TLM', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('TLM', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_tick_lower_than_min() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 mint_callback
@@ -587,9 +587,9 @@ mod YASPoolTests {
             }
 
 
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('TUM', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('TUM', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_tick_greater_than_max() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 mint_callback
@@ -619,8 +619,8 @@ mod YASPoolTests {
                     );
             }
             // TODO: fix error overflow
-            //#[test]
-            //#[available_gas(2000000000)]
+            #[test]
+            #[available_gas(2000000000)]
             fn test_amount_max() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 let maxLiquidityGross: u128 = yas_pool.max_liquidity_per_tick();
@@ -636,9 +636,9 @@ mod YASPoolTests {
             }
 
 
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_amount_at_tick_greater_than_max() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 mint_callback
@@ -660,9 +660,9 @@ mod YASPoolTests {
                         maxLiquidityGross - 1000 + 1
                     );
             }
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_amount_at_tick_greater_than_max_2() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 mint_callback
@@ -686,9 +686,9 @@ mod YASPoolTests {
                         maxLiquidityGross - 1000 + 1
                     );
             }
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_amount_at_tick_greater_than_max_3() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 mint_callback
@@ -713,8 +713,8 @@ mod YASPoolTests {
                     );
             }
             // TODO: fix error overflow
-            //#[test]
-            //#[available_gas(2000000000)]
+            #[test]
+            #[available_gas(2000000000)]
             fn test_fails_amount_at_tick_greater_than_max_4() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 mint_callback
@@ -738,9 +738,11 @@ mod YASPoolTests {
             }
 
 
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('amount must be greater than 0', 'ENTRYPOINT_FAILED'))] //set panic code
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(
+                expected: ('amount must be greater than 0', 'ENTRYPOINT_FAILED')
+            )] //set panic code
             fn test_fails_amount_is_zero() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 let (amount0, amount1): (u256, u256) = yas_pool
@@ -762,22 +764,22 @@ mod YASPoolTests {
                 encode_price_sqrt_1_1
             };
             use super::super::{get_min_tick_and_max_tick};
-            use yas::numbers::signed_integer::{
+            use yas_core::numbers::signed_integer::{
                 i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
             };
-            use yas::contracts::yas_pool::{
+            use yas_core::contracts::yas_pool::{
                 YASPool, YASPool::ContractState, YASPool::InternalImpl, IYASPool,
                 IYASPoolDispatcher, IYASPoolDispatcherTrait
             };
-            use yas::contracts::yas_router::{
+            use yas_core::contracts::yas_router::{
                 YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
             };
 
 
             use debug::PrintTrait;
 
-            //#[test]
-            //#[available_gas(200000000)]
+            #[test]
+            #[available_gas(200000000)]
             fn test_initial_balances() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
 
@@ -789,8 +791,8 @@ mod YASPoolTests {
             }
 
 
-            //#[test]
-            //#[available_gas(200000000)]
+            #[test]
+            #[available_gas(200000000)]
             fn test_initial_tick() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 let (expected_min_tick, expected_max_tick) = get_min_tick_and_max_tick();
@@ -802,25 +804,25 @@ mod YASPoolTests {
 
 
             mod AboveCurrentPrice {
-                use yas::contracts::yas_pool::{IYASPoolDispatcherTrait};
+                use yas_core::contracts::yas_pool::{IYASPoolDispatcherTrait};
                 use super::{
                     get_min_tick_and_max_tick, setup, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount,
                     fee_amount, IERC20DispatcherTrait, FACTORY_ADDRESS, TOKEN_A, TOKEN_B, WALLET,
                     encode_price_sqrt_1_1
                 };
                 use super::super::pow;
-                use yas::numbers::signed_integer::{
+                use yas_core::numbers::signed_integer::{
                     i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
                 };
 
-                use yas::contracts::yas_router::{
+                use yas_core::contracts::yas_router::{
                     YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
                 };
                 use debug::PrintTrait;
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_transfers_token_0_only() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
 
@@ -842,8 +844,8 @@ mod YASPoolTests {
                 }
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_max_tick_max_lvrg() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     let BigNumber: u128 = pow(2, 102).try_into().unwrap();
@@ -867,8 +869,8 @@ mod YASPoolTests {
                 }
 
 
-                //#[test]
-                //#[available_gas(200000000000)]
+                #[test]
+                #[available_gas(200000000000)]
                 fn test_max_tick() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
 
@@ -892,8 +894,8 @@ mod YASPoolTests {
 
                 // WIP: 'removing works'
                 // no burn() function
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_burn() {
                     //await mint(wallet.address, -240, 0, 10000) -done
                     //await pool.burn(-240, 0, 10000)
@@ -916,8 +918,8 @@ mod YASPoolTests {
 
 
                 // WIP: 'adds liquidity to liquidityGross'
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_add_liquidityGross() {
                     //await mint(wallet.address, -240, 0, 100) -done
                     //expect((await pool.ticks(-240)).liquidityGross).to.eq(100)
@@ -951,8 +953,8 @@ mod YASPoolTests {
 
 
                 // TODO: 'removes liquidity from liquidityGross'
-                ////#[test]
-                ////#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_remove_liquidityGross() {
                     //await mint(wallet.address, -240, 0, 100) -done
                     //await mint(wallet.address, -240, 0, 40) -done
@@ -984,8 +986,8 @@ mod YASPoolTests {
                 }
 
                 // TODO: 'clears tick lower if last position is removed'
-                ////#[test]
-                ////#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_clear_tick_lower() {
                     //await mint(wallet.address, -240, 0, 100) -done
                     //await pool.burn(-240, 0, 100)
@@ -1009,8 +1011,8 @@ mod YASPoolTests {
                 }
 
                 // TODO: 'clears tick upper if last position is removed'
-                ////#[test]
-                ////#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_clear_tick_upper() {
                     //await mint(wallet.address, -240, 0, 100) -done
                     //await pool.burn(-240, 0, 100)
@@ -1035,8 +1037,8 @@ mod YASPoolTests {
                 }
 
                 // TODO: 'only clears the tick that is not used at all'
-                ////#[test]
-                ////#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_clear_tick_unused() {
                     //await mint(wallet.address, -240, 0, 100) -done 
                     //await mint(wallet.address, -tickSpacing, 0, 250) -done
@@ -1075,22 +1077,22 @@ mod YASPoolTests {
             }
 
             mod IncludingCurrentPrice {
-                use yas::contracts::yas_pool::{IYASPoolDispatcherTrait};
+                use yas_core::contracts::yas_pool::{IYASPoolDispatcherTrait};
                 use super::{
                     get_min_tick_and_max_tick, setup, tick_spacing, FeeAmount, fee_amount,
                     IERC20DispatcherTrait, WALLET
                 };
                 use super::super::pow;
-                use yas::numbers::signed_integer::{
+                use yas_core::numbers::signed_integer::{
                     i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
                 };
-                use yas::contracts::yas_router::{
+                use yas_core::contracts::yas_router::{
                     YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
                 };
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_curr_price_both() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1114,8 +1116,8 @@ mod YASPoolTests {
 
 
                 // TODO: 'initializes lower tick'
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_init_lower_tick() {
                     // await mint(wallet.address, minTick + tickSpacing, maxTick - tickSpacing, 100)
                     // const { liquidityGross } = await pool.ticks(minTick + tickSpacing)
@@ -1138,8 +1140,8 @@ mod YASPoolTests {
 
 
                 // TODO: 'initializes upper tick'
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_init_upper_tick() {
                     // await mint(wallet.address, minTick + tickSpacing, maxTick - tickSpacing, 100)
                     // const { liquidityGross } = await pool.ticks(maxTick - tickSpacing)
@@ -1161,8 +1163,8 @@ mod YASPoolTests {
                 }
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_min_max_tick() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1180,8 +1182,8 @@ mod YASPoolTests {
 
 
                 // TODO: 'removing works'
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_remove() {
                     // await mint(wallet.address, minTick + tickSpacing, maxTick - tickSpacing, 100)
                     // await pool.burn(minTick + tickSpacing, maxTick - tickSpacing, 100)
@@ -1210,22 +1212,22 @@ mod YASPoolTests {
             }
 
             mod BelowCurrentPrice {
-                use yas::contracts::yas_pool::{IYASPoolDispatcherTrait};
+                use yas_core::contracts::yas_pool::{IYASPoolDispatcherTrait};
                 use super::{
                     get_min_tick_and_max_tick, setup, tick_spacing, FeeAmount, fee_amount,
                     IERC20DispatcherTrait, WALLET
                 };
                 use super::super::pow;
-                use yas::numbers::signed_integer::{
+                use yas_core::numbers::signed_integer::{
                     i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
                 };
-                use yas::contracts::yas_router::{
+                use yas_core::contracts::yas_router::{
                     YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
                 };
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_below_only_token1() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1248,8 +1250,8 @@ mod YASPoolTests {
 
 
                 // TODO: 'min tick with max leverage'
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_below_maxtick_maxlvrg() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1271,8 +1273,8 @@ mod YASPoolTests {
                 }
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_below_min_tick() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1295,8 +1297,8 @@ mod YASPoolTests {
 
 
                 // TODO: 'removing works'
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_below_remove() {
                     // await mint(wallet.address, -46080, -46020, 10000)
                     // await pool.burn(-46080, -46020, 10000)
@@ -1329,8 +1331,8 @@ mod YASPoolTests {
         }
 
         // TODO: 'protocol fees accumulate as expected during swap'
-        //#[test]
-        //#[available_gas(200000000)]
+        #[test]
+        #[available_gas(200000000)]
         fn test_protocol_fees_accum() {
             // await pool.setFeeProtocol(6, 6)
             //
@@ -1347,8 +1349,8 @@ mod YASPoolTests {
 
 
         // TODO: 'positions are protected before protocol fee is turned on'
-        //#[test]
-        //#[available_gas(200000000)]
+        #[test]
+        #[available_gas(200000000)]
         fn test_positions_protected() {
             // await mint(wallet.address, minTick + tickSpacing, maxTick - tickSpacing, expandTo18Decimals(1))
             // await swapExact0For1(expandTo18Decimals(1).div(10), wallet.address)
@@ -1366,8 +1368,8 @@ mod YASPoolTests {
 
 
         // TODO: 'poke is not allowed on uninitialized position'
-        //#[test]
-        //#[available_gas(200000000)]
+        #[test]
+        #[available_gas(200000000)]
         fn test_unallow_poke_on_uninit_pos() {
             // await mint(other.address, minTick + tickSpacing, maxTick - tickSpacing, expandTo18Decimals(1))
             // await swapExact0For1(expandTo18Decimals(1).div(10), wallet.address)
@@ -1412,21 +1414,23 @@ mod YASPoolTests {
     use starknet::{ClassHash, SyscallResultTrait};
     use starknet::testing::{set_contract_address, set_caller_address};
 
-    use yas::contracts::yas_factory::{
+    use yas_core::contracts::yas_factory::{
         YASFactory, IYASFactory, IYASFactoryDispatcher, IYASFactoryDispatcherTrait
     };
-    use yas::libraries::tick_math::{TickMath::MIN_TICK, TickMath::MAX_TICK};
-    use yas::numbers::fixed_point::implementations::impl_64x96::{
+    use yas_core::libraries::tick_math::{TickMath::MIN_TICK, TickMath::MAX_TICK};
+    use yas_core::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FixedType, FixedTrait
     };
-    use yas::contracts::yas_router::{YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait};
-    use yas::tests::utils::constants::PoolConstants::{
+    use yas_core::contracts::yas_router::{
+        YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
+    };
+    use yas_core::tests::utils::constants::PoolConstants::{
         TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET, encode_price_sqrt_1_1, encode_price_sqrt_1_10
     };
-    use yas::tests::utils::constants::FactoryConstants::{
+    use yas_core::tests::utils::constants::FactoryConstants::{
         POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing
     };
-    use yas::contracts::yas_erc20::{
+    use yas_core::contracts::yas_erc20::{
         ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
     };
 
