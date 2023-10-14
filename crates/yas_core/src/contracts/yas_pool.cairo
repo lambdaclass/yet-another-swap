@@ -1,6 +1,7 @@
 use starknet::ContractAddress;
-use yas_core::numbers::signed_integer::{i32::i32, i256::i256};
-use yas_core::numbers::fixed_point::implementations::impl_64x96::FixedType;
+use yas::numbers::signed_integer::{i32::i32, i256::i256};
+use yas::numbers::fixed_point::implementations::impl_64x96::FixedType;
+use yas::contracts::yas_pool::YASPool::Slot0;
 
 #[starknet::interface]
 trait IYASPool<TContractState> {
@@ -23,6 +24,9 @@ trait IYASPool<TContractState> {
     ) -> (u256, u256);
     fn token_0(self: @TContractState) -> ContractAddress;
     fn token_1(self: @TContractState) -> ContractAddress;
+    fn slot_0(self: @TContractState) -> Slot0;
+    fn max_liquidity_per_tick(self: @TContractState) -> u128;
+    fn tick_spacing(self: @TContractState) -> i32;
 }
 
 #[starknet::contract]
@@ -31,32 +35,32 @@ mod YASPool {
 
     use starknet::{ContractAddress, get_block_timestamp, get_caller_address, get_contract_address};
 
-    use yas_core::interfaces::interface_ERC20::{IERC20DispatcherTrait, IERC20Dispatcher};
-    use yas_core::interfaces::interface_yas_mint_callback::{
+    use yas::interfaces::interface_ERC20::{IERC20DispatcherTrait, IERC20Dispatcher};
+    use yas::interfaces::interface_yas_mint_callback::{
         IYASMintCallbackDispatcherTrait, IYASMintCallbackDispatcher
     };
-    use yas_core::interfaces::interface_yas_swap_callback::{
+    use yas::interfaces::interface_yas_swap_callback::{
         IYASSwapCallbackDispatcherTrait, IYASSwapCallbackDispatcher
     };
-    use yas_core::libraries::liquidity_math::LiquidityMath;
-    use yas_core::libraries::position::{Position, Position::PositionImpl, PositionKey, Info};
-    use yas_core::libraries::sqrt_price_math::SqrtPriceMath;
-    use yas_core::libraries::swap_math::SwapMath;
-    use yas_core::libraries::tick::{Tick, Tick::TickImpl};
-    use yas_core::libraries::tick_bitmap::{TickBitmap, TickBitmap::TickBitmapImpl};
-    use yas_core::libraries::tick_math::TickMath::{
+    use yas::libraries::liquidity_math::LiquidityMath;
+    use yas::libraries::position::{Position, Position::PositionImpl, PositionKey, Info};
+    use yas::libraries::sqrt_price_math::SqrtPriceMath;
+    use yas::libraries::swap_math::SwapMath;
+    use yas::libraries::tick::{Tick, Tick::TickImpl};
+    use yas::libraries::tick_bitmap::{TickBitmap, TickBitmap::TickBitmapImpl};
+    use yas::libraries::tick_math::TickMath::{
         get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_TICK, MAX_TICK
     };
-    use yas_core::numbers::fixed_point::implementations::impl_64x96::{
+    use yas::numbers::fixed_point::implementations::impl_64x96::{
         FixedType, FixedTrait, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable
     };
-    use yas_core::numbers::signed_integer::{
+    use yas::numbers::signed_integer::{
         i32::i32, i64::i64, i128::{i128, u128Intoi128}, i256::{i256, i256TryIntou256},
         integer_trait::IntegerTrait
     };
-    use yas_core::utils::math_utils::Constants::Q128;
-    use yas_core::utils::math_utils::FullMath;
-    use yas_core::utils::math_utils::BitShift::BitShiftTrait;
+    use yas::utils::math_utils::Constants::Q128;
+    use yas::utils::math_utils::FullMath;
+    use yas::utils::math_utils::BitShift::BitShiftTrait;
 
     #[event]
     #[derive(Drop, starknet::Event)]
@@ -198,6 +202,20 @@ mod YASPool {
         fn token_1(self: @ContractState) -> ContractAddress {
             self.token_1.read()
         }
+
+        //TODO added for tests:
+        fn slot_0(self: @ContractState) -> Slot0 {
+            self.slot_0.read()
+        }
+
+        fn max_liquidity_per_tick(self: @ContractState) -> u128 {
+            self.max_liquidity_per_tick.read()
+        }
+
+        fn tick_spacing(self: @ContractState) -> i32 {
+            self.tick_spacing.read()
+        }
+        //TODO added for tests^^
 
         /// @notice Sets the initial price for the pool
         /// @dev price is represented as a sqrt(amount_token_1/amount_token_0) Q64.96 value
