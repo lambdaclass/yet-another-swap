@@ -1,0 +1,14 @@
+[package]
+name = "yas_core"
+version = "0.1.0"
+
+[dependencies]
+starknet.workspace = true
+
+[lib]
+
+[[target.starknet-contract]]
+sierra = true
+
+[cairo]
+sierra-replace-ids = true
