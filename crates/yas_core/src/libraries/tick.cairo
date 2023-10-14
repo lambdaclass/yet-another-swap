@@ -72,6 +72,10 @@ trait ITick<TContractState> {
         upper: bool,
         max_liquidity: u128
     ) -> bool;
+    fn get_ticks(
+        self: @TContractState,
+        tick: i32
+    ) -> Info;
 }
 
 #[starknet::contract]
@@ -268,6 +272,15 @@ mod Tick {
 
             self.ticks.write(hashed_tick, info);
             flipped
+        }
+
+        fn get_ticks(
+            self: @ContractState,
+            tick: i32
+        ) -> Info {
+            let hashed_tick = PoseidonTrait::new().update_with(tick).finalize();
+            let info: Info = self.ticks.read(hashed_tick);
+            info
         }
     }
 
