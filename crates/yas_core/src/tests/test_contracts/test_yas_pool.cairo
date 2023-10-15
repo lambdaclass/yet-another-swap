@@ -820,7 +820,6 @@ mod YASPoolTests {
                 use yas_core::libraries::tick::{Tick, Tick::TickImpl};
 
 
-
                 //#[test]
                 //#[available_gas(200000000)]
                 fn test_transfers_token_0_only() {
@@ -929,11 +928,27 @@ mod YASPoolTests {
                             IntegerTrait::<i32>::new(0, false),
                             100
                         );
-                    
-                    assert(yas_pool.ticks(IntegerTrait::<i32>::new(240, true)).liquidity_gross == 100, 'wrong liquidity_gross amount 1');
-                    assert(yas_pool.ticks(IntegerTrait::<i32>::new(0, false)).liquidity_gross == 100, 'wrong liquidity_gross amount 2');
-                    assert(yas_pool.ticks(yas_pool.tick_spacing()).liquidity_gross == 0, 'wrong liquidity_gross amount 3');
-                    assert(yas_pool.ticks(IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM) * 2, false)).liquidity_gross == 0, 'wrong liquidity_gross amount 4');
+
+                    assert(
+                        yas_pool.ticks(IntegerTrait::<i32>::new(240, true)).liquidity_gross == 100,
+                        'wrong liquidity_gross amount 1'
+                    );
+                    assert(
+                        yas_pool.ticks(IntegerTrait::<i32>::new(0, false)).liquidity_gross == 100,
+                        'wrong liquidity_gross amount 2'
+                    );
+                    assert(
+                        yas_pool.ticks(yas_pool.tick_spacing()).liquidity_gross == 0,
+                        'wrong liquidity_gross amount 3'
+                    );
+                    assert(
+                        yas_pool
+                            .ticks(
+                                IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM) * 2, false)
+                            )
+                            .liquidity_gross == 0,
+                        'wrong liquidity_gross amount 4'
+                    );
 
                     mint_callback
                         .mint(
@@ -944,10 +959,26 @@ mod YASPoolTests {
                             150
                         );
 
-                    assert(yas_pool.ticks(IntegerTrait::<i32>::new(240, true)).liquidity_gross == 250, 'wrong liquidity_gross amount 5');
-                    assert(yas_pool.ticks(IntegerTrait::<i32>::new(0, false)).liquidity_gross == 100, 'wrong liquidity_gross amount 6');
-                    assert(yas_pool.ticks(yas_pool.tick_spacing()).liquidity_gross == 150, 'wrong liquidity_gross amount 7');
-                    assert(yas_pool.ticks(IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM) * 2, false)).liquidity_gross == 0, 'wrong liquidity_gross amount 8');
+                    assert(
+                        yas_pool.ticks(IntegerTrait::<i32>::new(240, true)).liquidity_gross == 250,
+                        'wrong liquidity_gross amount 5'
+                    );
+                    assert(
+                        yas_pool.ticks(IntegerTrait::<i32>::new(0, false)).liquidity_gross == 100,
+                        'wrong liquidity_gross amount 6'
+                    );
+                    assert(
+                        yas_pool.ticks(yas_pool.tick_spacing()).liquidity_gross == 150,
+                        'wrong liquidity_gross amount 7'
+                    );
+                    assert(
+                        yas_pool
+                            .ticks(
+                                IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM) * 2, false)
+                            )
+                            .liquidity_gross == 0,
+                        'wrong liquidity_gross amount 8'
+                    );
 
                     mint_callback
                         .mint(
@@ -958,10 +989,26 @@ mod YASPoolTests {
                             60
                         );
 
-                    assert(yas_pool.ticks(IntegerTrait::<i32>::new(240, true)).liquidity_gross == 250, 'wrong liquidity_gross amount 9');
-                    assert(yas_pool.ticks(IntegerTrait::<i32>::new(0, false)).liquidity_gross == 160, 'wrong liquidity_gross amount 10');
-                    assert(yas_pool.ticks(yas_pool.tick_spacing()).liquidity_gross == 150, 'wrong liquidity_gross amount 11');
-                    assert(yas_pool.ticks(IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM) * 2, false)).liquidity_gross == 60, 'wrong liquidity_gross amount 12');
+                    assert(
+                        yas_pool.ticks(IntegerTrait::<i32>::new(240, true)).liquidity_gross == 250,
+                        'wrong liquidity_gross amount 9'
+                    );
+                    assert(
+                        yas_pool.ticks(IntegerTrait::<i32>::new(0, false)).liquidity_gross == 160,
+                        'wrong liquidity_gross amount 10'
+                    );
+                    assert(
+                        yas_pool.ticks(yas_pool.tick_spacing()).liquidity_gross == 150,
+                        'wrong liquidity_gross amount 11'
+                    );
+                    assert(
+                        yas_pool
+                            .ticks(
+                                IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM) * 2, false)
+                            )
+                            .liquidity_gross == 60,
+                        'wrong liquidity_gross amount 12'
+                    );
                 }
 
 
@@ -995,8 +1042,14 @@ mod YASPoolTests {
                     //burn
                     assert(1 == 2, 'burn() func doesnt exist yet');
 
-                    assert(yas_pool.ticks(IntegerTrait::<i32>::new(240, true)).liquidity_gross == 500, 'wrong liquidity_gross amount');
-                    assert(yas_pool.ticks(IntegerTrait::<i32>::new(0, false)).liquidity_gross == 50, 'wrong liquidity_gross amount 2');
+                    assert(
+                        yas_pool.ticks(IntegerTrait::<i32>::new(240, true)).liquidity_gross == 500,
+                        'wrong liquidity_gross amount'
+                    );
+                    assert(
+                        yas_pool.ticks(IntegerTrait::<i32>::new(0, false)).liquidity_gross == 50,
+                        'wrong liquidity_gross amount 2'
+                    );
                 }
 
 
@@ -1022,11 +1075,15 @@ mod YASPoolTests {
                         );
                     //burn
                     assert(1 == 2, 'burn() func doesnt exist yet');
-                    
+
                     let tick_info = yas_pool.ticks(IntegerTrait::<i32>::new(240, true));
                     assert(tick_info.liquidity_gross == 0, 'wrong liquidity_gross amount');
-                    assert(tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128');
-                    assert(tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128');
+                    assert(
+                        tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128'
+                    );
+                    assert(
+                        tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128'
+                    );
 
                     assert(1 == 2, 'burn() func doesnt exist yet');
                 }
@@ -1056,8 +1113,12 @@ mod YASPoolTests {
 
                     let tick_info = yas_pool.ticks(IntegerTrait::<i32>::new(0, false));
                     assert(tick_info.liquidity_gross == 0, 'wrong liquidity_gross amount');
-                    assert(tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128');
-                    assert(tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128');
+                    assert(
+                        tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128'
+                    );
+                    assert(
+                        tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128'
+                    );
                 }
 
                 // TODO: 'only clears the tick that is not used at all'
@@ -1098,13 +1159,21 @@ mod YASPoolTests {
 
                     let tick_info = yas_pool.ticks(IntegerTrait::<i32>::new(240, true));
                     assert(tick_info.liquidity_gross == 0, 'wrong liquidity_gross amount');
-                    assert(tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128');
-                    assert(tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128');
+                    assert(
+                        tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128'
+                    );
+                    assert(
+                        tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128'
+                    );
 
-                    let tick_info = yas_pool.ticks( - yas_pool.tick_spacing());
+                    let tick_info = yas_pool.ticks(-yas_pool.tick_spacing());
                     assert(tick_info.liquidity_gross == 250, 'wrong liquidity_gross amount');
-                    assert(tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128');
-                    assert(tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128');
+                    assert(
+                        tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128'
+                    );
+                    assert(
+                        tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128'
+                    );
                 }
             }
 
@@ -1160,7 +1229,10 @@ mod YASPoolTests {
                             100
                         );
 
-                    assert(yas_pool.ticks(min_tick + yas_pool.tick_spacing()).liquidity_gross == 100, 'wrong liquidity_gross amount 1');
+                    assert(
+                        yas_pool.ticks(min_tick + yas_pool.tick_spacing()).liquidity_gross == 100,
+                        'wrong liquidity_gross amount 1'
+                    );
                 }
 
 
@@ -1176,7 +1248,10 @@ mod YASPoolTests {
                             max_tick - yas_pool.tick_spacing(),
                             100
                         );
-                    assert(yas_pool.ticks(max_tick - yas_pool.tick_spacing()).liquidity_gross == 100, 'wrong liquidity_gross amount 1');
+                    assert(
+                        yas_pool.ticks(max_tick - yas_pool.tick_spacing()).liquidity_gross == 100,
+                        'wrong liquidity_gross amount 1'
+                    );
                 }
 
 
