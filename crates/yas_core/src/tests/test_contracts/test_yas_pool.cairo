@@ -917,9 +917,8 @@ mod YASPoolTests {
                 }
 
 
-                // WIP: 'adds liquidity to liquidityGross'
-                #[test]
-                #[available_gas(200000000)]
+                //#[test]
+                //#[available_gas(200000000)]
                 fn test_add_liquidityGross() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -994,10 +993,12 @@ mod YASPoolTests {
                             40
                         );
                     //burn
-                    //check tick data
-
                     assert(1 == 2, 'burn() func doesnt exist yet');
+
+                    assert(yas_pool.ticks(IntegerTrait::<i32>::new(240, true)).liquidity_gross == 500, 'wrong liquidity_gross amount');
+                    assert(yas_pool.ticks(IntegerTrait::<i32>::new(0, false)).liquidity_gross == 50, 'wrong liquidity_gross amount 2');
                 }
+
 
                 // TODO: 'clears tick lower if last position is removed'
                 //#[test]
@@ -1005,10 +1006,10 @@ mod YASPoolTests {
                 fn test_clear_tick_lower() {
                     //await mint(wallet.address, -240, 0, 100) -done
                     //await pool.burn(-240, 0, 100)
-                    //const { liquidityGross, feeGrowthOutside0X128, feeGrowthOutside1X128 } = await pool.ticks(-240)
-                    //expect(liquidityGross).to.eq(0)
-                    //expect(feeGrowthOutside0X128).to.eq(0)
-                    //expect(feeGrowthOutside1X128).to.eq(0)
+                    //const { liquidityGross, feeGrowthOutside0X128, feeGrowthOutside1X128 } = await pool.ticks(-240) -done
+                    //expect(liquidityGross).to.eq(0) -done
+                    //expect(feeGrowthOutside0X128).to.eq(0) -done
+                    //expect(feeGrowthOutside1X128).to.eq(0) -done
 
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1020,7 +1021,13 @@ mod YASPoolTests {
                             100
                         );
                     //burn
-                    //check tick data
+                    assert(1 == 2, 'burn() func doesnt exist yet');
+                    
+                    let tick_info = yas_pool.ticks(IntegerTrait::<i32>::new(240, true));
+                    assert(tick_info.liquidity_gross == 0, 'wrong liquidity_gross amount');
+                    assert(tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128');
+                    assert(tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128');
+
                     assert(1 == 2, 'burn() func doesnt exist yet');
                 }
 
@@ -1031,9 +1038,9 @@ mod YASPoolTests {
                     //await mint(wallet.address, -240, 0, 100) -done
                     //await pool.burn(-240, 0, 100)
                     //const { liquidityGross, feeGrowthOutside0X128, feeGrowthOutside1X128 } = await pool.ticks(0)
-                    //expect(liquidityGross).to.eq(0)
-                    //expect(feeGrowthOutside0X128).to.eq(0)
-                    //expect(feeGrowthOutside1X128).to.eq(0)
+                    //expect(liquidityGross).to.eq(0) -done
+                    //expect(feeGrowthOutside0X128).to.eq(0) -done
+                    //expect(feeGrowthOutside1X128).to.eq(0) -done
 
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1045,9 +1052,12 @@ mod YASPoolTests {
                             100
                         );
                     //burn
-                    //check tick data
-
                     assert(1 == 2, 'burn() func doesnt exist yet');
+
+                    let tick_info = yas_pool.ticks(IntegerTrait::<i32>::new(0, false));
+                    assert(tick_info.liquidity_gross == 0, 'wrong liquidity_gross amount');
+                    assert(tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128');
+                    assert(tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128');
                 }
 
                 // TODO: 'only clears the tick that is not used at all'
@@ -1057,14 +1067,14 @@ mod YASPoolTests {
                     //await mint(wallet.address, -240, 0, 100) -done 
                     //await mint(wallet.address, -tickSpacing, 0, 250) -done
                     //await pool.burn(-240, 0, 100)
-                    //let { liquidityGross, feeGrowthOutside0X128, feeGrowthOutside1X128 } = await pool.ticks(-240)
-                    //expect(liquidityGross).to.eq(0)
-                    //expect(feeGrowthOutside0X128).to.eq(0)
-                    //expect(feeGrowthOutside1X128).to.eq(0)
-                    //;({ liquidityGross, feeGrowthOutside0X128, feeGrowthOutside1X128 } = await pool.ticks(-tickSpacing))
-                    //expect(liquidityGross).to.eq(250)
-                    //expect(feeGrowthOutside0X128).to.eq(0)
-                    //expect(feeGrowthOutside1X128).to.eq(0)
+                    //let { liquidityGross, feeGrowthOutside0X128, feeGrowthOutside1X128 } = await pool.ticks(-240) -done
+                    //expect(liquidityGross).to.eq(0) -done
+                    //expect(feeGrowthOutside0X128).to.eq(0) -done
+                    //expect(feeGrowthOutside1X128).to.eq(0) -done
+                    //;({ liquidityGross, feeGrowthOutside0X128, feeGrowthOutside1X128 } = await pool.ticks(-tickSpacing)) -done
+                    //expect(liquidityGross).to.eq(250) -done
+                    //expect(feeGrowthOutside0X128).to.eq(0) -done
+                    //expect(feeGrowthOutside1X128).to.eq(0) -done
 
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1084,9 +1094,17 @@ mod YASPoolTests {
                             250
                         );
                     //burn
-                    //check tick data
-
                     assert(1 == 2, 'burn() func doesnt exist yet');
+
+                    let tick_info = yas_pool.ticks(IntegerTrait::<i32>::new(240, true));
+                    assert(tick_info.liquidity_gross == 0, 'wrong liquidity_gross amount');
+                    assert(tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128');
+                    assert(tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128');
+
+                    let tick_info = yas_pool.ticks( - yas_pool.tick_spacing());
+                    assert(tick_info.liquidity_gross == 250, 'wrong liquidity_gross amount');
+                    assert(tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128');
+                    assert(tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128');
                 }
             }
 
@@ -1129,14 +1147,9 @@ mod YASPoolTests {
                 }
 
 
-                // TODO: 'initializes lower tick'
                 //#[test]
                 //#[available_gas(200000000)]
                 fn test_init_lower_tick() {
-                    // await mint(wallet.address, minTick + tickSpacing, maxTick - tickSpacing, 100)
-                    // const { liquidityGross } = await pool.ticks(minTick + tickSpacing)
-                    // expect(liquidityGross).to.eq(100)
-
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
                         .mint(
@@ -1146,21 +1159,14 @@ mod YASPoolTests {
                             max_tick - yas_pool.tick_spacing(),
                             100
                         );
-                    //let liquidityGross: u128 = yas_pool.ticks(min_tick + yas_pool.tick_spacing());
-                    //missing pool.ticks() func
-                    //assert(liquidityGross == 100, 'wrong liquidity');
-                    assert(1 == 2, 'missing pool.ticks() func');
+
+                    assert(yas_pool.ticks(min_tick + yas_pool.tick_spacing()).liquidity_gross == 100, 'wrong liquidity_gross amount 1');
                 }
 
 
-                // TODO: 'initializes upper tick'
                 //#[test]
                 //#[available_gas(200000000)]
                 fn test_init_upper_tick() {
-                    // await mint(wallet.address, minTick + tickSpacing, maxTick - tickSpacing, 100)
-                    // const { liquidityGross } = await pool.ticks(maxTick - tickSpacing)
-                    // expect(liquidityGross).to.eq(100)
-
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
                         .mint(
@@ -1170,10 +1176,7 @@ mod YASPoolTests {
                             max_tick - yas_pool.tick_spacing(),
                             100
                         );
-                    //let liquidityGross: u128 = yas_pool.ticks(max_tick - yas_pool.tick_spacing());
-                    //missing pool.ticks() func
-                    //assert(liquidityGross == 100, 'wrong liquidity');
-                    assert(1 == 2, 'missing pool.ticks() func');
+                    assert(yas_pool.ticks(max_tick - yas_pool.tick_spacing()).liquidity_gross == 100, 'wrong liquidity_gross amount 1');
                 }
 
 
@@ -1263,7 +1266,6 @@ mod YASPoolTests {
                 }
 
 
-                // TODO: 'min tick with max leverage'
                 //#[test]
                 //#[available_gas(200000000)]
                 fn test_below_maxtick_maxlvrg() {
