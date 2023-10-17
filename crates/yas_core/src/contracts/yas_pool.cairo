@@ -24,10 +24,7 @@ trait IYASPool<TContractState> {
     fn token_0(self: @TContractState) -> ContractAddress;
     fn token_1(self: @TContractState) -> ContractAddress;
     fn burn(
-        ref self: TContractState,
-        tick_lower: i32,
-        tick_upper: i32,
-        amount: u128
+        ref self: TContractState, tick_lower: i32, tick_upper: i32, amount: u128
     ) -> (u256, u256);
 }
 
@@ -70,6 +67,7 @@ mod YASPool {
         Initialize: Initialize,
         SwapExecuted: SwapExecuted,
         Mint: Mint,
+        Burn: Burn
     }
 
     /// @notice Emitted exactly once by a pool when #initialize is first called on the pool
@@ -97,6 +95,16 @@ mod YASPool {
     struct Mint {
         sender: ContractAddress,
         recipient: ContractAddress,
+        tick_lower: i32,
+        tick_upper: i32,
+        amount: u128,
+        amount_0: u256,
+        amount_1: u256
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct Burn {
+        sender: ContractAddress,
         tick_lower: i32,
         tick_upper: i32,
         amount: u128,
@@ -545,31 +553,45 @@ mod YASPool {
         /// @inheritdoc IUniswapV3PoolActions
         /// @dev noDelegateCall is applied indirectly via _modifyPosition
         fn burn(
-            ref self: ContractState,
-            tick_lower: i32,
-            tick_upper: i32,
-            amount: u128
-            // lock
+            ref self: ContractState, tick_lower: i32, tick_upper: i32, amount: u128
         ) -> (u256, u256) {
+            self.check_and_lock();
+
             let (position, amount_0, amount_1) = self
                 .modify_position(
                     ModifyPositionParams {
-                        position_key: PositionKey { owner: get_caller_address(), tick_lower, tick_upper },
+                        position_key: PositionKey {
+                            owner: get_caller_address(), tick_lower, tick_upper
+                        },
                         liquidity_delta: amount.into()
                     }
                 );
 
-            let amount_0 = uint256(-amount0Int);
-            let amount_1 = uint256(-amount1Int);
+            let amount_0: u256 = amount_0.try_into().unwrap();
+            let amount_1: u256 = amount_1.try_into().unwrap();
 
             if amount_0 > 0 || amount_1 > 0 {
-                let (position.tokens_owed_0, position.tokens_owed_1) = (
-                    position.tokens_owed_0 + uint128(amount_0),
-                    position.tokens_owed_1 + uint128(amount_1)
+                let mut position_state = Position::unsafe_new_contract_state();
+                PositionImpl::update_tokens_owed(
+                    ref position_state,
+                    PositionKey { owner: get_caller_address(), tick_lower, tick_upper },
+                    position.tokens_owed_0 + amount_0.try_into().unwrap(),
+                    position.tokens_owed_1 + amount_1.try_into().unwrap()
                 );
             }
 
-            emit Burn(get_caller_address(), tick_lower, tick_upper, amount, amount_0, amount_1);
+            self
+                .emit(
+                    Burn {
+                        sender: get_caller_address(),
+                        tick_lower,
+                        tick_upper,
+                        amount,
+                        amount_0,
+                        amount_1
+                    }
+                );
+            self.unlock();
             (amount_0, amount_1)
         }
     }
