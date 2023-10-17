@@ -80,10 +80,10 @@ make test FN=test_invalid_max_tick
 ```
 
 For more precise testing, you can combine both parameters. Remember, these parameters are case-sensitive.
+
 ```bash
 make test MOD=Mint FN=test_invalid_max_tick
 ```
-
 
 ## Setting up a Testnet Smart Wallet
 
