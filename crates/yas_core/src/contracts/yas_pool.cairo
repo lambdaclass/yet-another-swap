@@ -23,6 +23,12 @@ trait IYASPool<TContractState> {
     ) -> (u256, u256);
     fn token_0(self: @TContractState) -> ContractAddress;
     fn token_1(self: @TContractState) -> ContractAddress;
+    fn burn(
+        ref self: TContractState,
+        tick_lower: i32,
+        tick_upper: i32,
+        amount: u128
+    ) -> (u256, u256);
 }
 
 #[starknet::contract]
@@ -533,6 +539,37 @@ mod YASPool {
                     }
                 );
             self.unlock();
+            (amount_0, amount_1)
+        }
+
+        /// @inheritdoc IUniswapV3PoolActions
+        /// @dev noDelegateCall is applied indirectly via _modifyPosition
+        fn burn(
+            ref self: ContractState,
+            tick_lower: i32,
+            tick_upper: i32,
+            amount: u128
+            // lock
+        ) -> (u256, u256) {
+            let (position, amount_0, amount_1) = self
+                .modify_position(
+                    ModifyPositionParams {
+                        position_key: PositionKey { owner: get_caller_address(), tick_lower, tick_upper },
+                        liquidity_delta: amount.into()
+                    }
+                );
+
+            let amount_0 = uint256(-amount0Int);
+            let amount_1 = uint256(-amount1Int);
+
+            if amount_0 > 0 || amount_1 > 0 {
+                let (position.tokens_owed_0, position.tokens_owed_1) = (
+                    position.tokens_owed_0 + uint128(amount_0),
+                    position.tokens_owed_1 + uint128(amount_1)
+                );
+            }
+
+            emit Burn(get_caller_address(), tick_lower, tick_upper, amount, amount_0, amount_1);
             (amount_0, amount_1)
         }
     }
