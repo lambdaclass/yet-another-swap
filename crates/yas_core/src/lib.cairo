@@ -39,7 +39,7 @@ mod tests {
         mod test_yas_pool;
     }
 
-    mod test_libraries {// mod test_bit_math;
+    mod test_libraries { // mod test_bit_math;
     // mod test_liquidity_math;
     // mod test_tick_math;
     // mod test_position;
@@ -49,11 +49,11 @@ mod tests {
     // mod test_tick_bitmap;
     }
 
-    mod test_numbers {// mod test_fixed_point;
+    mod test_numbers { // mod test_fixed_point;
     // mod test_signed_integer;
     }
 
-    mod test_utils {// mod test_math_utils;
+    mod test_utils { // mod test_math_utils;
     // mod test_utils;
     }
 

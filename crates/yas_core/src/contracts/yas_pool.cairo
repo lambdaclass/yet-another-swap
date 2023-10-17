@@ -206,7 +206,6 @@ mod YASPool {
             self.token_1.read()
         }
 
-        //TODO added for tests:
         fn slot_0(self: @ContractState) -> Slot0 {
             self.slot_0.read()
         }
@@ -223,7 +222,6 @@ mod YASPool {
             let tick_state = Tick::unsafe_new_contract_state();
             TickImpl::get_ticks(@tick_state, tick)
         }
-        //TODO added for tests^^
 
         /// @notice Sets the initial price for the pool
         /// @dev price is represented as a sqrt(amount_token_1/amount_token_0) Q64.96 value

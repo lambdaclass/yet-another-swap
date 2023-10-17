@@ -50,8 +50,8 @@ mod YASPoolTests {
         use yas_core::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
         use yas_core::tests::utils::constants::PoolConstants::{FACTORY_ADDRESS, TOKEN_A, TOKEN_B};
 
-        ////#[test]
-        ////#[available_gas(2000000000000)]
+        #[test]
+        #[available_gas(2000000000000)]
         fn test_deployer() {
             let fee = 5;
             let tick_spacing = IntegerTrait::<i32>::new(1, false);
@@ -77,9 +77,9 @@ mod YASPoolTests {
         };
         use yas_core::utils::{math_utils::pow, utils::Slot0PartialEq};
 
-        ////#[test]
-        ////#[available_gas(200000000)]
-        ////#[should_panic(expected: ('AI', 'ENTRYPOINT_FAILED'))]
+        #[test]
+        #[available_gas(200000000)]
+        #[should_panic(expected: ('AI', 'ENTRYPOINT_FAILED'))]
         fn test_fails_if_already_initialized() {
             let yas_pool = deploy(
                 FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), 5, IntegerTrait::<i32>::new(1, false)
@@ -92,9 +92,9 @@ mod YASPoolTests {
             yas_pool.initialize(sqrt_price_X96);
         }
 
-        ////#[test]
-        ////#[available_gas(200000000)]
-        ////#[should_panic(expected: ('R', 'ENTRYPOINT_FAILED'))]
+        #[test]
+        #[available_gas(200000000)]
+        #[should_panic(expected: ('R', 'ENTRYPOINT_FAILED'))]
         fn test_fails_if_price_is_too_low() {
             let yas_pool = deploy(
                 FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), 5, IntegerTrait::<i32>::new(1, false)
@@ -104,9 +104,9 @@ mod YASPoolTests {
             yas_pool.initialize(sqrt_price_X96);
         }
 
-        ////#[test]
-        ////#[available_gas(200000000)]
-        ////#[should_panic(expected: ('R', 'ENTRYPOINT_FAILED'))]
+        #[test]
+        #[available_gas(200000000)]
+        #[should_panic(expected: ('R', 'ENTRYPOINT_FAILED'))]
         fn test_fails_if_price_is_min_sqrt_ratio_minus_1() {
             let yas_pool = deploy(
                 FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), 5, IntegerTrait::<i32>::new(1, false)
@@ -116,9 +116,9 @@ mod YASPoolTests {
             yas_pool.initialize(sqrt_price_X96);
         }
 
-        ////#[test]
-        ////#[available_gas(200000000)]
-        ////#[should_panic(expected: ('R', 'ENTRYPOINT_FAILED'))]
+        #[test]
+        #[available_gas(200000000)]
+        #[should_panic(expected: ('R', 'ENTRYPOINT_FAILED'))]
         fn test_fails_if_price_is_too_high() {
             let yas_pool = deploy(
                 FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), 5, IntegerTrait::<i32>::new(1, false)
@@ -128,9 +128,9 @@ mod YASPoolTests {
             yas_pool.initialize(sqrt_price_X96);
         }
 
-        ////#[test]
-        ////#[available_gas(200000000)]
-        ////#[should_panic(expected: ('R', 'ENTRYPOINT_FAILED'))]
+        #[test]
+        #[available_gas(200000000)]
+        #[should_panic(expected: ('R', 'ENTRYPOINT_FAILED'))]
         fn test_fails_if_price_is_max_sqrt_ratio() {
             let yas_pool = deploy(
                 FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), 5, IntegerTrait::<i32>::new(1, false)
@@ -140,8 +140,8 @@ mod YASPoolTests {
             yas_pool.initialize(sqrt_price_X96);
         }
 
-        ////#[test]
-        ////#[available_gas(200000000)]
+        #[test]
+        #[available_gas(200000000)]
         fn test_can_be_initialized_at_min_sqrt_ratio() {
             let mut state = STATE();
 
@@ -157,8 +157,8 @@ mod YASPoolTests {
             assert(InternalImpl::get_slot_0(@state) == expected, 'slot 0 wrong initialization');
         }
 
-        ////#[test]
-        ////#[available_gas(200000000)]
+        #[test]
+        #[available_gas(200000000)]
         fn test_can_be_initialized_at_max_sqrt_ratio_minus_1() {
             let mut state = STATE();
 
@@ -175,8 +175,8 @@ mod YASPoolTests {
             assert(InternalImpl::get_slot_0(@state) == expected, 'slot 0 wrong initialization')
         }
 
-        ////#[test]
-        ////#[available_gas(200000000)]
+        #[test]
+        #[available_gas(200000000)]
         fn test_sets_initial_variables() {
             let mut state = STATE();
 
@@ -190,8 +190,8 @@ mod YASPoolTests {
             assert(InternalImpl::get_slot_0(@state) == expected, 'slot 0 wrong initialization')
         }
 
-        ////#[test]
-        ////#[available_gas(200000000)]
+        #[test]
+        #[available_gas(200000000)]
         fn test_emits_a_initialized_event() {
             let yas_pool = deploy(
                 FACTORY_ADDRESS(), TOKEN_A(), TOKEN_B(), 5, IntegerTrait::<i32>::new(1, false)
@@ -232,8 +232,8 @@ mod YASPoolTests {
             position::{Info, Position, Position::PositionImpl, PositionKey}
         };
 
-        ////#[test]
-        ////#[available_gas(200000000)]
+        #[test]
+        #[available_gas(200000000)]
         fn test_add_liquidity_when_call_update_position_then_position_is_updated() {
             let (mut pool_state, mut position_state, mut tick_state) = mock_contract_states();
 
@@ -266,8 +266,8 @@ mod YASPoolTests {
             assert(result.liquidity == 1100, 'wrong liquidity');
         }
 
-        ////#[test]
-        ////#[available_gas(200000000)]
+        #[test]
+        #[available_gas(200000000)]
         fn test_sub_liquidity_when_call_update_position_then_position_is_updated() {
             let (mut pool_state, mut position_state, mut tick_state) = mock_contract_states();
 
@@ -300,9 +300,9 @@ mod YASPoolTests {
             assert(result.liquidity == 900, 'wrong liquidity');
         }
 
-        ////#[test]
-        ////#[available_gas(200000000)]
-        ////#[should_panic(expected: ('LS',))]
+        #[test]
+        #[available_gas(200000000)]
+        #[should_panic(expected: ('LS',))]
         fn test_sub_liquidity_gt_available_when_call_update_position_should_panic() {
             let (mut pool_state, mut position_state, mut tick_state) = mock_contract_states();
 
@@ -331,9 +331,9 @@ mod YASPoolTests {
             InternalImpl::update_position(@pool_state, position_key, delta_liquidity, tick);
         }
 
-        ////#[test]
-        ////#[available_gas(200000000)]
-        ////#[should_panic(expected: ('LO',))]
+        #[test]
+        #[available_gas(200000000)]
+        #[should_panic(expected: ('LO',))]
         fn test_add_liquidity_gt_max_liq_when_call_update_position_should_panic() {
             let (mut pool_state, mut position_state, mut tick_state) = mock_contract_states();
 
@@ -370,8 +370,8 @@ mod YASPoolTests {
         use yas_core::libraries::tick_math::TickMath;
         use yas_core::numbers::signed_integer::{i32::i32, integer_trait::IntegerTrait};
 
-        ////#[test]
-        ////#[available_gas(60000)]
+        #[test]
+        #[available_gas(60000)]
         fn test_valid_ticks() {
             let tick_lower = IntegerTrait::<i32>::new(100, true);
             let tick_upper = IntegerTrait::<i32>::new(100, false);
@@ -383,8 +383,8 @@ mod YASPoolTests {
             }
         }
 
-        ////#[test]
-        ////#[available_gas(60000)]
+        #[test]
+        #[available_gas(60000)]
         fn test_valid_tick_lower() {
             let tick_lower = TickMath::MIN_TICK();
             let tick_upper = IntegerTrait::<i32>::new(100, false);
@@ -396,8 +396,8 @@ mod YASPoolTests {
             }
         }
 
-        ////#[test]
-        ////#[available_gas(60000)]
+        #[test]
+        #[available_gas(60000)]
         fn test_valid_tick_upper() {
             let tick_lower = IntegerTrait::<i32>::new(100, true);
             let tick_upper = TickMath::MAX_TICK();
@@ -409,9 +409,9 @@ mod YASPoolTests {
             }
         }
 
-        ////#[test]
-        ////#[available_gas(60000)]
-        ////#[should_panic(expected: ('TLU',))]
+        #[test]
+        #[available_gas(60000)]
+        #[should_panic(expected: ('TLU',))]
         fn test_tick_upper_lower_invalid() {
             let tick_lower = IntegerTrait::<i32>::new(100, false);
             let tick_upper = IntegerTrait::<i32>::new(100, true);
@@ -423,9 +423,9 @@ mod YASPoolTests {
             }
         }
 
-        ////#[test]
-        ////#[available_gas(60000)]
-        ////#[should_panic(expected: ('TLM',))]
+        #[test]
+        #[available_gas(60000)]
+        #[should_panic(expected: ('TLM',))]
         fn test_invalid_min_tick() {
             let tick_lower = TickMath::MIN_TICK() - IntegerTrait::<i32>::new(1, false);
             let tick_upper = TickMath::MIN_TICK();
@@ -437,9 +437,9 @@ mod YASPoolTests {
             }
         }
 
-        ////#[test]
-        ////#[available_gas(60000)]
-        ////#[should_panic(expected: ('TUM',))]
+        #[test]
+        #[available_gas(60000)]
+        #[should_panic(expected: ('TUM',))]
         fn test_invalid_max_tick() {
             let tick_lower = TickMath::MAX_TICK();
             let tick_upper = TickMath::MAX_TICK() + IntegerTrait::<i32>::new(1, false);
@@ -451,8 +451,8 @@ mod YASPoolTests {
             }
         }
 
-        ////#[test]
-        ////#[available_gas(60000)]
+        #[test]
+        #[available_gas(60000)]
         fn test_valid_min_max_ticks() {
             let tick_lower = TickMath::MIN_TICK();
             let tick_upper = TickMath::MAX_TICK();
@@ -472,7 +472,6 @@ mod YASPoolTests {
             setup, get_min_tick_and_max_tick, deploy, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount,
             fee_amount
         };
-
 
         use starknet::{ContractAddress, ClassHash, SyscallResultTrait, contract_address_const};
         use starknet::syscalls::deploy_syscall;
@@ -508,9 +507,9 @@ mod YASPoolTests {
         };
 
 
-        //#[test]
-        //#[available_gas(2000000000)]
-        //#[should_panic(expected: ('LOK', 'ENTRYPOINT_FAILED'))]
+        #[test]
+        #[available_gas(2000000000)]
+        #[should_panic(expected: ('LOK', 'ENTRYPOINT_FAILED'))]
         fn test_fails_not_initialized() {
             let yas_pool = deploy(
                 FACTORY_ADDRESS(),
@@ -540,7 +539,6 @@ mod YASPoolTests {
                 IERC20DispatcherTrait, FACTORY_ADDRESS, TOKEN_A, TOKEN_B, WALLET,
                 encode_price_sqrt_1_1
             };
-
             use yas_core::numbers::signed_integer::{
                 i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
             };
@@ -551,15 +549,13 @@ mod YASPoolTests {
             use yas_core::contracts::yas_router::{
                 YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
             };
-            use debug::PrintTrait;
 
 
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('TLU', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('TLU', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_tick_lower_greater_than_tick_upper() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-
                 mint_callback
                     .mint(
                         yas_pool.contract_address,
@@ -571,9 +567,9 @@ mod YASPoolTests {
             }
 
 
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('TLM', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('TLM', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_tick_lower_than_min() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 mint_callback
@@ -587,9 +583,9 @@ mod YASPoolTests {
             }
 
 
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('TUM', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('TUM', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_tick_greater_than_max() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 mint_callback
@@ -603,9 +599,9 @@ mod YASPoolTests {
             }
 
 
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_amount_greater_than_max() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 let grater_than_max_amount: u128 = yas_pool.max_liquidity_per_tick() + 1;
@@ -618,13 +614,11 @@ mod YASPoolTests {
                         grater_than_max_amount
                     );
             }
-            // TODO: fix error overflow
-            //#[test]
-            //#[available_gas(2000000000)]
+            #[test]
+            #[available_gas(2000000000)]
             fn test_amount_max() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 let maxLiquidityGross: u128 = yas_pool.max_liquidity_per_tick();
-                //maxLiquidityGross.print();
                 mint_callback
                     .mint(
                         yas_pool.contract_address,
@@ -636,9 +630,9 @@ mod YASPoolTests {
             }
 
 
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_amount_at_tick_greater_than_max() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 mint_callback
@@ -660,9 +654,9 @@ mod YASPoolTests {
                         maxLiquidityGross - 1000 + 1
                     );
             }
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_amount_at_tick_greater_than_max_2() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 mint_callback
@@ -686,9 +680,9 @@ mod YASPoolTests {
                         maxLiquidityGross - 1000 + 1
                     );
             }
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_amount_at_tick_greater_than_max_3() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 mint_callback
@@ -712,10 +706,9 @@ mod YASPoolTests {
                         maxLiquidityGross - 1000 + 1
                     );
             }
-            // TODO: fix error overflow
-            //#[test]
-            //#[available_gas(2000000000)]
-            fn test_fails_amount_at_tick_greater_than_max_4() {
+            #[test]
+            #[available_gas(2000000000)]
+            fn test_success_amount_at_tick_greater_than_max_4() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 mint_callback
                     .mint(
@@ -726,7 +719,6 @@ mod YASPoolTests {
                         1000
                     );
                 let maxLiquidityGross: u128 = yas_pool.max_liquidity_per_tick();
-
                 mint_callback
                     .mint(
                         yas_pool.contract_address,
@@ -738,9 +730,11 @@ mod YASPoolTests {
             }
 
 
-            //#[test]
-            //#[available_gas(2000000000)]
-            //#[should_panic(expected: ('amount must be greater than 0', 'ENTRYPOINT_FAILED'))] //set panic code
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(
+                expected: ('amount must be greater than 0', 'ENTRYPOINT_FAILED')
+            )] //set panic code
             fn test_fails_amount_is_zero() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 let (amount0, amount1): (u256, u256) = yas_pool
@@ -773,11 +767,8 @@ mod YASPoolTests {
                 YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
             };
 
-
-            use debug::PrintTrait;
-
-            //#[test]
-            //#[available_gas(200000000)]
+            #[test]
+            #[available_gas(200000000)]
             fn test_initial_balances() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
 
@@ -789,8 +780,8 @@ mod YASPoolTests {
             }
 
 
-            //#[test]
-            //#[available_gas(200000000)]
+            #[test]
+            #[available_gas(200000000)]
             fn test_initial_tick() {
                 let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 let (expected_min_tick, expected_max_tick) = get_min_tick_and_max_tick();
@@ -816,12 +807,11 @@ mod YASPoolTests {
                 use yas_core::contracts::yas_router::{
                     YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
                 };
-                use debug::PrintTrait;
                 use yas_core::libraries::tick::{Tick, Tick::TickImpl};
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_transfers_token_0_only() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
 
@@ -843,8 +833,8 @@ mod YASPoolTests {
                 }
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_max_tick_max_lvrg() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     let BigNumber: u128 = pow(2, 102).try_into().unwrap();
@@ -868,8 +858,8 @@ mod YASPoolTests {
                 }
 
 
-                //#[test]
-                //#[available_gas(200000000000)]
+                #[test]
+                #[available_gas(200000000000)]
                 fn test_max_tick() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
 
@@ -896,6 +886,7 @@ mod YASPoolTests {
                 //#[test]
                 //#[available_gas(200000000)]
                 fn test_burn() {
+                    //to implement:
                     //await mint(wallet.address, -240, 0, 10000) -done
                     //await pool.burn(-240, 0, 10000)
                     //const { amount0, amount1 } = await pool.callStatic.collect(wallet.address, -240, 0, MaxUint128, MaxUint128)
@@ -916,8 +907,8 @@ mod YASPoolTests {
                 }
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_add_liquidityGross() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1016,6 +1007,7 @@ mod YASPoolTests {
                 //#[test]
                 //#[available_gas(200000000)]
                 fn test_remove_liquidityGross() {
+                    //to implement:
                     //await mint(wallet.address, -240, 0, 100) -done
                     //await mint(wallet.address, -240, 0, 40) -done
                     //await pool.burn(-240, 0, 90)
@@ -1057,6 +1049,7 @@ mod YASPoolTests {
                 //#[test]
                 //#[available_gas(200000000)]
                 fn test_clear_tick_lower() {
+                    //to implement:
                     //await mint(wallet.address, -240, 0, 100) -done
                     //await pool.burn(-240, 0, 100)
                     //const { liquidityGross, feeGrowthOutside0X128, feeGrowthOutside1X128 } = await pool.ticks(-240) -done
@@ -1092,6 +1085,7 @@ mod YASPoolTests {
                 //#[test]
                 //#[available_gas(200000000)]
                 fn test_clear_tick_upper() {
+                    //to implement:
                     //await mint(wallet.address, -240, 0, 100) -done
                     //await pool.burn(-240, 0, 100)
                     //const { liquidityGross, feeGrowthOutside0X128, feeGrowthOutside1X128 } = await pool.ticks(0)
@@ -1125,6 +1119,7 @@ mod YASPoolTests {
                 //#[test]
                 //#[available_gas(200000000)]
                 fn test_clear_tick_unused() {
+                    //to implement:
                     //await mint(wallet.address, -240, 0, 100) -done 
                     //await mint(wallet.address, -tickSpacing, 0, 250) -done
                     //await pool.burn(-240, 0, 100)
@@ -1192,8 +1187,8 @@ mod YASPoolTests {
                 };
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_curr_price_both() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1216,8 +1211,8 @@ mod YASPoolTests {
                 }
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_init_lower_tick() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1236,8 +1231,8 @@ mod YASPoolTests {
                 }
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_init_upper_tick() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1255,8 +1250,8 @@ mod YASPoolTests {
                 }
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_min_max_tick() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1277,6 +1272,7 @@ mod YASPoolTests {
                 //#[test]
                 //#[available_gas(200000000)]
                 fn test_remove() {
+                    //to implement:
                     // await mint(wallet.address, minTick + tickSpacing, maxTick - tickSpacing, 100)
                     // await pool.burn(minTick + tickSpacing, maxTick - tickSpacing, 100)
                     // const { amount0, amount1 } = await pool.callStatic.collect(
@@ -1318,8 +1314,8 @@ mod YASPoolTests {
                 };
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_below_only_token1() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1341,8 +1337,8 @@ mod YASPoolTests {
                 }
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_below_maxtick_maxlvrg() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1364,8 +1360,8 @@ mod YASPoolTests {
                 }
 
 
-                //#[test]
-                //#[available_gas(200000000)]
+                #[test]
+                #[available_gas(200000000)]
                 fn test_below_min_tick() {
                     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                     mint_callback
@@ -1391,6 +1387,7 @@ mod YASPoolTests {
                 //#[test]
                 //#[available_gas(200000000)]
                 fn test_below_remove() {
+                    //to implement:
                     // await mint(wallet.address, -46080, -46020, 10000)
                     // await pool.burn(-46080, -46020, 10000)
                     // const { amount0, amount1 } = await pool.callStatic.collect(
@@ -1416,7 +1413,7 @@ mod YASPoolTests {
                     //pool.burn()
                     //assert(token_0.balanceOf(yas_pool.contract_address) == 0, 'token_0 wrong amount');
                     //assert(token_1.balanceOf(yas_pool.contract_address) == 3, 'token_1 wrong amount');
-                    assert(1 == 2, 'missing burn()');
+                    assert(1 == 2, 'no burn() function');
                 }
             }
         }
@@ -1425,6 +1422,7 @@ mod YASPoolTests {
         //#[test]
         //#[available_gas(200000000)]
         fn test_protocol_fees_accum() {
+            //to implement:
             // await pool.setFeeProtocol(6, 6)
             //
             // await mint(wallet.address, minTick + tickSpacing, maxTick - tickSpacing, expandTo18Decimals(1))
@@ -1435,7 +1433,7 @@ mod YASPoolTests {
             // expect(token0ProtocolFees).to.eq('50000000000000')
             // expect(token1ProtocolFees).to.eq('5000000000000')
 
-            assert(1 == 2, 'empty');
+            assert(1 == 2, 'no setFeeProtocol() function');
         }
 
 
@@ -1443,6 +1441,7 @@ mod YASPoolTests {
         //#[test]
         //#[available_gas(200000000)]
         fn test_positions_protected() {
+            //to implement:
             // await mint(wallet.address, minTick + tickSpacing, maxTick - tickSpacing, expandTo18Decimals(1))
             // await swapExact0For1(expandTo18Decimals(1).div(10), wallet.address)
             // await swapExact1For0(expandTo18Decimals(1).div(100), wallet.address)
@@ -1454,7 +1453,7 @@ mod YASPoolTests {
             // expect(token0ProtocolFees).to.eq(0)
             // expect(token1ProtocolFees).to.eq(0)
 
-            assert(1 == 2, 'empty');
+            assert(1 == 2, 'no setFeeProtocol() function');
         }
 
 
@@ -1462,6 +1461,7 @@ mod YASPoolTests {
         //#[test]
         //#[available_gas(200000000)]
         fn test_unallow_poke_on_uninit_pos() {
+            //to implement:
             // await mint(other.address, minTick + tickSpacing, maxTick - tickSpacing, expandTo18Decimals(1))
             // await swapExact0For1(expandTo18Decimals(1).div(10), wallet.address)
             // await swapExact1For0(expandTo18Decimals(1).div(100), wallet.address)
@@ -1497,7 +1497,7 @@ mod YASPoolTests {
             // expect(tokensOwed0, 'tokens owed 0 after').to.eq(3)
             // expect(tokensOwed1, 'tokens owed 1 after').to.eq(0)
 
-            assert(1 == 2, 'empty');
+            assert(1 == 2, 'no burn() function');
         }
     }
 
@@ -1533,12 +1533,16 @@ mod YASPoolTests {
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
 
         // Deploy ERC20 tokens with factory address
-        let token_0 = deploy_erc20('YAS0', '$YAS0', 4000000000000000000, OWNER()); // 0x3
-        let token_1 = deploy_erc20('YAS1', '$YAS1', 4000000000000000000, OWNER()); // 0x4
+        let token_0 = deploy_erc20(
+            'YAS0', '$YAS0', 400000000000000000000000000000000000, OWNER()
+        ); // 0x3
+        let token_1 = deploy_erc20(
+            'YAS1', '$YAS1', 400000000000000000000000000000000000, OWNER()
+        ); // 0x4
 
         set_contract_address(OWNER());
-        token_0.transfer(WALLET(), 4000000000000000000);
-        token_1.transfer(WALLET(), 4000000000000000000);
+        token_0.transfer(WALLET(), 400000000000000000000000000000000000);
+        token_1.transfer(WALLET(), 400000000000000000000000000000000000);
 
         // Give permissions to expend WALLET() tokens
         set_contract_address(WALLET());
@@ -1560,7 +1564,6 @@ mod YASPoolTests {
 
         (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick)
     }
-
 
     fn deploy_erc20(
         name: felt252, symbol: felt252, initial_supply: u256, recipent: ContractAddress
