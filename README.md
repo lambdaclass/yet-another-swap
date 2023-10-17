@@ -67,13 +67,23 @@ Run the following command to run all tests:
 make test
 ```
 
-You can also filter test output by using the FILTER parameter, allowing you to narrow down the tests you want to view based on any specific criteria; such as the name of a single test, the name of a module of tests, or even the name of a whole test file. Be careful though, it is CaSe SeNsItIvE !
-
-For example, to filter and view only the tests within the "Mint" module:
+If you wish to run tests from a specific module, use the MOD parameter. For instance, to run tests within the Mint module, execute:
 
 ```bash
-make test FILTER=Mint
+make test MOD=Mint
 ```
+
+To focus on a specific test function, utilize the FN parameter. For instance, to run only the "test_invalid_max_tick" function:
+
+```bash
+make test FN=test_invalid_max_tick
+```
+
+For more precise testing, you can combine both parameters. Remember, these parameters are case-sensitive.
+```bash
+make test MOD=Mint FN=test_invalid_max_tick
+```
+
 
 ## Setting up a Testnet Smart Wallet
 
