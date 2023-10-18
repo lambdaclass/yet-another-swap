@@ -72,6 +72,7 @@ trait ITick<TContractState> {
         upper: bool,
         max_liquidity: u128
     ) -> bool;
+    fn get_tick(self: @TContractState, tick: i32) -> Info;
 }
 
 #[starknet::contract]
@@ -96,6 +97,11 @@ mod Tick {
 
     #[external(v0)]
     impl TickImpl of ITick<ContractState> {
+        fn get_tick(self: @ContractState, tick: i32) -> Info {
+            let hashed_tick = PoseidonTrait::new().update_with(tick).finalize();
+            self.ticks.read(hashed_tick)
+        }
+
         /// @notice Derives max liquidity per tick from given tick spacing
         /// @dev Executed within the pool constructor
         /// @param tick_spacing The amount of required tick separation, realized in multiples of `tick_spacing`

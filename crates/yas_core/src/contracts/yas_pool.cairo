@@ -1,6 +1,8 @@
 use starknet::ContractAddress;
 use yas_core::numbers::signed_integer::{i32::i32, i256::i256};
 use yas_core::numbers::fixed_point::implementations::impl_64x96::FixedType;
+use yas_core::libraries::position::{Info as PositionInfo, PositionKey};
+use yas_core::libraries::tick::Info as TickInfo;
 
 #[starknet::interface]
 trait IYASPool<TContractState> {
@@ -26,6 +28,9 @@ trait IYASPool<TContractState> {
     fn burn(
         ref self: TContractState, tick_lower: i32, tick_upper: i32, amount: u128
     ) -> (u256, u256);
+    fn get_tick_spacing(self: @TContractState) -> i32;
+    fn get_tick(self: @TContractState, tick: i32) -> TickInfo;
+    fn get_position(self: @TContractState, position_key: PositionKey) -> PositionInfo;
 }
 
 #[starknet::contract]
@@ -42,10 +47,12 @@ mod YASPool {
         IYASSwapCallbackDispatcherTrait, IYASSwapCallbackDispatcher
     };
     use yas_core::libraries::liquidity_math::LiquidityMath;
-    use yas_core::libraries::position::{Position, Position::PositionImpl, PositionKey, Info};
+    use yas_core::libraries::position::{
+        Position, Position::PositionImpl, PositionKey, Info as PositionInfo
+    };
     use yas_core::libraries::sqrt_price_math::SqrtPriceMath;
     use yas_core::libraries::swap_math::SwapMath;
-    use yas_core::libraries::tick::{Tick, Tick::TickImpl};
+    use yas_core::libraries::tick::{Tick, Tick::TickImpl, Info as TickInfo};
     use yas_core::libraries::tick_bitmap::{TickBitmap, TickBitmap::TickBitmapImpl};
     use yas_core::libraries::tick_math::TickMath::{
         get_tick_at_sqrt_ratio, get_sqrt_ratio_at_tick, MIN_TICK, MAX_TICK
@@ -211,6 +218,20 @@ mod YASPool {
 
         fn token_1(self: @ContractState) -> ContractAddress {
             self.token_1.read()
+        }
+
+        fn get_tick_spacing(self: @ContractState) -> i32 {
+            self.tick_spacing.read()
+        }
+
+        fn get_tick(self: @ContractState, tick: i32) -> TickInfo {
+            let tick_state = Tick::unsafe_new_contract_state();
+            TickImpl::get_tick(@tick_state, tick)
+        }
+
+        fn get_position(self: @ContractState, position_key: PositionKey) -> PositionInfo {
+            let mut position_state = Position::unsafe_new_contract_state();
+            PositionImpl::get(@position_state, position_key)
         }
 
         /// @notice Sets the initial price for the pool
@@ -605,7 +626,7 @@ mod YASPool {
         /// @param tick the current tick, passed to avoid sloads
         fn update_position(
             self: @ContractState, position_key: PositionKey, liquidity_delta: i128, tick: i32
-        ) -> Info {
+        ) -> PositionInfo {
             let mut tick_bitmap_state = TickBitmap::unsafe_new_contract_state();
             let mut tick_state = Tick::unsafe_new_contract_state();
             let mut position_state = Position::unsafe_new_contract_state();
@@ -699,7 +720,7 @@ mod YASPool {
         /// @return amount1 the amount of token1 owed to the pool, negative if the pool should pay the recipient
         fn modify_position(
             ref self: ContractState, params: ModifyPositionParams
-        ) -> (Info, i256, i256) // TODO: noDelegateCall
+        ) -> (PositionInfo, i256, i256) // TODO: noDelegateCall
         {
             match check_ticks(params.position_key.tick_lower, params.position_key.tick_upper) {
                 Result::Ok(()) => {},
