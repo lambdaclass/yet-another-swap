@@ -1,0 +1,4 @@
+repos:
+-   repo: https://github.com/rcatalan98/pre-commit-cairo.git
+    hooks:
+    -   id: format
