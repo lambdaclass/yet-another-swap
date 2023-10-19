@@ -119,6 +119,7 @@ mod PoolConstants {
         FP64x96Impl::new(56022770974786139918731938227, false)
     }
 
+    // returns result of encode_price_sqrt(1, 10) on v3-core typescript impl. 
     fn encode_price_sqrt_1_10() -> FixedType {
         FP64x96Impl::new(25054144837504793118641380156, false)
     }
