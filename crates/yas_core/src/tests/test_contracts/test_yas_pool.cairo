@@ -612,6 +612,8 @@ mod YASPoolTests {
             assert(tick_info.liquidity_gross != 0, '');
         }
 
+        #[test]
+        #[available_gas(200000000)]
         fn test_does_not_clear_the_position_fee_growth_snapshot_if_no_more_liquidity() {
             // some activity that would make the ticks non-zero
             // await pool.advanceTime(10)
@@ -623,7 +625,7 @@ mod YASPoolTests {
             // swap_exact_0_for_1(10000000000000000000, WALLET());
             // swap_exact_1_for_0(10000000000000000000, WALLET());
             // set_contract_address(OTHER()); // TODO: OTHER() ?
-            yas_router.burn(min_tick, max_tick, 10000000000000000000);
+            yas_router.burn(yas_pool.contract_address, min_tick, max_tick, 10000000000000000000);
 
             let info_position = yas_pool
                 .get_position(
@@ -642,55 +644,71 @@ mod YASPoolTests {
                 ''
             );
         }
-    // fn test_clears_the_tick_if_its_the_last_position_using_it() {
-    //     let (yas_pool, token_0, token_1) = setup();
-    //     let (min_tick, max_tick) = get_min_tick_and_max_tick();
-    //     let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
 
-    //     let tick_lower = min_tick + tick_spacing;
-    //     let tick_upper = max_tick - tick_spacing;
-    //     // some activity that would make the ticks non-zero
-    //     // await pool.advanceTime(10)
-    //     mint(WALLET(), tick_lower, tick_upper, 1);
-    //     swap_exact_0_for_1(10000000000000000000, WALLET());
-    //     pool.burn(tick_lower, tick_upper, 1);
-    //     check_tick_is_clear(tick_lower);
-    //     check_tick_is_clear(tick_upper);
-    // }
+        #[test]
+        #[available_gas(200000000)]
+        fn test_clears_the_tick_if_its_the_last_position_using_it() {
+            let (yas_pool, yas_router, token_0, token_1) = setup();
+            let (min_tick, max_tick) = get_min_tick_and_max_tick();
+            let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
 
-    // fn test_clears_only_the_lower_tick_if_upper_is_still_used() {
-    //     let (yas_pool, token_0, token_1) = setup();
-    //     let (min_tick, max_tick) = get_min_tick_and_max_tick();
-    //     let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
+            let tick_lower = min_tick + tick_spacing;
+            let tick_upper = max_tick - tick_spacing;
+            // some activity that would make the ticks non-zero
+            // await pool.advanceTime(10)
+            set_contract_address(WALLET());
+            yas_router.mint(yas_pool.contract_address, WALLET(), tick_lower, tick_upper, 1);
+            // swap_exact_0_for_1(10000000000000000000, WALLET());
+            yas_router.burn(yas_pool.contract_address, tick_lower, tick_upper, 1);
+            check_tick_is_clear(yas_pool, tick_lower);
+            check_tick_is_clear(yas_pool, tick_upper);
+        }
 
-    //     let tick_lower = min_tick + tick_spacing;
-    //     let tick_upper = max_tick - tick_spacing;
-    //     // some activity that would make the ticks non-zero
-    //     // await pool.advanceTime(10)
-    //     mint(WALLET(), tickLower, tickUpper, 1);
-    //     mint(WALLET(), tickLower + tickSpacing, tickUpper, 1);
-    //     swapExact0For1(10000000000000000000, WALLET());
-    //     pool.burn(tickLower, tickUpper, 1);
-    //     checkTickIsClear(tickLower);
-    //     checkTickIsNotClear(tickUpper);
-    // }
+        #[test]
+        #[available_gas(200000000)]
+        fn test_clears_only_the_lower_tick_if_upper_is_still_used() {
+            let (yas_pool, yas_router, token_0, token_1) = setup();
+            let (min_tick, max_tick) = get_min_tick_and_max_tick();
+            let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
 
-    // fn test_clears_only_the_upper_tick_if_lower_is_still_used() {
-    //     let (yas_pool, token_0, token_1) = setup();
-    //     let (min_tick, max_tick) = get_min_tick_and_max_tick();
-    //     let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
+            let tick_lower = min_tick + tick_spacing;
+            let tick_upper = max_tick - tick_spacing;
+            // some activity that would make the ticks non-zero
+            // await pool.advanceTime(10)
+            set_contract_address(WALLET());
+            yas_router.mint(yas_pool.contract_address, WALLET(), tick_lower, tick_upper, 1);
+            yas_router
+                .mint(
+                    yas_pool.contract_address, WALLET(), tick_lower + tick_spacing, tick_upper, 1
+                );
+            // swapExact0For1(10000000000000000000, WALLET());
+            yas_router.burn(yas_pool.contract_address, tick_lower, tick_upper, 1);
+            check_tick_is_clear(yas_pool, tick_lower);
+            check_tick_is_not_clear(yas_pool, tick_upper);
+        }
 
-    //     let tick_lower = min_tick + tick_spacing;
-    //     let tick_upper = max_tick - tick_spacing;
-    //     // some activity that would make the ticks non-zero
-    //     // await pool.advanceTime(10)
-    //     mint(WALLET(), tick_lower, tick_upper, 1);
-    //     mint(WALLET(), tick_lower, tick_upper - tick_spacing, 1);
-    //     swap_exact_0_for_1(10000000000000000000, WALLET());
-    //     pool.burn(tick_lower, tick_upper, 1);
-    //     check_tick_is_not_clear(tick_lower);
-    //     check_tick_is_clear(tick_upper);
-    // }
+        #[test]
+        #[available_gas(200000000)]
+        fn test_clears_only_the_upper_tick_if_lower_is_still_used() {
+            let (yas_pool, yas_router, token_0, token_1) = setup();
+            let (min_tick, max_tick) = get_min_tick_and_max_tick();
+            let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
+
+            let tick_lower = min_tick + tick_spacing;
+            let tick_upper = max_tick - tick_spacing;
+            // some activity that would make the ticks non-zero
+            // await pool.advanceTime(10)
+            set_contract_address(WALLET());
+            yas_router.mint(yas_pool.contract_address, WALLET(), tick_lower, tick_upper, 1);
+            yas_router
+                .mint(
+                    yas_pool.contract_address, WALLET(), tick_lower, tick_upper - tick_spacing, 1
+                );
+            // swap_exact_0_for_1(10000000000000000000, WALLET());
+            yas_router.burn(yas_pool.contract_address, tick_lower, tick_upper, 1);
+            check_tick_is_not_clear(yas_pool, tick_lower);
+            check_tick_is_clear(yas_pool, tick_upper);
+        }
     }
 
     // YASPool mint() aux functions
