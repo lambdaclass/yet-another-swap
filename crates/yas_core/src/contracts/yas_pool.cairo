@@ -29,7 +29,7 @@ trait IYASPool<TContractState> {
     fn slot_0(self: @TContractState) -> Slot0;
     fn max_liquidity_per_tick(self: @TContractState) -> u128;
     fn tick_spacing(self: @TContractState) -> i32;
-    fn ticks(self: @TContractState, tick: i32) -> Tick::Info;
+    fn get_tick(self: @TContractState, tick: i32) -> Tick::Info;
 }
 
 #[starknet::contract]
@@ -218,9 +218,9 @@ mod YASPool {
             self.tick_spacing.read()
         }
 
-        fn ticks(self: @ContractState, tick: i32) -> Tick::Info {
+        fn get_tick(self: @ContractState, tick: i32) -> Tick::Info {
             let tick_state = Tick::unsafe_new_contract_state();
-            TickImpl::get_ticks(@tick_state, tick)
+            TickImpl::get_tick(@tick_state, tick)
         }
 
         /// @notice Sets the initial price for the pool
