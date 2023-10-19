@@ -230,7 +230,7 @@ mod YASPool {
         }
 
         fn get_position(self: @ContractState, position_key: PositionKey) -> PositionInfo {
-            let mut position_state = Position::unsafe_new_contract_state();
+            let position_state = Position::unsafe_new_contract_state();
             PositionImpl::get(@position_state, position_key)
         }
 
