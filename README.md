@@ -59,7 +59,6 @@ make build
 This command executes the Scarb build process, resulting in the creation of a
 Sierra program.
 
-
 ## Setting up a Testnet Smart Wallet
 
 **This guide will help you declare and deploy contracts on a testnet. Please

@@ -645,7 +645,7 @@ mod YASPoolTests {
                         max_tick - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
                         1000
                     );
-                let maxLiquidityGross: u128 = yas_pool.max_liquidity_per_tick();
+                let max_liquidity_gross: u128 = yas_pool.max_liquidity_per_tick();
 
                 mint_callback
                     .mint(
@@ -653,7 +653,7 @@ mod YASPoolTests {
                         WALLET(),
                         min_tick + IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
                         max_tick - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
-                        maxLiquidityGross - 1000 + 1
+                        max_liquidity_gross - 1000 + 1
                     );
             }
             #[test]
