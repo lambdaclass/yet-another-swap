@@ -41,6 +41,13 @@ trait IYASRouter<TContractState> {
         recipient: ContractAddress,
         sqrt_price_limit_X96: FixedType
     ) -> (i256, i256);
+    fn burn(
+        ref self: TContractState,
+        pool: ContractAddress,
+        tick_lower: i32,
+        tick_upper: i32,
+        amount: u128
+    ) -> (u256, u256);
 }
 
 #[starknet::contract]
@@ -199,6 +206,15 @@ mod YASRouter {
                     sqrt_price_limit_X96,
                     array![get_caller_address().into()]
                 )
+        }
+        fn burn(
+            ref self: ContractState,
+            pool: ContractAddress,
+            tick_lower: i32,
+            tick_upper: i32,
+            amount: u128
+        ) -> (u256, u256) {
+            IYASPoolDispatcher { contract_address: pool }.burn(tick_lower, tick_upper, amount)
         }
     }
 }
