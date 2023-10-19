@@ -884,16 +884,10 @@ mod YASPoolTests {
 
                 // TODO: missing burn() func
                 // // WIP: 'removing works'
+                // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L276
                 // //#[test]
                 // //#[available_gas(200000000)]
                 // fn test_burn() {
-                //     //to implement:
-                //     //await mint(wallet.address, -240, 0, 10000) -done
-                //     //await pool.burn(-240, 0, 10000)
-                //     //const { amount0, amount1 } = await pool.callStatic.collect(wallet.address, -240, 0, MaxUint128, MaxUint128)
-                //     //expect(amount0, 'amount0').to.eq(120)
-                //     //expect(amount1, 'amount1').to.eq(0)
-
                 //     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
                 //     mint_callback
                 //         .mint(
@@ -1015,16 +1009,10 @@ mod YASPoolTests {
                 }
             // TODO: missing burn() func.
             // // TODO: 'removes liquidity from liquidityGross'
+            // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L302
             // //#[test]
             // //#[available_gas(200000000)]
             // fn test_remove_liquidityGross() {
-            //     //to implement:
-            //     //await mint(wallet.address, -240, 0, 100) -done
-            //     //await mint(wallet.address, -240, 0, 40) -done
-            //     //await pool.burn(-240, 0, 90)
-            //     //expect((await pool.get_tick(-240)).liquidityGross).to.eq(50)
-            //     //expect((await pool.get_tick(0)).liquidityGross).to.eq(50)
-
             //     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
             //     mint_callback
             //         .mint(
@@ -1044,7 +1032,6 @@ mod YASPoolTests {
             //         );
             //     //burn
             //     assert(1 == 2, 'burn() func doesnt exist yet');
-
             //     assert(
             //         yas_pool.get_tick(IntegerTrait::<i32>::new(240, true)).liquidity_gross == 500,
             //         'wrong liquidity_gross amount'
@@ -1057,17 +1044,10 @@ mod YASPoolTests {
 
             // TODO: missing burn() func
             // TODO: 'clears tick lower if last position is removed'
+            // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L310
             // //#[test]
             // //#[available_gas(200000000)]
             // fn test_clear_tick_lower() {
-            //     //to implement:
-            //     //await mint(wallet.address, -240, 0, 100) -done
-            //     //await pool.burn(-240, 0, 100)
-            //     //const { liquidityGross, feeGrowthOutside0X128, feeGrowthOutside1X128 } = await pool.get_tick(-240) -done
-            //     //expect(liquidityGross).to.eq(0) -done
-            //     //expect(feeGrowthOutside0X128).to.eq(0) -done
-            //     //expect(feeGrowthOutside1X128).to.eq(0) -done
-
             //     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
             //     mint_callback
             //         .mint(
@@ -1079,7 +1059,6 @@ mod YASPoolTests {
             //         );
             //     //burn
             //     assert(1 == 2, 'burn() func doesnt exist yet');
-
             //     let tick_info = yas_pool.get_tick(IntegerTrait::<i32>::new(240, true));
             //     assert(tick_info.liquidity_gross == 0, 'wrong liquidity_gross amount');
             //     assert(
@@ -1094,17 +1073,10 @@ mod YASPoolTests {
 
             // // TODO: missing burn() func
             // // TODO: 'clears tick upper if last position is removed'
+            // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L319
             // //#[test]
             // //#[available_gas(200000000)]
             // fn test_clear_tick_upper() {
-            //     //to implement:
-            //     //await mint(wallet.address, -240, 0, 100) -done
-            //     //await pool.burn(-240, 0, 100)
-            //     //const { liquidityGross, feeGrowthOutside0X128, feeGrowthOutside1X128 } = await pool.get_tick(0)
-            //     //expect(liquidityGross).to.eq(0) -done
-            //     //expect(feeGrowthOutside0X128).to.eq(0) -done
-            //     //expect(feeGrowthOutside1X128).to.eq(0) -done
-
             //     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
             //     mint_callback
             //         .mint(
@@ -1116,7 +1088,6 @@ mod YASPoolTests {
             //         );
             //     //burn
             //     assert(1 == 2, 'burn() func doesnt exist yet');
-
             //     let tick_info = yas_pool.get_tick(IntegerTrait::<i32>::new(0, false));
             //     assert(tick_info.liquidity_gross == 0, 'wrong liquidity_gross amount');
             //     assert(
@@ -1129,22 +1100,10 @@ mod YASPoolTests {
 
             // // TODO: missing burn() func
             // // TODO: 'only clears the tick that is not used at all'
+            // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L327
             // //#[test]
             // //#[available_gas(200000000)]
             // fn test_clear_tick_unused() {
-            //     //to implement:
-            //     //await mint(wallet.address, -240, 0, 100) -done 
-            //     //await mint(wallet.address, -tickSpacing, 0, 250) -done
-            //     //await pool.burn(-240, 0, 100)
-            //     //let { liquidityGross, feeGrowthOutside0X128, feeGrowthOutside1X128 } = await pool.get_tick(-240) -done
-            //     //expect(liquidityGross).to.eq(0) -done
-            //     //expect(feeGrowthOutside0X128).to.eq(0) -done
-            //     //expect(feeGrowthOutside1X128).to.eq(0) -done
-            //     //;({ liquidityGross, feeGrowthOutside0X128, feeGrowthOutside1X128 } = await pool.get_tick(-tickSpacing)) -done
-            //     //expect(liquidityGross).to.eq(250) -done
-            //     //expect(feeGrowthOutside0X128).to.eq(0) -done
-            //     //expect(feeGrowthOutside1X128).to.eq(0) -done
-
             //     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
             //     mint_callback
             //         .mint(
@@ -1164,7 +1123,6 @@ mod YASPoolTests {
             //         );
             //     //burn
             //     assert(1 == 2, 'burn() func doesnt exist yet');
-
             //     let tick_info = yas_pool.get_tick(IntegerTrait::<i32>::new(240, true));
             //     assert(tick_info.liquidity_gross == 0, 'wrong liquidity_gross amount');
             //     assert(
@@ -1173,7 +1131,6 @@ mod YASPoolTests {
             //     assert(
             //         tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128'
             //     );
-
             //     let tick_info = yas_pool.get_tick(-yas_pool.tick_spacing());
             //     assert(tick_info.liquidity_gross == 250, 'wrong liquidity_gross amount');
             //     assert(
@@ -1183,6 +1140,7 @@ mod YASPoolTests {
             //         tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128'
             //     );
             // }
+
             }
 
             mod IncludingCurrentPrice {
@@ -1283,24 +1241,12 @@ mod YASPoolTests {
                         'token_1 wrong amount'
                     );
                 }
-            // // // TODO: missing burn() func
+            // // TODO: missing burn() func
             // // TODO: 'removing works'
+            // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L393
             // //#[test]
             // //#[available_gas(200000000)]
             // fn test_remove() {
-            //     //to implement:
-            //     // await mint(wallet.address, minTick + tickSpacing, maxTick - tickSpacing, 100)
-            //     // await pool.burn(minTick + tickSpacing, maxTick - tickSpacing, 100)
-            //     // const { amount0, amount1 } = await pool.callStatic.collect(
-            //     // wallet.address,
-            //     // minTick + tickSpacing,
-            //     // maxTick - tickSpacing,
-            //     // MaxUint128,
-            //     // MaxUint128
-            //     // )
-            //     // expect(amount0, 'amount0').to.eq(316)
-            //     // expect(amount1, 'amount1').to.eq(31)
-
             //     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
             //     mint_callback
             //         .mint(
@@ -1313,6 +1259,7 @@ mod YASPoolTests {
             //     //yas_pool.burn()
             //     assert(1 == 2, 'missing burn() func');
             // }
+
             }
 
             mod BelowCurrentPrice {
@@ -1397,25 +1344,12 @@ mod YASPoolTests {
                         'token_1 wrong amount'
                     );
                 }
-            // // TODO: missing burn() func
+            // TODO: missing burn() func
             // TODO: 'removing works'
+            // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L449
             //#[test]
             //#[available_gas(200000000)]
             // fn test_below_remove() {
-            //     //to implement:
-            //     // await mint(wallet.address, -46080, -46020, 10000)
-            //     // await pool.burn(-46080, -46020, 10000)
-            //     // const { amount0, amount1 } = await pool.callStatic.collect(
-            //     // wallet.address,
-            //     // -46080,
-            //     // -46020,
-            //     // MaxUint128,
-            //     // MaxUint128
-            //     // )
-            //     // expect(amount0, 'amount0').to.eq(0)
-            //     // expect(amount1, 'amount1').to.eq(3)
-            //     //IntegerTrait::<i32>::new(23040, true)
-
             //     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
             //     mint_callback
             //         .mint(
@@ -1430,89 +1364,61 @@ mod YASPoolTests {
             //     //assert(token_1.balanceOf(yas_pool.contract_address) == 3, 'token_1 wrong amount');
             //     assert(1 == 2, 'no burn() function');
             // }
+
             }
         }
     // // TODO: missing setFeeProtocol() func
     // // TODO: 'protocol fees accumulate as expected during swap'
+    // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L482
     // //#[test]
     // //#[available_gas(200000000)]
     // fn test_protocol_fees_accum() {
-    //     //to implement:
-    //     // await pool.setFeeProtocol(6, 6)
-    //     //
-    //     // await mint(wallet.address, minTick + tickSpacing, maxTick - tickSpacing, expandTo18Decimals(1))
-    //     // await swapExact0For1(expandTo18Decimals(1).div(10), wallet.address)
-    //     // await swapExact1For0(expandTo18Decimals(1).div(100), wallet.address)
-    //     //
-    //     // let { token0: token0ProtocolFees, token1: token1ProtocolFees } = await pool.protocolFees()
-    //     // expect(token0ProtocolFees).to.eq('50000000000000')
-    //     // expect(token1ProtocolFees).to.eq('5000000000000')
-
-    //     assert(1 == 2, 'no setFeeProtocol() function');
+    //let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
+    //assert(1 == 2, 'no setFeeProtocol() function');
+    // mint_callback
+    //     .mint(
+    //         yas_pool.contract_address,
+    //         WALLET(),
+    //         min_tick + yas_pool.tick_spacing(),
+    //         max_tick - yas_pool.tick_spacing(),
+    //         1000000000000000000 //?
+    //     );
     // }
 
     // // TODO: missing setFeeProtocol() func
     // // TODO: 'positions are protected before protocol fee is turned on'
+    // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L494
     // //#[test]
     // //#[available_gas(200000000)]
     // fn test_positions_protected() {
-    //     //to implement:
-    //     // await mint(wallet.address, minTick + tickSpacing, maxTick - tickSpacing, expandTo18Decimals(1))
-    //     // await swapExact0For1(expandTo18Decimals(1).div(10), wallet.address)
-    //     // await swapExact1For0(expandTo18Decimals(1).div(100), wallet.address)
-    //     // let { token0: token0ProtocolFees, token1: token1ProtocolFees } = await pool.protocolFees()
-    //     // expect(token0ProtocolFees).to.eq(0)
-    //     // expect(token1ProtocolFees).to.eq(0)
-    //     // await pool.setFeeProtocol(6, 6)
-    //     // ;({ token0: token0ProtocolFees, token1: token1ProtocolFees } = await pool.protocolFees())
-    //     // expect(token0ProtocolFees).to.eq(0)
-    //     // expect(token1ProtocolFees).to.eq(0)
-
-    //     assert(1 == 2, 'no setFeeProtocol() function');
+    //let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
+    // mint_callback
+    //     .mint(
+    //         yas_pool.contract_address,
+    //         WALLET(),
+    //         min_tick + yas_pool.tick_spacing(),
+    //         max_tick - yas_pool.tick_spacing(),
+    //         1000000000000000000 //?
+    //     );
+    //assert(1 == 2, 'no setFeeProtocol() function');
     // }
 
     //TODO: missing burn() func
     // test: 'poke is not allowed on uninitialized position'
+    // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L509
     // //#[test]
     // //#[available_gas(200000000)]
     // fn test_unallow_poke_on_uninit_pos() {
-    //     //to implement:
-    //     // await mint(other.address, minTick + tickSpacing, maxTick - tickSpacing, expandTo18Decimals(1))
-    //     // await swapExact0For1(expandTo18Decimals(1).div(10), wallet.address)
-    //     // await swapExact1For0(expandTo18Decimals(1).div(100), wallet.address)
-
-    //     // // missing revert reason due to hardhat
-    //     // await expect(pool.burn(minTick + tickSpacing, maxTick - tickSpacing, 0)).to.be.reverted
-
-    //     // await mint(wallet.address, minTick + tickSpacing, maxTick - tickSpacing, 1)
-    //     // let {
-    //     // liquidity,
-    //     // feeGrowthInside0LastX128,
-    //     // feeGrowthInside1LastX128,
-    //     // tokensOwed1,
-    //     // tokensOwed0,
-    //     // } = await pool.positions(getPositionKey(wallet.address, minTick + tickSpacing, maxTick - tickSpacing))
-    //     // expect(liquidity).to.eq(1)
-    //     // expect(feeGrowthInside0LastX128).to.eq('102084710076281216349243831104605583')
-    //     // expect(feeGrowthInside1LastX128).to.eq('10208471007628121634924383110460558')
-    //     // expect(tokensOwed0, 'tokens owed 0 before').to.eq(0)
-    //     // expect(tokensOwed1, 'tokens owed 1 before').to.eq(0)
-
-    //     // await pool.burn(minTick + tickSpacing, maxTick - tickSpacing, 1)
-    //     // ;({
-    //     // liquidity,
-    //     // feeGrowthInside0LastX128,
-    //     // feeGrowthInside1LastX128,
-    //     // tokensOwed1,
-    //     // tokensOwed0,
-    //     // } = await pool.positions(getPositionKey(wallet.address, minTick + tickSpacing, maxTick - tickSpacing)))
-    //     // expect(liquidity).to.eq(0)
-    //     // expect(feeGrowthInside0LastX128).to.eq('102084710076281216349243831104605583')
-    //     // expect(feeGrowthInside1LastX128).to.eq('10208471007628121634924383110460558')
-    //     // expect(tokensOwed0, 'tokens owed 0 after').to.eq(3)
-    //     // expect(tokensOwed1, 'tokens owed 1 after').to.eq(0)
-
-    //     assert(1 == 2, 'no burn() function');
+    //let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
+    // mint_callback
+    //     .mint(
+    //         yas_pool.contract_address,
+    //         WALLET(),
+    //         min_tick + yas_pool.tick_spacing(),
+    //         max_tick - yas_pool.tick_spacing(),
+    //         1000000000000000000 //?
+    //     );
+    //assert(1 == 2, 'no burn() function');
     // }
 
     }
