@@ -20,7 +20,9 @@ mod YASNFTPositionManagerTests {
     use yas_core::tests::utils::constants::FactoryConstants::{
         POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing, OWNER
     };
-    use yas_core::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET};
+    use yas_core::tests::utils::constants::PoolConstants::{
+        TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET, encode_price_sqrt_1_1
+    };
 
     use yas_periphery::yas_nft_position_manager::{
         YASNFTPositionManager, IYASNFTPositionManager, IYASNFTPositionManagerDispatcher,
@@ -155,14 +157,14 @@ mod YASNFTPositionManagerTests {
         fn test_fails_if_cannot_transfer() {
             let (yas_nft_position_manager, token_0, token_1) = setup();
 
-            let encode_price_sqrt_1_1 = FP64x96Impl::new(79228162514264337593543950336, false);
+            let sqrt_price_X96 = encode_price_sqrt_1_1();
 
             yas_nft_position_manager
                 .create_and_initialize_pool_if_necessary(
                     token_0.contract_address,
                     token_1.contract_address,
                     fee_amount(FeeAmount::MEDIUM),
-                    encode_price_sqrt_1_1
+                    sqrt_price_X96
                 );
 
             set_contract_address(WALLET());
@@ -192,14 +194,14 @@ mod YASNFTPositionManagerTests {
         fn test_creates_a_token() {
             let (yas_nft_position_manager, token_0, token_1) = setup();
 
-            let encode_price_sqrt_1_1 = FP64x96Impl::new(79228162514264337593543950336, false);
+            let sqrt_price_X96 = encode_price_sqrt_1_1();
 
             yas_nft_position_manager
                 .create_and_initialize_pool_if_necessary(
                     token_0.contract_address,
                     token_1.contract_address,
                     fee_amount(FeeAmount::MEDIUM),
-                    encode_price_sqrt_1_1
+                    sqrt_price_X96
                 );
 
             let (min_tick, max_tick) = get_min_tick_and_max_tick();
@@ -209,7 +211,7 @@ mod YASNFTPositionManagerTests {
                         token_0: token_0.contract_address,
                         token_1: token_1.contract_address,
                         fee: fee_amount(FeeAmount::MEDIUM),
-                        recipient: OTHER(), // TODO:
+                        recipient: OTHER(),
                         tick_lower: min_tick,
                         tick_upper: max_tick,
                         amount_0_desired: 15,

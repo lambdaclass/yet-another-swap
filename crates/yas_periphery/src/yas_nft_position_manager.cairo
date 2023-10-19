@@ -6,8 +6,6 @@ use yas_core::numbers::signed_integer::{i32::i32};
 // details about the uniswap position
 #[derive(Copy, Drop, Serde, starknet::Store)]
 struct Position {
-    // the nonce for permits
-    nonce: u128,
     // the address that is approved for spending this token
     operator: ContractAddress,
     // the ID of the pool with which this token is connected
@@ -209,7 +207,6 @@ mod YASNFTPositionManager {
 
     #[constructor]
     fn constructor(ref self: ContractState, factory: ContractAddress) {
-        // TODO: ERC721Permit.sol
         let mut state = ERC721::unsafe_new_contract_state();
         ERC721::InternalImpl::initializer(ref state, 'YAS Positions NFT-V1', 'YAS-V3-POS');
 
@@ -274,7 +271,6 @@ mod YASNFTPositionManager {
                 .write(
                     token_id,
                     Position {
-                        nonce: 0,
                         operator: contract_address_const::<0>(),
                         pool_id: pool_id,
                         tick_lower: params.tick_lower,
@@ -459,7 +455,6 @@ mod YASNFTPositionManager {
             ERC721::ERC721Impl::safe_transfer_from(ref state, from, to, token_id, data);
         }
 
-        // TODO: replace _approve
         fn approve(ref self: ContractState, to: ContractAddress, token_id: u256) {
             let state = ERC721::unsafe_new_contract_state();
             let owner = ERC721::InternalImpl::_owner_of(@state, token_id);
