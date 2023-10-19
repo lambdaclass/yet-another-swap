@@ -110,7 +110,9 @@ mod YASNFTPositionManagerTests {
         use yas_core::tests::utils::constants::FactoryConstants::{
             POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing
         };
-        use yas_core::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, WALLET, OTHER, encode_price_sqrt_1_1};
+        use yas_core::tests::utils::constants::PoolConstants::{
+            TOKEN_A, TOKEN_B, WALLET, OTHER, encode_price_sqrt_1_1
+        };
 
         use yas_periphery::yas_nft_position_manager::{
             YASNFTPositionManager, IYASNFTPositionManager, IYASNFTPositionManagerDispatcher,

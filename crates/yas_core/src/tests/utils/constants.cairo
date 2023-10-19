@@ -76,7 +76,7 @@ mod PoolConstants {
     }
 
     fn OTHER() -> ContractAddress {
-        contract_address_const::<'WALLET'>()
+        contract_address_const::<'OTHER'>()
     }
 
     fn POOL_ADDRESS() -> ContractAddress {
