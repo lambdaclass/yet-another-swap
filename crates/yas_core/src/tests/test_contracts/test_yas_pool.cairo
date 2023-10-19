@@ -640,7 +640,7 @@ mod YASPoolTests {
             let (min_tick, max_tick) = get_min_tick_and_max_tick();
             set_contract_address(WALLET());
             yas_router
-                .mint(yas_pool.contract_address, OTHER(), min_tick, max_tick, 10000000000000000000);
+                .mint(yas_pool.contract_address, OTHER(), min_tick, max_tick, 1000000000000000000);
             swap_exact_0_for_1(
                 yas_router, yas_pool.contract_address, 10000000000000000000, WALLET()
             );
@@ -667,7 +667,6 @@ mod YASPoolTests {
                 'wrong fee_growth_ins_1_lastX128'
             );
         }
-
         #[test]
         #[available_gas(200000000000)]
         fn test_clears_the_tick_if_its_the_last_position_using_it() {
@@ -679,7 +678,7 @@ mod YASPoolTests {
             set_contract_address(WALLET());
             yas_router.mint(yas_pool.contract_address, WALLET(), tick_lower, tick_upper, 1);
             swap_exact_0_for_1(
-                yas_router, yas_pool.contract_address, 10000000000000000000, WALLET()
+                yas_router, yas_pool.contract_address, 1000000000000000000, WALLET()
             );
 
             yas_router.burn(yas_pool.contract_address, tick_lower, tick_upper, 1);
@@ -703,7 +702,7 @@ mod YASPoolTests {
                     yas_pool.contract_address, WALLET(), tick_lower + tick_spacing, tick_upper, 1
                 );
             swap_exact_0_for_1(
-                yas_router, yas_pool.contract_address, 10000000000000000000, WALLET()
+                yas_router, yas_pool.contract_address, 1000000000000000000, WALLET()
             );
 
             yas_router.burn(yas_pool.contract_address, tick_lower, tick_upper, 1);
@@ -727,7 +726,7 @@ mod YASPoolTests {
                     yas_pool.contract_address, WALLET(), tick_lower, tick_upper - tick_spacing, 1
                 );
             swap_exact_0_for_1(
-                yas_router, yas_pool.contract_address, 10000000000000000000, WALLET()
+                yas_router, yas_pool.contract_address, 1000000000000000000, WALLET()
             );
 
             yas_router.burn(yas_pool.contract_address, tick_lower, tick_upper, 1);
