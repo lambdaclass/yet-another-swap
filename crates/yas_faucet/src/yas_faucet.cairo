@@ -3,6 +3,8 @@ use starknet::ContractAddress;
 #[starknet::interface]
 trait IYASFaucet<TContractState> {
     fn faucet_mint(ref self: TContractState);
+    fn withdraw_all_balance(ref self: TContractState, user: ContractAddress);
+    fn get_amount_faucet(self: @TContractState) -> u256;
     fn get_user_unlock_time(self: @TContractState, user: ContractAddress) -> u64;
     fn get_token_address(self: @TContractState) -> ContractAddress;
     fn get_withdrawal_amount(self: @TContractState) -> u256;
@@ -45,13 +47,28 @@ mod YASFaucet {
     #[external(v0)]
     impl YASFaucetImpl of IYASFaucet<ContractState> {
         fn faucet_mint(ref self: ContractState) {
+            let withdrawal_amount = self.withdrawal_amount.read();
+            assert(self.get_amount_faucet() > withdrawal_amount, 'There is not enough balance');
             let caller_address = get_caller_address();
             assert(self.allowed_to_withdraw(caller_address), 'Not allowed to withdraw');
             self
                 .user_unlock_time
                 .write(caller_address, get_block_timestamp() + self.wait_time.read());
             IERC20Dispatcher { contract_address: self.token_address.read() }
-                .transfer(caller_address, self.withdrawal_amount.read());
+                .transfer(caller_address, withdrawal_amount);
+        }
+
+        fn withdraw_all_balance(ref self: ContractState, user: ContractAddress) {
+            let unsafe_state = Ownable::unsafe_new_contract_state();
+            Ownable::InternalImpl::assert_only_owner(@unsafe_state);
+            let balance = self.get_amount_faucet();
+            IERC20Dispatcher { contract_address: self.token_address.read() }
+                .transfer(user, balance);
+        }
+
+        fn get_amount_faucet(self: @ContractState) -> u256 {
+            IERC20Dispatcher { contract_address: self.token_address.read() }
+                .balanceOf(get_contract_address())
         }
 
         fn get_user_unlock_time(self: @ContractState, user: ContractAddress) -> u64 {
