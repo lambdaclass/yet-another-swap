@@ -785,8 +785,6 @@ mod YASPoolTests {
         yas_pool.initialize(initial_price);
 
         let (min_tick, max_tick) = get_min_tick_and_max_tick();
-        // let pool_balance_t0 = token_0.balanceOf(WALLET());
-        // let pool_balance_t1 = token_1.balanceOf(WALLET());
 
         set_contract_address(WALLET());
         yas_router.mint(yas_pool_address, WALLET(), min_tick, max_tick, mint_amount);
