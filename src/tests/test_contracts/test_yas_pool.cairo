@@ -667,7 +667,7 @@ mod YASPoolTests {
             // 0,999000059110060056 ETH
             let eth_swapped_expected = 999000059110060056;
 
-            // will trade ETH for USDC (USDC token_0, ETH token_1) so, ZFO false
+            // will trade USDC for ETH (USDC token_0, ETH token_1) so, ZFO true
             let zero_for_one = true;
 
             // When selling token 0 (zeroForOne is true) sqrtPriceLimitX96 must be
