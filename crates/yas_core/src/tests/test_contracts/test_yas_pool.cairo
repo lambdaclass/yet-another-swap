@@ -642,13 +642,13 @@ mod YASPoolTests {
             yas_router
                 .mint(yas_pool.contract_address, OTHER(), min_tick, max_tick, 1000000000000000000);
             swap_exact_0_for_1(
-                yas_router, yas_pool.contract_address, 10000000000000000000, WALLET()
+                yas_router, yas_pool.contract_address, 1000000000000000000, WALLET()
             );
             swap_exact_1_for_0(
-                yas_router, yas_pool.contract_address, 10000000000000000000, WALLET()
+                yas_router, yas_pool.contract_address, 1000000000000000000, WALLET()
             );
             set_contract_address(OTHER());
-            yas_router.burn(yas_pool.contract_address, min_tick, max_tick, 10000000000000000000);
+            yas_router.burn(yas_pool.contract_address, min_tick, max_tick, 1000000000000000000);
 
             let info_position = yas_pool
                 .get_position(
@@ -667,6 +667,7 @@ mod YASPoolTests {
                 'wrong fee_growth_ins_1_lastX128'
             );
         }
+
         #[test]
         #[available_gas(200000000000)]
         fn test_clears_the_tick_if_its_the_last_position_using_it() {
