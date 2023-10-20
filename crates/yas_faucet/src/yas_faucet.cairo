@@ -4,8 +4,8 @@ use starknet::ContractAddress;
 trait IYASFaucet<TContractState> {
     fn faucet_mint(ref self: TContractState);
     fn withdraw_all_balance(ref self: TContractState, user: ContractAddress);
-    fn get_amount_faucet(self: @TContractState) -> u256;
     fn get_user_unlock_time(self: @TContractState, user: ContractAddress) -> u64;
+    fn get_amount_faucet(self: @TContractState) -> u256;
     fn get_token_address(self: @TContractState) -> ContractAddress;
     fn get_withdrawal_amount(self: @TContractState) -> u256;
     fn get_wait_time(self: @TContractState) -> u64;
