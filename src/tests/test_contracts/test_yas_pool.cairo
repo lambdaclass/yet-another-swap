@@ -721,15 +721,12 @@ mod YASPoolTests {
     use yas::contracts::yas_erc20::{
         ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
     };
-    use debug::PrintTrait;
-
 
     fn setup() -> (IYASPoolDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let mint_callback = deploy_mint_callback(); // 0x1
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
 
         // Deploy ERC20 tokens with factory address
-        // in testnet TOKEN0 is USDC and TOKEN1 is ETH
         let token_0 = deploy_erc20('YAS0', '$YAS0', 4000000000000000000, OWNER()); // 0x3
         let token_1 = deploy_erc20('YAS1', '$YAS1', 4000000000000000000, OWNER()); // 0x4
 
@@ -755,8 +752,6 @@ mod YASPoolTests {
 
         let (min_tick, max_tick) = get_min_tick_and_max_tick();
         set_contract_address(WALLET());
-        let pool_balance_t0 = token_0.balanceOf(WALLET());
-        let pool_balance_t1 = token_1.balanceOf(WALLET());
 
         mint_callback.mint(yas_pool_address, WALLET(), min_tick, max_tick, 2000000000000000000);
 
