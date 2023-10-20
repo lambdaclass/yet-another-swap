@@ -62,5 +62,6 @@ mod tests {
 
     mod utils {
         mod constants;
+        mod swap_builder;
     }
 }

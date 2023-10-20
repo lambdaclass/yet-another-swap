@@ -1,4 +1,5 @@
 use starknet::ContractAddress;
+use yas::contracts::yas_pool::YASPool::Slot0;
 use yas::numbers::signed_integer::{i32::i32, i256::i256};
 use yas::numbers::fixed_point::implementations::impl_64x96::FixedType;
 
@@ -23,6 +24,7 @@ trait IYASPool<TContractState> {
     ) -> (u256, u256);
     fn token_0(self: @TContractState) -> ContractAddress;
     fn token_1(self: @TContractState) -> ContractAddress;
+    fn get_slot_0(self: @TContractState) -> Slot0;
 }
 
 #[starknet::contract]
@@ -197,6 +199,10 @@ mod YASPool {
 
         fn token_1(self: @ContractState) -> ContractAddress {
             self.token_1.read()
+        }
+
+        fn get_slot_0(self: @ContractState) -> Slot0 {
+            self.slot_0.read()
         }
 
         /// @notice Sets the initial price for the pool
