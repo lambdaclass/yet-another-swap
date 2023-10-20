@@ -592,8 +592,8 @@ mod YASPoolTests {
 
             let (yas_pool, yas_router, token_0, token_1) = setup_with(
                 initial_price: FP64x96Impl::new(INITIAL_PRICE, POSITIVE),
-                usdc_amount: 30000000 * 10000000, // 30000000m USDC
-                eth_amount: 10 * 1000000000, // 1000000 ETH
+                usdc_amount: 300000000000000, // 300000000000000 USDC
+                eth_amount: 10000000000, // 10000000000 ETH
                 mint_amount: 100000000000000000000000
             );
 
@@ -648,8 +648,8 @@ mod YASPoolTests {
 
             let (yas_pool, yas_router, token_0, token_1) = setup_with(
                 initial_price: FP64x96Impl::new(INITIAL_PRICE, POSITIVE),
-                usdc_amount: 30000000 * 10000000, // 30000000m USDC
-                eth_amount: 10 * 1000000000, // 1000000 ETH
+                usdc_amount: 300000000000000, // 300000000000000 USDC
+                eth_amount: 10000000000, // 10000000000 ETH
                 mint_amount: 100000000000000000000000
             );
 
