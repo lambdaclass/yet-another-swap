@@ -579,7 +579,9 @@ mod YASPoolTests {
         use yas_core::contracts::yas_router::{
             YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
         };
-        use yas_core::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET};
+        use yas_core::tests::utils::constants::PoolConstants::{
+            TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET
+        };
 
         #[test]
         #[available_gas(200000000000)]
