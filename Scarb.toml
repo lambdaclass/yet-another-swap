@@ -10,5 +10,6 @@ repository = "https://github.com/lambdaclass/yet-another-swap/"
 
 [workspace.dependencies]
 starknet = ">=2.2.0"
+openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.7.0" }
 
 [[workspace.tool.starknet-contract]]
