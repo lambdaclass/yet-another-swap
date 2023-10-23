@@ -67,23 +67,19 @@ Run the following command to run all tests:
 make test
 ```
 
-If you wish to run tests from a specific module, use the MOD parameter. For instance, to run tests within the Mint module, execute:
+You can also filter the tests to run, by module or even by individual test name, for example to run tests within the Mint module, execute:
 
 ```bash
-make test MOD=Mint
+make test Mint
 ```
 
-To focus on a specific test function, utilize the FN parameter. For instance, to run only the "test_invalid_max_tick" function:
+Or to run only the "test_invalid_max_tick" function:
 
 ```bash
-make test FN=test_invalid_max_tick
+make test test_invalid_max_tick
 ```
 
-For more precise testing, you can combine both parameters. Remember, these parameters are case-sensitive.
-
-```bash
-make test MOD=Mint FN=test_invalid_max_tick
-```
+Be careful though, this parameters is case-sensitive
 
 ## Setting up a Testnet Smart Wallet
 
