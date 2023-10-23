@@ -1,8 +1,18 @@
 use starknet::ContractAddress;
 use yas_core::numbers::signed_integer::{i32::i32, i256::i256};
 use yas_core::numbers::fixed_point::implementations::impl_64x96::FixedType;
-use yas_core::contracts::yas_pool::YASPool::Slot0;
 use yas_core::libraries::tick::{Tick, Tick::TickImpl};
+
+#[derive(Copy, Drop, Serde, starknet::Store)]
+struct Slot0 {
+    // the current price
+    sqrt_price_X96: FixedType,
+    // the current tick
+    tick: i32,
+    // the current protocol fee as a percentage of the swap fee taken on withdrawal
+    // represented as an integer denominator (1/x)%
+    fee_protocol: u8,
+}
 
 
 #[starknet::interface]
@@ -34,7 +44,7 @@ trait IYASPool<TContractState> {
 
 #[starknet::contract]
 mod YASPool {
-    use super::IYASPool;
+    use super::{IYASPool, Slot0};
 
     use starknet::{ContractAddress, get_block_timestamp, get_caller_address, get_contract_address};
 
@@ -103,17 +113,6 @@ mod YASPool {
         amount: u128,
         amount_0: u256,
         amount_1: u256
-    }
-
-    #[derive(Copy, Drop, Serde, starknet::Store)]
-    struct Slot0 {
-        // the current price
-        sqrt_price_X96: FixedType,
-        // the current tick
-        tick: i32,
-        // the current protocol fee as a percentage of the swap fee taken on withdrawal
-        // represented as an integer denominator (1/x)%
-        fee_protocol: u8,
     }
 
     #[derive(Copy, Drop)]
