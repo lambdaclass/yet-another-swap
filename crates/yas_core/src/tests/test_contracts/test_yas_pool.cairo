@@ -774,7 +774,6 @@ mod YASPoolTests {
             #[available_gas(200000000)]
             fn test_initial_tick() {
                 let (yas_pool, _, _, _, _, _) = setup();
-                let (expected_min_tick, expected_max_tick) = get_min_tick_and_max_tick();
 
                 let tick = yas_pool.slot_0().tick;
 
@@ -824,7 +823,7 @@ mod YASPoolTests {
                 #[available_gas(200000000)]
                 fn test_max_tick_max_lvrg() {
                     let (yas_pool, token_0, token_1, yas_router, _, max_tick) = setup();
-                    let BigNumber: u128 = pow(2, 102).try_into().unwrap();
+                    let big_number: u128 = pow(2, 102).try_into().unwrap();
                     yas_router
                         .mint(
                             yas_pool.contract_address,
@@ -832,7 +831,7 @@ mod YASPoolTests {
                             max_tick
                                 - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
                             max_tick,
-                            BigNumber
+                            big_number
                         );
 
                     assert(
