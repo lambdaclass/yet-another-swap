@@ -506,7 +506,6 @@ mod YASPoolTests {
             FullMath::{div_rounding_up, mul_div, mul_div_rounding_up}, pow
         };
 
-
         #[test]
         #[available_gas(2000000000)]
         #[should_panic(expected: ('LOK', 'ENTRYPOINT_FAILED'))]
@@ -532,7 +531,6 @@ mod YASPoolTests {
                 );
         }
 
-
         mod FailureCases {
             use super::{
                 setup, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount, fee_amount,
@@ -550,7 +548,6 @@ mod YASPoolTests {
                 YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
             };
 
-
             #[test]
             #[available_gas(2000000000)]
             #[should_panic(expected: ('TLU', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
@@ -565,7 +562,6 @@ mod YASPoolTests {
                         1
                     );
             }
-
 
             #[test]
             #[available_gas(2000000000)]
@@ -582,7 +578,6 @@ mod YASPoolTests {
                     );
             }
 
-
             #[test]
             #[available_gas(2000000000)]
             #[should_panic(expected: ('TUM', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
@@ -597,7 +592,6 @@ mod YASPoolTests {
                         1
                     );
             }
-
 
             #[test]
             #[available_gas(2000000000)]
@@ -615,7 +609,6 @@ mod YASPoolTests {
                     );
             }
 
-
             #[test]
             #[available_gas(2000000000)]
             fn test_amount_max() {
@@ -630,7 +623,6 @@ mod YASPoolTests {
                         maxLiquidityGross
                     );
             }
-
 
             #[test]
             #[available_gas(2000000000)]
@@ -656,6 +648,7 @@ mod YASPoolTests {
                         max_liquidity_gross - 1000 + 1
                     );
             }
+
             #[test]
             #[available_gas(2000000000)]
             #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
@@ -682,6 +675,7 @@ mod YASPoolTests {
                         maxLiquidityGross - 1000 + 1
                     );
             }
+
             #[test]
             #[available_gas(2000000000)]
             #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
@@ -708,6 +702,7 @@ mod YASPoolTests {
                         maxLiquidityGross - 1000 + 1
                     );
             }
+
             #[test]
             #[available_gas(2000000000)]
             fn test_success_amount_at_tick_greater_than_max_4() {
@@ -731,7 +726,6 @@ mod YASPoolTests {
                     );
             }
 
-
             #[test]
             #[available_gas(2000000000)]
             #[should_panic(
@@ -749,7 +743,6 @@ mod YASPoolTests {
                     );
             }
         }
-
 
         mod SuccessCases {
             use super::{
@@ -781,7 +774,6 @@ mod YASPoolTests {
                 assert(balance_token_1 == 1000, 'wrong balance token 1');
             }
 
-
             #[test]
             #[available_gas(200000000)]
             fn test_initial_tick() {
@@ -792,7 +784,6 @@ mod YASPoolTests {
 
                 assert(tick == IntegerTrait::<i32>::new(23028, true), 'wrong initial tick');
             }
-
 
             mod AboveCurrentPrice {
                 use yas_core::contracts::yas_pool::{IYASPoolDispatcherTrait};
@@ -810,7 +801,6 @@ mod YASPoolTests {
                     YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
                 };
                 use yas_core::libraries::tick::{Tick, Tick::TickImpl};
-
 
                 #[test]
                 #[available_gas(200000000)]
@@ -833,7 +823,6 @@ mod YASPoolTests {
                         token_1.balanceOf(yas_pool.contract_address) == 1000, 'token_1 transferred'
                     );
                 }
-
 
                 #[test]
                 #[available_gas(200000000)]
@@ -858,7 +847,6 @@ mod YASPoolTests {
                         token_1.balanceOf(yas_pool.contract_address) == 1000, 'wrong token_1 amount'
                     );
                 }
-
 
                 #[test]
                 #[available_gas(200000000000)]
@@ -921,9 +909,7 @@ mod YASPoolTests {
                         'wrong liquidity_gross amount 1'
                     );
                     assert(
-                        yas_pool
-                            .get_tick(Zeroable::zero())
-                            .liquidity_gross == 100,
+                        yas_pool.get_tick(Zeroable::zero()).liquidity_gross == 100,
                         'wrong liquidity_gross amount 2'
                     );
                     assert(
@@ -955,9 +941,7 @@ mod YASPoolTests {
                         'wrong liquidity_gross amount 5'
                     );
                     assert(
-                        yas_pool
-                            .get_tick(Zeroable::zero())
-                            .liquidity_gross == 100,
+                        yas_pool.get_tick(Zeroable::zero()).liquidity_gross == 100,
                         'wrong liquidity_gross amount 6'
                     );
                     assert(
@@ -989,9 +973,7 @@ mod YASPoolTests {
                         'wrong liquidity_gross amount 9'
                     );
                     assert(
-                        yas_pool
-                            .get_tick(Zeroable::zero())
-                            .liquidity_gross == 160,
+                        yas_pool.get_tick(Zeroable::zero()).liquidity_gross == 160,
                         'wrong liquidity_gross amount 10'
                     );
                     assert(
@@ -1067,7 +1049,6 @@ mod YASPoolTests {
             //     assert(
             //         tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128'
             //     );
-
             //     assert(1 == 2, 'burn() func doesnt exist yet');
             // }
 
@@ -1157,7 +1138,6 @@ mod YASPoolTests {
                     YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
                 };
 
-
                 #[test]
                 #[available_gas(200000000)]
                 fn test_curr_price_both() {
@@ -1181,7 +1161,6 @@ mod YASPoolTests {
                     );
                 }
 
-
                 #[test]
                 #[available_gas(200000000)]
                 fn test_init_lower_tick() {
@@ -1203,7 +1182,6 @@ mod YASPoolTests {
                     );
                 }
 
-
                 #[test]
                 #[available_gas(200000000)]
                 fn test_init_upper_tick() {
@@ -1224,13 +1202,11 @@ mod YASPoolTests {
                     );
                 }
 
-
                 #[test]
                 #[available_gas(200000000)]
                 fn test_min_max_tick() {
                     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
-                    yas_router
-                        .mint(yas_pool.contract_address, WALLET(), min_tick, max_tick, 10000);
+                    yas_router.mint(yas_pool.contract_address, WALLET(), min_tick, max_tick, 10000);
 
                     assert(
                         token_0.balanceOf(yas_pool.contract_address) == 9996 + 31623,
@@ -1276,7 +1252,6 @@ mod YASPoolTests {
                     YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
                 };
 
-
                 #[test]
                 #[available_gas(200000000)]
                 fn test_below_only_token1() {
@@ -1299,7 +1274,6 @@ mod YASPoolTests {
                     );
                 }
 
-
                 #[test]
                 #[available_gas(200000000)]
                 fn test_below_maxtick_maxlvrg() {
@@ -1321,7 +1295,6 @@ mod YASPoolTests {
                         'token_1 wrong amount'
                     );
                 }
-
 
                 #[test]
                 #[available_gas(200000000)]
