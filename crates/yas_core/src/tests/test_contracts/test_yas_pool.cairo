@@ -561,7 +561,7 @@ mod YASPoolTests {
                         yas_pool.contract_address,
                         WALLET(),
                         IntegerTrait::<i32>::new(1, false),
-                        IntegerTrait::<i32>::new(0, false),
+                        Zeroable::zero(),
                         1
                     );
             }
@@ -577,7 +577,7 @@ mod YASPoolTests {
                         yas_pool.contract_address,
                         WALLET(),
                         IntegerTrait::<i32>::new(887273, true),
-                        IntegerTrait::<i32>::new(0, false),
+                        Zeroable::zero(),
                         1
                     );
             }
@@ -592,7 +592,7 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        IntegerTrait::<i32>::new(0, false),
+                        Zeroable::zero(),
                         IntegerTrait::<i32>::new(887273, false),
                         1
                     );
@@ -822,7 +822,7 @@ mod YASPoolTests {
                             yas_pool.contract_address,
                             WALLET(),
                             IntegerTrait::<i32>::new(22980, true),
-                            IntegerTrait::<i32>::new(0, false),
+                            Zeroable::zero(),
                             10000
                         );
                     assert(
@@ -894,7 +894,7 @@ mod YASPoolTests {
                 //             yas_pool.contract_address,
                 //             WALLET(),
                 //             IntegerTrait::<i32>::new(240, true),
-                //             IntegerTrait::<i32>::new(0, false),
+                //             Zeroable::zero(),
                 //             10000
                 //         );
                 //     //yas_pool.burn(-240, 0, 10000)
@@ -910,7 +910,7 @@ mod YASPoolTests {
                             yas_pool.contract_address,
                             WALLET(),
                             IntegerTrait::<i32>::new(240, true),
-                            IntegerTrait::<i32>::new(0, false),
+                            Zeroable::zero(),
                             100
                         );
 
@@ -922,7 +922,7 @@ mod YASPoolTests {
                     );
                     assert(
                         yas_pool
-                            .get_tick(IntegerTrait::<i32>::new(0, false))
+                            .get_tick(Zeroable::zero())
                             .liquidity_gross == 100,
                         'wrong liquidity_gross amount 2'
                     );
@@ -956,7 +956,7 @@ mod YASPoolTests {
                     );
                     assert(
                         yas_pool
-                            .get_tick(IntegerTrait::<i32>::new(0, false))
+                            .get_tick(Zeroable::zero())
                             .liquidity_gross == 100,
                         'wrong liquidity_gross amount 6'
                     );
@@ -977,7 +977,7 @@ mod YASPoolTests {
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
-                            IntegerTrait::<i32>::new(0, false),
+                            Zeroable::zero(),
                             IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM) * 2, false),
                             60
                         );
@@ -990,7 +990,7 @@ mod YASPoolTests {
                     );
                     assert(
                         yas_pool
-                            .get_tick(IntegerTrait::<i32>::new(0, false))
+                            .get_tick(Zeroable::zero())
                             .liquidity_gross == 160,
                         'wrong liquidity_gross amount 10'
                     );
@@ -1019,7 +1019,7 @@ mod YASPoolTests {
             //             yas_pool.contract_address,
             //             WALLET(),
             //             IntegerTrait::<i32>::new(240, true),
-            //             IntegerTrait::<i32>::new(0, false),
+            //             Zeroable::zero(),
             //             100
             //         );
             //     yas_router
@@ -1027,7 +1027,7 @@ mod YASPoolTests {
             //             yas_pool.contract_address,
             //             WALLET(),
             //             IntegerTrait::<i32>::new(240, true),
-            //             IntegerTrait::<i32>::new(0, false),
+            //             Zeroable::zero(),
             //             40
             //         );
             //     //burn
@@ -1037,7 +1037,7 @@ mod YASPoolTests {
             //         'wrong liquidity_gross amount'
             //     );
             //     assert(
-            //         yas_pool.get_tick(IntegerTrait::<i32>::new(0, false)).liquidity_gross == 50,
+            //         yas_pool.get_tick(Zeroable::zero()).liquidity_gross == 50,
             //         'wrong liquidity_gross amount 2'
             //     );
             // }
@@ -1054,7 +1054,7 @@ mod YASPoolTests {
             //             yas_pool.contract_address,
             //             WALLET(),
             //             IntegerTrait::<i32>::new(240, true),
-            //             IntegerTrait::<i32>::new(0, false),
+            //             Zeroable::zero(),
             //             100
             //         );
             //     //burn
@@ -1083,12 +1083,12 @@ mod YASPoolTests {
             //             yas_pool.contract_address,
             //             WALLET(),
             //             IntegerTrait::<i32>::new(240, true),
-            //             IntegerTrait::<i32>::new(0, false),
+            //             Zeroable::zero(),
             //             100
             //         );
             //     //burn
             //     assert(1 == 2, 'burn() func doesnt exist yet');
-            //     let tick_info = yas_pool.get_tick(IntegerTrait::<i32>::new(0, false));
+            //     let tick_info = yas_pool.get_tick(Zeroable::zero());
             //     assert(tick_info.liquidity_gross == 0, 'wrong liquidity_gross amount');
             //     assert(
             //         tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128'
@@ -1110,7 +1110,7 @@ mod YASPoolTests {
             //             yas_pool.contract_address,
             //             WALLET(),
             //             IntegerTrait::<i32>::new(240, true),
-            //             IntegerTrait::<i32>::new(0, false),
+            //             Zeroable::zero(),
             //             100
             //         );
             //     yas_router
@@ -1118,7 +1118,7 @@ mod YASPoolTests {
             //             yas_pool.contract_address,
             //             WALLET(),
             //             IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), true),
-            //             IntegerTrait::<i32>::new(0, false),
+            //             Zeroable::zero(),
             //             250
             //         );
             //     //burn
