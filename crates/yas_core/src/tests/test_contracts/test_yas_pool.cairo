@@ -555,8 +555,8 @@ mod YASPoolTests {
             #[available_gas(2000000000)]
             #[should_panic(expected: ('TLU', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_tick_lower_greater_than_tick_upper() {
-                let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                mint_callback
+                let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
@@ -571,8 +571,8 @@ mod YASPoolTests {
             #[available_gas(2000000000)]
             #[should_panic(expected: ('TLM', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_tick_lower_than_min() {
-                let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                mint_callback
+                let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
@@ -587,8 +587,8 @@ mod YASPoolTests {
             #[available_gas(2000000000)]
             #[should_panic(expected: ('TUM', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_tick_greater_than_max() {
-                let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                mint_callback
+                let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
@@ -603,9 +603,9 @@ mod YASPoolTests {
             #[available_gas(2000000000)]
             #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_amount_greater_than_max() {
-                let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
+                let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
                 let grater_than_max_amount: u128 = yas_pool.max_liquidity_per_tick() + 1;
-                mint_callback
+                yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
@@ -619,9 +619,9 @@ mod YASPoolTests {
             #[test]
             #[available_gas(2000000000)]
             fn test_amount_max() {
-                let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
+                let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
                 let maxLiquidityGross: u128 = yas_pool.max_liquidity_per_tick();
-                mint_callback
+                yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
@@ -636,8 +636,8 @@ mod YASPoolTests {
             #[available_gas(2000000000)]
             #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_amount_at_tick_greater_than_max() {
-                let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                mint_callback
+                let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
@@ -647,7 +647,7 @@ mod YASPoolTests {
                     );
                 let max_liquidity_gross: u128 = yas_pool.max_liquidity_per_tick();
 
-                mint_callback
+                yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
@@ -660,8 +660,8 @@ mod YASPoolTests {
             #[available_gas(2000000000)]
             #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_amount_at_tick_greater_than_max_2() {
-                let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                mint_callback
+                let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
@@ -671,7 +671,7 @@ mod YASPoolTests {
                     );
                 let maxLiquidityGross: u128 = yas_pool.max_liquidity_per_tick();
 
-                mint_callback
+                yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
@@ -686,8 +686,8 @@ mod YASPoolTests {
             #[available_gas(2000000000)]
             #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_amount_at_tick_greater_than_max_3() {
-                let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                mint_callback
+                let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
@@ -697,7 +697,7 @@ mod YASPoolTests {
                     );
                 let maxLiquidityGross: u128 = yas_pool.max_liquidity_per_tick();
 
-                mint_callback
+                yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
@@ -711,8 +711,8 @@ mod YASPoolTests {
             #[test]
             #[available_gas(2000000000)]
             fn test_success_amount_at_tick_greater_than_max_4() {
-                let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                mint_callback
+                let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
@@ -721,7 +721,7 @@ mod YASPoolTests {
                         1000
                     );
                 let maxLiquidityGross: u128 = yas_pool.max_liquidity_per_tick();
-                mint_callback
+                yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
@@ -738,7 +738,7 @@ mod YASPoolTests {
                 expected: ('amount must be greater than 0', 'ENTRYPOINT_FAILED')
             )] //set panic code
             fn test_fails_amount_is_zero() {
-                let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
+                let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
                 let (amount0, amount1): (u256, u256) = yas_pool
                     .mint(
                         recipient: yas_pool.contract_address,
@@ -772,7 +772,7 @@ mod YASPoolTests {
             #[test]
             #[available_gas(200000000)]
             fn test_initial_balances() {
-                let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
+                let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
 
                 let balance_token_0 = token_0.balanceOf(yas_pool.contract_address);
                 let balance_token_1 = token_1.balanceOf(yas_pool.contract_address);
@@ -785,7 +785,7 @@ mod YASPoolTests {
             #[test]
             #[available_gas(200000000)]
             fn test_initial_tick() {
-                let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
+                let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
                 let (expected_min_tick, expected_max_tick) = get_min_tick_and_max_tick();
 
                 let tick = yas_pool.slot_0().tick;
@@ -815,9 +815,9 @@ mod YASPoolTests {
                 #[test]
                 #[available_gas(200000000)]
                 fn test_transfers_token_0_only() {
-                    let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
 
-                    mint_callback
+                    yas_router
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
@@ -838,9 +838,9 @@ mod YASPoolTests {
                 #[test]
                 #[available_gas(200000000)]
                 fn test_max_tick_max_lvrg() {
-                    let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
                     let BigNumber: u128 = pow(2, 102).try_into().unwrap();
-                    mint_callback
+                    yas_router
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
@@ -863,9 +863,9 @@ mod YASPoolTests {
                 #[test]
                 #[available_gas(200000000000)]
                 fn test_max_tick() {
-                    let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
 
-                    mint_callback
+                    yas_router
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
@@ -888,8 +888,8 @@ mod YASPoolTests {
                 // //#[test]
                 // //#[available_gas(200000000)]
                 // fn test_burn() {
-                //     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                //     mint_callback
+                //     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                //     yas_router
                 //         .mint(
                 //             yas_pool.contract_address,
                 //             WALLET(),
@@ -904,8 +904,8 @@ mod YASPoolTests {
                 #[test]
                 #[available_gas(200000000)]
                 fn test_add_liquidityGross() {
-                    let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                    mint_callback
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                    yas_router
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
@@ -939,7 +939,7 @@ mod YASPoolTests {
                         'wrong liquidity_gross amount 4'
                     );
 
-                    mint_callback
+                    yas_router
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
@@ -973,7 +973,7 @@ mod YASPoolTests {
                         'wrong liquidity_gross amount 8'
                     );
 
-                    mint_callback
+                    yas_router
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
@@ -1013,8 +1013,8 @@ mod YASPoolTests {
             // //#[test]
             // //#[available_gas(200000000)]
             // fn test_remove_liquidityGross() {
-            //     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-            //     mint_callback
+            //     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+            //     yas_router
             //         .mint(
             //             yas_pool.contract_address,
             //             WALLET(),
@@ -1022,7 +1022,7 @@ mod YASPoolTests {
             //             IntegerTrait::<i32>::new(0, false),
             //             100
             //         );
-            //     mint_callback
+            //     yas_router
             //         .mint(
             //             yas_pool.contract_address,
             //             WALLET(),
@@ -1048,8 +1048,8 @@ mod YASPoolTests {
             // //#[test]
             // //#[available_gas(200000000)]
             // fn test_clear_tick_lower() {
-            //     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-            //     mint_callback
+            //     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+            //     yas_router
             //         .mint(
             //             yas_pool.contract_address,
             //             WALLET(),
@@ -1077,8 +1077,8 @@ mod YASPoolTests {
             // //#[test]
             // //#[available_gas(200000000)]
             // fn test_clear_tick_upper() {
-            //     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-            //     mint_callback
+            //     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+            //     yas_router
             //         .mint(
             //             yas_pool.contract_address,
             //             WALLET(),
@@ -1104,8 +1104,8 @@ mod YASPoolTests {
             // //#[test]
             // //#[available_gas(200000000)]
             // fn test_clear_tick_unused() {
-            //     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-            //     mint_callback
+            //     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+            //     yas_router
             //         .mint(
             //             yas_pool.contract_address,
             //             WALLET(),
@@ -1113,7 +1113,7 @@ mod YASPoolTests {
             //             IntegerTrait::<i32>::new(0, false),
             //             100
             //         );
-            //     mint_callback
+            //     yas_router
             //         .mint(
             //             yas_pool.contract_address,
             //             WALLET(),
@@ -1161,8 +1161,8 @@ mod YASPoolTests {
                 #[test]
                 #[available_gas(200000000)]
                 fn test_curr_price_both() {
-                    let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                    mint_callback
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                    yas_router
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
@@ -1185,8 +1185,8 @@ mod YASPoolTests {
                 #[test]
                 #[available_gas(200000000)]
                 fn test_init_lower_tick() {
-                    let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                    mint_callback
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                    yas_router
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
@@ -1207,8 +1207,8 @@ mod YASPoolTests {
                 #[test]
                 #[available_gas(200000000)]
                 fn test_init_upper_tick() {
-                    let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                    mint_callback
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                    yas_router
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
@@ -1228,8 +1228,8 @@ mod YASPoolTests {
                 #[test]
                 #[available_gas(200000000)]
                 fn test_min_max_tick() {
-                    let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                    mint_callback
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                    yas_router
                         .mint(yas_pool.contract_address, WALLET(), min_tick, max_tick, 10000);
 
                     assert(
@@ -1247,8 +1247,8 @@ mod YASPoolTests {
             // //#[test]
             // //#[available_gas(200000000)]
             // fn test_remove() {
-            //     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-            //     mint_callback
+            //     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+            //     yas_router
             //         .mint(
             //             yas_pool.contract_address,
             //             WALLET(),
@@ -1280,8 +1280,8 @@ mod YASPoolTests {
                 #[test]
                 #[available_gas(200000000)]
                 fn test_below_only_token1() {
-                    let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                    mint_callback
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                    yas_router
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
@@ -1303,8 +1303,8 @@ mod YASPoolTests {
                 #[test]
                 #[available_gas(200000000)]
                 fn test_below_maxtick_maxlvrg() {
-                    let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                    mint_callback
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                    yas_router
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
@@ -1326,8 +1326,8 @@ mod YASPoolTests {
                 #[test]
                 #[available_gas(200000000)]
                 fn test_below_min_tick() {
-                    let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-                    mint_callback
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                    yas_router
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
@@ -1350,8 +1350,8 @@ mod YASPoolTests {
             //#[test]
             //#[available_gas(200000000)]
             // fn test_below_remove() {
-            //     let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-            //     mint_callback
+            //     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+            //     yas_router
             //         .mint(
             //             yas_pool.contract_address,
             //             WALLET(),
@@ -1373,9 +1373,9 @@ mod YASPoolTests {
     // //#[test]
     // //#[available_gas(200000000)]
     // fn test_protocol_fees_accum() {
-    //let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
+    //let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
     //assert(1 == 2, 'no setFeeProtocol() function');
-    // mint_callback
+    // yas_router
     //     .mint(
     //         yas_pool.contract_address,
     //         WALLET(),
@@ -1391,8 +1391,8 @@ mod YASPoolTests {
     // //#[test]
     // //#[available_gas(200000000)]
     // fn test_positions_protected() {
-    //let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-    // mint_callback
+    //let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+    // yas_router
     //     .mint(
     //         yas_pool.contract_address,
     //         WALLET(),
@@ -1409,8 +1409,8 @@ mod YASPoolTests {
     // //#[test]
     // //#[available_gas(200000000)]
     // fn test_unallow_poke_on_uninit_pos() {
-    //let (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick) = setup();
-    // mint_callback
+    //let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+    // yas_router
     //     .mint(
     //         yas_pool.contract_address,
     //         WALLET(),
@@ -1451,7 +1451,7 @@ mod YASPoolTests {
     fn setup() -> (
         IYASPoolDispatcher, IERC20Dispatcher, IERC20Dispatcher, IYASRouterDispatcher, i32, i32
     ) {
-        let mint_callback = deploy_mint_callback(); // 0x1
+        let yas_router = deploy_yas_router(); // 0x1
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
 
         // Deploy ERC20 tokens with factory address
@@ -1464,8 +1464,8 @@ mod YASPoolTests {
 
         // Give permissions to expend WALLET() tokens
         set_contract_address(WALLET());
-        token_1.approve(mint_callback.contract_address, BoundedInt::max());
-        token_0.approve(mint_callback.contract_address, BoundedInt::max());
+        token_1.approve(yas_router.contract_address, BoundedInt::max());
+        token_0.approve(yas_router.contract_address, BoundedInt::max());
 
         let yas_pool_address = yas_factory // 0x5
             .create_pool(
@@ -1478,9 +1478,9 @@ mod YASPoolTests {
 
         let (min_tick, max_tick) = get_min_tick_and_max_tick();
         set_contract_address(WALLET());
-        mint_callback.mint(yas_pool_address, WALLET(), min_tick, max_tick, 3161);
+        yas_router.mint(yas_pool_address, WALLET(), min_tick, max_tick, 3161);
 
-        (yas_pool, token_0, token_1, mint_callback, min_tick, max_tick)
+        (yas_pool, token_0, token_1, yas_router, min_tick, max_tick)
     }
 
     fn deploy_erc20(
@@ -1498,7 +1498,7 @@ mod YASPoolTests {
         return IERC20Dispatcher { contract_address: address };
     }
 
-    fn deploy_mint_callback() -> IYASRouterDispatcher {
+    fn deploy_yas_router() -> IYASRouterDispatcher {
         let (address, _) = deploy_syscall(
             YASRouter::TEST_CLASS_HASH.try_into().unwrap(), 0, array![].span(), true
         )
