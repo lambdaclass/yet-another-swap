@@ -1420,7 +1420,7 @@ mod YASPoolTests {
     fn setup() -> (
         IYASPoolDispatcher, IERC20Dispatcher, IERC20Dispatcher, IYASRouterDispatcher, i32, i32
     ) {
-        let yas_router: IYASRouterDispatcher = deploy_yas_router(); // 0x1
+        let yas_router: IYASRouterDispatcher = deploy_yas_router2(); // 0x1
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
 
         // Deploy ERC20 tokens with factory address
@@ -1433,8 +1433,8 @@ mod YASPoolTests {
 
         // Give permissions to expend WALLET() tokens
         set_contract_address(WALLET());
-        token_1.approve(yas_router.contract_address, BoundedInt::max());
-        token_0.approve(yas_router.contract_address, BoundedInt::max());
+        token_1.approve(yas_router2.contract_address, BoundedInt::max());
+        token_0.approve(yas_router2.contract_address, BoundedInt::max());
 
         let yas_pool_address = yas_factory // 0x5
             .create_pool(
@@ -1447,9 +1447,9 @@ mod YASPoolTests {
 
         let (min_tick, max_tick) = get_min_tick_and_max_tick();
         set_contract_address(WALLET());
-        yas_router.mint(yas_pool_address, WALLET(), min_tick, max_tick, 3161);
+        yas_router2.mint(yas_pool_address, WALLET(), min_tick, max_tick, 3161);
 
-        (yas_pool, token_0, token_1, yas_router, min_tick, max_tick)
+        (yas_pool, token_0, token_1, yas_router2, min_tick, max_tick)
     }
 
     fn deploy_erc20(
@@ -1467,7 +1467,7 @@ mod YASPoolTests {
         return IERC20Dispatcher { contract_address: address };
     }
 
-    fn deploy_yas_router() -> IYASRouterDispatcher {
+    fn deploy_yas_router2() -> IYASRouterDispatcher {
         let (address, _) = deploy_syscall(
             YASRouter::TEST_CLASS_HASH.try_into().unwrap(), 0, array![].span(), true
         )
