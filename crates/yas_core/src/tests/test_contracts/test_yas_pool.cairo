@@ -1420,7 +1420,7 @@ mod YASPoolTests {
     fn setup() -> (
         IYASPoolDispatcher, IERC20Dispatcher, IERC20Dispatcher, IYASRouterDispatcher, i32, i32
     ) {
-        let yas_router = deploy_yas_router(); // 0x1
+        let yas_router: IYASRouterDispatcher = deploy_yas_router(); // 0x1
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
 
         // Deploy ERC20 tokens with factory address
