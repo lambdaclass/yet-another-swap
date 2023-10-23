@@ -568,7 +568,7 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        IntegerTrait::<i32>::new(887273, true),
+                        MIN_TICK() - IntegerTrait::<i32>::new(1, false),
                         Zeroable::zero(),
                         1
                     );
@@ -584,7 +584,7 @@ mod YASPoolTests {
                         yas_pool.contract_address,
                         WALLET(),
                         Zeroable::zero(),
-                        IntegerTrait::<i32>::new(887273, false),
+                        MAX_TICK() + IntegerTrait::<i32>::new(1, false),
                         1
                     );
             }
