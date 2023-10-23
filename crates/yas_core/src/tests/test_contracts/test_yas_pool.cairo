@@ -500,9 +500,7 @@ mod YASPoolTests {
             i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
         };
 
-        use yas_core::utils::math_utils::{
-            FullMath::{div_rounding_up, mul_div, mul_div_rounding_up}, pow
-        };
+        use yas_core::utils::math_utils::pow;
 
         #[test]
         #[available_gas(2000000000)]
@@ -1128,7 +1126,6 @@ mod YASPoolTests {
                     get_min_tick_and_max_tick, setup, tick_spacing, FeeAmount, fee_amount,
                     IERC20DispatcherTrait, WALLET
                 };
-                use super::super::pow;
                 use yas_core::numbers::signed_integer::{
                     i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
                 };
