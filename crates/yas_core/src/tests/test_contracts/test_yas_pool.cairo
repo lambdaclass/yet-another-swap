@@ -514,7 +514,7 @@ mod YASPoolTests {
                 IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false)
             );
             let sqrt_price_X96 = encode_price_sqrt_1_1();
-            //yas_pool.initialize(sqrt_price_X96); //don't
+            //yas_pool.initialize(sqrt_price_X96); //don't, test is about not initializing
             let (min_tick, max_tick) = get_min_tick_and_max_tick();
 
             let (amount0, amount1): (u256, u256) = yas_pool
@@ -523,7 +523,7 @@ mod YASPoolTests {
                     tick_lower: min_tick,
                     tick_upper: max_tick,
                     amount: 1,
-                    data: ArrayTrait::<felt252>::new()
+                    data: array![]
                 );
         }
 
