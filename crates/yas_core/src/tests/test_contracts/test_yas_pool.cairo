@@ -592,16 +592,16 @@ mod YASPoolTests {
             #[test]
             #[available_gas(2000000000)]
             #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-            fn test_fails_amount_greater_than_max() {
+            fn test_fails_amount_exceeds_the_max() {
                 let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
-                let grater_than_max_amount: u128 = yas_pool.max_liquidity_per_tick() + 1;
+                let max_liquidity_gross: u128 = yas_pool.max_liquidity_per_tick();
                 yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
                         min_tick + IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
                         max_tick - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
-                        grater_than_max_amount
+                        max_liquidity_gross + 1
                     );
             }
 
