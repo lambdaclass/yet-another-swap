@@ -725,17 +725,17 @@ mod YASPoolTests {
             #[test]
             #[available_gas(2000000000)]
             #[should_panic(
-                expected: ('amount must be greater than 0', 'ENTRYPOINT_FAILED')
+                expected: ('amount must be greater than 0', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED')
             )] //set panic code
             fn test_fails_amount_is_zero() {
                 let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
-                let (amount0, amount1): (u256, u256) = yas_pool
+                yas_router
                     .mint(
-                        recipient: yas_pool.contract_address,
-                        tick_lower: min_tick,
-                        tick_upper: max_tick,
-                        amount: 0,
-                        data: ArrayTrait::<felt252>::new()
+                        yas_pool.contract_address,
+                        WALLET(),
+                        min_tick + IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
+                        max_tick - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
+                        Zeroable::zero()
                     );
             }
         }
