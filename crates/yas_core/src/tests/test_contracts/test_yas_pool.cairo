@@ -599,8 +599,8 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
-                        max_tick - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
+                        min_tick + yas_pool.tick_spacing(),
+                        max_tick - yas_pool.tick_spacing(),
                         max_liquidity_gross + 1
                     );
             }
@@ -614,8 +614,8 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
-                        max_tick - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
+                        min_tick + yas_pool.tick_spacing(),
+                        max_tick - yas_pool.tick_spacing(),
                         max_liquidity_gross
                     );
             }
@@ -629,8 +629,8 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
-                        max_tick - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
+                        min_tick + yas_pool.tick_spacing(),
+                        max_tick - yas_pool.tick_spacing(),
                         1000
                     );
                 let max_liquidity_gross: u128 = yas_pool.max_liquidity_per_tick();
@@ -639,8 +639,8 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
-                        max_tick - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
+                        min_tick + yas_pool.tick_spacing(),
+                        max_tick - yas_pool.tick_spacing(),
                         max_liquidity_gross - 1000 + 1
                     );
             }
@@ -654,8 +654,8 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
-                        max_tick - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
+                        min_tick + yas_pool.tick_spacing(),
+                        max_tick - yas_pool.tick_spacing(),
                         1000
                     );
                 let max_liquidity_gross: u128 = yas_pool.max_liquidity_per_tick();
@@ -664,10 +664,8 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick
-                            + IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false)
-                                * IntegerTrait::<i32>::new(2, false),
-                        max_tick - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
+                        min_tick + yas_pool.tick_spacing() * IntegerTrait::<i32>::new(2, false),
+                        max_tick - yas_pool.tick_spacing(),
                         max_liquidity_gross - 1000 + 1
                     );
             }
@@ -681,8 +679,8 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
-                        max_tick - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
+                        min_tick + yas_pool.tick_spacing(),
+                        max_tick - yas_pool.tick_spacing(),
                         1000
                     );
                 let max_liquidity_gross: u128 = yas_pool.max_liquidity_per_tick();
@@ -691,10 +689,8 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
-                        max_tick
-                            - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false)
-                                * IntegerTrait::<i32>::new(2, false),
+                        min_tick + yas_pool.tick_spacing(),
+                        max_tick - yas_pool.tick_spacing() * IntegerTrait::<i32>::new(2, false),
                         max_liquidity_gross - 1000 + 1
                     );
             }
@@ -707,8 +703,8 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
-                        max_tick - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
+                        min_tick + yas_pool.tick_spacing(),
+                        max_tick - yas_pool.tick_spacing(),
                         1000
                     );
                 let max_liquidity_gross: u128 = yas_pool.max_liquidity_per_tick();
@@ -716,8 +712,8 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
-                        max_tick - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
+                        min_tick + yas_pool.tick_spacing(),
+                        max_tick - yas_pool.tick_spacing(),
                         max_liquidity_gross - 1000
                     );
             }
@@ -735,8 +731,8 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
-                        max_tick - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
+                        min_tick + yas_pool.tick_spacing(),
+                        max_tick - yas_pool.tick_spacing(),
                         Zeroable::zero()
                     );
             }
@@ -830,8 +826,7 @@ mod YASPoolTests {
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
-                            max_tick
-                                - IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),
+                            max_tick - yas_pool.tick_spacing(),
                             max_tick,
                             big_number
                         );
