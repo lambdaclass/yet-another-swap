@@ -280,6 +280,12 @@ STARKNET_RPC="https://rpc-goerli-1.starknet.rs/rpc/v0.4" \
 make deploy
 ```
 
+## Contracts Starknet Testnet
+
+- Router: 0x06c3b1076e09b1d16642808b0bfef750a683ad06724f9e4f1aaaca17bc44fad5
+- Factory: 0x0490c81e19516eba9eb531b48e58f9876259ac9396444dc759a84e4a8aefa628
+- Pool (USDC-ETH): 0x016648670892a29b68b66c98892f408ab2e174ffb827c023ad9f4ca0eff816eb
+
 ## Version Specifications
 
 - Cairo 2.2.0
