@@ -8,6 +8,45 @@ on:
 jobs:
   katana:
     runs-on: ubuntu-latest
-    steps: 
+    resources:
+      cpus: 6 #todo: test
+      memory: 8GB #todo: test
+    steps:    
       - uses: actions/checkout@v3
-      - run: make start-katana
+
+      - name: Setup Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          override: true
+
+      - name: install scarb
+        uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "0.7.0"
+
+      - name: build contracts
+        run: make build
+
+      - name: setup Katana .env
+        run: |
+          echo 'STARKNET_RPC=http://0.0.0.0:5050
+          PRIVATE_KEY=0x1800000000300000180000000000030000000000003006001800006600
+          ACCOUNT_ADDRESS=0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973
+          OWNER_ADDRESS=0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973' > .env
+
+      - name: download Katana
+        run: make install-dojo
+
+      - name: Start Katana
+        run: katana
+        background: true #isnt working, try with &, or ctrl z bg
+
+      - name: Wait for Katana to Start
+        run: sleep 3
+
+      - name: Run Demo
+        run: make demo-local
+
+      - name: Stop Katana
+        run: pkill -f "katana" || true
