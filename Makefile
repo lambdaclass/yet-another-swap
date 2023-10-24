@@ -25,9 +25,18 @@ deploy:
 	
 demo-local:
 	cargo run --bin local
+	
 
+Command := $(firstword $(MAKECMDGOALS))
+FILTER := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 test:
+ifneq ($(FILTER),)
+	scarb test -f $(FILTER)
+else
 	scarb test
+endif
+%::
+	@true
 
 declare-testnet:
 	@./scripts/check_env_vars.sh

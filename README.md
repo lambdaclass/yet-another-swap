@@ -59,6 +59,28 @@ make build
 This command executes the Scarb build process, resulting in the creation of a
 Sierra program.
 
+## Test Project
+
+Run the following command to run all tests:
+
+```bash
+make test
+```
+
+You can also filter the tests to run, by module or even by individual test name, for example to run tests within the Mint module, execute:
+
+```bash
+make test Mint
+```
+
+Or to run only the "test_invalid_max_tick" function:
+
+```bash
+make test test_invalid_max_tick
+```
+
+Be careful though, this parameters is case-sensitive
+
 ## Setting up a Testnet Smart Wallet
 
 **This guide will help you declare and deploy contracts on a testnet. Please
@@ -216,6 +238,33 @@ This demo will perform the following steps:
 
    ```bash
    make demo-local
+   ```
+
+## Run demo in Testnet
+
+0. Make sure you have the STARKNET_ACCOUNT and STARKNET_KEYSTORE environment variables declared, you won't be able to deploy on testnet otherwise:
+
+   ```bash
+   STARKNET_KEYSTORE="~/.starkli-wallets/keystore.json"
+   STARKNET_ACCOUNT="~/.starkli-wallets/account.json"
+   ```
+
+1. Build the project
+
+   ```bash
+   make build
+   ```
+
+2. Declare contracts on testnet
+
+   ```bash
+   make declare-testnet
+   ```
+
+3. Deploy those contracts on testnet
+
+   ```bash
+   Work In Progress
    ```
 
 ## Override `.env` file
