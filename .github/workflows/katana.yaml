@@ -1,0 +1,13 @@
+name: Run Katana
+on:
+  merge_group:
+  push:
+    branches: [main]
+  pull_request:
+    branches: ["*"]
+jobs:
+  katana:
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v3
+      - run: make start-katana
