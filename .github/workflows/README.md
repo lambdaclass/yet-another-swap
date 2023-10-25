@@ -1,18 +1,16 @@
 # Testing GitHub workflows locally
 
 ## Using 'act' (`https://github.com/nektos/act`) to test GitHub actions locally
+### Installation
 
-First download `act` tool
+For MacOS users simply run:
+```brew install act```
 
+For Linux users:
+
+1. Download `act` tool
 ```bash
 curl -s https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
-```
-
-It is possible you may have to move it to the appropiate `/bin` folder:
-
-```bash
-mv ./bin/act /bin/act
-```
 
 Now to verify it is correctly installed:
 
