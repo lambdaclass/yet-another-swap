@@ -34,6 +34,40 @@ in the latest version of Cairo.
 > Note: In our Orion fork, we've added the capability for signed integers to be
 > stored in a smart contract.
 
+## Requirements
+
+### Rust&Cargo
+
+Visit the [rustup](https://rustup.rs/) website and follow the instructions on the page or run the following command in the terminal:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+Check the version;
+
+```bash
+rustc --version
+cargo --version
+```
+
+### Starkli 
+
+[Starkli](https://github.com/xJonathanLEI/starkli) is CLI tool for Starknet. For install;
+
+```bash
+curl https://get.starkli.sh | sh
+```
+
+Update `starkli` simply by running;
+
+```bash
+starkliup
+```
+
+
+
+
 ## Install dependencies
 
 Run the following command:
