@@ -26,7 +26,7 @@ build: clean
 deploy: clean
 	cargo run --bin deploy
 	
-demo-local: clean
+demo-local: build
 	cargo run --bin local
 	
 Command := $(firstword $(MAKECMDGOALS))
