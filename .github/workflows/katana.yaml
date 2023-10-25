@@ -29,14 +29,13 @@ jobs:
           ACCOUNT_ADDRESS=0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973
           OWNER_ADDRESS=0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973' > .env
 
-      - name: download Katana
-        run: make install-dojo
-
-      - name: Start Katana & Run Tests
+      - name: Download Katana
         run: |
-          katana &
-          sleep 3
-          make demo-local
+          wget https://github.com/dojoengine/dojo/releases/download/v0.3.1/dojo_v0.3.1_linux_amd64.tar.gz
+          tar -xzvf dojo_v0.3.1_linux_amd64.tar.gz
+          rm sozo torii dojo-language-server
 
-      - name: Stop Katana
-        run: pkill -f "katana" || true
+      - name: Run Tests
+        run: |
+          ./katana &
+          make demo-local
