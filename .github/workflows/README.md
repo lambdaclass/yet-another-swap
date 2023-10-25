@@ -12,7 +12,7 @@ For Linux users:
 ```bash
 curl -s https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
 
-Now to verify it is correctly installed:
+Verify it is correctly installed:
 
 ```bash
 act --version
