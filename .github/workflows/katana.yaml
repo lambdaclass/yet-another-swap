@@ -17,12 +17,12 @@ jobs:
           profile: minimal
           override: true
 
-      - name: install scarb
+      - name: Install scarb
         uses: software-mansion/setup-scarb@v1
         with:
           scarb-version: "0.7.0"
 
-      - name: setup Katana .env
+      - name: Setup Katana .env
         run: |
           cp .github/workflows/katana/katana.env .env
 
