@@ -862,8 +862,8 @@ mod YASPoolTests {
                     );
                 }
 
+                // // WIP: test of 'removing works'
                 // TODO: missing burn() func
-                // // WIP: 'removing works'
                 // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L276
                 // //#[test]
                 // //#[available_gas(200000000)]
@@ -981,8 +981,8 @@ mod YASPoolTests {
                         'wrong liquidity_gross amount 12'
                     );
                 }
+            // // WIP: test of 'removes liquidity from liquidityGross'
             // TODO: missing burn() func.
-            // // TODO: 'removes liquidity from liquidityGross'
             // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L302
             // //#[test]
             // //#[available_gas(200000000)]
@@ -1016,8 +1016,8 @@ mod YASPoolTests {
             //     );
             // }
 
+            // WIP: test of 'clears tick lower if last position is removed'
             // TODO: missing burn() func
-            // TODO: 'clears tick lower if last position is removed'
             // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L310
             // //#[test]
             // //#[available_gas(200000000)]
@@ -1044,8 +1044,8 @@ mod YASPoolTests {
             //     assert(1 == 2, 'burn() func doesnt exist yet');
             // }
 
+            // // WIP: test of 'clears tick upper if last position is removed'
             // // TODO: missing burn() func
-            // // TODO: 'clears tick upper if last position is removed'
             // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L319
             // //#[test]
             // //#[available_gas(200000000)]
@@ -1071,8 +1071,8 @@ mod YASPoolTests {
             //     );
             // }
 
+            // // WIP: test of 'only clears the tick that is not used at all'
             // // TODO: missing burn() func
-            // // TODO: 'only clears the tick that is not used at all'
             // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L327
             // //#[test]
             // //#[available_gas(200000000)]
@@ -1208,8 +1208,8 @@ mod YASPoolTests {
                         'token_1 wrong amount'
                     );
                 }
+            // // WIP: test of 'removing works'
             // // TODO: missing burn() func
-            // // TODO: 'removing works'
             // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L393
             // //#[test]
             // //#[available_gas(200000000)]
@@ -1308,8 +1308,8 @@ mod YASPoolTests {
                         'token_1 wrong amount'
                     );
                 }
+            // WIP: test of 'removing works'
             // TODO: missing burn() func
-            // TODO: 'removing works'
             // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L449
             // #[test]
             // #[available_gas(200000000)]
@@ -1331,8 +1331,8 @@ mod YASPoolTests {
 
             }
         }
+    // // WIP: test of 'protocol fees accumulate as expected during swap'
     // // TODO: missing setFeeProtocol() func
-    // // TODO: 'protocol fees accumulate as expected during swap'
     // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L482
     // //#[test]
     // //#[available_gas(200000000)]
@@ -1349,8 +1349,8 @@ mod YASPoolTests {
     //     );
     // }
 
+    // // WIP: test of 'positions are protected before protocol fee is turned on'
     // // TODO: missing setFeeProtocol() func
-    // // TODO: 'positions are protected before protocol fee is turned on'
     // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L494
     // //#[test]
     // //#[available_gas(200000000)]
@@ -1367,8 +1367,8 @@ mod YASPoolTests {
     //assert(1 == 2, 'no setFeeProtocol() function');
     // }
 
+    // WIP: test of 'poke is not allowed on uninitialized position'
     //TODO: missing burn() func
-    // test: 'poke is not allowed on uninitialized position'
     // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L509
     // //#[test]
     // //#[available_gas(200000000)]
