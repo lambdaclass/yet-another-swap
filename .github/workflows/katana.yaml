@@ -8,10 +8,7 @@ on:
 jobs:
   katana:
     runs-on: ubuntu-latest
-    resources:
-      cpus: 6 #todo: test
-      memory: 8GB #todo: test
-    steps:    
+    steps:
       - uses: actions/checkout@v3
 
       - name: Setup Rust Toolchain
@@ -25,9 +22,6 @@ jobs:
         with:
           scarb-version: "0.7.0"
 
-      - name: build contracts
-        run: make build
-
       - name: setup Katana .env
         run: |
           echo 'STARKNET_RPC=http://0.0.0.0:5050
@@ -38,11 +32,11 @@ jobs:
       - name: download Katana
         run: make install-dojo
 
-      - name: Start Katana
+      - name: Start Katana & Run Tests
         run: |
           katana &
           sleep 3
           make demo-local
-  
+
       - name: Stop Katana
         run: pkill -f "katana" || true
