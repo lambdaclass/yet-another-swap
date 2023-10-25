@@ -36,7 +36,7 @@ in the latest version of Cairo.
 
 ## Requirements
 
-### Rust&Cargo
+### Rust and Cargo
 
 Visit the [rustup](https://rustup.rs/) website and follow the instructions on the page or run the following command in the terminal:
 
@@ -64,10 +64,6 @@ Update `starkli` simply by running;
 ```bash
 starkliup
 ```
-
-
-
-
 ## Install dependencies
 
 Run the following command:
