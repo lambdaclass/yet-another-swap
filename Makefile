@@ -17,17 +17,28 @@ install-dojo:
 start-katana:
 	katana
 
-build:
+clean:
+	scarb clean
+
+build: clean
 	scarb build
 
-deploy:
+deploy: clean
 	cargo run --bin deploy
 	
-demo-local:
+demo-local: clean
 	cargo run --bin local
-
+	
+Command := $(firstword $(MAKECMDGOALS))
+FILTER := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 test:
+ifneq ($(FILTER),)
+	scarb test -f $(FILTER)
+else
 	scarb test
+endif
+%::
+	@true
 
 declare-testnet:
 	@./scripts/check_env_vars.sh
