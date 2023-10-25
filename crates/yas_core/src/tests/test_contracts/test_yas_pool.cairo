@@ -564,7 +564,7 @@ mod YASPoolTests {
     }
 
     mod Swap {
-        use super::setup_with;
+        use super::{setup_with, setup_pool, mint_positions};
 
         use yas_core::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96Sub, FP64x96PartialEq, FixedType, FixedTrait
@@ -580,7 +580,11 @@ mod YASPoolTests {
             YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
         };
         use yas_core::tests::utils::constants::PoolConstants::{
-            TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET
+            TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET, encode_price_sqrt_1_1
+        };
+
+        use yas_core::tests::utils::constants::FactoryConstants::{
+            fee_amount, FeeAmount
         };
 
         #[test]
@@ -662,6 +666,93 @@ mod YASPoolTests {
             let eth_swapped_expected = 999000059110060056;
 
             // will trade USDC for ETH (USDC token_0, ETH token_1) so, ZFO true
+            let zero_for_one = true;
+
+            // When selling token 0 (zeroForOne is true) sqrtPriceLimitX96 must be
+            // between the current price and the minimal sqrt(P) since selling token 0
+            // moves the price down. Likewise, when selling token 1, sqrtPriceLimitX96
+            // must be between the current price and the maximal sqrt(P) ​because price moves up.
+
+            // In the while loop, we want to satisfy two conditions: full swap amount has not been
+            // filled and current price isn’t equal to sqrtPriceLimitX96:
+            let price_limit = FP64x96Impl::new(INITIAL_PRICE / 1000, POSITIVE);
+
+            // Check balance before swap
+            let user_token_0_balance_bf = token_0.balanceOf(WALLET());
+            let user_token_1_balance_bf = token_1.balanceOf(WALLET());
+
+            // Execute swap
+            yas_router
+                .swap(yas_pool.contract_address, WALLET(), zero_for_one, usdc_amount, price_limit);
+
+            // Check balance after swap
+            let user_token_0_balance_af = token_0.balanceOf(WALLET());
+            let user_token_1_balance_af = token_1.balanceOf(WALLET());
+
+            assert(
+                usdc_swapped_expected == user_token_0_balance_bf - user_token_0_balance_af,
+                'wrong USDC swap amount'
+            );
+            assert(
+                eth_swapped_expected == user_token_1_balance_af - user_token_1_balance_bf,
+                'wrong ETH swap amount'
+            );
+        }
+
+                #[test]
+        #[available_gas(200000000000)]
+        fn test_swap_first_pool_first_case() {
+            // test case:
+                //{
+                //    zeroForOne: true,
+                //    exactOut: false,
+                //    amount0: expandTo18Decimals(1),
+                //},
+
+            // pool:
+                //{
+                //    description: 'low fee, 1:1 price, 2e18 max range liquidity',
+                //    feeAmount: FeeAmount.LOW,
+                //    tickSpacing: TICK_SPACINGS[FeeAmount.LOW],
+                //    startingPrice: encodePriceSqrt(1, 1),
+                //    positions: [
+                //    {
+                //        tickLower: getMinTick(TICK_SPACINGS[FeeAmount.LOW]),
+                //        tickUpper: getMaxTick(TICK_SPACINGS[FeeAmount.LOW]),
+                //        liquidity: expandTo18Decimals(2),
+                //    },
+                //    ],
+                //},
+
+            // con esto: se crea la pool y se inicializa. se mintean las positions de la pool. 
+            // se ejecuta un swap(pool, testcase, poolfunction(?))
+            // se comparan los balances after swap
+            // 
+
+            let INITIAL_PRICE = encode_price_sqrt_1_1();
+            let POSITIVE = true;
+
+            let (yas_pool, yas_router, token_0, token_1, min_tick, max_tick) = setup_pool(
+                initial_price: INITIAL_PRICE,
+                usdc_amount: 300000000000000, // 300000000000000 USDC
+                eth_amount: 10000000000, // 10000000000 ETH
+                fee_amount: fee_amount(FeeAmount::LOW)
+            );
+
+            mint_positions(
+                yas_router,
+                yas_pool,
+                min_tick,
+                max_tick,
+                2000000000000000000
+            );
+
+            let usdc_amount = IntegerTrait::<i256>::new(1000000000000000000, POSITIVE); 
+
+            // TODO: find real numbers expected
+            let usdc_swapped_expected = 1;
+            let eth_swapped_expected = 1;
+
             let zero_for_one = true;
 
             // When selling token 0 (zeroForOne is true) sqrtPriceLimitX96 must be
@@ -777,7 +868,7 @@ mod YASPoolTests {
 
         let yas_pool_address = yas_factory // 0x5
             .create_pool(
-                token_0.contract_address, token_1.contract_address, fee_amount(FeeAmount::LOW)
+                token_0.contract_address, token_1.contract_address, fee_amount(FeeAmount::LOW) // why LOW ?
             );
         let yas_pool = IYASPoolDispatcher { contract_address: yas_pool_address };
 
@@ -790,6 +881,50 @@ mod YASPoolTests {
         yas_router.mint(yas_pool_address, WALLET(), min_tick, max_tick, mint_amount);
 
         (yas_pool, yas_router, token_0, token_1)
+    }
+
+    fn setup_pool(
+        initial_price: FixedType, usdc_amount: u256, eth_amount: u256, fee_amount: u32
+    ) -> (IYASPoolDispatcher, IYASRouterDispatcher, IERC20Dispatcher, IERC20Dispatcher, i32, i32) {
+        let yas_router = deploy_mint_callback(); // 0x1
+        let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
+
+        // Deploy ERC20 tokens with factory address
+        // in testnet TOKEN0 is USDC and TOKEN1 is ETH
+        let USDC = 1000000 * usdc_amount;
+        let ETH = 1000000000000000000 * eth_amount;
+        let token_0 = deploy_erc20('USDC', 'USDC', USDC, OWNER()); // 0x3 // 100k usdc (100k * 10^6)
+        let token_1 = deploy_erc20('ETH', 'ETH', ETH, OWNER()); // 0x4 // 50 ETH (50 * 10^18)
+
+        set_contract_address(OWNER());
+        token_0.transfer(WALLET(), USDC);
+        token_1.transfer(WALLET(), ETH);
+
+        // Give permissions to expend WALLET() tokens
+        set_contract_address(WALLET());
+        token_1.approve(yas_router.contract_address, BoundedInt::max());
+        token_0.approve(yas_router.contract_address, BoundedInt::max());
+
+        let yas_pool_address = yas_factory // 0x5
+            .create_pool(
+                token_0.contract_address, token_1.contract_address, fee_amount
+            );
+        let yas_pool = IYASPoolDispatcher { contract_address: yas_pool_address };
+
+        set_contract_address(OWNER());
+        yas_pool.initialize(initial_price);
+
+        set_contract_address(WALLET());
+
+        let (min_tick, max_tick) = get_min_tick_and_max_tick_with_fee(fee_amount);
+
+        (yas_pool, yas_router, token_0, token_1, min_tick, max_tick)
+    }
+
+    fn mint_positions(
+        yas_router: IYASRouterDispatcher, yas_pool_address: IYASPoolDispatcher, lower_tick: i32, upper_tick: i32, liquidity: u128
+    ) {
+        yas_router.mint(yas_pool_address.read(), WALLET(), lower_tick, upper_tick, liquidity)
     }
 
     fn deploy_erc20(
@@ -832,6 +967,13 @@ mod YASPoolTests {
 
     fn get_min_tick_and_max_tick() -> (i32, i32) {
         let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
+        let min_tick = i32_div_no_round(MIN_TICK(), tick_spacing) * tick_spacing;
+        let max_tick = i32_div_no_round(MAX_TICK(), tick_spacing) * tick_spacing;
+        (min_tick, max_tick)
+    }
+
+    fn get_min_tick_and_max_tick_with_fee(fee_amount: u32) -> (i32, i32) {
+        let tick_spacing = IntegerTrait::<i32>::new(fee_amount, false);
         let min_tick = i32_div_no_round(MIN_TICK(), tick_spacing) * tick_spacing;
         let max_tick = i32_div_no_round(MAX_TICK(), tick_spacing) * tick_spacing;
         (min_tick, max_tick)
