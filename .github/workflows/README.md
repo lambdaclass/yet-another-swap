@@ -26,7 +26,7 @@ You will have to specify the 'workflows' folder with `-a` parameter:
 act -a .github/workflows/
 ```
 
-And if you want to only run one of the github events you can specify it with the `-j` flag
+To only run one of the github events you can specify it with the `-j` flag
 
 ```bash
 act -a .github/workflows/ -j katana
