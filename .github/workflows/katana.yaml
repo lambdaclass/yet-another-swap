@@ -39,14 +39,10 @@ jobs:
         run: make install-dojo
 
       - name: Start Katana
-        run: katana
-        background: true #isnt working, try with &, or ctrl z bg
-
-      - name: Wait for Katana to Start
-        run: sleep 3
-
-      - name: Run Demo
-        run: make demo-local
-
+        run: |
+          katana &
+          sleep 3
+          make demo-local
+  
       - name: Stop Katana
         run: pkill -f "katana" || true
