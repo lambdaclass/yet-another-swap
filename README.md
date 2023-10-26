@@ -51,7 +51,7 @@ rustc --version
 cargo --version
 ```
 
-### Starkli 
+### Starkli
 
 [Starkli](https://github.com/xJonathanLEI/starkli) is CLI tool for Starknet. For install;
 
@@ -64,6 +64,7 @@ Update `starkli` simply by running;
 ```bash
 starkliup
 ```
+
 ## Install dependencies
 
 Run the following command:
