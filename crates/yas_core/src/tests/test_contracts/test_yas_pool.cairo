@@ -919,6 +919,10 @@ mod YASPoolTests {
 
             let pool_token_0_balance_bf = token_0.balanceOf(yas_pool.contract_address);
             let pool_token_1_balance_bf = token_1.balanceOf(yas_pool.contract_address);
+            //bueno no me deja llamar a estas funciones
+            //let a = yas_pool.tick_spacing();
+            //let slot0_bf = yas_pool.slot_0();
+            //let tick_bf = slot0_bf.tick;
 
             //SWAP
             let (token_0_swapped_amount, token_1_swapped_amount) = swap_test_case(yas_router, yas_pool, token_0, token_1, zero_for_one, amount_specified, has_sqrt_price_limit, sqrt_price_limit_u256);
@@ -943,9 +947,9 @@ mod YASPoolTests {
                     //"poolPriceBefore": "1.0000",
                     //"tickAfter": 8106,
                     //"tickBefore": 0,
-            assert(pool_token_0_balance_bf == 2000000000000000000, 'wrong token0 before');
+            assert(pool_token_0_balance_bf == 2000000000000000000, 'wrong token0 before'); //done
             assert(token_0_swapped_amount == token_0_swapped_expected, 'wrong token0 swapped amount'); //done
-            assert(pool_token_1_balance_bf == 2000000000000000000, 'wrong token1 before');
+            assert(pool_token_1_balance_bf == 2000000000000000000, 'wrong token1 before'); //done
             assert(token_1_swapped_amount == token_1_swapped_expected, 'wrong token1 swapped amount'); //done
 
             //let execution_price = token_0_swapped_amount / token_1_swapped_amount ;
@@ -956,8 +960,9 @@ mod YASPoolTests {
 
             //assert(pool_priceAfter == 2.2493, 'wrong poolPriceAfter');
             //assert(pool_priceBefore == 1.0000, 'wrong poolPriceBefore');
-            //assert(tick_after == 8106, 'wrong tickAfter');
-            //assert(tick_before == 0, 'wrong tickBefore');
+            
+            //assert(tick_after == 8106, 'wrong tickAfter'); //what is you?
+            //assert(tick_bf == 0, 'wrong tickBefore');
         }
     }
 
