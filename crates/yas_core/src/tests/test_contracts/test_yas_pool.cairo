@@ -7,6 +7,7 @@ mod YASPoolTests {
         YASPool, YASPool::ContractState, YASPool::InternalImpl, IYASPool, IYASPoolDispatcher,
         IYASPoolDispatcherTrait
     };
+
     use yas_core::numbers::signed_integer::{
         i32::i32, i32::i32_div_no_round, i64::i64, i128::i128, integer_trait::IntegerTrait
     };
@@ -871,17 +872,17 @@ mod YASPoolTests {
             // expected:
                 //exports[`UniswapV3Pool swap tests low fee, 1:1 price, 2e18 max range liquidity swap exactly 1.0000 token1 for token0 1`] = `
                 //Object {
-                //"amount0Before": "2000000000000000000",
-                //"amount0Delta": "-666444407401233536",
-                //"amount1Before": "2000000000000000000",
-                //"amount1Delta": "1000000000000000000",
-                //"executionPrice": "1.5005",
-                //"feeGrowthGlobal0X128Delta": "0",
-                //"feeGrowthGlobal1X128Delta": "85070591730234956148210572796405515",
-                //"poolPriceAfter": "2.2493",
-                //"poolPriceBefore": "1.0000",
-                //"tickAfter": 8106,
-                //"tickBefore": 0,
+                    //"amount0Before": "2000000000000000000",
+                    //"amount0Delta": "-666444407401233536",
+                    //"amount1Before": "2000000000000000000",
+                    //"amount1Delta": "1000000000000000000",
+                    //"executionPrice": "1.5005",
+                    //"feeGrowthGlobal0X128Delta": "0",
+                    //"feeGrowthGlobal1X128Delta": "85070591730234956148210572796405515",
+                    //"poolPriceAfter": "2.2493",
+                    //"poolPriceBefore": "1.0000",
+                    //"tickAfter": 8106,
+                    //"tickBefore": 0,
                 //}
 
 
@@ -895,6 +896,12 @@ mod YASPoolTests {
                 liquidity: liquidity
             );
 
+            //a hardcodear los test cases!!!! de arriba a abajo: son 16
+            // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.swaps.spec.ts#L135
+            //zero_for_one_array = [true, false, true, false, true, false, true, false, true, false, true, false, false, true, true, false]
+            //exact_out_array = [false, false, true, true, false, false, true, true, false, false, true, true, NULL, NULL, NULL, NULL]
+            //amount_specified_array = [1000000000000000000, 1000000000000000000, 1000000000000000000, 1000000000000000000, 1000000000000000000, 1000000000000000000, 1000000000000000000, 1000000000000000000, 1000, 1000, 1000, 1000, NULL, NULL, NULL, NULL]
+            //sqrt_price_limit_array = [NULL, NULL, NULL, NULL, encodePriceSqrt(50, 100), encodePriceSqrt(200, 100), encodePriceSqrt(50, 100), encodePriceSqrt(200, 100), NULL, NULL, NULL, NULL, encodePriceSqrt(5, 2), encodePriceSqrt(2, 5), encodePriceSqrt(5, 2), encodePriceSqrt(2, 5)]
 
             // setup SWAP test case
             // TODO get values from array to loop
@@ -906,10 +913,51 @@ mod YASPoolTests {
             let token_0_swapped_expected = 666444407401233536; //variable por test
             let token_1_swapped_expected = 1000000000000000000; //variable por test
 
+            let user_token_0_balance_bf = token_0.balanceOf(WALLET());
+            let user_token_1_balance_bf = token_1.balanceOf(WALLET());
+            //let (fee_growth_global_0_X128_bf, fee_growth_global_1_X128_bf) = yas_pool.get_fee_growth_globals();
+
+            let pool_token_0_balance_bf = token_0.balanceOf(yas_pool.contract_address);
+            let pool_token_1_balance_bf = token_1.balanceOf(yas_pool.contract_address);
+
+            //SWAP
             let (token_0_swapped_amount, token_1_swapped_amount) = swap_test_case(yas_router, yas_pool, token_0, token_1, zero_for_one, amount_specified, has_sqrt_price_limit, sqrt_price_limit_u256);
             
-            assert(token_0_swapped_amount == token_0_swapped_expected, 'wrong token0 swapped amount');
-            assert(token_1_swapped_amount == token_1_swapped_expected, 'wrong token1 swapped amount');
+            let user_token_0_balance_af = token_0.balanceOf(WALLET());
+            let user_token_1_balance_af = token_1.balanceOf(WALLET());
+            //let (fee_growth_global_0_X128_af, fee_growth_global_1_X128_af) = yas_pool.get_fee_growth_globals();
+
+            //let(fee_growth_global_0_X128_delta, fee_growth_global_1_X128_delta) = (fee_growth_global_0_X128_bf - fee_growth_global_0_X128_af, fee_growth_global_1_X128_bf - fee_growth_global_1_X128_af);
+
+
+
+            // assert:
+                    //"amount0Before": "2000000000000000000",
+                    //"amount0Delta": "-666444407401233536",
+                    //"amount1Before": "2000000000000000000",
+                    //"amount1Delta": "1000000000000000000",
+                    //"executionPrice": "1.5005",
+                    //"feeGrowthGlobal0X128Delta": "0",
+                    //"feeGrowthGlobal1X128Delta": "85070591730234956148210572796405515",
+                    //"poolPriceAfter": "2.2493",
+                    //"poolPriceBefore": "1.0000",
+                    //"tickAfter": 8106,
+                    //"tickBefore": 0,
+            assert(pool_token_0_balance_bf == 2000000000000000000, 'wrong token0 before');
+            assert(token_0_swapped_amount == token_0_swapped_expected, 'wrong token0 swapped amount'); //done
+            assert(pool_token_1_balance_bf == 2000000000000000000, 'wrong token1 before');
+            assert(token_1_swapped_amount == token_1_swapped_expected, 'wrong token1 swapped amount'); //done
+
+            //let execution_price = token_0_swapped_amount / token_1_swapped_amount ;
+            //assert(execution_price == 1.5005, 'wrong execution price'); //how to decimals ?
+            
+            //assert(fee_growth_global_0_X128_delta == 0, 'wrong feeGrowthGlobal0X128Delta'); 
+            //assert(fee_growthGlobal1X128Delta == 85070591730234956148210572796405515, 'wrong feeGrowthGlobal1X128Delta');
+
+            //assert(pool_priceAfter == 2.2493, 'wrong poolPriceAfter');
+            //assert(pool_priceBefore == 1.0000, 'wrong poolPriceBefore');
+            //assert(tick_after == 8106, 'wrong tickAfter');
+            //assert(tick_before == 0, 'wrong tickBefore');
         }
     }
 
@@ -1060,7 +1108,7 @@ mod YASPoolTests {
     }
 
     fn setup_pool_for_swap_test(
-        initial_price: FixedType, fee_amount: u32, liquidity: u256
+        initial_price: FixedType, fee_amount: u32, liquidity: u128
     ) -> (IYASPoolDispatcher, IYASRouterDispatcher, IERC20Dispatcher, IERC20Dispatcher, i32, i32) {
         let yas_router = deploy_mint_callback(); // 0x1
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
@@ -1097,7 +1145,7 @@ mod YASPoolTests {
             yas_pool.contract_address,
             min_tick,
             max_tick,
-            2000000000000000000 //variable por test
+            liquidity //variable por test
         );
 
         (yas_pool, yas_router, token_0, token_1, min_tick, max_tick)

@@ -23,6 +23,7 @@ trait IYASPool<TContractState> {
     ) -> (u256, u256);
     fn token_0(self: @TContractState) -> ContractAddress;
     fn token_1(self: @TContractState) -> ContractAddress;
+    fn get_fee_growth_globals(self: @TContractState) -> (u256, u256);
 }
 
 #[starknet::contract]
@@ -197,6 +198,11 @@ mod YASPool {
 
         fn token_1(self: @ContractState) -> ContractAddress {
             self.token_1.read()
+        }
+
+        //TODO: make private?
+        fn get_fee_growth_globals(self: @ContractState) -> (u256, u256) {
+            (self.fee_growth_global_0_X128.read(), self.fee_growth_global_1_X128.read())
         }
 
         /// @notice Sets the initial price for the pool
