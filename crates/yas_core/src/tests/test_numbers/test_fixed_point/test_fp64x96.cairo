@@ -56,9 +56,6 @@ fn test_round_up() {
     assert(a.round().into() == 3 * ONE_u128.into(), 'test_round_up');
 }
 
-// para hacer un decimal, decimal * ONE_u128 = xxxfelt.
-//let a = FixedTrait::from_felt(198070406285660843983859875840); // 2.5
-
 #[test]
 fn test_round_middle() {
     let a = FixedTrait::from_felt(198070406285660843983859875840); // 2.5
