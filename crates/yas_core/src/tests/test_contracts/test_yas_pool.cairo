@@ -570,7 +570,7 @@ mod YASPoolTests {
         use yas_core::numbers::fixed_point::implementations::impl_64x96::{
             FP64x96Impl, FP64x96Sub, FP64x96PartialEq, FixedType, FixedTrait
         };
-        use yas_core::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
+        use yas_core::numbers::signed_integer::{i32::i32, i256::i256, integer_trait::IntegerTrait};
         use yas_core::contracts::yas_erc20::{
             ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
         };
@@ -592,6 +592,8 @@ mod YASPoolTests {
             MIN_TICK, MAX_TICK, get_sqrt_ratio_at_tick, MIN_SQRT_RATIO, MAX_SQRT_RATIO
         };
 
+
+        use yas_core::contracts::yas_pool::{IYASPoolDispatcherTrait};
 
         use debug::PrintTrait;
 
@@ -765,7 +767,6 @@ mod YASPoolTests {
 
 
             // setup POOL test case:
-
             let INITIAL_PRICE = encode_price_sqrt_1_1();
 
             let NEGATIVE = true;
@@ -777,16 +778,8 @@ mod YASPoolTests {
                 liquidity: 2000000000000000000
             );
 
-            //mint_positions(
-            //    yas_router,
-            //    yas_pool.contract_address,
-            //    min_tick,
-            //    max_tick,
-            //    2000000000000000000
-            //);
-
+            
             // setup SWAP test case
-
             let token_0_amount = IntegerTrait::<i256>::new(1000000000000000000, POSITIVE); 
             let zero_for_one = true; 
             let has_sqrt_price_limit = false;
@@ -915,23 +908,25 @@ mod YASPoolTests {
 
             let user_token_0_balance_bf = token_0.balanceOf(WALLET());
             let user_token_1_balance_bf = token_1.balanceOf(WALLET());
-            //let (fee_growth_global_0_X128_bf, fee_growth_global_1_X128_bf) = yas_pool.get_fee_growth_globals();
+            let (fee_growth_global_0_X128_bf, fee_growth_global_1_X128_bf) = yas_pool.get_fee_growth_globals();
 
             let pool_token_0_balance_bf = token_0.balanceOf(yas_pool.contract_address);
             let pool_token_1_balance_bf = token_1.balanceOf(yas_pool.contract_address);
             //bueno no me deja llamar a estas funciones
             //let a = yas_pool.tick_spacing();
-            //let slot0_bf = yas_pool.slot_0();
-            //let tick_bf = slot0_bf.tick;
+            let slot0_bf = yas_pool.slot_0();
+            let tick_bf = slot0_bf.tick;
 
             //SWAP
             let (token_0_swapped_amount, token_1_swapped_amount) = swap_test_case(yas_router, yas_pool, token_0, token_1, zero_for_one, amount_specified, has_sqrt_price_limit, sqrt_price_limit_u256);
             
             let user_token_0_balance_af = token_0.balanceOf(WALLET());
             let user_token_1_balance_af = token_1.balanceOf(WALLET());
-            //let (fee_growth_global_0_X128_af, fee_growth_global_1_X128_af) = yas_pool.get_fee_growth_globals();
+            let (fee_growth_global_0_X128_af, fee_growth_global_1_X128_af) = yas_pool.get_fee_growth_globals();
+            let(fee_growth_global_0_X128_delta, fee_growth_global_1_X128_delta) = (fee_growth_global_0_X128_af - fee_growth_global_0_X128_bf, fee_growth_global_1_X128_af - fee_growth_global_1_X128_bf);
 
-            //let(fee_growth_global_0_X128_delta, fee_growth_global_1_X128_delta) = (fee_growth_global_0_X128_bf - fee_growth_global_0_X128_af, fee_growth_global_1_X128_bf - fee_growth_global_1_X128_af);
+            let slot0_af = yas_pool.slot_0();
+            let tick_af = slot0_af.tick;
 
 
 
@@ -955,14 +950,14 @@ mod YASPoolTests {
             //let execution_price = token_0_swapped_amount / token_1_swapped_amount ;
             //assert(execution_price == 1.5005, 'wrong execution price'); //how to decimals ?
             
-            //assert(fee_growth_global_0_X128_delta == 0, 'wrong feeGrowthGlobal0X128Delta'); 
-            //assert(fee_growthGlobal1X128Delta == 85070591730234956148210572796405515, 'wrong feeGrowthGlobal1X128Delta');
+            assert(fee_growth_global_0_X128_delta == 0, 'wrong feeGrowthGlobal0X128Delta'); //done
+            assert(fee_growth_global_1_X128_delta == 85070591730234956148210572796405515, 'wrong feeGrowthGlobal1X128Delta'); //done
 
             //assert(pool_priceAfter == 2.2493, 'wrong poolPriceAfter');
             //assert(pool_priceBefore == 1.0000, 'wrong poolPriceBefore');
-            
-            //assert(tick_after == 8106, 'wrong tickAfter'); //what is you?
-            //assert(tick_bf == 0, 'wrong tickBefore');
+
+            assert(tick_af == IntegerTrait::<i32>::new(8106, false), 'wrong tickAfter') //done
+            //assert(tick_bf == 0, 'wrong tickBefore');            
         }
     }
 
