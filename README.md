@@ -34,6 +34,37 @@ in the latest version of Cairo.
 > Note: In our Orion fork, we've added the capability for signed integers to be
 > stored in a smart contract.
 
+## Requirements
+
+### Rust and Cargo
+
+Visit the [rustup](https://rustup.rs/) website and follow the instructions on the page or run the following command in the terminal:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+Check the version;
+
+```bash
+rustc --version
+cargo --version
+```
+
+### Starkli
+
+[Starkli](https://github.com/xJonathanLEI/starkli) is CLI tool for Starknet. For install;
+
+```bash
+curl https://get.starkli.sh | sh
+```
+
+Update `starkli` simply by running;
+
+```bash
+starkliup
+```
+
 ## Install dependencies
 
 Run the following command:
@@ -58,6 +89,28 @@ make build
 
 This command executes the Scarb build process, resulting in the creation of a
 Sierra program.
+
+## Test Project
+
+Run the following command to run all tests:
+
+```bash
+make test
+```
+
+You can also filter the tests to run, by module or even by individual test name, for example to run tests within the Mint module, execute:
+
+```bash
+make test Mint
+```
+
+Or to run only the "test_invalid_max_tick" function:
+
+```bash
+make test test_invalid_max_tick
+```
+
+Be careful though, this parameters is case-sensitive
 
 ## Setting up a Testnet Smart Wallet
 
@@ -218,6 +271,33 @@ This demo will perform the following steps:
    make demo-local
    ```
 
+## Run demo in Testnet
+
+0. Make sure you have the STARKNET_ACCOUNT and STARKNET_KEYSTORE environment variables declared, you won't be able to deploy on testnet otherwise:
+
+   ```bash
+   STARKNET_KEYSTORE="~/.starkli-wallets/keystore.json"
+   STARKNET_ACCOUNT="~/.starkli-wallets/account.json"
+   ```
+
+1. Build the project
+
+   ```bash
+   make build
+   ```
+
+2. Declare contracts on testnet
+
+   ```bash
+   make declare-testnet
+   ```
+
+3. Deploy those contracts on testnet
+
+   ```bash
+   Work In Progress
+   ```
+
 ## Override `.env` file
 
 To override environment variables in the `.env` file, you may pass them before
@@ -230,6 +310,12 @@ PRIVATE_KEY=0x2bbf4f9fd0bbb2e60b0316c1fe0b76cf7a4d0198bd493ced9b8df2a3a24d68a \
 STARKNET_RPC="https://rpc-goerli-1.starknet.rs/rpc/v0.4" \
 make deploy
 ```
+
+## Contracts Starknet Testnet
+
+- Router: 0x06c3b1076e09b1d16642808b0bfef750a683ad06724f9e4f1aaaca17bc44fad5
+- Factory: 0x0490c81e19516eba9eb531b48e58f9876259ac9396444dc759a84e4a8aefa628
+- Pool (USDC-ETH): 0x016648670892a29b68b66c98892f408ab2e174ffb827c023ad9f4ca0eff816eb
 
 ## Version Specifications
 
