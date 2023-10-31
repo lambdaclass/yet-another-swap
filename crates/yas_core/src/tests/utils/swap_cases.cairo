@@ -45,6 +45,21 @@ mod SwapTestHelper {
         liquidity: u128
     }
 
+    #[derive(Copy, Drop, Serde)]
+    struct ExpectedValues {
+        amount_0_before: u256,
+        amount_0_delta: u256,
+        amount_1_before: u256,
+        amount_1_delta u256,
+        execution_price: u256,
+        fee_growth_global_0_X128_delta: u256,
+        fee_growth_global_1_X128_delta: u256,
+        pool_price_after: u256,
+        pool_price_before: u256,
+        tick_after: i32,
+        tick_before: i32,
+    }
+
     fn get_pool_case(number: u32) -> @PoolTestCase {
         let pools = array![
             PoolTestCase {
@@ -354,6 +369,18 @@ mod SwapTestHelper {
         //ret
         *swaps[number]
     }
+
+    fn get_expected(number: u32) -> ExpectedValues {
+    let expected = array![
+
+    ]
+
+    //ret:
+    expected(number)
+    }
+
+
+    //Helper Functions:
 
     // sqrt_price_X96 is the result of encode_price_sqrt_50_100() on v3-core typescript impl. 
     fn encode_price_sqrt_50_100() -> FixedType {

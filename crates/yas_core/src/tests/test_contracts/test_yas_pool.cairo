@@ -768,7 +768,7 @@ mod YASPoolTests {
             let pool_token_1_balance_bf = token_1.balanceOf(yas_pool.contract_address);
             let slot0_bf = yas_pool.slot_0();
             let tick_bf = slot0_bf.tick;
-            let out_price_bf = round_for_price_comparison(slot0_bf.sqrt_price_X96.mag);
+            let pool_price_bf = round_for_price_comparison(slot0_bf.sqrt_price_X96.mag);
 
             //SWAP
             let swap_case = get_swap_case(1);
@@ -805,19 +805,15 @@ mod YASPoolTests {
             );
             let slot0_af = yas_pool.slot_0();
             let tick_af = slot0_af.tick;
-            let out_price_af = round_for_price_comparison(slot0_af.sqrt_price_X96.mag);
+            let pool_price_af = round_for_price_comparison(slot0_af.sqrt_price_X96.mag);
             let token_0_swapped_expected = 666444407401233536; //variable por test
             let token_1_swapped_expected = 1000000000000000000; //variable por test
 
 
             assert(pool_token_0_balance_bf == 2000000000000000000, 'wrong token0 before');
-            assert(
-                token_0_swapped_amount == token_0_swapped_expected, 'wrong token0 swapped amount'
-            );
+            assert(token_0_swapped_amount == token_0_swapped_expected, 'wrong token0 swapped amount');
             assert(pool_token_1_balance_bf == 2000000000000000000, 'wrong token1 before');
-            assert(
-                token_1_swapped_amount == token_1_swapped_expected, 'wrong token1 swapped amount'
-            );
+            assert(token_1_swapped_amount == token_1_swapped_expected, 'wrong token1 swapped amount');
 
             let execution_price_10xx5: u256 =
                 //execution price * 10**5 , to save its decimals
@@ -830,13 +826,9 @@ mod YASPoolTests {
             assert(execution_price_10xx5 == 150050, 'wrong execution price');
 
             assert(fee_growth_global_0_X128_delta == 0, 'wrong feeGrowthGlobal0X128Delta');
-            assert(
-                fee_growth_global_1_X128_delta == 85070591730234956148210572796405515,
-                'wrong feeGrowthGlobal1X128Delta'
-            );
-
-            assert(224930 == out_price_af, 'wrong poolPriceAfter'); //2.2493 * 10**5
-            assert(100000 == out_price_bf, 'wrong poolPriceBefore'); //1.0000 * 10**5
+            assert(fee_growth_global_1_X128_delta == 85070591730234956148210572796405515, 'wrong feeGrowthGlobal1X128Delta');
+            assert(224930 == pool_price_af, 'wrong poolPriceAfter'); //2.2493 * 10**5
+            assert(100000 == pool_price_bf, 'wrong poolPriceBefore'); //1.0000 * 10**5
             assert(tick_af == IntegerTrait::<i32>::new(8106, false), 'wrong tickAfter');
             assert(tick_bf == Zeroable::zero(), 'wrong tickBefore');
         }
