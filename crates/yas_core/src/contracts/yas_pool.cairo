@@ -37,9 +37,9 @@ trait IYASPool<TContractState> {
     fn token_0(self: @TContractState) -> ContractAddress;
     fn token_1(self: @TContractState) -> ContractAddress;
     fn get_fee_growth_globals(self: @TContractState) -> (u256, u256);
-    fn slot_0(self: @TContractState) -> Slot0;
-    fn max_liquidity_per_tick(self: @TContractState) -> u128;
-    fn tick_spacing(self: @TContractState) -> i32;
+    fn get_slot_0(self: @TContractState) -> Slot0;
+    fn get_max_liquidity_per_tick(self: @TContractState) -> u128;
+    fn get_tick_spacing(self: @TContractState) -> i32;
     fn get_tick(self: @TContractState, tick: i32) -> Tick::Info;
 }
 
@@ -206,15 +206,15 @@ mod YASPool {
             self.token_1.read()
         }
 
-        fn slot_0(self: @ContractState) -> Slot0 {
+        fn get_slot_0(self: @ContractState) -> Slot0 {
             self.slot_0.read()
         }
 
-        fn max_liquidity_per_tick(self: @ContractState) -> u128 {
+        fn get_max_liquidity_per_tick(self: @ContractState) -> u128 {
             self.max_liquidity_per_tick.read()
         }
 
-        fn tick_spacing(self: @ContractState) -> i32 {
+        fn get_tick_spacing(self: @ContractState) -> i32 {
             self.tick_spacing.read()
         }
 
