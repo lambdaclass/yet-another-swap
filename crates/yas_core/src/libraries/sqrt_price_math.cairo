@@ -2,7 +2,7 @@
 // Contains the math that uses square root of price as a Q64.96 and liquidity to compute deltas
 mod SqrtPriceMath {
     use core::result::ResultTrait;
-use integer::{u256_overflowing_add, u256_overflow_mul};
+    use integer::{u256_overflowing_add, u256_overflow_mul};
 
     use yas_core::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FixedType, FixedTrait, FP64x96Add, FP64x96Sub, FP64x96Mul, FP64x96Div,
@@ -40,9 +40,11 @@ use integer::{u256_overflowing_add, u256_overflow_mul};
                     numerator, product
                 );
                 if !denominator_has_overflow && denominator >= numerator {
-                    return Result::Ok(FP64x96Impl::new(
-                        mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false
-                    ));
+                    return Result::Ok(
+                        FP64x96Impl::new(
+                            mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false
+                        )
+                    );
                 }
             }
             FP64x96Impl::new(div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false)
@@ -212,12 +214,15 @@ use integer::{u256_overflowing_add, u256_overflow_mul};
     ) -> i256 {
         if liquidity < IntegerTrait::<i128>::new(0, false) {
             IntegerTrait::<i256>::new(
-                get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false).expect('delta_err'),
+                get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false)
+                    .expect('delta_err'),
                 true
             )
         } else {
             IntegerTrait::<i256>::new(
-                get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true).expect('delta_error'), false
+                get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true)
+                    .expect('delta_error'),
+                false
             )
         }
     }

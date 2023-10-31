@@ -46,7 +46,8 @@ mod TestSwapMath {
 
             let price_after_whole_input_amount = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, amount.try_into().unwrap(), zero_for_one
-            ).expect('sqrt_err_20');
+            )
+                .expect('sqrt_err_20');
 
             assert(sqrtQ == price_target, 'price is capped at price target');
             assert(
@@ -78,7 +79,8 @@ mod TestSwapMath {
 
             let price_after_whole_input_amount = SqrtPriceMath::get_next_sqrt_price_from_output(
                 price, liquidity, expand_to_18_decimals(1), zero_for_one
-            ).expect('sqrt_err_21');
+            )
+                .expect('sqrt_err_21');
 
             assert(sqrtQ == price_target, 'price is capped at price target');
             assert(sqrtQ < price_after_whole_input_amount, 'price < price after whole input');
@@ -112,7 +114,8 @@ mod TestSwapMath {
             let price_after_whole_import_amount_less_fee =
                 SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, amount.try_into().unwrap() - fee_amount, zero_for_one
-            ).expect('sqrt_err_22');
+            )
+                .expect('sqrt_err_22');
 
             assert(sqrtQ < price_target, 'price is capped at price target');
             assert(
@@ -144,7 +147,8 @@ mod TestSwapMath {
 
             let price_after_whole_output_amount = SqrtPriceMath::get_next_sqrt_price_from_output(
                 price, liquidity, expand_to_18_decimals(1), zero_for_one
-            ).expect('sqrt_err_1');
+            )
+                .expect('sqrt_err_1');
 
             assert(sqrtQ < price_target, 'price doest reach price target');
             assert(sqrtQ == price_after_whole_output_amount, 'price = price after whole out');

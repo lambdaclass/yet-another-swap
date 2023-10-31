@@ -79,7 +79,9 @@ mod TickBitmap {
                 // overflow/underflow is possible, but prevented externally by limiting both tickSpacing and tick
                 let next = if initialized {
                     // (compressed - int24(bit_pos - BitMath.most_significant_bit(masked))) * tick_spacing
-                    (compressed - (bit_pos - BitMath::most_significant_bit(masked).expect('msb failed')).into())
+                    (compressed
+                        - (bit_pos - BitMath::most_significant_bit(masked).expect('msb failed'))
+                            .into())
                         * tick_spacing
                 } else {
                     // (compressed - int24(bit_pos)) * tick_spacing
@@ -101,7 +103,8 @@ mod TickBitmap {
                     // (compressed + 1 + int24(BitMath::least_significant_bit(masked) - bit_pos)) * tick_spacing
                     (compressed
                         + IntegerTrait::<i32>::new(1, false)
-                        + (BitMath::least_significant_bit(masked).expect('lsb failed') - bit_pos).into())
+                        + (BitMath::least_significant_bit(masked).expect('lsb failed') - bit_pos)
+                            .into())
                         * tick_spacing
                 } else {
                     // (compressed + 1 + int24(type(uint8).max - bit_pos)) * tick_spacing

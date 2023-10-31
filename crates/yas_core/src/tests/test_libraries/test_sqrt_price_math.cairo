@@ -6,7 +6,7 @@ mod TestSqrtPriceMath {
 
     mod GetNextSqrtPriceFromInput {
         use core::result::ResultTrait;
-use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
+        use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
         use integer::BoundedInt;
 
@@ -19,6 +19,7 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
         // fails if price is zero
         #[test]
+        #[available_gas(200000000)]
         #[should_panic]
         fn test_fail_if_price_is_zero() {
             SqrtPriceMath::get_next_sqrt_price_from_input(
@@ -28,6 +29,7 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
         // fails if liquidity is zero
         #[test]
+        #[available_gas(200000000)]
         #[should_panic]
         fn test_fail_if_liquidity_is_zero() {
             SqrtPriceMath::get_next_sqrt_price_from_input(
@@ -37,6 +39,7 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
         // fails if input amount overflows the price
         #[test]
+        #[available_gas(200000000)]
         #[should_panic]
         fn test_fail_if_input_amount_overflows_price() {
             let price = FixedTrait::from_felt((pow(2, 160) - 1).try_into().unwrap());
@@ -47,6 +50,7 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
         // any input amount cannot underflow the price  
         #[test]
+        #[available_gas(200000000)]
         #[should_panic]
         fn test_fail_if_input_amount_cannot_underflow_the_price() {
             let price = FixedTrait::from_felt(1);
@@ -65,7 +69,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, amount_in, true
-            ).expect('sqrt_err_1');
+            )
+                .expect('sqrt_err_1');
 
             assert(actual == price, 'assert error');
         }
@@ -80,7 +85,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, amount_in, true
-            ).expect('sqrt_err_2');
+            )
+                .expect('sqrt_err_2');
 
             assert(actual == price, 'assert error');
         }
@@ -97,7 +103,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, max_amount_no_overflow, true
-            ).expect('sqrt_err_3');
+            )
+                .expect('sqrt_err_3');
             assert(actual == FixedTrait::from_felt(1), 'assert error');
         }
 
@@ -111,7 +118,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, amount, false
-            ).expect('sqrt_err_4');
+            )
+                .expect('sqrt_err_4');
             assert(actual == FixedTrait::from_felt(87150978765690771352898345369), 'assert error');
         }
 
@@ -125,7 +133,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, amount, true
-            ).expect('sqrt_err_5');
+            )
+                .expect('sqrt_err_5');
             assert(actual == FixedTrait::from_felt(72025602285694852357767227579), 'assert error');
         }
 
@@ -139,7 +148,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, amount, true
-            ).expect('sqrt_err_6');
+            )
+                .expect('sqrt_err_6');
             assert(actual == FixedTrait::from_felt(624999999995069620), 'assert error');
         }
 
@@ -153,7 +163,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, amount, true
-            ).expect('sqrt_err_7');
+            )
+                .expect('sqrt_err_7');
             assert(actual == FixedTrait::from_felt(1), 'assert error');
         }
     }
@@ -171,6 +182,7 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
         // fails if price is zero
         #[test]
+        #[available_gas(200000000)]
         #[should_panic]
         fn test_fail_if_price_is_zero() {
             SqrtPriceMath::get_next_sqrt_price_from_output(
@@ -180,6 +192,7 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
         // fails if liquidity is zero
         #[test]
+        #[available_gas(200000000)]
         #[should_panic]
         fn test_fail_if_liquidity_is_zero() {
             SqrtPriceMath::get_next_sqrt_price_from_output(
@@ -189,6 +202,7 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
         // fails if output amount is exactly the virtual reserves of token0
         #[test]
+        #[available_gas(200000000)]
         #[should_panic]
         fn test_fail_output_amount_eq_virtual_reserves_of_token_0() {
             let price = FixedTrait::from_felt(20282409603651670423947251286016);
@@ -199,6 +213,7 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
         // fails if output amount is greater than virtual reserves of token0
         #[test]
+        #[available_gas(200000000)]
         #[should_panic]
         fn test_fail_output_amount_gt_virtual_reserves_of_token_0() {
             let price = FixedTrait::from_felt(20282409603651670423947251286016);
@@ -209,6 +224,7 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
         // fails if output amount is exactly the virtual reserves of token1
         #[test]
+        #[available_gas(200000000)]
         #[should_panic]
         fn test_fail_output_amount_eq_virtual_reserves_of_token_1() {
             let price = FixedTrait::from_felt(20282409603651670423947251286016);
@@ -219,6 +235,7 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
         // fails if output amount is greater than virtual reserves of token1
         #[test]
+        #[available_gas(200000000)]
         #[should_panic]
         fn test_fail_output_amount_gt_virtual_reserves_of_token_1() {
             let price = FixedTrait::from_felt(20282409603651670423947251286016);
@@ -237,7 +254,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_output(
                 price, liquidity, amount_out, true
-            ).expect('sqrt_err_8');
+            )
+                .expect('sqrt_err_8');
             let expected = FixedTrait::from_felt(77371252455336267181195264);
 
             assert(actual == expected, 'amount_lt_reservers_of_token_1')
@@ -245,6 +263,7 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
         // puzzling echidna test
         #[test]
+        #[available_gas(200000000)]
         #[should_panic]
         fn test_puzzling_edhidna() {
             let price = FixedTrait::from_felt(20282409603651670423947251286016);
@@ -259,7 +278,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
         fn test_input_price_if_amount_is_in_zero_and_zero_for_one_true() {
             let price = encode_price_sqrt_1_1();
             let liquidity: u128 = expand_to_18_decimals(1).try_into().unwrap() / 10;
-            let actual = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, 0, true).expect('sqrt_err_9');
+            let actual = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, 0, true)
+                .expect('sqrt_err_9');
 
             assert(actual == price, 'actual not eq to price')
         }
@@ -270,7 +290,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
         fn test_input_price_if_amount_is_in_zero_and_zero_for_one_false() {
             let price = encode_price_sqrt_1_1();
             let liquidity: u128 = expand_to_18_decimals(1).try_into().unwrap() / 10;
-            let actual = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, 0, false).expect('sqrt_err_10');
+            let actual = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, 0, false)
+                .expect('sqrt_err_10');
 
             assert(actual == price, 'actual not eq to price')
         }
@@ -285,7 +306,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_output(
                 price, liquidity, amount_out, false
-            ).expect('sqrt_err_11');
+            )
+                .expect('sqrt_err_11');
             let expected = FixedTrait::from_felt(88031291682515930659493278152);
             assert(actual == expected, 'output_amount_0_dot_1_token_1')
         }
@@ -300,23 +322,27 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_output(
                 price, liquidity, amount_out, true
-            ).expect('sqrt_err_12');
+            )
+                .expect('sqrt_err_12');
             let expected = FixedTrait::from_felt(71305346262837903834189555302);
             assert(actual == expected, 'output_amount_0_dot_1_token_1')
         }
 
         // reverts if amountOut is impossible in zero for one direction
         #[test]
+        #[available_gas(200000000)]
         #[should_panic]
         fn test_fail_if_amount_out_is_impossible_in_zero_for_one_direction_true() {
             let price = encode_price_sqrt_1_1();
             let liquidity = 1;
             let amount_out: u256 = BoundedInt::max();
-            SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, true).expect('sqrt_err_13');
+            SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, true)
+                .expect('sqrt_err_13');
         }
 
         // reverts if amountOut is impossible in one for zero direction
         #[test]
+        #[available_gas(200000000)]
         #[should_panic]
         fn test_fail_if_amount_out_is_impossible_in_zero_for_one_direction_false() {
             let price = encode_price_sqrt_1_1();
@@ -345,7 +371,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
         fn test_amount_0_delta_returns_0_if_liquidity_is_0() {
             let actual = SqrtPriceMath::get_amount_0_delta(
                 encode_price_sqrt_1_1(), encode_price_sqrt_2_1(), 0, true
-            ).expect('sqrt_err_14');
+            )
+                .expect('sqrt_err_14');
             let expected = 0;
             assert(actual == expected, 'delta_returns_0_if_liq_is_0')
         }
@@ -356,7 +383,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
         fn test_amount_0_delta_returns_0_if_prices_are_eq() {
             let actual = SqrtPriceMath::get_amount_0_delta(
                 encode_price_sqrt_1_1(), encode_price_sqrt_1_1(), 0, true
-            ).expect('sqrt_err_15');
+            )
+                .expect('sqrt_err_15');
             let expected = 0;
             assert(actual == expected, 'delta_return_0_if_prices_are_eq')
         }
@@ -370,7 +398,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
                 encode_price_sqrt_121_100(),
                 expand_to_18_decimals(1).try_into().unwrap(),
                 true
-            ).expect('sqrt_err_16');
+            )
+                .expect('sqrt_err_16');
 
             assert(amount0 == 90909090909090910, 'amount0 ronded not eq');
 
@@ -379,7 +408,8 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
                 encode_price_sqrt_121_100(),
                 expand_to_18_decimals(1).try_into().unwrap(),
                 false
-            ).expect('sqrt_err_17');
+            )
+                .expect('sqrt_err_17');
             assert(amount0_rounded_down == amount0 - 1, 'amount0 ronded not eq');
         }
 
@@ -392,14 +422,16 @@ use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
                 encode_price_sqrt_pow_2_96_1(),
                 expand_to_18_decimals(1).try_into().unwrap(),
                 true
-            ).expect('sqrt_err_18');
+            )
+                .expect('sqrt_err_18');
 
             let amount_0_down = SqrtPriceMath::get_amount_0_delta(
                 encode_price_sqrt_pow_2_90_1(),
                 encode_price_sqrt_pow_2_96_1(),
                 expand_to_18_decimals(1).try_into().unwrap(),
                 false
-            ).expect('sqrt_err_19');
+            )
+                .expect('sqrt_err_19');
             assert(amount_0_up == amount_0_down + 1, 'amount_0_up != amount_0_down+1');
         }
     }

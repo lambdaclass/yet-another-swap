@@ -8,7 +8,7 @@ mod LiquidityMath {
     /// Parameters:
     /// - x: The liquidity before change.
     /// - y: The delta by which liquidity should be changed.
-    fn add_delta(x: u128, y: i128) -> Result<u128,felt252> {
+    fn add_delta(x: u128, y: i128) -> Result<u128, felt252> {
         let zero = IntegerTrait::<i128>::new(0, true);
         if (y < zero) {
             // require((z = x - uint128(-y)) < x, 'LS');
@@ -25,7 +25,7 @@ mod LiquidityMath {
             let y_felt252: felt252 = y.into();
             let y_u128: u128 = y_felt252.try_into().unwrap();
             // assert(u128_overflowing_add(x, y_u128).is_ok(), 'LA');
-            if !(u128_overflowing_add(x, y_u128).is_ok()){
+            if !(u128_overflowing_add(x, y_u128).is_ok()) {
                 return Result::Err('LA');
             }
             return Result::Ok(x + y_u128);

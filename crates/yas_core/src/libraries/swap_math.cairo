@@ -46,7 +46,8 @@ mod SwapMath {
             );
             amount_in =
                 if zero_for_one {
-                    get_amount_0_delta(sqrt_ratio_targetX96, sqrt_ratio_currentX96, liquidity, true).expect('del_err_1')
+                    get_amount_0_delta(sqrt_ratio_targetX96, sqrt_ratio_currentX96, liquidity, true)
+                        .expect('del_err_1')
                 } else {
                     get_amount_1_delta(sqrt_ratio_currentX96, sqrt_ratio_targetX96, liquidity, true)
                 };
@@ -57,7 +58,8 @@ mod SwapMath {
                 } else {
                     get_next_sqrt_price_from_input(
                         sqrt_ratio_currentX96, liquidity, amount_remaining_less_fee, zero_for_one
-                    ).expect('sqrt_price_err')
+                    )
+                        .expect('sqrt_price_err')
                 };
         } else {
             amount_out =
@@ -68,7 +70,8 @@ mod SwapMath {
                 } else {
                     get_amount_0_delta(
                         sqrt_ratio_currentX96, sqrt_ratio_targetX96, liquidity, false
-                    ).expect('del_err_2')
+                    )
+                        .expect('del_err_2')
                 };
 
             sqrt_ratio_nextX96 =
@@ -77,7 +80,8 @@ mod SwapMath {
                 } else {
                     get_next_sqrt_price_from_output(
                         sqrt_ratio_currentX96, liquidity, amount_remaining.mag, zero_for_one
-                    ).expect('sqrt_price_err_1')
+                    )
+                        .expect('sqrt_price_err_1')
                 };
         }
 
@@ -88,7 +92,8 @@ mod SwapMath {
                 if max && exact_in {
                     amount_in
                 } else {
-                    get_amount_0_delta(sqrt_ratio_nextX96, sqrt_ratio_currentX96, liquidity, true).expect('del_err_3')
+                    get_amount_0_delta(sqrt_ratio_nextX96, sqrt_ratio_currentX96, liquidity, true)
+                        .expect('del_err_3')
                 };
 
             amount_out =
@@ -109,7 +114,8 @@ mod SwapMath {
                 if max && !exact_in {
                     amount_out
                 } else {
-                    get_amount_0_delta(sqrt_ratio_currentX96, sqrt_ratio_nextX96, liquidity, false).expect('del_err_4')
+                    get_amount_0_delta(sqrt_ratio_currentX96, sqrt_ratio_nextX96, liquidity, false)
+                        .expect('del_err_4')
                 };
         }
 

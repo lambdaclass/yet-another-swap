@@ -1,7 +1,7 @@
 mod TickMathTest {
     mod GetSqrtRatioAtTick {
         use core::result::ResultTrait;
-use yas_core::libraries::tick_math::TickMath::{
+        use yas_core::libraries::tick_math::TickMath::{
             MIN_TICK, MAX_TICK, MAX_SQRT_RATIO, MIN_SQRT_RATIO, get_sqrt_ratio_at_tick,
         };
         use yas_core::numbers::fixed_point::implementations::impl_64x96::{
@@ -31,7 +31,8 @@ use yas_core::libraries::tick_math::TickMath::{
         #[available_gas(200000000)]
         fn test_get_sqrt_ratio_at_tick_min_tick() {
             assert(
-                get_sqrt_ratio_at_tick(MIN_TICK()).expect('gsrt_err_1') == FP64x96Impl::from_felt(4295128739),
+                get_sqrt_ratio_at_tick(MIN_TICK())
+                    .expect('gsrt_err_1') == FP64x96Impl::from_felt(4295128739),
                 'result should be 4295128739_X96'
             );
         }
@@ -41,7 +42,8 @@ use yas_core::libraries::tick_math::TickMath::{
         fn test_get_sqrt_ratio_at_tick_min_plus_one() {
             let value = MIN_TICK() + IntegerTrait::<i32>::new(1, false);
             assert(
-                get_sqrt_ratio_at_tick(value).expect('gsrt_err_2') == FP64x96Impl::from_felt(4295343490),
+                get_sqrt_ratio_at_tick(value)
+                    .expect('gsrt_err_2') == FP64x96Impl::from_felt(4295343490),
                 'result should be 4295343490_X96'
             );
         }
@@ -51,9 +53,10 @@ use yas_core::libraries::tick_math::TickMath::{
         fn test_get_sqrt_ratio_at_tick_max_minus_1() {
             let value = MAX_TICK() - IntegerTrait::<i32>::new(1, false);
             assert(
-                get_sqrt_ratio_at_tick(
-                    value
-                ).expect('gsrt_err_3') == FixedTrait::from_felt(1461373636630004318706518188784493106690254656249),
+                get_sqrt_ratio_at_tick(value)
+                    .expect(
+                        'gsrt_err_3'
+                    ) == FixedTrait::from_felt(1461373636630004318706518188784493106690254656249),
                 'wrong ratio at tick MAX_TICK-1'
             );
         }
@@ -62,9 +65,10 @@ use yas_core::libraries::tick_math::TickMath::{
         #[available_gas(200000000)]
         fn test_get_sqrt_ratio_at_tick_max_tick() {
             assert(
-                get_sqrt_ratio_at_tick(
-                    MAX_TICK()
-                ).expect('gsrt_err_4') == FixedTrait::from_felt(1461446703485210103287273052203988822378723970342),
+                get_sqrt_ratio_at_tick(MAX_TICK())
+                    .expect(
+                        'gsrt_err_4'
+                    ) == FixedTrait::from_felt(1461446703485210103287273052203988822378723970342),
                 'wrong ratio at tick MAX_TICK'
             );
         }
@@ -73,7 +77,8 @@ use yas_core::libraries::tick_math::TickMath::{
         #[available_gas(200000000)]
         fn test_get_sqrt_ratio_at_tick_min_sqrt_ratio() {
             assert(
-                get_sqrt_ratio_at_tick(MIN_TICK()).expect('gsrt_err_5') == FixedTrait::new(MIN_SQRT_RATIO, false),
+                get_sqrt_ratio_at_tick(MIN_TICK())
+                    .expect('gsrt_err_5') == FixedTrait::new(MIN_SQRT_RATIO, false),
                 'wrong ratio tick MIN_SQRT_RATIO'
             );
         }
@@ -82,7 +87,8 @@ use yas_core::libraries::tick_math::TickMath::{
         #[available_gas(200000000)]
         fn test_get_sqrt_ratio_at_tick_max_sqrt_ratio() {
             assert(
-                get_sqrt_ratio_at_tick(MAX_TICK()).expect('gsrt_err_6') == FixedTrait::new(MAX_SQRT_RATIO, false),
+                get_sqrt_ratio_at_tick(MAX_TICK())
+                    .expect('gsrt_err_6') == FixedTrait::new(MAX_SQRT_RATIO, false),
                 'wrong ratio tick MAX_SQRT_RATIO'
             );
         }
@@ -179,7 +185,7 @@ use yas_core::libraries::tick_math::TickMath::{
 
     mod GetTickAtSqrtRatio {
         use core::result::ResultTrait;
-use yas_core::libraries::tick_math::TickMath::{
+        use yas_core::libraries::tick_math::TickMath::{
             MIN_TICK, MAX_TICK, MAX_SQRT_RATIO, MIN_SQRT_RATIO, get_tick_at_sqrt_ratio,
             get_sqrt_ratio_at_tick,
         };
@@ -219,7 +225,8 @@ use yas_core::libraries::tick_math::TickMath::{
             let input = FixedTrait::new(4295343490, false);
             let res = get_tick_at_sqrt_ratio(input);
             assert(
-                res.expect('tick_err_2') == (MIN_TICK() + IntegerTrait::<i32>::new(1, false)), 'wrong tick at MIN_TICK+1'
+                res.expect('tick_err_2') == (MIN_TICK() + IntegerTrait::<i32>::new(1, false)),
+                'wrong tick at MIN_TICK+1'
             );
         }
 
@@ -229,7 +236,8 @@ use yas_core::libraries::tick_math::TickMath::{
             let input = FixedTrait::new(1461373636630004318706518188784493106690254656249, false);
             let res = get_tick_at_sqrt_ratio(input);
             assert(
-                res.expect('tick_err_3') == MAX_TICK() - IntegerTrait::<i32>::new(1, false), 'wrong tick at MIN_TICK-1'
+                res.expect('tick_err_3') == MAX_TICK() - IntegerTrait::<i32>::new(1, false),
+                'wrong tick at MIN_TICK-1'
             );
         }
 
@@ -261,7 +269,8 @@ use yas_core::libraries::tick_math::TickMath::{
 
             let ratio_of_tick_plus_one = get_sqrt_ratio_at_tick(
                 res + IntegerTrait::<i32>::new(1, false)
-            ).expect('tick_err_7');
+            )
+                .expect('tick_err_7');
             assert(ratio >= ratio_of_tick, err_msg_2);
             assert(ratio < ratio_of_tick_plus_one, err_msg_3);
         }
@@ -478,16 +487,19 @@ use yas_core::libraries::tick_math::TickMath::{
         use yas_core::libraries::tick_math::TickMath::is_gt_as_int;
 
         #[test]
+        #[available_gas(200000)]
         fn test_a_gt_b() {
             assert(is_gt_as_int(10, 2) == 1, 'a > b result should be 1');
         }
 
         #[test]
+        #[available_gas(200000)]
         fn test_a_lt_b() {
             assert(is_gt_as_int(5, 10) == 0, 'a < b result should be 0');
         }
 
         #[test]
+        #[available_gas(200000)]
         fn test_a_eq_b() {
             assert(is_gt_as_int(5, 5) == 0, 'a == b result should be 0');
         }

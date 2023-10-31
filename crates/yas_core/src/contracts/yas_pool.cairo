@@ -233,10 +233,12 @@ mod YASPool {
             assert(
                 if zero_for_one {
                     sqrt_price_limit_X96 < slot_0_start.sqrt_price_X96
-                        && sqrt_price_limit_X96 > get_sqrt_ratio_at_tick(MIN_TICK()).expect('sqrt_err_pool2')
+                        && sqrt_price_limit_X96 > get_sqrt_ratio_at_tick(MIN_TICK())
+                            .expect('sqrt_err_pool2')
                 } else {
                     sqrt_price_limit_X96 > slot_0_start.sqrt_price_X96
-                        && sqrt_price_limit_X96 < get_sqrt_ratio_at_tick(MAX_TICK()).expect('sqrt_err_pool3')
+                        && sqrt_price_limit_X96 < get_sqrt_ratio_at_tick(MAX_TICK())
+                            .expect('sqrt_err_pool3')
                 },
                 'SPL'
             );
@@ -299,7 +301,8 @@ mod YASPool {
                 };
 
                 // get the price for the next tick
-                let step_sqrt_price_next_X96 = get_sqrt_ratio_at_tick(step_tick_next).expect('sqrt_err_pool4');
+                let step_sqrt_price_next_X96 = get_sqrt_ratio_at_tick(step_tick_next)
+                    .expect('sqrt_err_pool4');
 
                 // compute values to swap to the target tick, price limit, or point where input/output amount is exhausted
                 let (ret_sqrt_price_X96, step_amount_in, step_amount_out, mut step_fee_amount) =
@@ -372,7 +375,9 @@ mod YASPool {
                             liquidity_net = -liquidity_net;
                         };
 
-                        state.liquidity = LiquidityMath::add_delta(state.liquidity, liquidity_net).expect('delta_err_pool1');
+                        state
+                            .liquidity = LiquidityMath::add_delta(state.liquidity, liquidity_net)
+                            .expect('delta_err_pool1');
                     };
 
                     state
@@ -384,7 +389,9 @@ mod YASPool {
                             };
                 } else if state.sqrt_price_X96 != step_sqrt_price_start_X96 {
                     // recompute unless we're on a lower tick boundary (i.e. already transitioned ticks), and haven't moved
-                    state.tick = get_tick_at_sqrt_ratio(state.sqrt_price_X96).expect('sqrt_err_pool5');
+                    state
+                        .tick = get_tick_at_sqrt_ratio(state.sqrt_price_X96)
+                        .expect('sqrt_err_pool5');
                 };
             };
 
@@ -661,8 +668,10 @@ mod YASPool {
                     // right, when we'll need _more_ token0 (it's becoming more valuable) so user must provide it
                     amount_0 =
                         SqrtPriceMath::get_amount_0_delta_signed_token(
-                            get_sqrt_ratio_at_tick(params.position_key.tick_lower).expect('sqrt_err_pool6'),
-                            get_sqrt_ratio_at_tick(params.position_key.tick_upper).expect('sqrt_err_pool7'),
+                            get_sqrt_ratio_at_tick(params.position_key.tick_lower)
+                                .expect('sqrt_err_pool6'),
+                            get_sqrt_ratio_at_tick(params.position_key.tick_upper)
+                                .expect('sqrt_err_pool7'),
                             params.liquidity_delta
                         );
                 } else if slot_0.tick < params.position_key.tick_upper {
@@ -670,27 +679,32 @@ mod YASPool {
                     amount_0 =
                         SqrtPriceMath::get_amount_0_delta_signed_token(
                             slot_0.sqrt_price_X96,
-                            get_sqrt_ratio_at_tick(params.position_key.tick_upper).expect('sqrt_err_pool8'),
+                            get_sqrt_ratio_at_tick(params.position_key.tick_upper)
+                                .expect('sqrt_err_pool8'),
                             params.liquidity_delta
                         );
 
                     amount_1 =
                         SqrtPriceMath::get_amount_1_delta_signed_token(
-                            get_sqrt_ratio_at_tick(params.position_key.tick_lower).expect('sqrt_err_pool9'),
+                            get_sqrt_ratio_at_tick(params.position_key.tick_lower)
+                                .expect('sqrt_err_pool9'),
                             slot_0.sqrt_price_X96,
                             params.liquidity_delta
                         );
 
                     let mut liquidity = self.liquidity.read();
-                    liquidity = LiquidityMath::add_delta(liquidity, params.liquidity_delta).expect('delta_err_pool2');
+                    liquidity = LiquidityMath::add_delta(liquidity, params.liquidity_delta)
+                        .expect('delta_err_pool2');
                     self.liquidity.write(liquidity);
                 } else {
                     // current tick is above the passed range; liquidity can only become in range by crossing from right to
                     // left, when we'll need _more_ token1 (it's becoming more valuable) so user must provide it
                     amount_1 =
                         SqrtPriceMath::get_amount_1_delta_signed_token(
-                            get_sqrt_ratio_at_tick(params.position_key.tick_lower).expect('sqrt_err_pool10'),
-                            get_sqrt_ratio_at_tick(params.position_key.tick_upper).expect('sqrt_err_pool11'),
+                            get_sqrt_ratio_at_tick(params.position_key.tick_lower)
+                                .expect('sqrt_err_pool10'),
+                            get_sqrt_ratio_at_tick(params.position_key.tick_upper)
+                                .expect('sqrt_err_pool11'),
                             params.liquidity_delta
                         );
                 }

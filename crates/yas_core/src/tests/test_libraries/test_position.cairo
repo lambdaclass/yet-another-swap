@@ -72,7 +72,7 @@ mod PositionTests {
 
     mod Update {
         use core::result::ResultTrait;
-use super::{STATE, OWNER};
+        use super::{STATE, OWNER};
 
         use yas_core::libraries::position::{
             Info, PositionKey, Position::{PositionImpl, InternalImpl}
@@ -104,7 +104,8 @@ use super::{STATE, OWNER};
                 liquidity_delta,
                 fee_growth_inside_0_X128,
                 fee_growth_inside_1_X128
-            ).expect('NP');
+            )
+                .expect('NP');
         }
 
         #[test]

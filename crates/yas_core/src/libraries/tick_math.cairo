@@ -1,6 +1,6 @@
 mod TickMath {
     use core::result::ResultTrait;
-use integer::BoundedInt;
+    use integer::BoundedInt;
 
     use yas_core::numbers::fixed_point::core::{FixedTrait, FixedType};
     use yas_core::numbers::fixed_point::implementations::impl_64x96::{
@@ -148,7 +148,8 @@ use integer::BoundedInt;
         //         && sqrt_priceX96 < FixedTrait::new(MAX_SQRT_RATIO, false),
         //     'R' // TODO: review this error in the future. This is the original error from UniswapV3.
         // );
-        if !(sqrt_priceX96 >= FixedTrait::new(MIN_SQRT_RATIO, false) && sqrt_priceX96 < FixedTrait::new(MAX_SQRT_RATIO, false)) {
+        if !(sqrt_priceX96 >= FixedTrait::new(MIN_SQRT_RATIO, false)
+            && sqrt_priceX96 < FixedTrait::new(MAX_SQRT_RATIO, false)) {
             return Result::Err('R');
         }
         let ratio = sqrt_priceX96.mag.shl(32);
@@ -287,7 +288,8 @@ use integer::BoundedInt;
         let tick = if (tick_low == tick_high) {
             tick_low
         } else {
-            if (get_sqrt_ratio_at_tick(tick_high).expect('sqrt_ratio_at_tick_err') <= sqrt_priceX96) {
+            if (get_sqrt_ratio_at_tick(tick_high)
+                .expect('sqrt_ratio_at_tick_err') <= sqrt_priceX96) {
                 tick_high
             } else {
                 tick_low

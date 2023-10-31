@@ -48,7 +48,7 @@ trait IPosition<TContractState> {
 #[starknet::contract]
 mod Position {
     use core::result::ResultTrait;
-use super::{Info, PositionKey, IPosition};
+    use super::{Info, PositionKey, IPosition};
 
     use integer::BoundedInt;
     use hash::{HashStateTrait, HashStateExTrait};
@@ -76,20 +76,20 @@ use super::{Info, PositionKey, IPosition};
             liquidity_delta: i128,
             fee_growth_inside_0_X128: u256,
             fee_growth_inside_1_X128: u256
-        )-> Result<(), felt252> {
+        ) -> Result<(), felt252> {
             // get the position info
             let hashed_key = PoseidonTrait::new().update_with(position_key).finalize();
             let mut position = self.positions.read(hashed_key);
 
             let liquidity_next: u128 = if liquidity_delta == IntegerTrait::<i128>::new(0, false) {
                 // disallows pokes for 0 liquidity positions
-                if !(position.liquidity > 0){
+                if !(position.liquidity > 0) {
                     return Result::Err('NP');
                 };
                 position.liquidity
             } else {
-                add_delta(position.liquidity, liquidity_delta).expect('liq_err_pos')            
-                };
+                add_delta(position.liquidity, liquidity_delta).expect('liq_err_pos')
+            };
 
             // calculate accumulated fees
             let max_u128: u128 = BoundedInt::max();
