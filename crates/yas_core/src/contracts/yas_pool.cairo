@@ -584,7 +584,7 @@ mod YASPool {
                         position_key: PositionKey {
                             owner: get_caller_address(), tick_lower, tick_upper
                         },
-                        liquidity_delta: amount.into()
+                        liquidity_delta: -amount.into()
                     }
                 );
 
