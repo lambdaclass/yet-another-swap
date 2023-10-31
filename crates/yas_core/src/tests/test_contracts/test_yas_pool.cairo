@@ -766,7 +766,7 @@ mod YASPoolTests {
 
             let pool_token_0_balance_bf = token_0.balanceOf(yas_pool.contract_address);
             let pool_token_1_balance_bf = token_1.balanceOf(yas_pool.contract_address);
-            let slot0_bf = yas_pool.slot_0();
+            let slot0_bf = yas_pool.get_slot_0();
             let tick_bf = slot0_bf.tick;
             let pool_price_bf = round_for_price_comparison(slot0_bf.sqrt_price_X96.mag);
 
@@ -803,7 +803,7 @@ mod YASPoolTests {
                 fee_growth_global_0_X128_af - fee_growth_global_0_X128_bf,
                 fee_growth_global_1_X128_af - fee_growth_global_1_X128_bf
             );
-            let slot0_af = yas_pool.slot_0();
+            let slot0_af = yas_pool.get_slot_0();
             let tick_af = slot0_af.tick;
             let pool_price_af = round_for_price_comparison(slot0_af.sqrt_price_X96.mag);
             let token_0_swapped_expected = 666444407401233536; //variable por test

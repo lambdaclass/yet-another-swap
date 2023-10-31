@@ -46,11 +46,11 @@ mod SwapTestHelper {
     }
 
     #[derive(Copy, Drop, Serde)]
-    struct ExpectedValues {
+    struct SwapExpectedResults {
         amount_0_before: u256,
         amount_0_delta: u256,
         amount_1_before: u256,
-        amount_1_delta u256,
+        amount_1_delta: u256,
         execution_price: u256,
         fee_growth_global_0_X128_delta: u256,
         fee_growth_global_1_X128_delta: u256,
@@ -370,13 +370,9 @@ mod SwapTestHelper {
         *swaps[number]
     }
 
-    fn get_expected(number: u32) -> ExpectedValues {
-    let expected = array![
-
-    ]
-
-    //ret:
-    expected(number)
+    fn get_expected(number: u32) -> SwapExpectedResults {
+    let expected = array![];
+    *expected[number]
     }
 
 
