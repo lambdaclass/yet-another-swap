@@ -5,7 +5,8 @@ mod TestSqrtPriceMath {
     use yas_core::utils::math_utils::pow;
 
     mod GetNextSqrtPriceFromInput {
-        use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
+        use core::result::ResultTrait;
+use super::{encode_price_sqrt_1_1, encode_price_sqrt_121_100};
 
         use integer::BoundedInt;
 
@@ -64,7 +65,7 @@ mod TestSqrtPriceMath {
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, amount_in, true
-            );
+            ).expect('sqrt_err_1');
 
             assert(actual == price, 'assert error');
         }
@@ -79,7 +80,7 @@ mod TestSqrtPriceMath {
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, amount_in, true
-            );
+            ).expect('sqrt_err_2');
 
             assert(actual == price, 'assert error');
         }
@@ -96,7 +97,7 @@ mod TestSqrtPriceMath {
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, max_amount_no_overflow, true
-            );
+            ).expect('sqrt_err_3');
             assert(actual == FixedTrait::from_felt(1), 'assert error');
         }
 
@@ -110,7 +111,7 @@ mod TestSqrtPriceMath {
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, amount, false
-            );
+            ).expect('sqrt_err_4');
             assert(actual == FixedTrait::from_felt(87150978765690771352898345369), 'assert error');
         }
 
@@ -124,7 +125,7 @@ mod TestSqrtPriceMath {
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, amount, true
-            );
+            ).expect('sqrt_err_5');
             assert(actual == FixedTrait::from_felt(72025602285694852357767227579), 'assert error');
         }
 
@@ -138,7 +139,7 @@ mod TestSqrtPriceMath {
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, amount, true
-            );
+            ).expect('sqrt_err_6');
             assert(actual == FixedTrait::from_felt(624999999995069620), 'assert error');
         }
 
@@ -152,7 +153,7 @@ mod TestSqrtPriceMath {
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_input(
                 price, liquidity, amount, true
-            );
+            ).expect('sqrt_err_7');
             assert(actual == FixedTrait::from_felt(1), 'assert error');
         }
     }
@@ -236,7 +237,7 @@ mod TestSqrtPriceMath {
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_output(
                 price, liquidity, amount_out, true
-            );
+            ).expect('sqrt_err_8');
             let expected = FixedTrait::from_felt(77371252455336267181195264);
 
             assert(actual == expected, 'amount_lt_reservers_of_token_1')
@@ -258,7 +259,7 @@ mod TestSqrtPriceMath {
         fn test_input_price_if_amount_is_in_zero_and_zero_for_one_true() {
             let price = encode_price_sqrt_1_1();
             let liquidity: u128 = expand_to_18_decimals(1).try_into().unwrap() / 10;
-            let actual = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, 0, true);
+            let actual = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, 0, true).expect('sqrt_err_9');
 
             assert(actual == price, 'actual not eq to price')
         }
@@ -269,7 +270,7 @@ mod TestSqrtPriceMath {
         fn test_input_price_if_amount_is_in_zero_and_zero_for_one_false() {
             let price = encode_price_sqrt_1_1();
             let liquidity: u128 = expand_to_18_decimals(1).try_into().unwrap() / 10;
-            let actual = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, 0, false);
+            let actual = SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, 0, false).expect('sqrt_err_10');
 
             assert(actual == price, 'actual not eq to price')
         }
@@ -284,7 +285,7 @@ mod TestSqrtPriceMath {
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_output(
                 price, liquidity, amount_out, false
-            );
+            ).expect('sqrt_err_11');
             let expected = FixedTrait::from_felt(88031291682515930659493278152);
             assert(actual == expected, 'output_amount_0_dot_1_token_1')
         }
@@ -299,7 +300,7 @@ mod TestSqrtPriceMath {
 
             let actual = SqrtPriceMath::get_next_sqrt_price_from_output(
                 price, liquidity, amount_out, true
-            );
+            ).expect('sqrt_err_12');
             let expected = FixedTrait::from_felt(71305346262837903834189555302);
             assert(actual == expected, 'output_amount_0_dot_1_token_1')
         }
@@ -311,7 +312,7 @@ mod TestSqrtPriceMath {
             let price = encode_price_sqrt_1_1();
             let liquidity = 1;
             let amount_out: u256 = BoundedInt::max();
-            SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, true);
+            SqrtPriceMath::get_next_sqrt_price_from_output(price, liquidity, amount_out, true).expect('sqrt_err_13');
         }
 
         // reverts if amountOut is impossible in one for zero direction
@@ -344,7 +345,7 @@ mod TestSqrtPriceMath {
         fn test_amount_0_delta_returns_0_if_liquidity_is_0() {
             let actual = SqrtPriceMath::get_amount_0_delta(
                 encode_price_sqrt_1_1(), encode_price_sqrt_2_1(), 0, true
-            );
+            ).expect('sqrt_err_14');
             let expected = 0;
             assert(actual == expected, 'delta_returns_0_if_liq_is_0')
         }
@@ -355,7 +356,7 @@ mod TestSqrtPriceMath {
         fn test_amount_0_delta_returns_0_if_prices_are_eq() {
             let actual = SqrtPriceMath::get_amount_0_delta(
                 encode_price_sqrt_1_1(), encode_price_sqrt_1_1(), 0, true
-            );
+            ).expect('sqrt_err_15');
             let expected = 0;
             assert(actual == expected, 'delta_return_0_if_prices_are_eq')
         }
@@ -369,7 +370,7 @@ mod TestSqrtPriceMath {
                 encode_price_sqrt_121_100(),
                 expand_to_18_decimals(1).try_into().unwrap(),
                 true
-            );
+            ).expect('sqrt_err_16');
 
             assert(amount0 == 90909090909090910, 'amount0 ronded not eq');
 
@@ -378,7 +379,7 @@ mod TestSqrtPriceMath {
                 encode_price_sqrt_121_100(),
                 expand_to_18_decimals(1).try_into().unwrap(),
                 false
-            );
+            ).expect('sqrt_err_17');
             assert(amount0_rounded_down == amount0 - 1, 'amount0 ronded not eq');
         }
 
@@ -391,14 +392,14 @@ mod TestSqrtPriceMath {
                 encode_price_sqrt_pow_2_96_1(),
                 expand_to_18_decimals(1).try_into().unwrap(),
                 true
-            );
+            ).expect('sqrt_err_18');
 
             let amount_0_down = SqrtPriceMath::get_amount_0_delta(
                 encode_price_sqrt_pow_2_90_1(),
                 encode_price_sqrt_pow_2_96_1(),
                 expand_to_18_decimals(1).try_into().unwrap(),
                 false
-            );
+            ).expect('sqrt_err_19');
             assert(amount_0_up == amount_0_down + 1, 'amount_0_up != amount_0_down+1');
         }
     }

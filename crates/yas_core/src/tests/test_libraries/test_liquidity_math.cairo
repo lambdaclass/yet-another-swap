@@ -5,7 +5,7 @@ use yas_core::numbers::signed_integer::{i128::i128, integer_trait::IntegerTrait}
 #[available_gas(2000000)]
 fn test_add_delta_5_10() {
     let y = IntegerTrait::<i128>::new(10, false);
-    let z = add_delta(5, y);
+    let z = add_delta(5, y).expect('liquidity_errorred_1');
     assert(z == 15, 'z == 15');
 }
 
@@ -13,21 +13,21 @@ fn test_add_delta_5_10() {
 #[available_gas(2000000)]
 fn test_add_delta_1_0() {
     let y = IntegerTrait::<i128>::new(0, false);
-    let z = add_delta(1, y);
+    let z = add_delta(1, y).expect('liquidity_errorred_2');
     assert(z == 1, 'z == 1');
 }
 #[test]
 #[available_gas(2000000)]
 fn test_add_delta_1_minus1() {
     let y = IntegerTrait::<i128>::new(1, true);
-    let z = add_delta(1, y);
+    let z = add_delta(1, y).expect('liquidity_errorred_3');
     assert(z == 0, 'z == 0');
 }
 #[test]
 #[available_gas(2000000)]
 fn test_add_delta_1_1() {
     let y = IntegerTrait::<i128>::new(1, false);
-    let z = add_delta(1, y);
+    let z = add_delta(1, y).expect('liquidity_errorred_4');
     assert(z == 2, 'z == 2');
 }
 #[test]

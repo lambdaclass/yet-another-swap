@@ -42,12 +42,13 @@ trait IPosition<TContractState> {
         liquidity_delta: i128,
         fee_growth_inside_0_X128: u256,
         fee_growth_inside_1_X128: u256
-    );
+    ) -> Result<(), felt252>;
 }
 
 #[starknet::contract]
 mod Position {
-    use super::{Info, PositionKey, IPosition};
+    use core::result::ResultTrait;
+use super::{Info, PositionKey, IPosition};
 
     use integer::BoundedInt;
     use hash::{HashStateTrait, HashStateExTrait};
@@ -75,18 +76,20 @@ mod Position {
             liquidity_delta: i128,
             fee_growth_inside_0_X128: u256,
             fee_growth_inside_1_X128: u256
-        ) {
+        )-> Result<(), felt252> {
             // get the position info
             let hashed_key = PoseidonTrait::new().update_with(position_key).finalize();
             let mut position = self.positions.read(hashed_key);
 
             let liquidity_next: u128 = if liquidity_delta == IntegerTrait::<i128>::new(0, false) {
                 // disallows pokes for 0 liquidity positions
-                assert(position.liquidity > 0, 'NP');
-                position.liquidity
+                if !(position.liquidity > 0){
+                    return Result::Err('NP');
+                };
+                // position.liquidity
+                return Result::Ok(position.liquidity);
             } else {
-                add_delta(position.liquidity, liquidity_delta)
-            };
+                add_delta(position.liquidity, liquidity_delta).expect('liq_err_pos');            };
 
             // calculate accumulated fees
             let max_u128: u128 = BoundedInt::max();
@@ -119,6 +122,7 @@ mod Position {
                 position.tokens_owed_1 += tokens_owed_1;
             }
             self.positions.write(hashed_key, position);
+            return Result::Ok(());
         }
     }
 

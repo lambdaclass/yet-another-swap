@@ -76,7 +76,8 @@ trait ITick<TContractState> {
 
 #[starknet::contract]
 mod Tick {
-    use super::{ITick, Info};
+    use core::result::ResultTrait;
+use super::{ITick, Info};
 
     use integer::BoundedInt;
     use hash::{HashStateTrait, HashStateExTrait};
@@ -240,7 +241,7 @@ mod Tick {
             let liquidity_gross_before: u128 = info.liquidity_gross;
             let liquidity_gross_after: u128 = LiquidityMath::add_delta(
                 liquidity_gross_before, liquidity_delta
-            );
+            ).expect('liq_error');
             assert(liquidity_gross_after <= max_liquidity, 'LO');
 
             let flipped = (liquidity_gross_after == 0) != (liquidity_gross_before == 0);

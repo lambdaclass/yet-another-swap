@@ -1,5 +1,6 @@
 mod TickMath {
-    use integer::BoundedInt;
+    use core::result::ResultTrait;
+use integer::BoundedInt;
 
     use yas_core::numbers::fixed_point::core::{FixedTrait, FixedType};
     use yas_core::numbers::fixed_point::implementations::impl_64x96::{
@@ -33,12 +34,12 @@ mod TickMath {
     /// return: 
     ///     - sqrt_priceX96 A Fixed point Q64.96 number representing the sqrt of the ratio of the two assets (token1/token0)
     ///     at the given tick
-    fn get_sqrt_ratio_at_tick(tick: i32) -> FixedType {
+    fn get_sqrt_ratio_at_tick(tick: i32) -> Result<FixedType, felt252> {
         let abs_tick = tick.abs();
-        assert(
-            abs_tick <= MAX_TICK(), 'T'
-        ); // TODO: review this error in the future. This is the original error from UniswapV3.
-
+        // TODO: review this error in the future. This is the original error from UniswapV3.
+        if abs_tick > MAX_TICK() {
+            return Result::Err('T');
+        }
         // Initialize ratio with a base value
         let abs_tick_u256: u256 = abs_tick.mag.into();
         let mut aux_ratio = if (abs_tick_u256 & 0x1_u256) != 0_u256 {
@@ -120,7 +121,7 @@ mod TickMath {
         // we then downcast because we know the result always fits within 160 bits due to our tick input constraint
         // we round up in the division so getTickAtSqrtRatio of the output price is always consistent
         let sqrt_priceX96_mag = ((aux_ratio.shr(32)) + aux_add) & ((1.shl(160)) - 1);
-        return FixedTrait::new(sqrt_priceX96_mag, false);
+        return Result::Ok(FixedTrait::new(sqrt_priceX96_mag, false));
     }
 
     // Returns 1 if a > b, otherwise returns 0.
@@ -140,13 +141,16 @@ mod TickMath {
     ///     - sqrt_priceX96 The sqrt ratio for which to compute the tick as a Q64.96.
     /// return:
     ///     - tick The greatest tick for which the ratio is less than or equal to the input ratio.
-    fn get_tick_at_sqrt_ratio(sqrt_priceX96: FixedType) -> i32 {
+    fn get_tick_at_sqrt_ratio(sqrt_priceX96: FixedType) -> Result<i32, felt252> {
         // second inequality must be < because the price can never reach the price at the max tick
-        assert(
-            sqrt_priceX96 >= FixedTrait::new(MIN_SQRT_RATIO, false)
-                && sqrt_priceX96 < FixedTrait::new(MAX_SQRT_RATIO, false),
-            'R' // TODO: review this error in the future. This is the original error from UniswapV3.
-        );
+        // assert(
+        //     sqrt_priceX96 >= FixedTrait::new(MIN_SQRT_RATIO, false)
+        //         && sqrt_priceX96 < FixedTrait::new(MAX_SQRT_RATIO, false),
+        //     'R' // TODO: review this error in the future. This is the original error from UniswapV3.
+        // );
+        if !(sqrt_priceX96 >= FixedTrait::new(MIN_SQRT_RATIO, false) && sqrt_priceX96 < FixedTrait::new(MAX_SQRT_RATIO, false)) {
+            return Result::Err('R');
+        }
         let ratio = sqrt_priceX96.mag.shl(32);
         let mut r = ratio.clone();
         let mut msb = 0;
@@ -283,14 +287,14 @@ mod TickMath {
         let tick = if (tick_low == tick_high) {
             tick_low
         } else {
-            if (get_sqrt_ratio_at_tick(tick_high) <= sqrt_priceX96) {
+            if (get_sqrt_ratio_at_tick(tick_high).expect('sqrt_ratio_at_tick_err') <= sqrt_priceX96) {
                 tick_high
             } else {
                 tick_low
             }
         };
 
-        tick
+        return Result::Ok(tick);
     }
 
     // We don't have an impl of the i24 type, but I'm using only the 23 LSB bits

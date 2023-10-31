@@ -1,7 +1,8 @@
 // Functions based on Q64.96 sqrt price and liquidity
 // Contains the math that uses square root of price as a Q64.96 and liquidity to compute deltas
 mod SqrtPriceMath {
-    use integer::{u256_overflowing_add, u256_overflow_mul};
+    use core::result::ResultTrait;
+use integer::{u256_overflowing_add, u256_overflow_mul};
 
     use yas_core::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FixedType, FixedTrait, FP64x96Add, FP64x96Sub, FP64x96Mul, FP64x96Div,
@@ -21,11 +22,14 @@ mod SqrtPriceMath {
     /// @return The resulting price after adding or removing the amount, based on the 'add' parameter.
     fn get_next_sqrt_price_from_amount0_rounding_up(
         sqrtPX96: FixedType, liquidity: u128, amount: u256, add: bool
-    ) -> FixedType {
+    ) -> Result<FixedType, felt252> {
         if amount == 0 {
-            return sqrtPX96;
+            return Result::Ok(sqrtPX96);
         }
-        assert(sqrtPX96.sign == false, 'sqrtPX96 cannot be negative');
+        // assert(sqrtPX96.sign == false, 'sqrtPX96 cannot be negative');
+        if !(sqrtPX96.sign == false) {
+            return Result::Err('sqrtPX96 cannot be negative');
+        }
 
         let numerator = liquidity.into() * pow(2, Q96_RESOLUTION.into());
         let (product, product_has_overflow) = u256_overflow_mul(amount, sqrtPX96.mag);
@@ -36,20 +40,27 @@ mod SqrtPriceMath {
                     numerator, product
                 );
                 if !denominator_has_overflow && denominator >= numerator {
-                    return FP64x96Impl::new(
+                    return Result::Ok(FP64x96Impl::new(
                         mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false
-                    );
+                    ));
                 }
             }
             FP64x96Impl::new(div_rounding_up(numerator, (numerator / sqrtPX96.mag) + amount), false)
         } else {
             // if the product overflows, we know the denominator underflows
             // in addition, we must check that the denominator does not underflow
-            assert(FP64x96Impl::new(product / amount, false) == sqrtPX96, 'product overflow');
-            assert(numerator > product, 'denominator underflow');
+            // assert(FP64x96Impl::new(product / amount, false) == sqrtPX96, 'product overflow');
+            if !(FP64x96Impl::new(product / amount, false) == sqrtPX96) {
+                return Result::Err('product overflow');
+            }
+            // assert(numerator > product, 'denominator underflow');
+            if !(numerator > product) {
+                return Result::Err('denominator underflow');
+            }
             let denominator = numerator - product;
             FP64x96Impl::new(mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false)
         }
+        return Result::Ok(sqrtPX96);
     }
 
     /// Returns the next square root price given a token1 delta.
@@ -60,8 +71,11 @@ mod SqrtPriceMath {
     /// @return The resulting price after adding or removing the `amount`, based on the 'add' parameter.
     fn get_next_sqrt_price_from_amount1_rounding_down(
         sqrtPX96: FixedType, liquidity: u128, amount: u256, add: bool
-    ) -> FixedType {
-        assert(sqrtPX96.sign == false, 'sqrtPX96 cannot be negative');
+    ) -> Result<FixedType, felt252> {
+        // assert(sqrtPX96.sign == false, 'sqrtPX96 cannot be negative');
+        if !(sqrtPX96.sign == false) {
+            return Result::Err('sqrtPX96 cannot be negative');
+        }
 
         // if we're adding (subtracting), rounding down requires rounding the quotient down (up)
         // in both cases, avoid a mulDiv for most inputs
@@ -78,9 +92,13 @@ mod SqrtPriceMath {
             } else {
                 mul_div_rounding_up(amount, ONE, liquidity.into())
             };
-            assert(sqrtPX96 > FP64x96Impl::new(quotient, false), 'sqrtPX96_fp < quotient');
+            // assert(sqrtPX96 > FP64x96Impl::new(quotient, false), 'sqrtPX96_fp < quotient');
+            if !(sqrtPX96 > FP64x96Impl::new(quotient, false)) {
+                return Result::Err('sqrtPX96_fp < quotient');
+            }
             (sqrtPX96 - FP64x96Impl::new(quotient, false))
         }
+        return Result::Ok(sqrtPX96);
     }
 
     /// Returns the next square root price given an input amount of token0 or token1.
@@ -92,13 +110,19 @@ mod SqrtPriceMath {
     /// @return sqrtQX96 The price after adding the input amount to token0 or token1.
     fn get_next_sqrt_price_from_input(
         sqrtPX96: FixedType, liquidity: u128, amount_in: u256, zero_for_one: bool
-    ) -> FixedType {
-        assert(sqrtPX96.sign == false && liquidity > 0, 'sqrtPX96 & liquidity must be >0');
+    ) -> Result<FixedType, felt252> {
+        // assert(sqrtPX96.sign == false && liquidity > 0, 'sqrtPX96 & liquidity must be >0');
+
+        if !(sqrtPX96.sign == false && liquidity > 0) {
+            return Result::Err('sqrtPX96 & liquidity must be >0');
+        }
+
         if zero_for_one {
             get_next_sqrt_price_from_amount0_rounding_up(sqrtPX96, liquidity, amount_in, true)
         } else {
             get_next_sqrt_price_from_amount1_rounding_down(sqrtPX96, liquidity, amount_in, true)
         }
+        return Result::Ok(sqrtPX96);
     }
 
     /// Returns the next square root price given an output amount of token0 or token1.
@@ -110,14 +134,18 @@ mod SqrtPriceMath {
     /// @return sqrtQX96 The price after removing the output amount of token0 or token1.
     fn get_next_sqrt_price_from_output(
         sqrtPX96: FixedType, liquidity: u128, amount_out: u256, zero_for_one: bool
-    ) -> FixedType {
-        assert(sqrtPX96.sign == false && liquidity > 0, 'sqrtPX96 & liquidity must be >0');
+    ) -> Result<FixedType, felt252> {
+        // assert(sqrtPX96.sign == false && liquidity > 0, 'sqrtPX96 & liquidity must be >0');
+        if !(sqrtPX96.sign == false && liquidity > 0) {
+            return Result::Err('sqrtPX96 & liquidity must be >0');
+        }
 
         if zero_for_one {
             get_next_sqrt_price_from_amount1_rounding_down(sqrtPX96, liquidity, amount_out, false)
         } else {
             get_next_sqrt_price_from_amount0_rounding_up(sqrtPX96, liquidity, amount_out, false)
         }
+        return Result::Ok(sqrtPX96);
     }
 
     /// Returns the amount0 delta between two prices.
@@ -130,7 +158,7 @@ mod SqrtPriceMath {
     /// @return amount0 Amount of token0 required to cover a position of size liquidity between the two passed prices.
     fn get_amount_0_delta(
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: u128, round_up: bool
-    ) -> u256 {
+    ) -> Result<u256, felt252> {
         let (sqrt_ratio_AX96_1, sqrt_ratio_BX96_1) = if sqrt_ratio_AX96 > sqrt_ratio_BX96 {
             (sqrt_ratio_BX96, sqrt_ratio_AX96)
         } else {
@@ -139,7 +167,10 @@ mod SqrtPriceMath {
 
         let numerator1 = liquidity.into() * pow(2, Q96_RESOLUTION.into());
         let numerator2 = sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1;
-        assert(sqrt_ratio_AX96_1.sign == false, 'sqrt_ratio_AX96 cannot be neg');
+        // assert(sqrt_ratio_AX96_1.sign == false, 'sqrt_ratio_AX96 cannot be neg');
+        if !(sqrt_ratio_AX96_1.sign == false) {
+            return Result::Err('sqrt_ratio_AX96 cannot be neg');
+        }
 
         if round_up {
             div_rounding_up(
@@ -149,6 +180,8 @@ mod SqrtPriceMath {
         } else {
             mul_div(numerator1, numerator2.mag, sqrt_ratio_BX96_1.mag) / sqrt_ratio_AX96_1.mag
         }
+
+        return Result::Ok(numerator1);
     }
 
     /// Returns the amount1 delta between two prices.
@@ -179,12 +212,12 @@ mod SqrtPriceMath {
     ) -> i256 {
         if liquidity < IntegerTrait::<i128>::new(0, false) {
             IntegerTrait::<i256>::new(
-                get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false),
+                get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false).expect('delta_err'),
                 true
             )
         } else {
             IntegerTrait::<i256>::new(
-                get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false
+                get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true).expect('delta_error'), false
             )
         }
     }
