@@ -16,7 +16,7 @@ use yas_core::libraries::tick_math::TickMath::{
         #[should_panic(expected: ('T',))]
         fn test_get_sqrt_ratio_at_tick_reverts_minus1() {
             let value = MIN_TICK() - IntegerTrait::<i32>::new(1, false);
-            get_sqrt_ratio_at_tick(value);
+            get_sqrt_ratio_at_tick(value).expect('T');
         }
 
         #[test]
@@ -24,7 +24,7 @@ use yas_core::libraries::tick_math::TickMath::{
         #[should_panic(expected: ('T',))]
         fn test_get_sqrt_ratio_at_tick_reverts_plus1() {
             let value = MAX_TICK() + IntegerTrait::<i32>::new(1, false);
-            get_sqrt_ratio_at_tick(value);
+            get_sqrt_ratio_at_tick(value).expect('T');
         }
 
         #[test]
@@ -178,7 +178,8 @@ use yas_core::libraries::tick_math::TickMath::{
     }
 
     mod GetTickAtSqrtRatio {
-        use yas_core::libraries::tick_math::TickMath::{
+        use core::result::ResultTrait;
+use yas_core::libraries::tick_math::TickMath::{
             MIN_TICK, MAX_TICK, MAX_SQRT_RATIO, MIN_SQRT_RATIO, get_tick_at_sqrt_ratio,
             get_sqrt_ratio_at_tick,
         };
@@ -193,7 +194,7 @@ use yas_core::libraries::tick_math::TickMath::{
         #[should_panic(expected: ('R',))]
         fn test_panics_too_low() {
             let input = FixedTrait::new(MIN_SQRT_RATIO - 1, false);
-            get_tick_at_sqrt_ratio(input);
+            get_tick_at_sqrt_ratio(input).expect('R');
         }
 
         #[test]
@@ -201,7 +202,7 @@ use yas_core::libraries::tick_math::TickMath::{
         #[should_panic(expected: ('R',))]
         fn test_panics_too_high() {
             let input = FixedTrait::new(MAX_SQRT_RATIO + 1, false);
-            get_tick_at_sqrt_ratio(input);
+            get_tick_at_sqrt_ratio(input).expect('R');
         }
 
         #[test]

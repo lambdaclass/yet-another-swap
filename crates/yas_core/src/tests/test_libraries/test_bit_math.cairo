@@ -1,7 +1,7 @@
 mod BitMathTests {
     mod MostSignificantBit {
         use core::result::ResultTrait;
-use integer::BoundedInt;
+        use integer::BoundedInt;
         use yas_core::libraries::bit_math::BitMath::most_significant_bit;
 
         #[test]
@@ -37,6 +37,7 @@ use integer::BoundedInt;
         #[should_panic]
         fn msb_number_zero() {
             let ret = most_significant_bit(0);
+            assert(ret.expect('msb_failed_0') != 0, 'msb should be 0');
         }
     }
 
@@ -79,6 +80,7 @@ use integer::BoundedInt;
         #[should_panic]
         fn lsb_number_zero() {
             let ret = least_significant_bit(0);
+            assert(ret.expect('lsb_failed_0') == 0, 'lsb should be 0');
         }
     }
 }

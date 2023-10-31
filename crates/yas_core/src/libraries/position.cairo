@@ -86,10 +86,10 @@ use super::{Info, PositionKey, IPosition};
                 if !(position.liquidity > 0){
                     return Result::Err('NP');
                 };
-                // position.liquidity
-                return Result::Ok(position.liquidity);
+                position.liquidity
             } else {
-                add_delta(position.liquidity, liquidity_delta).expect('liq_err_pos');            };
+                add_delta(position.liquidity, liquidity_delta).expect('liq_err_pos')            
+                };
 
             // calculate accumulated fees
             let max_u128: u128 = BoundedInt::max();
@@ -110,7 +110,7 @@ use super::{Info, PositionKey, IPosition};
 
             // update the position
             if liquidity_delta != IntegerTrait::<i128>::new(0, false) {
-                position.liquidity = liquidity_next;
+                position.liquidity = liquidity_next
             }
 
             position.fee_growth_inside_0_last_X128 = fee_growth_inside_0_X128;
