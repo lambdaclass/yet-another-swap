@@ -696,7 +696,7 @@ mod YASPoolTests {
         }
     }
 
-    mod burn {
+    mod Burn {
         use super::{setup, get_min_tick_and_max_tick};
 
         use core::zeroable::Zeroable;
@@ -771,7 +771,6 @@ mod YASPoolTests {
         fn test_does_not_clear_the_position_fee_growth_snapshot_if_no_more_liquidity() {
             let (yas_pool, yas_router, token_0, token_1) = setup();
             let (min_tick, max_tick) = get_min_tick_and_max_tick();
-            set_contract_address(WALLET());
             yas_router
                 .mint(yas_pool.contract_address, OTHER(), min_tick, max_tick, 1000000000000000000);
             swap_exact_0_for_1(
@@ -781,7 +780,7 @@ mod YASPoolTests {
                 yas_router, yas_pool.contract_address, 1000000000000000000, WALLET()
             );
             set_contract_address(OTHER());
-            yas_router.burn(yas_pool.contract_address, min_tick, max_tick, 1000000000000000000);
+            yas_pool.burn(min_tick, max_tick, 1000000000000000000);
 
             let info_position = yas_pool
                 .get_position(
@@ -809,13 +808,13 @@ mod YASPoolTests {
             let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
             let tick_lower = min_tick + tick_spacing;
             let tick_upper = max_tick - tick_spacing;
-            set_contract_address(WALLET());
             yas_router.mint(yas_pool.contract_address, WALLET(), tick_lower, tick_upper, 1);
             swap_exact_0_for_1(
                 yas_router, yas_pool.contract_address, 1000000000000000000, WALLET()
             );
 
-            yas_router.burn(yas_pool.contract_address, tick_lower, tick_upper, 1);
+            set_contract_address(WALLET());
+            yas_pool.burn(tick_lower, tick_upper, 1);
 
             check_tick_is_clear(yas_pool, tick_lower);
             check_tick_is_clear(yas_pool, tick_upper);
@@ -829,7 +828,6 @@ mod YASPoolTests {
             let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
             let tick_lower = min_tick + tick_spacing;
             let tick_upper = max_tick - tick_spacing;
-            set_contract_address(WALLET());
             yas_router.mint(yas_pool.contract_address, WALLET(), tick_lower, tick_upper, 1);
             yas_router
                 .mint(
@@ -839,7 +837,8 @@ mod YASPoolTests {
                 yas_router, yas_pool.contract_address, 1000000000000000000, WALLET()
             );
 
-            yas_router.burn(yas_pool.contract_address, tick_lower, tick_upper, 1);
+            set_contract_address(WALLET());
+            yas_pool.burn(tick_lower, tick_upper, 1);
 
             check_tick_is_clear(yas_pool, tick_lower);
             check_tick_is_not_clear(yas_pool, tick_upper);
@@ -853,7 +852,6 @@ mod YASPoolTests {
             let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
             let tick_lower = min_tick + tick_spacing;
             let tick_upper = max_tick - tick_spacing;
-            set_contract_address(WALLET());
             yas_router.mint(yas_pool.contract_address, WALLET(), tick_lower, tick_upper, 1);
             yas_router
                 .mint(
@@ -863,7 +861,8 @@ mod YASPoolTests {
                 yas_router, yas_pool.contract_address, 1000000000000000000, WALLET()
             );
 
-            yas_router.burn(yas_pool.contract_address, tick_lower, tick_upper, 1);
+            set_contract_address(WALLET());
+            yas_pool.burn(tick_lower, tick_upper, 1);
 
             check_tick_is_not_clear(yas_pool, tick_lower);
             check_tick_is_clear(yas_pool, tick_upper);
