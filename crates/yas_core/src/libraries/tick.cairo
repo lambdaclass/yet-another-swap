@@ -97,11 +97,6 @@ mod Tick {
 
     #[external(v0)]
     impl TickImpl of ITick<ContractState> {
-        fn get_tick(self: @ContractState, tick: i32) -> Info {
-            let hashed_tick = PoseidonTrait::new().update_with(tick).finalize();
-            self.ticks.read(hashed_tick)
-        }
-
         /// @notice Derives max liquidity per tick from given tick spacing
         /// @dev Executed within the pool constructor
         /// @param tick_spacing The amount of required tick separation, realized in multiples of `tick_spacing`
@@ -274,6 +269,11 @@ mod Tick {
 
             self.ticks.write(hashed_tick, info);
             flipped
+        }
+
+        fn get_tick(self: @ContractState, tick: i32) -> Info {
+            let hashed_tick = PoseidonTrait::new().update_with(tick).finalize();
+            self.ticks.read(hashed_tick)
         }
     }
 
