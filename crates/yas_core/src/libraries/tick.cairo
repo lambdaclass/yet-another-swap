@@ -275,11 +275,6 @@ mod Tick {
             self.ticks.write(hashed_tick, info);
             flipped
         }
-
-        fn get_tick(self: @ContractState, tick: i32) -> Info {
-            let hashed_tick = PoseidonTrait::new().update_with(tick).finalize();
-            self.ticks.read(hashed_tick)
-        }
     }
 
     #[generate_trait]

@@ -1593,8 +1593,7 @@ mod YASPoolTests {
         #[test]
         #[available_gas(200000000000)]
         fn test_does_not_clear_the_position_fee_growth_snapshot_if_no_more_liquidity() {
-            let (yas_pool, yas_router, token_0, token_1) = setup();
-            let (min_tick, max_tick) = get_min_tick_and_max_tick();
+            let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
             yas_router
                 .mint(yas_pool.contract_address, OTHER(), min_tick, max_tick, 1000000000000000000);
             swap_exact_0_for_1(
@@ -1628,8 +1627,7 @@ mod YASPoolTests {
         #[test]
         #[available_gas(200000000000)]
         fn test_clears_the_tick_if_its_the_last_position_using_it() {
-            let (yas_pool, yas_router, token_0, token_1) = setup();
-            let (min_tick, max_tick) = get_min_tick_and_max_tick();
+            let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
             let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
             let tick_lower = min_tick + tick_spacing;
             let tick_upper = max_tick - tick_spacing;
@@ -1648,8 +1646,7 @@ mod YASPoolTests {
         #[test]
         #[available_gas(200000000000)]
         fn test_clears_only_the_lower_tick_if_upper_is_still_used() {
-            let (yas_pool, yas_router, token_0, token_1) = setup();
-            let (min_tick, max_tick) = get_min_tick_and_max_tick();
+            let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
             let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
             let tick_lower = min_tick + tick_spacing;
             let tick_upper = max_tick - tick_spacing;
@@ -1672,8 +1669,7 @@ mod YASPoolTests {
         #[test]
         #[available_gas(200000000000)]
         fn test_clears_only_the_upper_tick_if_lower_is_still_used() {
-            let (yas_pool, yas_router, token_0, token_1) = setup();
-            let (min_tick, max_tick) = get_min_tick_and_max_tick();
+            let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
             let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
             let tick_lower = min_tick + tick_spacing;
             let tick_upper = max_tick - tick_spacing;

@@ -35,8 +35,8 @@ trait IYASPool<TContractState> {
         data: Array<felt252>
     ) -> (u256, u256);
     fn burn(
-            ref self: TContractState, tick_lower: i32, tick_upper: i32, amount: u128
-        ) -> (u256, u256);
+        ref self: TContractState, tick_lower: i32, tick_upper: i32, amount: u128
+    ) -> (u256, u256);
     fn token_0(self: @TContractState) -> ContractAddress;
     fn token_1(self: @TContractState) -> ContractAddress;
     fn get_slot_0(self: @TContractState) -> Slot0;
