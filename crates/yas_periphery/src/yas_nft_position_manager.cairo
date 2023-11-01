@@ -3,7 +3,7 @@ use starknet::ContractAddress;
 use yas_core::numbers::fixed_point::implementations::impl_64x96::FixedType;
 use yas_core::numbers::signed_integer::{i32::i32};
 
-// details about the uniswap position
+// details about the YAS position
 #[derive(Copy, Drop, Serde, starknet::Store)]
 struct Position {
     // the address that is approved for spending this token
@@ -81,7 +81,7 @@ struct AddLiquidityParams {
 #[starknet::interface]
 trait IYASNFTPositionManager<TContractState> {
     fn positions(self: @TContractState, token_id: u256) -> (Position, PoolKey);
-    fn factory(self: @TContractState) -> ContractAddress;
+    fn get_factory(self: @TContractState) -> ContractAddress;
     fn create_and_initialize_pool_if_necessary(
         ref self: TContractState,
         token_0: ContractAddress,
@@ -217,7 +217,7 @@ mod YASNFTPositionManager {
 
     #[external(v0)]
     impl YASNFTPositionManagerImpl of IYASNFTPositionManager<ContractState> {
-        fn factory(self: @ContractState) -> ContractAddress {
+        fn get_factory(self: @ContractState) -> ContractAddress {
             self.factory.read()
         }
 
@@ -371,7 +371,7 @@ mod YASNFTPositionManager {
                 let (sqrt_price_X96_existing, _, _, _) = IYASPoolDispatcher {
                     contract_address: pool
                 }
-                    .slot_0();
+                    .get_slot_0();
                 if sqrt_price_X96_existing.is_zero() {
                     IYASPoolDispatcher { contract_address: pool }.initialize(sqrt_price_X96);
                 }
@@ -522,7 +522,7 @@ mod YASNFTPositionManager {
             let pool_dispatcher = IYASPoolDispatcher { contract_address: pool_address };
 
             // compute the liquidity amount
-            let (sqrt_price_X96, _, _, _) = pool_dispatcher.slot_0();
+            let (sqrt_price_X96, _, _, _) = pool_dispatcher.get_slot_0();
             let sqrt_ratio_AX96 = get_sqrt_ratio_at_tick(params.tick_lower);
             let sqrt_ratio_BX96 = get_sqrt_ratio_at_tick(params.tick_upper);
 
@@ -553,9 +553,9 @@ mod YASNFTPositionManager {
 
     /// @notice Computes the amount of liquidity received for a given amount of token0 and price range
     /// @dev Calculates amount0 * (sqrt(upper) * sqrt(lower)) / (sqrt(upper) - sqrt(lower))
-    /// @param sqrtRatioAX96 A sqrt price representing the first tick boundary
-    /// @param sqrtRatioBX96 A sqrt price representing the second tick boundary
-    /// @param amount0 The amount0 being sent in
+    /// @param sqrt_ratio_AX96 A sqrt price representing the first tick boundary
+    /// @param sqrt_ratio_BX96 A sqrt price representing the second tick boundary
+    /// @param amount_0 The amount0 being sent in
     /// @return liquidity The amount of returned liquidity
     fn get_liquidity_for_amount_0(
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, amount_0: u256
@@ -574,9 +574,9 @@ mod YASNFTPositionManager {
 
     /// @notice Computes the amount of liquidity received for a given amount of token1 and price range
     /// @dev Calculates amount1 / (sqrt(upper) - sqrt(lower)).
-    /// @param sqrtRatioAX96 A sqrt price representing the first tick boundary
-    /// @param sqrtRatioBX96 A sqrt price representing the second tick boundary
-    /// @param amount1 The amount1 being sent in
+    /// @param sqrt_ratio_AX96 A sqrt price representing the first tick boundary
+    /// @param sqrt_ratio_BX96 A sqrt price representing the second tick boundary
+    /// @param amount_1 The amount1 being sent in
     /// @return liquidity The amount of returned liquidity
     fn get_liquidity_for_amount_1(
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, amount_1: u256
@@ -594,11 +594,11 @@ mod YASNFTPositionManager {
 
     /// @notice Computes the maximum amount of liquidity received for a given amount of token0, token1, the current
     /// pool prices and the prices at the tick boundaries
-    /// @param sqrtRatioX96 A sqrt price representing the current pool prices
-    /// @param sqrtRatioAX96 A sqrt price representing the first tick boundary
-    /// @param sqrtRatioBX96 A sqrt price representing the second tick boundary
-    /// @param amount0 The amount of token0 being sent in
-    /// @param amount1 The amount of token1 being sent in
+    /// @param sqrt_ratio_X96 A sqrt price representing the current pool prices
+    /// @param sqrt_ratio_AX96 A sqrt price representing the first tick boundary
+    /// @param sqrt_ratio_BX96 A sqrt price representing the second tick boundary
+    /// @param amount_0 The amount of token0 being sent in
+    /// @param amount_1 The amount of token1 being sent in
     /// @return liquidity The maximum amount of liquidity received
     fn get_liquidity_for_amounts(
         sqrt_ratio_X96: FixedType,

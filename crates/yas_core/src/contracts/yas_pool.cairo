@@ -36,7 +36,7 @@ trait IYASPool<TContractState> {
     ) -> (u256, u256);
     fn token_0(self: @TContractState) -> ContractAddress;
     fn token_1(self: @TContractState) -> ContractAddress;
-    fn slot_0(self: @TContractState) -> (FixedType, i32, u8, bool);
+    fn get_slot_0(self: @TContractState) -> (FixedType, i32, u8, bool);
     fn positions(self: @TContractState, position_key: PositionKey) -> Info;
 }
 
@@ -203,7 +203,7 @@ mod YASPool {
             self.token_1.read()
         }
 
-        fn slot_0(self: @ContractState) -> (FixedType, i32, u8, bool) {
+        fn get_slot_0(self: @ContractState) -> (FixedType, i32, u8, bool) {
             let slot_0 = self.slot_0.read();
             (slot_0.sqrt_price_X96, slot_0.tick, slot_0.fee_protocol, self.unlocked.read())
         }

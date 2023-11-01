@@ -97,7 +97,7 @@ mod YASNFTPositionManagerTests {
         (min_tick, max_tick)
     }
 
-    mod mint {
+    mod Mint {
         use super::{setup, get_min_tick_and_max_tick};
         use starknet::testing::{set_contract_address};
 
