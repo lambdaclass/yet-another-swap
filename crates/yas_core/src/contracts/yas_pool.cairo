@@ -588,8 +588,8 @@ mod YASPool {
                     }
                 );
 
-            let amount_0: u256 = amount_0.try_into().unwrap();
-            let amount_1: u256 = amount_1.try_into().unwrap();
+            let amount_0: u256 = amount_0.mag;
+            let amount_1: u256 = amount_1.mag;
 
             if amount_0 > 0 || amount_1 > 0 {
                 let mut position_state = Position::unsafe_new_contract_state();
