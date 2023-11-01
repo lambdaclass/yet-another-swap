@@ -1,0 +1,38 @@
+name: Run Katana
+on:
+  merge_group:
+  push:
+    branches: [main]
+  pull_request:
+    branches: ["*"]
+jobs:
+  katana:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          override: true
+
+      - name: Install scarb
+        uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "0.7.0"
+
+      - name: Setup Katana .env
+        run: |
+          cp .github/workflows/katana/katana.env .env
+
+      - name: Download Katana
+        run: |
+          wget https://github.com/dojoengine/dojo/releases/download/v0.3.1/dojo_v0.3.1_linux_amd64.tar.gz
+          tar -xzvf dojo_v0.3.1_linux_amd64.tar.gz
+          rm sozo torii dojo-language-server
+
+      - name: Run Tests
+        run: |
+          ./katana &
+          make demo-local
