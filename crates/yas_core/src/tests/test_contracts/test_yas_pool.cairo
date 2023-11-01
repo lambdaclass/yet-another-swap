@@ -594,13 +594,13 @@ mod YASPoolTests {
             #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_amount_exceeds_the_max() {
                 let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
-                let max_liquidity_gross: u128 = yas_pool.max_liquidity_per_tick();
+                let max_liquidity_gross: u128 = yas_pool.get_max_liquidity_per_tick();
                 yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + yas_pool.tick_spacing(),
-                        max_tick - yas_pool.tick_spacing(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
                         max_liquidity_gross + 1
                     );
             }
@@ -609,13 +609,13 @@ mod YASPoolTests {
             #[available_gas(2000000000)]
             fn test_amount_max() {
                 let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
-                let max_liquidity_gross: u128 = yas_pool.max_liquidity_per_tick();
+                let max_liquidity_gross: u128 = yas_pool.get_max_liquidity_per_tick();
                 yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + yas_pool.tick_spacing(),
-                        max_tick - yas_pool.tick_spacing(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
                         max_liquidity_gross
                     );
             }
@@ -629,18 +629,18 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + yas_pool.tick_spacing(),
-                        max_tick - yas_pool.tick_spacing(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
                         1000
                     );
-                let max_liquidity_gross: u128 = yas_pool.max_liquidity_per_tick();
+                let max_liquidity_gross: u128 = yas_pool.get_max_liquidity_per_tick();
 
                 yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + yas_pool.tick_spacing(),
-                        max_tick - yas_pool.tick_spacing(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
                         max_liquidity_gross - 1000 + 1
                     );
             }
@@ -654,18 +654,18 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + yas_pool.tick_spacing(),
-                        max_tick - yas_pool.tick_spacing(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
                         1000
                     );
-                let max_liquidity_gross: u128 = yas_pool.max_liquidity_per_tick();
+                let max_liquidity_gross: u128 = yas_pool.get_max_liquidity_per_tick();
 
                 yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + yas_pool.tick_spacing() * IntegerTrait::<i32>::new(2, false),
-                        max_tick - yas_pool.tick_spacing(),
+                        min_tick + yas_pool.get_tick_spacing() * IntegerTrait::<i32>::new(2, false),
+                        max_tick - yas_pool.get_tick_spacing(),
                         max_liquidity_gross - 1000 + 1
                     );
             }
@@ -679,18 +679,18 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + yas_pool.tick_spacing(),
-                        max_tick - yas_pool.tick_spacing(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
                         1000
                     );
-                let max_liquidity_gross: u128 = yas_pool.max_liquidity_per_tick();
+                let max_liquidity_gross: u128 = yas_pool.get_max_liquidity_per_tick();
 
                 yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + yas_pool.tick_spacing(),
-                        max_tick - yas_pool.tick_spacing() * IntegerTrait::<i32>::new(2, false),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing() * IntegerTrait::<i32>::new(2, false),
                         max_liquidity_gross - 1000 + 1
                     );
             }
@@ -703,17 +703,17 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + yas_pool.tick_spacing(),
-                        max_tick - yas_pool.tick_spacing(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
                         1000
                     );
-                let max_liquidity_gross: u128 = yas_pool.max_liquidity_per_tick();
+                let max_liquidity_gross: u128 = yas_pool.get_max_liquidity_per_tick();
                 yas_router
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + yas_pool.tick_spacing(),
-                        max_tick - yas_pool.tick_spacing(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
                         max_liquidity_gross - 1000
                     );
             }
@@ -731,8 +731,8 @@ mod YASPoolTests {
                     .mint(
                         yas_pool.contract_address,
                         WALLET(),
-                        min_tick + yas_pool.tick_spacing(),
-                        max_tick - yas_pool.tick_spacing(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
                         Zeroable::zero()
                     );
             }
@@ -773,7 +773,7 @@ mod YASPoolTests {
             fn test_initial_tick() {
                 let (yas_pool, _, _, _, _, _) = setup();
 
-                let tick = yas_pool.slot_0().tick;
+                let tick = yas_pool.get_slot_0().tick;
 
                 assert(tick == IntegerTrait::<i32>::new(23028, true), 'wrong initial tick');
             }
@@ -826,7 +826,7 @@ mod YASPoolTests {
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
-                            max_tick - yas_pool.tick_spacing(),
+                            max_tick - yas_pool.get_tick_spacing(),
                             max_tick,
                             big_number
                         );
@@ -905,7 +905,7 @@ mod YASPoolTests {
                         'wrong liquidity_gross amount 2'
                     );
                     assert(
-                        yas_pool.get_tick(yas_pool.tick_spacing()).liquidity_gross == 0,
+                        yas_pool.get_tick(yas_pool.get_tick_spacing()).liquidity_gross == 0,
                         'wrong liquidity_gross amount 3'
                     );
                     assert(
@@ -922,7 +922,7 @@ mod YASPoolTests {
                             yas_pool.contract_address,
                             WALLET(),
                             IntegerTrait::<i32>::new(240, true),
-                            yas_pool.tick_spacing(),
+                            yas_pool.get_tick_spacing(),
                             150
                         );
 
@@ -937,7 +937,7 @@ mod YASPoolTests {
                         'wrong liquidity_gross amount 6'
                     );
                     assert(
-                        yas_pool.get_tick(yas_pool.tick_spacing()).liquidity_gross == 150,
+                        yas_pool.get_tick(yas_pool.get_tick_spacing()).liquidity_gross == 150,
                         'wrong liquidity_gross amount 7'
                     );
                     assert(
@@ -969,7 +969,7 @@ mod YASPoolTests {
                         'wrong liquidity_gross amount 10'
                     );
                     assert(
-                        yas_pool.get_tick(yas_pool.tick_spacing()).liquidity_gross == 150,
+                        yas_pool.get_tick(yas_pool.get_tick_spacing()).liquidity_gross == 150,
                         'wrong liquidity_gross amount 11'
                     );
                     assert(
@@ -1104,7 +1104,7 @@ mod YASPoolTests {
             //     assert(
             //         tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128'
             //     );
-            //     let tick_info = yas_pool.get_tick(-yas_pool.tick_spacing());
+            //     let tick_info = yas_pool.get_tick(-yas_pool.get_tick_spacing());
             //     assert(tick_info.liquidity_gross == 250, 'wrong liquidity_gross amount');
             //     assert(
             //         tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128'
@@ -1137,8 +1137,8 @@ mod YASPoolTests {
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
-                            min_tick + yas_pool.tick_spacing(),
-                            max_tick - yas_pool.tick_spacing(),
+                            min_tick + yas_pool.get_tick_spacing(),
+                            max_tick - yas_pool.get_tick_spacing(),
                             100
                         );
 
@@ -1160,14 +1160,14 @@ mod YASPoolTests {
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
-                            min_tick + yas_pool.tick_spacing(),
-                            max_tick - yas_pool.tick_spacing(),
+                            min_tick + yas_pool.get_tick_spacing(),
+                            max_tick - yas_pool.get_tick_spacing(),
                             100
                         );
 
                     assert(
                         yas_pool
-                            .get_tick(min_tick + yas_pool.tick_spacing())
+                            .get_tick(min_tick + yas_pool.get_tick_spacing())
                             .liquidity_gross == 100,
                         'wrong liquidity_gross amount 1'
                     );
@@ -1181,13 +1181,13 @@ mod YASPoolTests {
                         .mint(
                             yas_pool.contract_address,
                             WALLET(),
-                            min_tick + yas_pool.tick_spacing(),
-                            max_tick - yas_pool.tick_spacing(),
+                            min_tick + yas_pool.get_tick_spacing(),
+                            max_tick - yas_pool.get_tick_spacing(),
                             100
                         );
                     assert(
                         yas_pool
-                            .get_tick(max_tick - yas_pool.tick_spacing())
+                            .get_tick(max_tick - yas_pool.get_tick_spacing())
                             .liquidity_gross == 100,
                         'wrong liquidity_gross amount 1'
                     );
@@ -1219,8 +1219,8 @@ mod YASPoolTests {
             //         .mint(
             //             yas_pool.contract_address,
             //             WALLET(),
-            //             min_tick + yas_pool.tick_spacing(),
-            //             max_tick - yas_pool.tick_spacing(),
+            //             min_tick + yas_pool.get_tick_spacing(),
+            //             max_tick - yas_pool.get_tick_spacing(),
             //             100
             //         );
             //     //yas_pool.burn()
@@ -1274,7 +1274,7 @@ mod YASPoolTests {
                             yas_pool.contract_address,
                             WALLET(),
                             min_tick,
-                            min_tick + yas_pool.tick_spacing(),
+                            min_tick + yas_pool.get_tick_spacing(),
                             pow(2, 102).try_into().unwrap()
                         );
 
@@ -1343,8 +1343,8 @@ mod YASPoolTests {
     //     .mint(
     //         yas_pool.contract_address,
     //         WALLET(),
-    //         min_tick + yas_pool.tick_spacing(),
-    //         max_tick - yas_pool.tick_spacing(),
+    //         min_tick + yas_pool.get_tick_spacing(),
+    //         max_tick - yas_pool.get_tick_spacing(),
     //         1000000000000000000 //?
     //     );
     // }
@@ -1360,8 +1360,8 @@ mod YASPoolTests {
     //     .mint(
     //         yas_pool.contract_address,
     //         WALLET(),
-    //         min_tick + yas_pool.tick_spacing(),
-    //         max_tick - yas_pool.tick_spacing(),
+    //         min_tick + yas_pool.get_tick_spacing(),
+    //         max_tick - yas_pool.get_tick_spacing(),
     //         1000000000000000000 //?
     //     );
     //assert(1 == 2, 'no setFeeProtocol() function');
@@ -1378,8 +1378,8 @@ mod YASPoolTests {
     //     .mint(
     //         yas_pool.contract_address,
     //         WALLET(),
-    //         min_tick + yas_pool.tick_spacing(),
-    //         max_tick - yas_pool.tick_spacing(),
+    //         min_tick + yas_pool.get_tick_spacing(),
+    //         max_tick - yas_pool.get_tick_spacing(),
     //         1000000000000000000 //?
     //     );
     //assert(1 == 2, 'no burn() function');
