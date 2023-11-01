@@ -466,7 +466,10 @@ mod YASPoolTests {
 
     mod Mint {
         use yas_core::contracts::yas_pool::YASPool::InternalTrait;
-        use super::{deploy, mock_contract_states};
+        use super::{
+            setup, get_min_tick_and_max_tick, deploy, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount,
+            fee_amount
+        };
 
         use starknet::{ContractAddress, ClassHash, SyscallResultTrait, contract_address_const};
         use starknet::syscalls::deploy_syscall;
@@ -486,81 +489,902 @@ mod YASPoolTests {
             FP64x96Impl, FixedType, FixedTrait
         };
         use yas_core::libraries::tick::{Tick, Tick::TickImpl};
-        use yas_core::libraries::tick_math::{TickMath::MIN_TICK, TickMath::MAX_TICK};
         use yas_core::libraries::position::{Info, Position, Position::PositionImpl, PositionKey};
-        use yas_core::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, WALLET};
-        use yas_core::tests::utils::constants::FactoryConstants::{
-            FeeAmount, fee_amount, tick_spacing
+        use yas_core::tests::utils::constants::PoolConstants::{
+            FACTORY_ADDRESS, TOKEN_A, TOKEN_B, WALLET, STATE, encode_price_sqrt_1_1
         };
-        use yas_core::contracts::yas_erc20::{ERC20, ERC20::ERC20Impl, IERC20Dispatcher};
+        use yas_core::contracts::yas_erc20::{
+            ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
+        };
         use yas_core::numbers::signed_integer::{
             i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
         };
 
-        // TODO: 'fails if not initialized'
-        // TODO: 'initialize the pool at price of 10:1'
+        use yas_core::utils::math_utils::pow;
+
+        #[test]
+        #[available_gas(2000000000)]
+        #[should_panic(expected: ('LOK', 'ENTRYPOINT_FAILED'))]
+        fn test_fails_not_initialized() {
+            let yas_pool = deploy(
+                FACTORY_ADDRESS(),
+                TOKEN_A(),
+                TOKEN_B(),
+                fee_amount(FeeAmount::MEDIUM),
+                IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false)
+            );
+            let sqrt_price_X96 = encode_price_sqrt_1_1();
+            //yas_pool.initialize(sqrt_price_X96); //don't, test is about not initializing
+            let (min_tick, max_tick) = get_min_tick_and_max_tick();
+
+            let (amount0, amount1): (u256, u256) = yas_pool
+                .mint(
+                    recipient: yas_pool.contract_address,
+                    tick_lower: min_tick,
+                    tick_upper: max_tick,
+                    amount: 1,
+                    data: array![]
+                );
+        }
 
         mod FailureCases {
-            // TODO: 'fails if tickLower greater than tickUpper'
+            use super::{
+                setup, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount, fee_amount,
+                IERC20DispatcherTrait, FACTORY_ADDRESS, TOKEN_A, TOKEN_B, WALLET,
+                encode_price_sqrt_1_1
+            };
+            use yas_core::numbers::signed_integer::{
+                i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
+            };
+            use yas_core::contracts::yas_pool::{
+                YASPool, YASPool::ContractState, YASPool::YASPoolImpl, YASPool::InternalImpl,
+                IYASPool, IYASPoolDispatcher, IYASPoolDispatcherTrait
+            };
+            use yas_core::contracts::yas_router::{
+                YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
+            };
+
             #[test]
-            #[available_gas(2000000)]
-            fn test_fails_tick_lower_greater_than_tick_upper() {}
-        // TODO: 'fails if tickLower less than min tick'
-        // TODO: 'fails if tickUpper greater than max tick'
-        // TODO: 'fails if amount exceeds the max'
-        // TODO: 'fails if total amount at tick exceeds the max'
-        // TODO: 'fails if amount is 0'
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('TLU', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_fails_tick_lower_greater_than_tick_upper() {
+                let (yas_pool, _, _, yas_router, _, _) = setup();
+                yas_router
+                    .mint(
+                        yas_pool.contract_address,
+                        WALLET(),
+                        IntegerTrait::<i32>::new(1, false),
+                        Zeroable::zero(),
+                        1
+                    );
+            }
+
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('TLM', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_fails_tick_lower_than_min() {
+                let (yas_pool, _, _, yas_router, _, _) = setup();
+                yas_router
+                    .mint(
+                        yas_pool.contract_address,
+                        WALLET(),
+                        MIN_TICK() - IntegerTrait::<i32>::new(1, false),
+                        Zeroable::zero(),
+                        1
+                    );
+            }
+
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('TUM', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_fails_tick_greater_than_max() {
+                let (yas_pool, _, _, yas_router, _, _) = setup();
+                yas_router
+                    .mint(
+                        yas_pool.contract_address,
+                        WALLET(),
+                        Zeroable::zero(),
+                        MAX_TICK() + IntegerTrait::<i32>::new(1, false),
+                        1
+                    );
+            }
+
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_fails_amount_exceeds_the_max() {
+                let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
+                let max_liquidity_gross = yas_pool.get_max_liquidity_per_tick();
+                yas_router
+                    .mint(
+                        yas_pool.contract_address,
+                        WALLET(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
+                        max_liquidity_gross + 1
+                    );
+            }
+
+            #[test]
+            #[available_gas(2000000000)]
+            fn test_amount_max() {
+                let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
+                let max_liquidity_gross = yas_pool.get_max_liquidity_per_tick();
+                yas_router
+                    .mint(
+                        yas_pool.contract_address,
+                        WALLET(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
+                        max_liquidity_gross
+                    );
+            }
+
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_fails_amount_at_tick_greater_than_max() {
+                let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
+                yas_router
+                    .mint(
+                        yas_pool.contract_address,
+                        WALLET(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
+                        1000
+                    );
+                let max_liquidity_gross = yas_pool.get_max_liquidity_per_tick();
+
+                yas_router
+                    .mint(
+                        yas_pool.contract_address,
+                        WALLET(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
+                        max_liquidity_gross - 1000 + 1
+                    );
+            }
+
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_fails_amount_at_tick_greater_than_max_2() {
+                let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
+                yas_router
+                    .mint(
+                        yas_pool.contract_address,
+                        WALLET(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
+                        1000
+                    );
+                let max_liquidity_gross = yas_pool.get_max_liquidity_per_tick();
+
+                yas_router
+                    .mint(
+                        yas_pool.contract_address,
+                        WALLET(),
+                        min_tick + yas_pool.get_tick_spacing() * IntegerTrait::<i32>::new(2, false),
+                        max_tick - yas_pool.get_tick_spacing(),
+                        max_liquidity_gross - 1000 + 1
+                    );
+            }
+
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_fails_amount_at_tick_greater_than_max_3() {
+                let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
+                yas_router
+                    .mint(
+                        yas_pool.contract_address,
+                        WALLET(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
+                        1000
+                    );
+                let max_liquidity_gross = yas_pool.get_max_liquidity_per_tick();
+
+                yas_router
+                    .mint(
+                        yas_pool.contract_address,
+                        WALLET(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing() * IntegerTrait::<i32>::new(2, false),
+                        max_liquidity_gross - 1000 + 1
+                    );
+            }
+
+            #[test]
+            #[available_gas(2000000000)]
+            fn test_success_amount_at_tick_greater_than_max_4() {
+                let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
+                yas_router
+                    .mint(
+                        yas_pool.contract_address,
+                        WALLET(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
+                        1000
+                    );
+                let max_liquidity_gross = yas_pool.get_max_liquidity_per_tick();
+                yas_router
+                    .mint(
+                        yas_pool.contract_address,
+                        WALLET(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
+                        max_liquidity_gross - 1000
+                    );
+            }
+
+            #[test]
+            #[available_gas(2000000000)]
+            #[should_panic(
+                expected: (
+                    'amount must be greater than 0', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'
+                )
+            )] //set panic code
+            fn test_fails_amount_is_zero() {
+                let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
+                yas_router
+                    .mint(
+                        yas_pool.contract_address,
+                        WALLET(),
+                        min_tick + yas_pool.get_tick_spacing(),
+                        max_tick - yas_pool.get_tick_spacing(),
+                        Zeroable::zero()
+                    );
+            }
         }
 
         mod SuccessCases {
-            // TODO: 'initial balances'
-            // TODO: 'initial tick'
-            mod AboveCurrentPrice {
-                use super::super::super::setup;
+            use super::{
+                setup, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount, fee_amount,
+                IERC20DispatcherTrait, FACTORY_ADDRESS, TOKEN_A, TOKEN_B, WALLET, STATE,
+                encode_price_sqrt_1_1
+            };
+            use super::super::{get_min_tick_and_max_tick};
+            use yas_core::numbers::signed_integer::{
+                i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
+            };
+            use yas_core::contracts::yas_pool::{
+                YASPool, YASPool::ContractState, YASPool::InternalImpl, IYASPool,
+                IYASPoolDispatcher, IYASPoolDispatcherTrait
+            };
+            use yas_core::contracts::yas_router::{
+                YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
+            };
 
-                use yas_core::contracts::yas_pool::{
-                    YASPool, YASPool::ContractState, YASPool::InternalImpl, IYASPool,
-                    IYASPoolDispatcher, IYASPoolDispatcherTrait
+            #[test]
+            #[available_gas(200000000)]
+            fn test_initial_balances() {
+                let (yas_pool, token_0, token_1, _, _, _) = setup();
+
+                let balance_token_0 = token_0.balanceOf(yas_pool.contract_address);
+                let balance_token_1 = token_1.balanceOf(yas_pool.contract_address);
+
+                assert(balance_token_0 == 9996, 'wrong balance token 0');
+                assert(balance_token_1 == 1000, 'wrong balance token 1');
+            }
+
+            #[test]
+            #[available_gas(200000000)]
+            fn test_initial_tick() {
+                let (yas_pool, _, _, _, _, _) = setup();
+
+                let tick = yas_pool.get_slot_0().tick;
+
+                assert(tick == IntegerTrait::<i32>::new(23028, true), 'wrong initial tick');
+            }
+
+            mod AboveCurrentPrice {
+                use yas_core::contracts::yas_pool::{IYASPoolDispatcherTrait};
+                use super::{
+                    get_min_tick_and_max_tick, setup, MIN_TICK, MAX_TICK, tick_spacing, FeeAmount,
+                    fee_amount, IERC20DispatcherTrait, FACTORY_ADDRESS, TOKEN_A, TOKEN_B, WALLET,
+                    encode_price_sqrt_1_1
                 };
-                use yas_core::contracts::yas_erc20::IERC20DispatcherTrait;
+                use super::super::pow;
+                use yas_core::numbers::signed_integer::{
+                    i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
+                };
+
+                use yas_core::contracts::yas_router::{
+                    YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
+                };
+                use yas_core::libraries::tick::{Tick, Tick::TickImpl};
 
                 #[test]
                 #[available_gas(200000000)]
                 fn test_transfers_token_0_only() {
-                    let (yas_pool, yas_router, token_0, token_1) = setup();
+                    let (yas_pool, token_0, token_1, yas_router, _, _) = setup();
 
-                    let balance_token_0 = token_0.balanceOf(yas_pool.contract_address);
-                    let balance_token_1 = token_1.balanceOf(yas_pool.contract_address);
-
-                    assert(balance_token_0 == 2000000000000000000, 'wrong balance token 0');
-                    assert(balance_token_1 == 2000000000000000000, 'wrong balance token 1');
+                    yas_router
+                        .mint(
+                            yas_pool.contract_address,
+                            WALLET(),
+                            IntegerTrait::<i32>::new(22980, true),
+                            Zeroable::zero(),
+                            10000
+                        );
+                    assert(
+                        token_0.balanceOf(yas_pool.contract_address) == 9996 + 21549,
+                        'token_0 not transferred'
+                    );
+                    assert(
+                        token_1.balanceOf(yas_pool.contract_address) == 1000, 'token_1 transferred'
+                    );
                 }
-            // TODO: 'max tick with max leverage'
-            // TODO: 'works for max tick'
-            // TODO: 'removing works'
-            // TODO: 'adds liquidity to liquidityGross'
-            // TODO: 'removes liquidity from liquidityGross'
-            // TODO: 'clears tick lower if last position is removed'
-            // TODO: 'clears tick upper if last position is removed'
-            // TODO: 'only clears the tick that is not used at all'
+
+                #[test]
+                #[available_gas(200000000)]
+                fn test_max_tick_max_lvrg() {
+                    let (yas_pool, token_0, token_1, yas_router, _, max_tick) = setup();
+                    let big_number = pow(2, 102).try_into().unwrap();
+                    yas_router
+                        .mint(
+                            yas_pool.contract_address,
+                            WALLET(),
+                            max_tick - yas_pool.get_tick_spacing(),
+                            max_tick,
+                            big_number
+                        );
+
+                    assert(
+                        token_0.balanceOf(yas_pool.contract_address) == 9996 + 828011525,
+                        'wrong token_0 amount'
+                    );
+                    assert(
+                        token_1.balanceOf(yas_pool.contract_address) == 1000, 'wrong token_1 amount'
+                    );
+                }
+
+                #[test]
+                #[available_gas(200000000000)]
+                fn test_max_tick() {
+                    let (yas_pool, token_0, token_1, yas_router, _, max_tick) = setup();
+
+                    yas_router
+                        .mint(
+                            yas_pool.contract_address,
+                            WALLET(),
+                            IntegerTrait::<i32>::new(22980, true),
+                            max_tick,
+                            10000
+                        );
+                    assert(
+                        token_0.balanceOf(yas_pool.contract_address) == 9996 + 31549,
+                        'wrong token_0 amount'
+                    );
+                    assert(
+                        token_1.balanceOf(yas_pool.contract_address) == 1000, 'wrong token_1 amount'
+                    );
+                }
+
+                // // WIP: test of 'removing works'
+                // TODO: missing burn() func
+                // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L276
+                // //#[test]
+                // //#[available_gas(200000000)]
+                // fn test_burn() {
+                //     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                //     yas_router
+                //         .mint(
+                //             yas_pool.contract_address,
+                //             WALLET(),
+                //             IntegerTrait::<i32>::new(240, true),
+                //             Zeroable::zero(),
+                //             10000
+                //         );
+                //     //yas_pool.burn(-240, 0, 10000)
+                //     assert(1 == 2, 'burn() function not created');
+                // }
+
+                #[test]
+                #[available_gas(200000000)]
+                fn test_add_liquidityGross() {
+                    let (yas_pool, _, _, yas_router, _, _) = setup();
+                    yas_router
+                        .mint(
+                            yas_pool.contract_address,
+                            WALLET(),
+                            IntegerTrait::<i32>::new(240, true),
+                            Zeroable::zero(),
+                            100
+                        );
+
+                    assert(
+                        yas_pool
+                            .get_tick(IntegerTrait::<i32>::new(240, true))
+                            .liquidity_gross == 100,
+                        'wrong liquidity_gross amount 1'
+                    );
+                    assert(
+                        yas_pool.get_tick(Zeroable::zero()).liquidity_gross == 100,
+                        'wrong liquidity_gross amount 2'
+                    );
+                    assert(
+                        yas_pool.get_tick(yas_pool.get_tick_spacing()).liquidity_gross == 0,
+                        'wrong liquidity_gross amount 3'
+                    );
+                    assert(
+                        yas_pool
+                            .get_tick(
+                                IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM) * 2, false)
+                            )
+                            .liquidity_gross == 0,
+                        'wrong liquidity_gross amount 4'
+                    );
+
+                    yas_router
+                        .mint(
+                            yas_pool.contract_address,
+                            WALLET(),
+                            IntegerTrait::<i32>::new(240, true),
+                            yas_pool.get_tick_spacing(),
+                            150
+                        );
+
+                    assert(
+                        yas_pool
+                            .get_tick(IntegerTrait::<i32>::new(240, true))
+                            .liquidity_gross == 250,
+                        'wrong liquidity_gross amount 5'
+                    );
+                    assert(
+                        yas_pool.get_tick(Zeroable::zero()).liquidity_gross == 100,
+                        'wrong liquidity_gross amount 6'
+                    );
+                    assert(
+                        yas_pool.get_tick(yas_pool.get_tick_spacing()).liquidity_gross == 150,
+                        'wrong liquidity_gross amount 7'
+                    );
+                    assert(
+                        yas_pool
+                            .get_tick(
+                                IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM) * 2, false)
+                            )
+                            .liquidity_gross == 0,
+                        'wrong liquidity_gross amount 8'
+                    );
+
+                    yas_router
+                        .mint(
+                            yas_pool.contract_address,
+                            WALLET(),
+                            Zeroable::zero(),
+                            IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM) * 2, false),
+                            60
+                        );
+
+                    assert(
+                        yas_pool
+                            .get_tick(IntegerTrait::<i32>::new(240, true))
+                            .liquidity_gross == 250,
+                        'wrong liquidity_gross amount 9'
+                    );
+                    assert(
+                        yas_pool.get_tick(Zeroable::zero()).liquidity_gross == 160,
+                        'wrong liquidity_gross amount 10'
+                    );
+                    assert(
+                        yas_pool.get_tick(yas_pool.get_tick_spacing()).liquidity_gross == 150,
+                        'wrong liquidity_gross amount 11'
+                    );
+                    assert(
+                        yas_pool
+                            .get_tick(
+                                IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM) * 2, false)
+                            )
+                            .liquidity_gross == 60,
+                        'wrong liquidity_gross amount 12'
+                    );
+                }
+            // // WIP: test of 'removes liquidity from liquidityGross'
+            // TODO: missing burn() func.
+            // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L302
+            // //#[test]
+            // //#[available_gas(200000000)]
+            // fn test_remove_liquidityGross() {
+            //     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+            //     yas_router
+            //         .mint(
+            //             yas_pool.contract_address,
+            //             WALLET(),
+            //             IntegerTrait::<i32>::new(240, true),
+            //             Zeroable::zero(),
+            //             100
+            //         );
+            //     yas_router
+            //         .mint(
+            //             yas_pool.contract_address,
+            //             WALLET(),
+            //             IntegerTrait::<i32>::new(240, true),
+            //             Zeroable::zero(),
+            //             40
+            //         );
+            //     //burn
+            //     assert(1 == 2, 'burn() func doesnt exist yet');
+            //     assert(
+            //         yas_pool.get_tick(IntegerTrait::<i32>::new(240, true)).liquidity_gross == 500,
+            //         'wrong liquidity_gross amount'
+            //     );
+            //     assert(
+            //         yas_pool.get_tick(Zeroable::zero()).liquidity_gross == 50,
+            //         'wrong liquidity_gross amount 2'
+            //     );
+            // }
+
+            // WIP: test of 'clears tick lower if last position is removed'
+            // TODO: missing burn() func
+            // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L310
+            // //#[test]
+            // //#[available_gas(200000000)]
+            // fn test_clear_tick_lower() {
+            //     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+            //     yas_router
+            //         .mint(
+            //             yas_pool.contract_address,
+            //             WALLET(),
+            //             IntegerTrait::<i32>::new(240, true),
+            //             Zeroable::zero(),
+            //             100
+            //         );
+            //     //burn
+            //     assert(1 == 2, 'burn() func doesnt exist yet');
+            //     let tick_info = yas_pool.get_tick(IntegerTrait::<i32>::new(240, true));
+            //     assert(tick_info.liquidity_gross == 0, 'wrong liquidity_gross amount');
+            //     assert(
+            //         tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128'
+            //     );
+            //     assert(
+            //         tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128'
+            //     );
+            //     assert(1 == 2, 'burn() func doesnt exist yet');
+            // }
+
+            // // WIP: test of 'clears tick upper if last position is removed'
+            // // TODO: missing burn() func
+            // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L319
+            // //#[test]
+            // //#[available_gas(200000000)]
+            // fn test_clear_tick_upper() {
+            //     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+            //     yas_router
+            //         .mint(
+            //             yas_pool.contract_address,
+            //             WALLET(),
+            //             IntegerTrait::<i32>::new(240, true),
+            //             Zeroable::zero(),
+            //             100
+            //         );
+            //     //burn
+            //     assert(1 == 2, 'burn() func doesnt exist yet');
+            //     let tick_info = yas_pool.get_tick(Zeroable::zero());
+            //     assert(tick_info.liquidity_gross == 0, 'wrong liquidity_gross amount');
+            //     assert(
+            //         tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128'
+            //     );
+            //     assert(
+            //         tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128'
+            //     );
+            // }
+
+            // // WIP: test of 'only clears the tick that is not used at all'
+            // // TODO: missing burn() func
+            // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L327
+            // //#[test]
+            // //#[available_gas(200000000)]
+            // fn test_clear_tick_unused() {
+            //     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+            //     yas_router
+            //         .mint(
+            //             yas_pool.contract_address,
+            //             WALLET(),
+            //             IntegerTrait::<i32>::new(240, true),
+            //             Zeroable::zero(),
+            //             100
+            //         );
+            //     yas_router
+            //         .mint(
+            //             yas_pool.contract_address,
+            //             WALLET(),
+            //             IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), true),
+            //             Zeroable::zero(),
+            //             250
+            //         );
+            //     //burn
+            //     assert(1 == 2, 'burn() func doesnt exist yet');
+            //     let tick_info = yas_pool.get_tick(IntegerTrait::<i32>::new(240, true));
+            //     assert(tick_info.liquidity_gross == 0, 'wrong liquidity_gross amount');
+            //     assert(
+            //         tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128'
+            //     );
+            //     assert(
+            //         tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128'
+            //     );
+            //     let tick_info = yas_pool.get_tick(-yas_pool.get_tick_spacing());
+            //     assert(tick_info.liquidity_gross == 250, 'wrong liquidity_gross amount');
+            //     assert(
+            //         tick_info.fee_growth_outside_0X128 == 0, 'wrong fee_growth_outside_0X128'
+            //     );
+            //     assert(
+            //         tick_info.fee_growth_outside_1X128 == 0, 'wrong fee_growth_outside_1X128'
+            //     );
+            // }
+
             }
 
-            mod IncludingCurrentPrice { // TODO: 'price within range: transfers current price of both tokens'
-            // TODO: 'initializes lower tick'
-            // TODO: 'initializes upper tick'
-            // TODO: 'works for min/max tick'
-            // TODO: 'removing works'
+            mod IncludingCurrentPrice {
+                use yas_core::contracts::yas_pool::{IYASPoolDispatcherTrait};
+                use super::{
+                    get_min_tick_and_max_tick, setup, tick_spacing, FeeAmount, fee_amount,
+                    IERC20DispatcherTrait, WALLET
+                };
+                use yas_core::numbers::signed_integer::{
+                    i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
+                };
+                use yas_core::contracts::yas_router::{
+                    YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
+                };
+
+                #[test]
+                #[available_gas(200000000)]
+                fn test_curr_price_both() {
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                    yas_router
+                        .mint(
+                            yas_pool.contract_address,
+                            WALLET(),
+                            min_tick + yas_pool.get_tick_spacing(),
+                            max_tick - yas_pool.get_tick_spacing(),
+                            100
+                        );
+
+                    assert(
+                        token_0.balanceOf(yas_pool.contract_address) == 9996 + 317,
+                        'token_0 wrong amount'
+                    );
+                    assert(
+                        token_1.balanceOf(yas_pool.contract_address) == 1000 + 32,
+                        'token_1 wrong amount'
+                    );
+                }
+
+                #[test]
+                #[available_gas(200000000)]
+                fn test_init_lower_tick() {
+                    let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
+                    yas_router
+                        .mint(
+                            yas_pool.contract_address,
+                            WALLET(),
+                            min_tick + yas_pool.get_tick_spacing(),
+                            max_tick - yas_pool.get_tick_spacing(),
+                            100
+                        );
+
+                    assert(
+                        yas_pool
+                            .get_tick(min_tick + yas_pool.get_tick_spacing())
+                            .liquidity_gross == 100,
+                        'wrong liquidity_gross amount 1'
+                    );
+                }
+
+                #[test]
+                #[available_gas(200000000)]
+                fn test_init_upper_tick() {
+                    let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
+                    yas_router
+                        .mint(
+                            yas_pool.contract_address,
+                            WALLET(),
+                            min_tick + yas_pool.get_tick_spacing(),
+                            max_tick - yas_pool.get_tick_spacing(),
+                            100
+                        );
+                    assert(
+                        yas_pool
+                            .get_tick(max_tick - yas_pool.get_tick_spacing())
+                            .liquidity_gross == 100,
+                        'wrong liquidity_gross amount 1'
+                    );
+                }
+
+                #[test]
+                #[available_gas(200000000)]
+                fn test_min_max_tick() {
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+                    yas_router.mint(yas_pool.contract_address, WALLET(), min_tick, max_tick, 10000);
+
+                    assert(
+                        token_0.balanceOf(yas_pool.contract_address) == 9996 + 31623,
+                        'token_0 wrong amount'
+                    );
+                    assert(
+                        token_1.balanceOf(yas_pool.contract_address) == 1000 + 3163,
+                        'token_1 wrong amount'
+                    );
+                }
+            // // WIP: test of 'removing works'
+            // // TODO: missing burn() func
+            // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L393
+            // //#[test]
+            // //#[available_gas(200000000)]
+            // fn test_remove() {
+            //     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+            //     yas_router
+            //         .mint(
+            //             yas_pool.contract_address,
+            //             WALLET(),
+            //             min_tick + yas_pool.get_tick_spacing(),
+            //             max_tick - yas_pool.get_tick_spacing(),
+            //             100
+            //         );
+            //     //yas_pool.burn()
+            //     assert(1 == 2, 'missing burn() func');
+            // }
+
             }
 
-            mod BelowCurrentPrice { // TODO: 'transfers token1 only'
-            // TODO: 'min tick with max leverage'
-            // TODO: 'works for min tick'
-            // TODO: 'removing works'
+            mod BelowCurrentPrice {
+                use yas_core::contracts::yas_pool::{IYASPoolDispatcherTrait};
+                use super::{
+                    get_min_tick_and_max_tick, setup, tick_spacing, FeeAmount, fee_amount,
+                    IERC20DispatcherTrait, WALLET
+                };
+                use super::super::pow;
+                use yas_core::numbers::signed_integer::{
+                    i32::i32, i32::i32_div_no_round, integer_trait::IntegerTrait
+                };
+                use yas_core::contracts::yas_router::{
+                    YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
+                };
+
+                #[test]
+                #[available_gas(200000000)]
+                fn test_below_only_token1() {
+                    let (yas_pool, token_0, token_1, yas_router, _, _) = setup();
+                    yas_router
+                        .mint(
+                            yas_pool.contract_address,
+                            WALLET(),
+                            IntegerTrait::<i32>::new(46080, true),
+                            IntegerTrait::<i32>::new(23040, true),
+                            10000
+                        );
+
+                    assert(
+                        token_0.balanceOf(yas_pool.contract_address) == 9996, 'token_0 wrong amount'
+                    );
+                    assert(
+                        token_1.balanceOf(yas_pool.contract_address) == 1000 + 2162,
+                        'token_1 wrong amount'
+                    );
+                }
+
+                #[test]
+                #[available_gas(200000000)]
+                fn test_below_maxtick_maxlvrg() {
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, _) = setup();
+                    yas_router
+                        .mint(
+                            yas_pool.contract_address,
+                            WALLET(),
+                            min_tick,
+                            min_tick + yas_pool.get_tick_spacing(),
+                            pow(2, 102).try_into().unwrap()
+                        );
+
+                    assert(
+                        token_0.balanceOf(yas_pool.contract_address) == 9996, 'token_0 wrong amount'
+                    );
+                    assert(
+                        token_1.balanceOf(yas_pool.contract_address) == 1000 + 828011520,
+                        'token_1 wrong amount'
+                    );
+                }
+
+                #[test]
+                #[available_gas(200000000)]
+                fn test_below_min_tick() {
+                    let (yas_pool, token_0, token_1, yas_router, min_tick, _) = setup();
+                    yas_router
+                        .mint(
+                            yas_pool.contract_address,
+                            WALLET(),
+                            min_tick,
+                            IntegerTrait::<i32>::new(23040, true),
+                            10000
+                        );
+
+                    assert(
+                        token_0.balanceOf(yas_pool.contract_address) == 9996, 'token_0 wrong amount'
+                    );
+                    assert(
+                        token_1.balanceOf(yas_pool.contract_address) == 1000 + 3161,
+                        'token_1 wrong amount'
+                    );
+                }
+            // WIP: test of 'removing works'
+            // TODO: missing burn() func
+            // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L449
+            // #[test]
+            // #[available_gas(200000000)]
+            // fn test_below_remove() {
+            //     let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+            //     yas_router
+            //         .mint(
+            //             yas_pool.contract_address,
+            //             WALLET(),
+            //             IntegerTrait::<i32>::new(46080, true),
+            //             IntegerTrait::<i32>::new(46020, true),
+            //             10000
+            //         );
+            //     //pool.burn()
+            //     //assert(token_0.balanceOf(yas_pool.contract_address) == 0, 'token_0 wrong amount');
+            //     //assert(token_1.balanceOf(yas_pool.contract_address) == 3, 'token_1 wrong amount');
+            //     assert(1 == 2, 'no burn() function');
+            // }
+
             }
         }
-    // TODO: 'protocol fees accumulate as expected during swap'
-    // TODO: 'positions are protected before protocol fee is turned on'
-    // TODO: 'poke is not allowed on uninitialized position'
+    // // WIP: test of 'protocol fees accumulate as expected during swap'
+    // // TODO: missing setFeeProtocol() func
+    // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L482
+    // //#[test]
+    // //#[available_gas(200000000)]
+    // fn test_protocol_fees_accum() {
+    //let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+    //assert(1 == 2, 'no setFeeProtocol() function');
+    // yas_router
+    //     .mint(
+    //         yas_pool.contract_address,
+    //         WALLET(),
+    //         min_tick + yas_pool.get_tick_spacing(),
+    //         max_tick - yas_pool.get_tick_spacing(),
+    //         1000000000000000000 //?
+    //     );
+    // }
+
+    // // WIP: test of 'positions are protected before protocol fee is turned on'
+    // // TODO: missing setFeeProtocol() func
+    // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L494
+    // //#[test]
+    // //#[available_gas(200000000)]
+    // fn test_positions_protected() {
+    //let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+    // yas_router
+    //     .mint(
+    //         yas_pool.contract_address,
+    //         WALLET(),
+    //         min_tick + yas_pool.get_tick_spacing(),
+    //         max_tick - yas_pool.get_tick_spacing(),
+    //         1000000000000000000 //?
+    //     );
+    //assert(1 == 2, 'no setFeeProtocol() function');
+    // }
+
+    // WIP: test of 'poke is not allowed on uninitialized position'
+    //TODO: missing burn() func
+    // https://github.com/Uniswap/v3-core/blob/main/test/UniswapV3Pool.spec.ts#L509
+    // //#[test]
+    // //#[available_gas(200000000)]
+    // fn test_unallow_poke_on_uninit_pos() {
+    //let (yas_pool, token_0, token_1, yas_router, min_tick, max_tick) = setup();
+    // yas_router
+    //     .mint(
+    //         yas_pool.contract_address,
+    //         WALLET(),
+    //         min_tick + yas_pool.get_tick_spacing(),
+    //         max_tick - yas_pool.get_tick_spacing(),
+    //         1000000000000000000 //?
+    //     );
+    //assert(1 == 2, 'no burn() function');
+    // }
+
     }
 
     mod Swap {
@@ -884,7 +1708,9 @@ mod YASPoolTests {
     use yas_core::contracts::yas_router::{
         YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
     };
-    use yas_core::tests::utils::constants::PoolConstants::{TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET};
+    use yas_core::tests::utils::constants::PoolConstants::{
+        TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET, encode_price_sqrt_1_1, encode_price_sqrt_1_10
+    };
     use yas_core::tests::utils::constants::FactoryConstants::{
         POOL_CLASS_HASH, FeeAmount, fee_amount, tick_spacing
     };
@@ -892,39 +1718,40 @@ mod YASPoolTests {
         ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
     };
 
-    fn setup() -> (IYASPoolDispatcher, IYASRouterDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
-        let yas_router = deploy_yas_router(); // 0x1
-        let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
+
+    fn setup() -> (
+        IYASPoolDispatcher, IERC20Dispatcher, IERC20Dispatcher, IYASRouterDispatcher, i32, i32
+    ) {
+        let yas_router: IYASRouterDispatcher = deploy_yas_router(); // 0x1
+        let yas_factory: IYASFactoryDispatcher = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
 
         // Deploy ERC20 tokens with factory address
-        let token_0 = deploy_erc20('YAS0', '$YAS0', 4000000000000000000, OWNER()); // 0x3
-        let token_1 = deploy_erc20('YAS1', '$YAS1', 4000000000000000000, OWNER()); // 0x4
+        let token_0 = deploy_erc20('YAS0', '$YAS0', BoundedInt::max(), OWNER()); // 0x3
+        let token_1 = deploy_erc20('YAS1', '$YAS1', BoundedInt::max(), OWNER()); // 0x4
 
         set_contract_address(OWNER());
-        token_0.transfer(WALLET(), 4000000000000000000);
-        token_1.transfer(WALLET(), 4000000000000000000);
+        token_0.transfer(WALLET(), BoundedInt::max());
+        token_1.transfer(WALLET(), BoundedInt::max());
 
         // Give permissions to expend WALLET() tokens
         set_contract_address(WALLET());
         token_1.approve(yas_router.contract_address, BoundedInt::max());
         token_0.approve(yas_router.contract_address, BoundedInt::max());
 
-        let encode_price_sqrt_1_1 = FP64x96Impl::new(79228162514264337593543950336, false);
-
         let yas_pool_address = yas_factory // 0x5
             .create_pool(
-                token_0.contract_address, token_1.contract_address, fee_amount(FeeAmount::LOW)
+                token_0.contract_address, token_1.contract_address, fee_amount(FeeAmount::MEDIUM)
             );
         let yas_pool = IYASPoolDispatcher { contract_address: yas_pool_address };
 
         set_contract_address(OWNER());
-        yas_pool.initialize(encode_price_sqrt_1_1);
+        yas_pool.initialize(encode_price_sqrt_1_10());
 
         let (min_tick, max_tick) = get_min_tick_and_max_tick();
         set_contract_address(WALLET());
-        yas_router.mint(yas_pool_address, WALLET(), min_tick, max_tick, 2000000000000000000);
+        yas_router.mint(yas_pool_address, WALLET(), min_tick, max_tick, 3161);
 
-        (yas_pool, yas_router, token_0, token_1)
+        (yas_pool, token_0, token_1, yas_router, min_tick, max_tick)
     }
 
     fn setup_with(

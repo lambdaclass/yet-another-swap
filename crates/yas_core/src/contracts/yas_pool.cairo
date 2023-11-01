@@ -4,6 +4,17 @@ use yas_core::numbers::fixed_point::implementations::impl_64x96::FixedType;
 use yas_core::libraries::position::{Info as PositionInfo, PositionKey};
 use yas_core::libraries::tick::Info as TickInfo;
 
+#[derive(Copy, Drop, Serde, starknet::Store)]
+struct Slot0 {
+    // the current price
+    sqrt_price_X96: FixedType,
+    // the current tick
+    tick: i32,
+    // the current protocol fee as a percentage of the swap fee taken on withdrawal
+    // represented as an integer denominator (1/x)%
+    fee_protocol: u8,
+}
+
 #[starknet::interface]
 trait IYASPool<TContractState> {
     fn initialize(ref self: TContractState, sqrt_price_X96: FixedType);
@@ -23,19 +34,21 @@ trait IYASPool<TContractState> {
         amount: u128,
         data: Array<felt252>
     ) -> (u256, u256);
+    fn burn(
+            ref self: TContractState, tick_lower: i32, tick_upper: i32, amount: u128
+        ) -> (u256, u256);
     fn token_0(self: @TContractState) -> ContractAddress;
     fn token_1(self: @TContractState) -> ContractAddress;
-    fn burn(
-        ref self: TContractState, tick_lower: i32, tick_upper: i32, amount: u128
-    ) -> (u256, u256);
+    fn get_slot_0(self: @TContractState) -> Slot0;
+    fn get_max_liquidity_per_tick(self: @TContractState) -> u128;
+    fn get_position(self: @TContractState, position_key: PositionKey) -> PositionInfo;
     fn get_tick_spacing(self: @TContractState) -> i32;
     fn get_tick(self: @TContractState, tick: i32) -> TickInfo;
-    fn get_position(self: @TContractState, position_key: PositionKey) -> PositionInfo;
 }
 
 #[starknet::contract]
 mod YASPool {
-    use super::IYASPool;
+    use super::{IYASPool, Slot0};
 
     use starknet::{ContractAddress, get_block_timestamp, get_caller_address, get_contract_address};
 
@@ -117,17 +130,6 @@ mod YASPool {
         amount: u128,
         amount_0: u256,
         amount_1: u256
-    }
-
-    #[derive(Copy, Drop, Serde, starknet::Store)]
-    struct Slot0 {
-        // the current price
-        sqrt_price_X96: FixedType,
-        // the current tick
-        tick: i32,
-        // the current protocol fee as a percentage of the swap fee taken on withdrawal
-        // represented as an integer denominator (1/x)%
-        fee_protocol: u8,
     }
 
     #[derive(Copy, Drop)]
@@ -218,6 +220,14 @@ mod YASPool {
 
         fn token_1(self: @ContractState) -> ContractAddress {
             self.token_1.read()
+        }
+
+        fn get_slot_0(self: @ContractState) -> Slot0 {
+            self.slot_0.read()
+        }
+
+        fn get_max_liquidity_per_tick(self: @ContractState) -> u128 {
+            self.max_liquidity_per_tick.read()
         }
 
         fn get_tick_spacing(self: @ContractState) -> i32 {
@@ -793,6 +803,10 @@ mod YASPool {
             Position::unsafe_new_contract_state()
         }
 
+        fn get_slot_0(self: @ContractState) -> Slot0 {
+            self.slot_0.read()
+        }
+
         fn set_tokens(ref self: ContractState, token_0: ContractAddress, token_1: ContractAddress) {
             self.token_0.write(token_0);
             self.token_1.write(token_1);
@@ -818,10 +832,6 @@ mod YASPool {
         ) {
             self.fee_growth_global_0_X128.write(fee_growth_global_0_X128);
             self.fee_growth_global_1_X128.write(fee_growth_global_1_X128);
-        }
-
-        fn get_slot_0(self: @ContractState) -> Slot0 {
-            self.slot_0.read()
         }
 
         fn check_and_lock(ref self: ContractState) {
