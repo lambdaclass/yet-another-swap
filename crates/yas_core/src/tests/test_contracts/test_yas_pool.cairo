@@ -594,7 +594,7 @@ mod YASPoolTests {
             #[should_panic(expected: ('LO', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
             fn test_fails_amount_exceeds_the_max() {
                 let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
-                let max_liquidity_gross: u128 = yas_pool.get_max_liquidity_per_tick();
+                let max_liquidity_gross = yas_pool.get_max_liquidity_per_tick();
                 yas_router
                     .mint(
                         yas_pool.contract_address,
@@ -609,7 +609,7 @@ mod YASPoolTests {
             #[available_gas(2000000000)]
             fn test_amount_max() {
                 let (yas_pool, _, _, yas_router, min_tick, max_tick) = setup();
-                let max_liquidity_gross: u128 = yas_pool.get_max_liquidity_per_tick();
+                let max_liquidity_gross = yas_pool.get_max_liquidity_per_tick();
                 yas_router
                     .mint(
                         yas_pool.contract_address,
@@ -633,7 +633,7 @@ mod YASPoolTests {
                         max_tick - yas_pool.get_tick_spacing(),
                         1000
                     );
-                let max_liquidity_gross: u128 = yas_pool.get_max_liquidity_per_tick();
+                let max_liquidity_gross = yas_pool.get_max_liquidity_per_tick();
 
                 yas_router
                     .mint(
@@ -658,7 +658,7 @@ mod YASPoolTests {
                         max_tick - yas_pool.get_tick_spacing(),
                         1000
                     );
-                let max_liquidity_gross: u128 = yas_pool.get_max_liquidity_per_tick();
+                let max_liquidity_gross = yas_pool.get_max_liquidity_per_tick();
 
                 yas_router
                     .mint(
@@ -683,7 +683,7 @@ mod YASPoolTests {
                         max_tick - yas_pool.get_tick_spacing(),
                         1000
                     );
-                let max_liquidity_gross: u128 = yas_pool.get_max_liquidity_per_tick();
+                let max_liquidity_gross = yas_pool.get_max_liquidity_per_tick();
 
                 yas_router
                     .mint(
@@ -707,7 +707,7 @@ mod YASPoolTests {
                         max_tick - yas_pool.get_tick_spacing(),
                         1000
                     );
-                let max_liquidity_gross: u128 = yas_pool.get_max_liquidity_per_tick();
+                let max_liquidity_gross = yas_pool.get_max_liquidity_per_tick();
                 yas_router
                     .mint(
                         yas_pool.contract_address,
@@ -821,7 +821,7 @@ mod YASPoolTests {
                 #[available_gas(200000000)]
                 fn test_max_tick_max_lvrg() {
                     let (yas_pool, token_0, token_1, yas_router, _, max_tick) = setup();
-                    let big_number: u128 = pow(2, 102).try_into().unwrap();
+                    let big_number = pow(2, 102).try_into().unwrap();
                     yas_router
                         .mint(
                             yas_pool.contract_address,
