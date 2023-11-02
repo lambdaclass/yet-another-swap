@@ -368,11 +368,8 @@ mod YASNFTPositionManager {
                 pool = factory_dispatcher.create_pool(token_0, token_1, fee);
                 IYASPoolDispatcher { contract_address: pool }.initialize(sqrt_price_X96);
             } else {
-                let (sqrt_price_X96_existing, _, _, _) = IYASPoolDispatcher {
-                    contract_address: pool
-                }
-                    .get_slot_0();
-                if sqrt_price_X96_existing.is_zero() {
+                let slot_0 = IYASPoolDispatcher { contract_address: pool }.get_slot_0();
+                if slot_0.sqrt_price_X96.is_zero() {
                     IYASPoolDispatcher { contract_address: pool }.initialize(sqrt_price_X96);
                 }
             }
@@ -522,12 +519,12 @@ mod YASNFTPositionManager {
             let pool_dispatcher = IYASPoolDispatcher { contract_address: pool_address };
 
             // compute the liquidity amount
-            let (sqrt_price_X96, _, _, _) = pool_dispatcher.get_slot_0();
+            let slot_0 = pool_dispatcher.get_slot_0();
             let sqrt_ratio_AX96 = get_sqrt_ratio_at_tick(params.tick_lower);
             let sqrt_ratio_BX96 = get_sqrt_ratio_at_tick(params.tick_upper);
 
             let liquidity = get_liquidity_for_amounts(
-                sqrt_price_X96,
+                slot_0.sqrt_price_X96,
                 sqrt_ratio_AX96,
                 sqrt_ratio_BX96,
                 params.amount_0_desired,
