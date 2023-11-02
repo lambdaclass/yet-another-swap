@@ -29,6 +29,13 @@
 #   tick_before: IntegerTrait::<i32>::new(0, false),
 # }
 
+# pass "True" to "true"
+def sign_to_text(sign):
+    if sign :
+        return "true"
+    else:
+        return"false"
+
 
 
 def format_amount_delta(amount_delta):
@@ -39,7 +46,7 @@ def format_amount_delta(amount_delta):
     # convert to positive
     amount_delta = abs(amount_delta)
     # return the formatted amount_delta and if its 0 then sign is false
-    return f'IntegerTrait::<i256>::new({amount_delta}, {sign})'
+    return f'IntegerTrait::<i256>::new({amount_delta}, {sign_to_text(sign)})'
 
 def format_execution_price(execution_price):
     # remove the quotes
@@ -55,6 +62,7 @@ def format_execution_price(execution_price):
     # return the formatted execution_price
     return f'{execution_price}'
 
+# end format is * 10**5
 def format_pool_price(pool_price):
     # remove the quotes
     pool_price = pool_price.replace('"', '')
@@ -62,13 +70,18 @@ def format_pool_price(pool_price):
     pool_price = pool_price.replace(',', '')
     # convert to float
     pool_price = float(pool_price)
-    # take the square root
-    pool_price = pool_price ** (1/2)
-    # multiply by 2**96
-    pool_price = pool_price * 2**96
+    # dislpace comma
+    pool_price = pool_price * 10**5
+    rounded = '%s' % float('%.5g' % pool_price)
+    pool_price = float(rounded)
+    ## take the square root
+    #pool_price = pool_price ** (1/2)
+    ## multiply by 2**96
+    #pool_price = pool_price * 2**96
     # convert to integer
     pool_price = int(pool_price)
     # return the formatted pool_price
+    #return f'FixedTrait::new({pool_price}, false)' #CHECK is it always false? negative price shouldnt make sense
     return f'{pool_price}'
 
 def format_tick(tick):
@@ -79,7 +92,7 @@ def format_tick(tick):
     # convert to integer
     tick = int(tick)
     # return the formatted tick
-    return f'IntegerTrait::<i32>::new({tick}, {tick < 0})'
+    return f'IntegerTrait::<i32>::new({abs(tick)}, {sign_to_text(tick < 0)})'
 
 def parse_object(object):
     # first save in a dictionary the key-value pairs
@@ -155,7 +168,7 @@ def parse_object(object):
 #main
 if __name__ == "__main__":
     # read from 'pool2_swap1.txt'
-    file = open('pool2_swap1.txt', 'r')
+    file = open('./pool2_swaps_torober.txt', 'r')
     objects = file.read()
     # each object is separated by a ;\n from the next object
     objects = objects.split(';\n')
@@ -175,13 +188,15 @@ if __name__ == "__main__":
 
     to_print = ""
     for i, object in enumerate(parsed_objects):
-        swap_variable_string = "let swap_expected_result = SwapExpectedResults {"
+        # swap_variable_string = "let swap_expected_result = SwapExpectedResults {"
+        swap_variable_string = "\t\t\tSwapExpectedResults {"
+
         for key, value in object.items():
-            swap_variable_string += f'\n  {key}: {value},'
-        swap_variable_string += "\n};"
+            swap_variable_string += f'\n\t\t\t\t{key}: {value},'
+        swap_variable_string += "\n\t\t\t},"
 
         if i != len(parsed_objects) - 1:
-            swap_variable_string += "\n\n"
+            swap_variable_string += "\n"
         to_print += swap_variable_string
 
     # save the result in 'swap_expected_result.txt'

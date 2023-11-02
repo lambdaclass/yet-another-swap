@@ -52,8 +52,8 @@ mod SwapTestHelper {
         execution_price: u256,
         fee_growth_global_0_X128_delta: u256,
         fee_growth_global_1_X128_delta: u256,
-        pool_price_after: FixedType,
-        pool_price_before: FixedType,
+        pool_price_after: u256, //it is price * 10**5
+        pool_price_before: u256,
         tick_after: i32,
         tick_before: i32,
     }
@@ -386,9 +386,37 @@ mod SwapTestHelper {
         ]
     }
 
-    fn SWAP_EXPECTED_RESULTS() -> Array<SwapExpectedResults> {
-        // TODO: implement
-        array![]
+    fn SWAP_EXPECTED_RESULTS_POOL_1() -> Array<SwapExpectedResults> {
+        // WIP: implement
+        array![
+			SwapExpectedResults {
+				amount_0_before: 2000000000000000000,
+				amount_0_delta: IntegerTrait::<i256>::new(1000000000000000000, false),
+				amount_1_before: 2000000000000000000,
+				amount_1_delta: IntegerTrait::<i256>::new(665331998665331998, true),
+				execution_price: 66533,
+				fee_growth_global_0_X128_delta: 510423550381407695195061911147652317,
+				fee_growth_global_1_X128_delta: 0,
+				pool_price_after: 44533,
+				pool_price_before: 100000,
+				tick_after: IntegerTrait::<i32>::new(8090, true),
+				tick_before: IntegerTrait::<i32>::new(0, false),
+			},
+            //the following works, but must re-start the pool beforehand
+        //    SwapExpectedResults {
+		//		amount_0_before: 2000000000000000000,
+		//		amount_0_delta: IntegerTrait::<i256>::new(665331998665331998, true),
+		//		amount_1_before: 2000000000000000000,
+		//		amount_1_delta: IntegerTrait::<i256>::new(1000000000000000000, false),
+		//		execution_price: 150300,
+		//		fee_growth_global_0_X128_delta: 0,
+		//		fee_growth_global_1_X128_delta: 510423550381407695195061911147652317,
+		//		pool_price_after: 224550,
+		//		pool_price_before: 100000,
+		//		tick_after: IntegerTrait::<i32>::new(8089, false),
+		//		tick_before: IntegerTrait::<i32>::new(0, false),
+		//	}
+        ]
     }
 
 
