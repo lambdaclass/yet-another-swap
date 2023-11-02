@@ -1,23 +1,21 @@
 mod SwapTestHelper {
-
     use yas_core::libraries::tick_math::TickMath::{
         MIN_TICK, MAX_TICK, MIN_SQRT_RATIO, MAX_SQRT_RATIO
     };
 
-    use yas_core::tests::utils::constants::FactoryConstants::{
-        tick_spacing, FeeAmount, fee_amount
-    };
+    use yas_core::tests::utils::constants::FactoryConstants::{tick_spacing, FeeAmount, fee_amount};
 
     use yas_core::numbers::fixed_point::implementations::impl_64x96::{
         FP64x96Impl, FP64x96Sub, FP64x96PartialEq, FixedType, FixedTrait
     };
-    
+
     use yas_core::numbers::signed_integer::{
         i32::i32, i32::i32_div_no_round, i256::i256, integer_trait::IntegerTrait
     };
 
-    use array::ArrayTrait;
-    
+    use dict::Felt252DictTrait;
+    use poseidon::poseidon_hash_span;
+
     use integer::BoundedInt;
 
 
@@ -48,20 +46,28 @@ mod SwapTestHelper {
     #[derive(Copy, Drop, Serde)]
     struct SwapExpectedResults {
         amount_0_before: u256,
-        amount_0_delta: u256,
+        amount_0_delta: i256,
         amount_1_before: u256,
-        amount_1_delta: u256,
+        amount_1_delta: i256,
         execution_price: u256,
         fee_growth_global_0_X128_delta: u256,
         fee_growth_global_1_X128_delta: u256,
-        pool_price_after: u256,
-        pool_price_before: u256,
+        pool_price_after: FixedType,
+        pool_price_before: FixedType,
         tick_after: i32,
         tick_before: i32,
     }
 
-    fn get_pool_case(number: u32) -> @PoolTestCase {
-        let pools = array![
+    #[derive(Copy, Drop, Serde)]
+    struct SwapExpectedResultsError {
+        pool_balance_0: u256,
+        pool_balance_1: u256,
+        pool_price_before: FixedType,
+        tick_before: i32,
+    }
+
+    fn POOL_CASES() -> Array<PoolTestCase> {
+        array![
             PoolTestCase {
                 // description: 'low fee, 1:1 price, 2e18 max range liquidity',
                 fee_amount: fee_amount(FeeAmount::LOW),
@@ -133,7 +139,9 @@ mod SwapTestHelper {
                         liquidity: 2000000000000000000,
                     },
                     Position {
-                        tick_lower: IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),//tick_spacing(FeeAmount::MEDIUM),
+                        tick_lower: IntegerTrait::<i32>::new(
+                            tick_spacing(FeeAmount::MEDIUM), false
+                        ), //tick_spacing(FeeAmount::MEDIUM),
                         tick_upper: get_max_tick(FeeAmount::MEDIUM),
                         liquidity: 2000000000000000000,
                     },
@@ -151,11 +159,15 @@ mod SwapTestHelper {
                     },
                     Position {
                         tick_lower: get_min_tick(FeeAmount::MEDIUM),
-                        tick_upper: IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), true),//-tick_spacing(FeeAmount::MEDIUM),
+                        tick_upper: IntegerTrait::<i32>::new(
+                            tick_spacing(FeeAmount::MEDIUM), true
+                        ), //-tick_spacing(FeeAmount::MEDIUM),
                         liquidity: 2000000000000000000,
                     },
                     Position {
-                        tick_lower: IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false),//tick_spacing(FeeAmount::MEDIUM),
+                        tick_lower: IntegerTrait::<i32>::new(
+                            tick_spacing(FeeAmount::MEDIUM), false
+                        ), //tick_spacing(FeeAmount::MEDIUM),
                         tick_upper: get_max_tick(FeeAmount::MEDIUM),
                         liquidity: 2000000000000000000,
                     },
@@ -167,8 +179,12 @@ mod SwapTestHelper {
                 starting_price: encode_price_sqrt_1_1(),
                 mint_positions: array![
                     Position {
-                        tick_lower: IntegerTrait::<i32>::new(tick_spacing(FeeAmount::LOW), true),//-tick_spacing(FeeAmount::LOW),
-                        tick_upper: IntegerTrait::<i32>::new(tick_spacing(FeeAmount::LOW), false),//tick_spacing(FeeAmount::LOW),
+                        tick_lower: IntegerTrait::<i32>::new(
+                            tick_spacing(FeeAmount::LOW), true
+                        ), //-tick_spacing(FeeAmount::LOW),
+                        tick_upper: IntegerTrait::<i32>::new(
+                            tick_spacing(FeeAmount::LOW), false
+                        ), //tick_spacing(FeeAmount::LOW),
                         liquidity: 2000000000000000000,
                     },
                 ],
@@ -180,7 +196,9 @@ mod SwapTestHelper {
                 mint_positions: array![
                     Position {
                         tick_lower: Zeroable::zero(),
-                        tick_upper: IntegerTrait::<i32>::new(2000 * tick_spacing(FeeAmount::MEDIUM), false),//2000 * tick_spacing(FeeAmount::MEDIUM),
+                        tick_upper: IntegerTrait::<i32>::new(
+                            2000 * tick_spacing(FeeAmount::MEDIUM), false
+                        ), //2000 * tick_spacing(FeeAmount::MEDIUM),
                         liquidity: 2000000000000000000,
                     },
                 ],
@@ -191,7 +209,9 @@ mod SwapTestHelper {
                 starting_price: encode_price_sqrt_1_1(),
                 mint_positions: array![
                     Position {
-                        tick_lower: IntegerTrait::<i32>::new(2000 * tick_spacing(FeeAmount::MEDIUM), true),//-2000 * tick_spacing(FeeAmount::MEDIUM),
+                        tick_lower: IntegerTrait::<i32>::new(
+                            2000 * tick_spacing(FeeAmount::MEDIUM), true
+                        ), //-2000 * tick_spacing(FeeAmount::MEDIUM),
                         tick_upper: Zeroable::zero(),
                         liquidity: 2000000000000000000,
                     },
@@ -229,7 +249,9 @@ mod SwapTestHelper {
                     Position {
                         tick_lower: get_min_tick(FeeAmount::MEDIUM),
                         tick_upper: get_max_tick(FeeAmount::MEDIUM),
-                        liquidity: tick_spacing_to_max_liquidity_per_tick(IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false)),
+                        liquidity: tick_spacing_to_max_liquidity_per_tick(
+                            IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false)
+                        ),
                     },
                 ],
             },
@@ -257,14 +279,11 @@ mod SwapTestHelper {
                     },
                 ],
             },
-        ];
-
-        //ret:    
-        pools[number]
+        ]
     }
 
-    fn get_swap_case(number: u32) -> SwapTestCase {
-        let swaps = array![
+    fn SWAP_CASES() -> Array<SwapTestCase> {
+        array![
             SwapTestCase {
                 zero_for_one: true,
                 exact_out: false,
@@ -364,15 +383,12 @@ mod SwapTestHelper {
                 sqrt_price_limit: encode_price_sqrt_2_5(),
                 zero_for_one: false,
             }
-        ];
-
-        //ret
-        *swaps[number]
+        ]
     }
 
-    fn get_expected(number: u32) -> SwapExpectedResults {
-    let expected = array![];
-    *expected[number]
+    fn SWAP_EXPECTED_RESULTS() -> Array<SwapExpectedResults> {
+        // TODO: implement
+        array![]
     }
 
 
@@ -382,7 +398,7 @@ mod SwapTestHelper {
     fn encode_price_sqrt_50_100() -> FixedType {
         FP64x96Impl::new(56022770974786139918731938227, false)
     }
-        
+
     // sqrt_price_X96 is the result of encode_price_sqrt_200_100() on v3-core typescript impl. 
     fn encode_price_sqrt_200_100() -> FixedType {
         FP64x96Impl::new(112045541949572279837463876454, false)
