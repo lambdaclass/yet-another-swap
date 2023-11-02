@@ -23,11 +23,11 @@ clean:
 build: clean
 	scarb build
 
-deploy: clean
-	cargo run --bin deploy
+deploy: build
+	cd scripts && cargo run --bin deploy
 	
 demo-local: build
-	cargo run --bin local
+	cd scripts && cargo run --bin local
 	
 Command := $(firstword $(MAKECMDGOALS))
 FILTER := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))

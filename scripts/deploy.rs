@@ -12,7 +12,7 @@ use starknet::providers::jsonrpc::{HttpTransport, JsonRpcClient};
 use starknet::providers::{MaybeUnknownErrorCode, Provider, ProviderError, StarknetErrorWithMessage};
 use starknet::signers::{LocalWallet, SigningKey};
 
-const BUILD_PATH_PREFIX: &str = "target/dev/yas_";
+const BUILD_PATH_PREFIX: &str = "../target/dev/yas_core_";
 // TODO: Update to New once account contracts are migrated to v1
 const ENCODING: ExecutionEncoding = ExecutionEncoding::Legacy;
 
@@ -34,6 +34,7 @@ fn jsonrpc_client() -> JsonRpcClient<HttpTransport> {
 /// The contract artifact.
 fn contract_artifact(contract_name: &str) -> Result<SierraClass> {
     let artifact_path = format!("{BUILD_PATH_PREFIX}{contract_name}.sierra.json");
+    println!("Loading contract artifact: {}", artifact_path);
     let file = fs::File::open(artifact_path)
         .unwrap_or_else(|_| panic!("Compiled contract {} not found: run `make build`", contract_name));
     serde_json::from_reader(file).map_err(Into::into)

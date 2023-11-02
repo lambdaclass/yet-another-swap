@@ -13,7 +13,7 @@ use starknet::providers::jsonrpc::{HttpTransport, JsonRpcClient};
 use starknet::providers::{MaybeUnknownErrorCode, Provider, ProviderError, StarknetErrorWithMessage};
 use starknet::signers::{LocalWallet, SigningKey};
 
-const BUILD_PATH_PREFIX: &str = "target/dev/yas_core_";
+const BUILD_PATH_PREFIX: &str = "../target/dev/yas_core_";
 // TODO: Update to New once account contracts are migrated to v1
 const ENCODING: ExecutionEncoding = ExecutionEncoding::Legacy;
 
