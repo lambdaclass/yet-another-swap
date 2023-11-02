@@ -1,6 +1,7 @@
 use starknet::ContractAddress;
 
 use yas_core::libraries::position::{Info, PositionKey};
+use yas_core::libraries::tick::{Tick, Tick::TickImpl};
 use yas_core::numbers::fixed_point::implementations::impl_64x96::FixedType;
 use yas_core::numbers::signed_integer::{i32::i32, i256::i256};
 
@@ -36,7 +37,10 @@ trait IYASPool<TContractState> {
     ) -> (u256, u256);
     fn token_0(self: @TContractState) -> ContractAddress;
     fn token_1(self: @TContractState) -> ContractAddress;
-    fn get_slot_0(self: @TContractState) -> (FixedType, i32, u8, bool);
+    fn get_slot_0(self: @TContractState) -> Slot0;
+    fn get_max_liquidity_per_tick(self: @TContractState) -> u128;
+    fn get_tick_spacing(self: @TContractState) -> i32;
+    fn get_tick(self: @TContractState, tick: i32) -> Tick::Info;
     fn positions(self: @TContractState, position_key: PositionKey) -> Info;
 }
 
@@ -203,9 +207,21 @@ mod YASPool {
             self.token_1.read()
         }
 
-        fn get_slot_0(self: @ContractState) -> (FixedType, i32, u8, bool) {
-            let slot_0 = self.slot_0.read();
-            (slot_0.sqrt_price_X96, slot_0.tick, slot_0.fee_protocol, self.unlocked.read())
+        fn get_slot_0(self: @ContractState) -> Slot0 {
+            self.slot_0.read()
+        }
+
+        fn get_max_liquidity_per_tick(self: @ContractState) -> u128 {
+            self.max_liquidity_per_tick.read()
+        }
+
+        fn get_tick_spacing(self: @ContractState) -> i32 {
+            self.tick_spacing.read()
+        }
+
+        fn get_tick(self: @ContractState, tick: i32) -> Tick::Info {
+            let tick_state = Tick::unsafe_new_contract_state();
+            TickImpl::get_tick(@tick_state, tick)
         }
 
         fn positions(self: @ContractState, position_key: PositionKey) -> Info {
@@ -727,6 +743,10 @@ mod YASPool {
             Position::unsafe_new_contract_state()
         }
 
+        fn get_slot_0(self: @ContractState) -> Slot0 {
+            self.slot_0.read()
+        }
+
         fn set_tokens(ref self: ContractState, token_0: ContractAddress, token_1: ContractAddress) {
             self.token_0.write(token_0);
             self.token_1.write(token_1);
@@ -752,10 +772,6 @@ mod YASPool {
         ) {
             self.fee_growth_global_0_X128.write(fee_growth_global_0_X128);
             self.fee_growth_global_1_X128.write(fee_growth_global_1_X128);
-        }
-
-        fn get_slot_0(self: @ContractState) -> Slot0 {
-            self.slot_0.read()
         }
 
         fn check_and_lock(ref self: ContractState) {
