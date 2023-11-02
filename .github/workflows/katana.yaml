@@ -31,6 +31,11 @@ jobs:
           wget https://github.com/dojoengine/dojo/releases/download/v0.3.1/dojo_v0.3.1_linux_amd64.tar.gz
           tar -xzvf dojo_v0.3.1_linux_amd64.tar.gz
           rm sozo torii dojo-language-server
+      
+      -name: Run Deploy
+        run: |
+          ./katana &
+          make deploy
 
       - name: Run Tests
         run: |
