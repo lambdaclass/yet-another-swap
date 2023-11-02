@@ -13,7 +13,7 @@ jobs:
 
       - name: Setup Rust Toolchain
         run: |
-            cd scripts
+          cd scripts
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
