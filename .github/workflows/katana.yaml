@@ -11,6 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Navigate to scripts directory
+        run: |
+          cd scripts
+
       - name: Setup Rust Toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -31,8 +35,8 @@ jobs:
           wget https://github.com/dojoengine/dojo/releases/download/v0.3.1/dojo_v0.3.1_linux_amd64.tar.gz
           tar -xzvf dojo_v0.3.1_linux_amd64.tar.gz
           rm sozo torii dojo-language-server
-      
-      -name: Run Deploy
+
+      - name: Run Deploy
         run: |
           ./katana &
           make deploy
