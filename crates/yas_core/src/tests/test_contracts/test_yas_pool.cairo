@@ -724,11 +724,7 @@ mod YASPoolTests {
         fn test_pool_1() {
             let pool_case: @PoolTestCase = POOL_CASES()[1];
 
-            let (yas_pool, yas_router, token_0, token_1) = setup_pool_for_swap_test(
-                initial_price: *pool_case.starting_price,
-                fee_amount: *pool_case.fee_amount,
-                mint_positions: pool_case.mint_positions
-            );
+
 
             let mut i = 0;
             let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
@@ -737,7 +733,12 @@ mod YASPoolTests {
                 if i == expected_cases.len() {
                     break;
                 }
-                'new case'.print();
+                // restart Pool
+                let (yas_pool, yas_router, token_0, token_1) = setup_pool_for_swap_test(
+                    initial_price: *pool_case.starting_price,
+                    fee_amount: *pool_case.fee_amount,
+                    mint_positions: pool_case.mint_positions
+                );
                 let swap_case = swap_cases[i];
 
                 // Save values before swap for compare

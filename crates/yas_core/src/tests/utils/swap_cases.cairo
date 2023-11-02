@@ -402,20 +402,19 @@ mod SwapTestHelper {
 				tick_after: IntegerTrait::<i32>::new(8090, true),
 				tick_before: IntegerTrait::<i32>::new(0, false),
 			},
-            //the following works, but must re-start the pool beforehand
-        //    SwapExpectedResults {
-		//		amount_0_before: 2000000000000000000,
-		//		amount_0_delta: IntegerTrait::<i256>::new(665331998665331998, true),
-		//		amount_1_before: 2000000000000000000,
-		//		amount_1_delta: IntegerTrait::<i256>::new(1000000000000000000, false),
-		//		execution_price: 150300,
-		//		fee_growth_global_0_X128_delta: 0,
-		//		fee_growth_global_1_X128_delta: 510423550381407695195061911147652317,
-		//		pool_price_after: 224550,
-		//		pool_price_before: 100000,
-		//		tick_after: IntegerTrait::<i32>::new(8089, false),
-		//		tick_before: IntegerTrait::<i32>::new(0, false),
-		//	}
+            SwapExpectedResults {
+				amount_0_before: 2000000000000000000,
+				amount_0_delta: IntegerTrait::<i256>::new(665331998665331998, true),
+				amount_1_before: 2000000000000000000,
+				amount_1_delta: IntegerTrait::<i256>::new(1000000000000000000, false),
+				execution_price: 150300,
+				fee_growth_global_0_X128_delta: 0,
+				fee_growth_global_1_X128_delta: 510423550381407695195061911147652317,
+				pool_price_after: 224550,
+				pool_price_before: 100000,
+				tick_after: IntegerTrait::<i32>::new(8089, false),
+				tick_before: IntegerTrait::<i32>::new(0, false),
+			}
         ]
     }
 
