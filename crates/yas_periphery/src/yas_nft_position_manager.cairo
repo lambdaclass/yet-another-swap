@@ -381,10 +381,10 @@ mod YASNFTPositionManager {
         ) {
             let msg_sender = get_caller_address();
 
-            // TODO: we need verify if data has a valid ContractAddress
             let mut sender: ContractAddress = Zeroable::zero();
             if !data.is_empty() {
                 sender = (*data[0]).try_into().unwrap();
+                assert(sender.is_non_zero(), 'Sender is zero');
             }
 
             self.emit(MintCallback { amount_0_owed, amount_1_owed });
@@ -562,7 +562,6 @@ mod YASNFTPositionManager {
         } else {
             (sqrt_ratio_AX96, sqrt_ratio_BX96)
         };
-        // TODO: .mag
         let intermediate = FullMath::mul_div(sqrt_ratio_AX96.mag, sqrt_ratio_BX96.mag, ONE);
         FullMath::mul_div(amount_0, intermediate, (sqrt_ratio_BX96 - sqrt_ratio_AX96).mag)
             .try_into()
@@ -583,7 +582,6 @@ mod YASNFTPositionManager {
         } else {
             (sqrt_ratio_AX96, sqrt_ratio_BX96)
         };
-        // TODO: .mag
         FullMath::mul_div(amount_1, ONE, (sqrt_ratio_BX96 - sqrt_ratio_AX96).mag)
             .try_into()
             .unwrap()
