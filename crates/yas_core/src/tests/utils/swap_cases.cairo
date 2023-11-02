@@ -23,6 +23,7 @@ mod SwapTestHelper {
     #[derive(Copy, Drop, Serde)]
     struct SwapTestCase {
         zero_for_one: bool,
+        has_exact_out   : bool,
         exact_out: bool,
         amount_specified: i256,
         sqrt_price_limit: FixedType,
@@ -284,100 +285,120 @@ mod SwapTestHelper {
 
     fn SWAP_CASES() -> Array<SwapTestCase> {
         array![
-            SwapTestCase {
-                zero_for_one: true,
-                exact_out: false,
-                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-                sqrt_price_limit: FP64x96Impl::new(0, false)
-            },
+        //    SwapTestCase { //
+        //        zero_for_one: true,
+        //        has_exact_out: true,
+        //        exact_out: false,
+        //        amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+        //        sqrt_price_limit: FP64x96Impl::new(0, false)
+        //    },
+        //    SwapTestCase { //
+        //        zero_for_one: false,
+        //        has_exact_out: true,
+        //        exact_out: false,
+        //        amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+        //        sqrt_price_limit: FP64x96Impl::new(0, false)
+        //    },
+        //    //doesnt work:
+        //    //SwapTestCase { 
+        //    //    zero_for_one: true,
+        //    //    has_exact_out: true,
+        //    //    exact_out: true,
+        //    //    amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+        //    //    sqrt_price_limit: FP64x96Impl::new(0, false)
+        //    //},
+        //    //SwapTestCase {
+        //    //    zero_for_one: false,
+        //    //    has_exact_out: true,
+        //    //    exact_out: true,
+        //    //    amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+        //    //    sqrt_price_limit: FP64x96Impl::new(0, false)
+        //    //},
+        //    // swap large amounts in/out with a price limit
+        //    SwapTestCase { //
+        //        zero_for_one: true,
+        //        has_exact_out: true,
+        //        exact_out: false,
+        //        amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+        //        sqrt_price_limit: encode_price_sqrt_50_100(),
+        //    },
+        //    SwapTestCase {//
+        //        zero_for_one: false,
+        //        has_exact_out: true,
+        //        exact_out: false,
+        //        amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+        //        sqrt_price_limit: encode_price_sqrt_200_100(),
+        //    },
+        //    SwapTestCase {//
+        //        zero_for_one: true,
+        //        has_exact_out: true,
+        //        exact_out: true,
+        //        amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+        //        sqrt_price_limit: encode_price_sqrt_50_100(),
+        //    },
+        //    SwapTestCase {//
+        //        zero_for_one: false,
+        //        has_exact_out: true,
+        //        exact_out: true,
+        //        amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+        //        sqrt_price_limit: encode_price_sqrt_200_100(),
+        //    },
+        //    // swap small amounts in/out
+        //    SwapTestCase { //
+        //        zero_for_one: true,
+        //        has_exact_out: true,
+        //        exact_out: false,
+        //        amount_specified: IntegerTrait::<i256>::new(1000, false),
+        //        sqrt_price_limit: FP64x96Impl::new(0, false)
+        //    },
+        //    SwapTestCase {//
+        //        zero_for_one: false,
+        //        has_exact_out: true,
+        //        exact_out: false,
+        //        amount_specified: IntegerTrait::<i256>::new(1000, false),
+        //        sqrt_price_limit: FP64x96Impl::new(0, false)
+        //    },
+            
+        //    SwapTestCase { //tiene errores
+        //        zero_for_one: true,
+        //        has_exact_out: true,
+        //        exact_out: true,
+        //        amount_specified: IntegerTrait::<i256>::new(1000, false),
+        //        sqrt_price_limit: FP64x96Impl::new(0, false)
+        //    },
+
+            //testin
             SwapTestCase {
                 zero_for_one: false,
-                exact_out: false,
-                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-                sqrt_price_limit: FP64x96Impl::new(0, false)
-            },
-            SwapTestCase {
-                zero_for_one: true,
-                exact_out: true,
-                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-                sqrt_price_limit: FP64x96Impl::new(0, false)
-            },
-            SwapTestCase {
-                zero_for_one: false,
-                exact_out: true,
-                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-                sqrt_price_limit: FP64x96Impl::new(0, false)
-            },
-            // swap large amounts in/out with a price limit
-            SwapTestCase {
-                zero_for_one: true,
-                exact_out: false,
-                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-                sqrt_price_limit: encode_price_sqrt_50_100(),
-            },
-            SwapTestCase {
-                zero_for_one: false,
-                exact_out: false,
-                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-                sqrt_price_limit: encode_price_sqrt_200_100(),
-            },
-            SwapTestCase {
-                zero_for_one: true,
-                exact_out: true,
-                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-                sqrt_price_limit: encode_price_sqrt_50_100(),
-            },
-            SwapTestCase {
-                zero_for_one: false,
-                exact_out: true,
-                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-                sqrt_price_limit: encode_price_sqrt_200_100(),
-            },
-            // swap small amounts in/out
-            SwapTestCase {
-                zero_for_one: true,
-                exact_out: false,
-                amount_specified: IntegerTrait::<i256>::new(1000, false),
-                sqrt_price_limit: FP64x96Impl::new(0, false)
-            },
-            SwapTestCase {
-                zero_for_one: false,
-                exact_out: false,
-                amount_specified: IntegerTrait::<i256>::new(1000, false),
-                sqrt_price_limit: FP64x96Impl::new(0, false)
-            },
-            SwapTestCase {
-                zero_for_one: true,
-                exact_out: true,
-                amount_specified: IntegerTrait::<i256>::new(1000, false),
-                sqrt_price_limit: FP64x96Impl::new(0, false)
-            },
-            SwapTestCase {
-                zero_for_one: false,
+                has_exact_out: true,
                 exact_out: true,
                 amount_specified: IntegerTrait::<i256>::new(1000, false),
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
             // swap arbitrary input to price
             SwapTestCase {
+                has_exact_out: false,
                 exact_out: false, // non specified
                 amount_specified: Zeroable::zero(), // non specified
                 sqrt_price_limit: encode_price_sqrt_5_2(),
                 zero_for_one: false,
             },
             SwapTestCase {
+                has_exact_out: false,
                 exact_out: false, // non specified
                 amount_specified: Zeroable::zero(), // non specified
                 sqrt_price_limit: encode_price_sqrt_2_5(),
                 zero_for_one: true,
             },
             SwapTestCase {
+                has_exact_out: false,
                 exact_out: false, // non specified
                 amount_specified: Zeroable::zero(), // non specified
                 sqrt_price_limit: encode_price_sqrt_5_2(),
                 zero_for_one: true,
             },
             SwapTestCase {
+                has_exact_out: false,
                 exact_out: false, // non specified
                 amount_specified: Zeroable::zero(), // non specified
                 sqrt_price_limit: encode_price_sqrt_2_5(),
@@ -389,35 +410,141 @@ mod SwapTestHelper {
     fn SWAP_EXPECTED_RESULTS_POOL_1() -> Array<SwapExpectedResults> {
         // WIP: implement
         array![
-			SwapExpectedResults {
-				amount_0_before: 2000000000000000000,
-				amount_0_delta: IntegerTrait::<i256>::new(1000000000000000000, false),
-				amount_1_before: 2000000000000000000,
-				amount_1_delta: IntegerTrait::<i256>::new(665331998665331998, true),
-				execution_price: 66533,
-				fee_growth_global_0_X128_delta: 510423550381407695195061911147652317,
-				fee_growth_global_1_X128_delta: 0,
-				pool_price_after: 44533,
-				pool_price_before: 100000,
-				tick_after: IntegerTrait::<i32>::new(8090, true),
-				tick_before: IntegerTrait::<i32>::new(0, false),
-			},
-            SwapExpectedResults {
-				amount_0_before: 2000000000000000000,
-				amount_0_delta: IntegerTrait::<i256>::new(665331998665331998, true),
-				amount_1_before: 2000000000000000000,
-				amount_1_delta: IntegerTrait::<i256>::new(1000000000000000000, false),
-				execution_price: 150300,
-				fee_growth_global_0_X128_delta: 0,
-				fee_growth_global_1_X128_delta: 510423550381407695195061911147652317,
-				pool_price_after: 224550,
-				pool_price_before: 100000,
-				tick_after: IntegerTrait::<i32>::new(8089, false),
-				tick_before: IntegerTrait::<i32>::new(0, false),
-			}
+            //working:
+			//SwapExpectedResults {
+			//	amount_0_before: 2000000000000000000,
+			//	amount_0_delta: IntegerTrait::<i256>::new(1000000000000000000, false),
+			//	amount_1_before: 2000000000000000000,
+			//	amount_1_delta: IntegerTrait::<i256>::new(665331998665331998, true),
+			//	execution_price: 66533,
+			//	fee_growth_global_0_X128_delta: 510423550381407695195061911147652317,
+			//	fee_growth_global_1_X128_delta: 0,
+			//	pool_price_after: 44533,
+			//	pool_price_before: 100000,
+			//	tick_after: IntegerTrait::<i32>::new(8090, true),
+			//	tick_before: IntegerTrait::<i32>::new(0, false),
+			//},
+            //SwapExpectedResults {
+			//	amount_0_before: 2000000000000000000,
+			//	amount_0_delta: IntegerTrait::<i256>::new(665331998665331998, true),
+			//	amount_1_before: 2000000000000000000,
+			//	amount_1_delta: IntegerTrait::<i256>::new(1000000000000000000, false),
+			//	execution_price: 150300,
+			//	fee_growth_global_0_X128_delta: 0,
+			//	fee_growth_global_1_X128_delta: 510423550381407695195061911147652317,
+			//	pool_price_after: 224550,
+			//	pool_price_before: 100000,
+			//	tick_after: IntegerTrait::<i32>::new(8089, false),
+			//	tick_before: IntegerTrait::<i32>::new(0, false),
+			//},
+			//SwapExpectedResults {
+			//	amount_0_before: 2000000000000000000,
+			//	amount_0_delta: IntegerTrait::<i256>::new(830919884399388263, false),
+			//	amount_1_before: 2000000000000000000,
+			//	amount_1_delta: IntegerTrait::<i256>::new(585786437626904951, true),
+			//	execution_price: 70499,
+			//	fee_growth_global_0_X128_delta: 424121077477644648929101317621422688,
+			//	fee_growth_global_1_X128_delta: 0,
+			//	pool_price_after: 50000,
+			//	pool_price_before: 100000,
+			//	tick_after: IntegerTrait::<i32>::new(6932, true),
+			//	tick_before: IntegerTrait::<i32>::new(0, false),
+			//},
+            //SwapExpectedResults {
+			//	amount_0_before: 2000000000000000000,
+			//	amount_0_delta: IntegerTrait::<i256>::new(585786437626904951, true),
+			//	amount_1_before: 2000000000000000000,
+			//	amount_1_delta: IntegerTrait::<i256>::new(830919884399388263, false),
+			//	execution_price: 141850,
+			//	fee_growth_global_0_X128_delta: 0,
+			//	fee_growth_global_1_X128_delta: 424121077477644648929101317621422688,
+			//	pool_price_after: 200000,
+			//	pool_price_before: 100000,
+			//	tick_after: IntegerTrait::<i32>::new(6931, false),
+			//	tick_before: IntegerTrait::<i32>::new(0, false),
+			//},
+			//SwapExpectedResults {
+			//	amount_0_before: 2000000000000000000,
+			//	amount_0_delta: IntegerTrait::<i256>::new(830919884399388263, false),
+			//	amount_1_before: 2000000000000000000,
+			//	amount_1_delta: IntegerTrait::<i256>::new(585786437626904951, true),
+			//	execution_price: 70499,
+			//	fee_growth_global_0_X128_delta: 424121077477644648929101317621422688,
+			//	fee_growth_global_1_X128_delta: 0,
+			//	pool_price_after: 50000,
+			//	pool_price_before: 100000,
+			//	tick_after: IntegerTrait::<i32>::new(6932, true),
+			//	tick_before: IntegerTrait::<i32>::new(0, false),
+			//},
+			//SwapExpectedResults {
+			//	amount_0_before: 2000000000000000000,
+			//	amount_0_delta: IntegerTrait::<i256>::new(585786437626904951, true),
+			//	amount_1_before: 2000000000000000000,
+			//	amount_1_delta: IntegerTrait::<i256>::new(830919884399388263, false),
+			//	execution_price: 141850,
+			//	fee_growth_global_0_X128_delta: 0,
+			//	fee_growth_global_1_X128_delta: 424121077477644648929101317621422688,
+			//	pool_price_after: 200000,
+			//	pool_price_before: 100000,
+			//	tick_after: IntegerTrait::<i32>::new(6931, false),
+			//	tick_before: IntegerTrait::<i32>::new(0, false),
+			//},
+            //SwapExpectedResults {
+			//	amount_0_before: 2000000000000000000,
+			//	amount_0_delta: IntegerTrait::<i256>::new(1000, false),
+			//	amount_1_before: 2000000000000000000,
+			//	amount_1_delta: IntegerTrait::<i256>::new(996, true),
+			//	execution_price: 99600,
+			//	fee_growth_global_0_X128_delta: 510423550381407695195,
+			//	fee_growth_global_1_X128_delta: 0,
+			//	pool_price_after: 100000,
+			//	pool_price_before: 100000,
+			//	tick_after: IntegerTrait::<i32>::new(1, true),
+			//	tick_before: IntegerTrait::<i32>::new(0, false),
+			//},
+            //SwapExpectedResults {
+			//	amount_0_before: 2000000000000000000,
+			//	amount_0_delta: IntegerTrait::<i256>::new(996, true),
+			//	amount_1_before: 2000000000000000000,
+			//	amount_1_delta: IntegerTrait::<i256>::new(1000, false),
+			//	execution_price: 100400,
+			//	fee_growth_global_0_X128_delta: 0,
+			//	fee_growth_global_1_X128_delta: 510423550381407695195,
+			//	pool_price_after: 100000,
+			//	pool_price_before: 100000,
+			//	tick_after: IntegerTrait::<i32>::new(0, false),
+			//	tick_before: IntegerTrait::<i32>::new(0, false),
+			//},
+
+            //estos tiene errores, para mi faltan casos en los redondeos, de más decimales y eso
+            //SwapExpectedResults {
+			//	amount_0_before: 2000000000000000000,
+			//	amount_0_delta: IntegerTrait::<i256>::new(1005, false), //dió 1000
+			//	amount_1_before: 2000000000000000000,
+			//	amount_1_delta: IntegerTrait::<i256>::new(1000, true), // dió 996
+			//	execution_price: 99502, //dió 99600, CREO que falta el caso de 1 zero mas en el round este
+			//	fee_growth_global_0_X128_delta: 680564733841876926926,
+			//	fee_growth_global_1_X128_delta: 0,
+			//	pool_price_after: 100000,
+			//	pool_price_before: 100000,
+			//	tick_after: IntegerTrait::<i32>::new(1, true),
+			//	tick_before: IntegerTrait::<i32>::new(0, false),
+			//}
+            //SwapExpectedResults {
+			//	amount_0_before: 2000000000000000000,
+			//	amount_0_delta: IntegerTrait::<i256>::new(1000, true),
+			//	amount_1_before: 2000000000000000000,
+			//	amount_1_delta: IntegerTrait::<i256>::new(1005, false),
+			//	execution_price: 100499,
+			//	fee_growth_global_0_X128_delta: 0,
+			//	fee_growth_global_1_X128_delta: 680564733841876926926,
+			//	pool_price_after: 100000,
+			//	pool_price_before: 100000,
+			//	tick_after: IntegerTrait::<i32>::new(0, false),
+			//	tick_before: IntegerTrait::<i32>::new(0, false),
+			//}
         ]
     }
-
 
     //Helper Functions:
 

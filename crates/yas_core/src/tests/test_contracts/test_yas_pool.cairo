@@ -567,7 +567,7 @@ mod YASPoolTests {
     mod Swap {
         use super::{
             setup_with, setup_pool_for_swap_test, mint_positions, swap_test_case,
-            round_for_price_comparison
+            round_for_price_comparison, calculate_execution_price, get_min_tick_and_max_tick_with_fee
         };
 
         use yas_core::numbers::fixed_point::implementations::impl_64x96::{
@@ -602,8 +602,6 @@ mod YASPoolTests {
             SwapTestHelper::SwapExpectedResults,
             SwapTestHelper::{POOL_CASES, SWAP_CASES, SWAP_EXPECTED_RESULTS_POOL_1}
         };
-
-        use super::get_min_tick_and_max_tick_with_fee;
 
         use debug::PrintTrait;
 
@@ -721,10 +719,8 @@ mod YASPoolTests {
 
         #[test]
         #[available_gas(200000000000)]
-        fn test_pool_1() {
-            let pool_case: @PoolTestCase = POOL_CASES()[1];
-
-
+        fn test_pool_1() {            
+            let pool_case: @PoolTestCase = POOL_CASES()[1]; //meter todo en una func y correr en cada test pool solo esa funcion con el valor 
 
             let mut i = 0;
             let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
@@ -733,6 +729,7 @@ mod YASPoolTests {
                 if i == expected_cases.len() {
                     break;
                 }
+                'case'.print();
                 // restart Pool
                 let (yas_pool, yas_router, token_0, token_1) = setup_pool_for_swap_test(
                     initial_price: *pool_case.starting_price,
@@ -781,11 +778,7 @@ mod YASPoolTests {
                     fee_growth_global_0_X128_af - fee_growth_global_0_X128_bf,
                     fee_growth_global_1_X128_af - fee_growth_global_1_X128_bf
                 );
-                let execution_price = if *swap_case.zero_for_one {
-                    token_1_swapped_amount * pow(10, 5) / token_0_swapped_amount //swapped this from OG. working
-                } else {
-                    token_1_swapped_amount * pow(10, 5) / token_0_swapped_amount //this working? maybe both actually do same division
-                };
+                let execution_price = calculate_execution_price(token_0_swapped_amount, token_1_swapped_amount);
 
                 let pool_balance_0_af = token_0.balanceOf(yas_pool.contract_address);
                 let pool_balance_1_af = token_1.balanceOf(yas_pool.contract_address);
@@ -819,6 +812,7 @@ mod YASPoolTests {
         }
 
         fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults) {
+            //actual.execution_price.print();
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
             assert(actual.amount_0_delta == *expected.amount_0_delta, 'wrong amount_0_delta');
             assert(actual.amount_1_before == *expected.amount_1_before, 'wrong amount_1_before');
@@ -1073,22 +1067,50 @@ mod YASPoolTests {
         (yas_pool, yas_router, token_0, token_1)
     }
 
+    fn calculate_execution_price(token_0_swapped_amount: u256, token_1_swapped_amount: u256) -> u256{
+        let unrounded = token_1_swapped_amount * pow(10, 6) / token_0_swapped_amount;
+        //'unrounded'.print(); 
+        //unrounded.print();
+        let (rounder, half) = if unrounded > 999999 {
+                (100, 49)
+            } else {
+                (10, 4)
+            };
+        let round_decider = unrounded % rounder;
+        let mut rounded = if round_decider > half {
+                //round up
+                unrounded + (rounder - round_decider)
+            } else {
+                //round down
+                unrounded - round_decider
+            };
+        //'rounded'.print();
+        //rounded.print();
+        rounded = rounded / 10;
+
+        //'rounded/10'.print();
+        //rounded.print();
+        
+        //unrounded
+        rounded // == round(token_1_swapped_amount * pow(10, 5) / token_0_swapped_amount);
+    }
+
     fn round_for_price_comparison(sqrt_price_X96: u256) -> u256 {
         let square = (sqrt_price_X96 * sqrt_price_X96) / pow(2, 96);
-        let move_decimal_point = square * pow(10, 5);
+        let move_decimal_point = square * pow(10, 6);
         let mut in_decimal = move_decimal_point / pow(2, 96);
-        //let round_decider = in_decimal % 10;
-        //if round_decider > 4 {
-        //    //round up
-        //    in_decimal = in_decimal + (10 - round_decider);
-        //} else {
-        //    //round down
-        //    in_decimal = in_decimal - round_decider;
-        //}
+        let round_decider = in_decimal % 10;
+        if round_decider > 4 {
+            //round up
+            in_decimal = in_decimal + (10 - round_decider);
+        } else {
+            //round down
+            in_decimal = in_decimal - round_decider;
+        }
         //'in_decimal'.print();
         //in_decimal.print();
         //FixedTrait::new(in_decimal, false)
-        in_decimal
+        in_decimal / 10 //price * 10**5
     }
 
     fn swap_test_case(
