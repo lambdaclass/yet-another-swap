@@ -720,11 +720,17 @@ mod YASPoolTests {
         #[test]
         #[available_gas(200000000000)]
         fn test_pool_1() {            
-            let pool_case: @PoolTestCase = POOL_CASES()[1]; //meter todo en una func y correr en cada test pool solo esa funcion con el valor 
+            let pool_case: @PoolTestCase = POOL_CASES()[1]; 
 
-            let mut i = 0;
             let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
-            let swap_cases = SWAP_CASES();
+
+            test_pool(pool_case, expected_cases);
+        }
+
+        fn test_pool(pool_case: @PoolTestCase, expected_cases: Array<SwapExpectedResults>) {
+            let mut i = 0;
+            let swap_cases = SWAP_CASES(); //same swap cases for all pools
+            assert(expected_cases.len() == swap_cases.len(), 'wrong amount of expected cases');
             loop {
                 if i == expected_cases.len() {
                     break;
@@ -737,6 +743,7 @@ mod YASPoolTests {
                     mint_positions: pool_case.mint_positions
                 );
                 let swap_case = swap_cases[i];
+                let expected = expected_cases[i];
 
                 // Save values before swap for compare
                 let user_token_0_balance_bf = token_0.balanceOf(WALLET());
@@ -748,6 +755,25 @@ mod YASPoolTests {
                 let pool_balance_1_bf = token_1.balanceOf(yas_pool.contract_address);
                 let slot0_bf = yas_pool.get_slot_0();
 
+                let mut amount_to_swap = IntegerTrait::<i256>::new(0, false);//Zeroable::zero();
+                if *swap_case.has_exact_out {
+                    if *swap_case.exact_out {           //exact OUT
+                        if *swap_case.zero_for_one {    //so i check how much i should put swap IN in order to get those OUT tokens, the Asserts will still verify everything else
+                            amount_to_swap = *expected.amount_0_delta;
+                        } else {
+                            amount_to_swap = *expected.amount_1_delta;
+                        }
+                    } else {                            //exact IN, normal swap.
+                        amount_to_swap = *swap_case.amount_specified;
+                    }
+                }
+                //'input'.print();
+                //let input = *swap_case.amount_specified;
+                //input.mag.print();
+                //
+                //'modified'.print();
+                //amount_to_swap.mag.print();
+
                 // Execute swap
                 let (token_0_swapped_amount, token_1_swapped_amount) = swap_test_case(
                     yas_router,
@@ -755,7 +781,7 @@ mod YASPoolTests {
                     token_0,
                     token_1,
                     *swap_case.zero_for_one,
-                    *swap_case.amount_specified,
+                    amount_to_swap, //*swap_case.amount_specified, //commented is the original
                     *swap_case.sqrt_price_limit
                 );
 
@@ -805,14 +831,25 @@ mod YASPoolTests {
                     tick_before: tick_bf,
                 };
 
-                let expected = expected_cases[i];
+                
                 assert_swap_result_equals(actual, expected);
                 i += 1;
             };
         }
 
         fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults) {
+            //'amount_0_delta'.print();
+            //actual.amount_0_delta.mag.print();
+            //'amount_1_delta'.print();
+            //actual.amount_1_delta.mag.print();
+            //'execution_price'.print();
             //actual.execution_price.print();
+            //'fee_growth_global_0_X128_delta'.print();
+            //actual.fee_growth_global_0_X128_delta.print();
+            //'fee_growth_global_1_X128_delta'.print();
+            //actual.fee_growth_global_1_X128_delta.print();
+            //'-'.print();
+
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
             assert(actual.amount_0_delta == *expected.amount_0_delta, 'wrong amount_0_delta');
             assert(actual.amount_1_before == *expected.amount_1_before, 'wrong amount_1_before');
@@ -1088,11 +1125,8 @@ mod YASPoolTests {
         //rounded.print();
         rounded = rounded / 10;
 
-        //'rounded/10'.print();
         //rounded.print();
-        
-        //unrounded
-        rounded // == round(token_1_swapped_amount * pow(10, 5) / token_0_swapped_amount);
+        rounded // this == round(token_1_swapped_amount * pow(10, 5) / token_0_swapped_amount);
     }
 
     fn round_for_price_comparison(sqrt_price_X96: u256) -> u256 {

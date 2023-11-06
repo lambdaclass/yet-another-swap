@@ -36,8 +36,6 @@ def sign_to_text(sign):
     else:
         return"false"
 
-
-
 def format_amount_delta(amount_delta):
     # convert to integer
     amount_delta = int(amount_delta)
@@ -58,7 +56,7 @@ def format_execution_price(execution_price):
     # multiply by 10**5
     execution_price = execution_price * 10**5
     # convert to integer
-    execution_price = int(execution_price)
+    execution_price = int(round(execution_price))
     # return the formatted execution_price
     return f'{execution_price}'
 
@@ -143,7 +141,7 @@ def parse_object(object):
     object.pop()
     # for each key-value pair
     for key_value in object:
-        print(key_value)
+        #print(key_value)
         # split by ":"
         key_value = key_value.split(":")
         # print(key_value)
@@ -162,7 +160,7 @@ def parse_object(object):
             # apply the function
             values[key] = functions_to_apply[key](value)
     
-    print(values)
+    #print(values)
     return values
 
 #main
