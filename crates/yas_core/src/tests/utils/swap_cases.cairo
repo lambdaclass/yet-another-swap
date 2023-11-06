@@ -372,44 +372,45 @@ mod SwapTestHelper {
                amount_specified: IntegerTrait::<i256>::new(1000, false),
                sqrt_price_limit: FP64x96Impl::new(0, false)
            },
+            // swap arbitrary input to price
+            SwapTestCase {//
+                has_exact_out: false,
+                exact_out: false, // non specified
+                amount_specified: Zeroable::zero(), // non specified
+                sqrt_price_limit: encode_price_sqrt_5_2(),
+                zero_for_one: false,
+            },
+            SwapTestCase {//
+                has_exact_out: false,
+                exact_out: false, // non specified
+                amount_specified: Zeroable::zero(), // non specified
+                sqrt_price_limit: encode_price_sqrt_2_5(),
+                zero_for_one: true,
+            },
+        ]
+    }
 
-        ////testin
-        //    // swap arbitrary input to price
-        //    SwapTestCase {
-        //        has_exact_out: false,
-        //        exact_out: false, // non specified
-        //        amount_specified: Zeroable::zero(), // non specified
-        //        sqrt_price_limit: encode_price_sqrt_5_2(),
-        //        zero_for_one: false,
-        //    },
-        //    SwapTestCase {
-        //        has_exact_out: false,
-        //        exact_out: false, // non specified
-        //        amount_specified: Zeroable::zero(), // non specified
-        //        sqrt_price_limit: encode_price_sqrt_2_5(),
-        //        zero_for_one: true,
-        //    },
-        //    SwapTestCase {
-        //        has_exact_out: false,
-        //        exact_out: false, // non specified
-        //        amount_specified: Zeroable::zero(), // non specified
-        //        sqrt_price_limit: encode_price_sqrt_5_2(),
-        //        zero_for_one: true,
-        //    },
-        //    SwapTestCase {
-        //        has_exact_out: false,
-        //        exact_out: false, // non specified
-        //        amount_specified: Zeroable::zero(), // non specified
-        //        sqrt_price_limit: encode_price_sqrt_2_5(),
-        //        zero_for_one: false,
-        //    }
+    fn SWAP_CASES_POOL_1_SHOULD_PANIC() -> Array<SwapTestCase> {
+        array![
+            SwapTestCase {
+                has_exact_out: false,
+                exact_out: false, // non specified
+                amount_specified: Zeroable::zero(), // non specified
+                sqrt_price_limit: encode_price_sqrt_5_2(),
+                zero_for_one: true,
+            },
+            SwapTestCase {
+                has_exact_out: false,
+                exact_out: false, // non specified
+                amount_specified: Zeroable::zero(), // non specified
+                sqrt_price_limit: encode_price_sqrt_2_5(),
+                zero_for_one: false,
+            }
         ]
     }
 
     fn SWAP_EXPECTED_RESULTS_POOL_1() -> Array<SwapExpectedResults> {
-        // WIP: implement
         array![
-            //working:
 			SwapExpectedResults {
 				amount_0_before: 2000000000000000000,
 				amount_0_delta: IntegerTrait::<i256>::new(1000000000000000000, false),
@@ -566,19 +567,51 @@ mod SwapTestHelper {
 				tick_after: IntegerTrait::<i32>::new(0, false),
 				tick_before: IntegerTrait::<i32>::new(0, false),
 			},
-        //   SwapExpectedResults {
-		//		amount_0_before: 2000000000000000000,
-		//		amount_0_delta: IntegerTrait::<i256>::new(735088935932648267, true),
-		//		amount_1_before: 2000000000000000000,
-		//		amount_1_delta: IntegerTrait::<i256>::new(1165774985123750584, false),
-		//		execution_price: 158590,
-		//		fee_growth_global_0_X128_delta: 0,
-		//		fee_growth_global_1_X128_delta: 595039006852697554786973994761078087,
-		//		pool_price_after: 250000,
-		//		pool_price_before: 100000,
-		//		tick_after: IntegerTrait::<i32>::new(9163, false),
-		//		tick_before: IntegerTrait::<i32>::new(0, false),
-		//	},
+           SwapExpectedResults {//
+				amount_0_before: 2000000000000000000,
+				amount_0_delta: IntegerTrait::<i256>::new(735088935932648267, true),
+				amount_1_before: 2000000000000000000,
+				amount_1_delta: IntegerTrait::<i256>::new(1165774985123750584, false),
+				execution_price: 158590,
+				fee_growth_global_0_X128_delta: 0,
+				fee_growth_global_1_X128_delta: 595039006852697554786973994761078087,
+				pool_price_after: 250000,
+				pool_price_before: 100000,
+				tick_after: IntegerTrait::<i32>::new(9163, false),
+				tick_before: IntegerTrait::<i32>::new(0, false),
+			},
+            SwapExpectedResults {//
+				amount_0_before: 2000000000000000000,
+				amount_0_delta: IntegerTrait::<i256>::new(1165774985123750584, false),
+				amount_1_before: 2000000000000000000,
+				amount_1_delta: IntegerTrait::<i256>::new(735088935932648267, true),
+				execution_price: 63056,
+				fee_growth_global_0_X128_delta: 595039006852697554786973994761078087,
+				fee_growth_global_1_X128_delta: 0,
+				pool_price_after: 40000,
+				pool_price_before: 100000,
+				tick_after: IntegerTrait::<i32>::new(9164, true),
+				tick_before: IntegerTrait::<i32>::new(0, false),
+			}
+        ]
+    }
+
+    fn SWAP_EXPECTED_RESULTS_POOL_1_SHOULD_PANIC() -> Array<SwapExpectedResults> {
+        //This is just a generic expected case, the content doesnt matter. When called, the SWAP should panic with SPL
+        array![
+           SwapExpectedResults {
+				amount_0_before: 2000000000000000000,
+				amount_0_delta: IntegerTrait::<i256>::new(735088935932648267, true),
+				amount_1_before: 2000000000000000000,
+				amount_1_delta: IntegerTrait::<i256>::new(1165774985123750584, false),
+				execution_price: 158590,
+				fee_growth_global_0_X128_delta: 0,
+				fee_growth_global_1_X128_delta: 595039006852697554786973994761078087,
+				pool_price_after: 250000,
+				pool_price_before: 100000,
+				tick_after: IntegerTrait::<i32>::new(9163, false),
+				tick_before: IntegerTrait::<i32>::new(0, false),
+			}
         ]
     }
 
