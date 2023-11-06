@@ -2,24 +2,16 @@ mod SwapTestHelper {
     use yas_core::libraries::tick_math::TickMath::{
         MIN_TICK, MAX_TICK, MIN_SQRT_RATIO, MAX_SQRT_RATIO
     };
-
-    use yas_core::tests::utils::constants::FactoryConstants::{tick_spacing, FeeAmount, fee_amount};
-
     use yas_core::numbers::fixed_point::implementations::impl_64x96::{
-        FP64x96Impl, FP64x96Sub, FP64x96PartialEq, FixedType, FixedTrait
+        FP64x96Impl, FixedType, FixedTrait
     };
-
     use yas_core::numbers::signed_integer::{
         i32::i32, i32::i32_div_no_round, i256::i256, integer_trait::IntegerTrait
     };
-
-    use dict::Felt252DictTrait;
-    use poseidon::poseidon_hash_span;
+    use yas_core::tests::utils::constants::FactoryConstants::{tick_spacing, FeeAmount, fee_amount};
 
     use integer::BoundedInt;
 
-
-    //check this headers
     #[derive(Copy, Drop, Serde)]
     struct SwapTestCase {
         zero_for_one: bool,
@@ -31,7 +23,6 @@ mod SwapTestHelper {
 
     #[derive(Drop, Serde)]
     struct PoolTestCase {
-        //// description: felt252// ? some are too long to fit
         fee_amount: u32,
         starting_price: FixedType,
         mint_positions: Array<Position>
@@ -53,7 +44,7 @@ mod SwapTestHelper {
         execution_price: u256,
         fee_growth_global_0_X128_delta: u256,
         fee_growth_global_1_X128_delta: u256,
-        pool_price_after: u256, //it is price * 10**5
+        pool_price_after: u256,
         pool_price_before: u256,
         tick_after: i32,
         tick_before: i32,
@@ -162,13 +153,13 @@ mod SwapTestHelper {
                         tick_lower: get_min_tick(FeeAmount::MEDIUM),
                         tick_upper: IntegerTrait::<i32>::new(
                             tick_spacing(FeeAmount::MEDIUM), true
-                        ), //-tick_spacing(FeeAmount::MEDIUM),
+                        ),
                         liquidity: 2000000000000000000,
                     },
                     Position {
                         tick_lower: IntegerTrait::<i32>::new(
                             tick_spacing(FeeAmount::MEDIUM), false
-                        ), //tick_spacing(FeeAmount::MEDIUM),
+                        ),
                         tick_upper: get_max_tick(FeeAmount::MEDIUM),
                         liquidity: 2000000000000000000,
                     },
@@ -182,10 +173,10 @@ mod SwapTestHelper {
                     Position {
                         tick_lower: IntegerTrait::<i32>::new(
                             tick_spacing(FeeAmount::LOW), true
-                        ), //-tick_spacing(FeeAmount::LOW),
+                        ),
                         tick_upper: IntegerTrait::<i32>::new(
                             tick_spacing(FeeAmount::LOW), false
-                        ), //tick_spacing(FeeAmount::LOW),
+                        ),
                         liquidity: 2000000000000000000,
                     },
                 ],
@@ -199,7 +190,7 @@ mod SwapTestHelper {
                         tick_lower: Zeroable::zero(),
                         tick_upper: IntegerTrait::<i32>::new(
                             2000 * tick_spacing(FeeAmount::MEDIUM), false
-                        ), //2000 * tick_spacing(FeeAmount::MEDIUM),
+                        ),
                         liquidity: 2000000000000000000,
                     },
                 ],
@@ -212,7 +203,7 @@ mod SwapTestHelper {
                     Position {
                         tick_lower: IntegerTrait::<i32>::new(
                             2000 * tick_spacing(FeeAmount::MEDIUM), true
-                        ), //-2000 * tick_spacing(FeeAmount::MEDIUM),
+                        ),
                         tick_upper: Zeroable::zero(),
                         liquidity: 2000000000000000000,
                     },
@@ -285,14 +276,14 @@ mod SwapTestHelper {
 
     fn SWAP_CASES() -> Array<SwapTestCase> {
         array![
-            SwapTestCase { //
+            SwapTestCase {
                 zero_for_one: true,
                 has_exact_out: true,
                 exact_out: false,
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
-            SwapTestCase { //
+            SwapTestCase {
                 zero_for_one: false,
                 has_exact_out: true,
                 exact_out: false,
@@ -315,28 +306,28 @@ mod SwapTestHelper {
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
             //swap large amounts in/out with a price limit
-            SwapTestCase { //
+            SwapTestCase {
                 zero_for_one: true,
                 has_exact_out: true,
                 exact_out: false,
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: encode_price_sqrt_50_100(),
             },
-            SwapTestCase {//
+            SwapTestCase {
                 zero_for_one: false,
                 has_exact_out: true,
                 exact_out: false,
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: encode_price_sqrt_200_100(),
             },
-            SwapTestCase {//
+            SwapTestCase {
                 zero_for_one: true,
                 has_exact_out: true,
                 exact_out: true,
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: encode_price_sqrt_50_100(),
             },
-            SwapTestCase {//
+            SwapTestCase {
                 zero_for_one: false,
                 has_exact_out: true,
                 exact_out: true,
@@ -344,28 +335,28 @@ mod SwapTestHelper {
                 sqrt_price_limit: encode_price_sqrt_200_100(),
             },
             // swap small amounts in/out
-            SwapTestCase { //
+            SwapTestCase {
                 zero_for_one: true,
                 has_exact_out: true,
                 exact_out: false,
                 amount_specified: IntegerTrait::<i256>::new(1000, false),
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
-            SwapTestCase {//
+            SwapTestCase {
                 zero_for_one: false,
                 has_exact_out: true,
                 exact_out: false,
                 amount_specified: IntegerTrait::<i256>::new(1000, false),
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
-            SwapTestCase {//
+            SwapTestCase {
                 zero_for_one: true,
                 has_exact_out: true,
                 exact_out: true,
                 amount_specified: IntegerTrait::<i256>::new(1000, false),
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
-           SwapTestCase {//
+           SwapTestCase {
                zero_for_one: false,
                has_exact_out: true,
                exact_out: true,
@@ -373,14 +364,14 @@ mod SwapTestHelper {
                sqrt_price_limit: FP64x96Impl::new(0, false)
            },
             // swap arbitrary input to price
-            SwapTestCase {//
+            SwapTestCase {
                 has_exact_out: false,
                 exact_out: false, // non specified
                 amount_specified: Zeroable::zero(), // non specified
                 sqrt_price_limit: encode_price_sqrt_5_2(),
                 zero_for_one: false,
             },
-            SwapTestCase {//
+            SwapTestCase {
                 has_exact_out: false,
                 exact_out: false, // non specified
                 amount_specified: Zeroable::zero(), // non specified
@@ -616,7 +607,6 @@ mod SwapTestHelper {
     }
 
     //Helper Functions:
-
     // sqrt_price_X96 is the result of encode_price_sqrt_50_100() on v3-core typescript impl. 
     fn encode_price_sqrt_50_100() -> FixedType {
         FP64x96Impl::new(56022770974786139918731938227, false)
@@ -626,8 +616,6 @@ mod SwapTestHelper {
     fn encode_price_sqrt_200_100() -> FixedType {
         FP64x96Impl::new(112045541949572279837463876454, false)
     }
-
-    use debug::PrintTrait;
 
     // sqrt_price_X96 is the result of encode_price_sqrt_5_2() on v3-core typescript impl. 
     fn encode_price_sqrt_5_2() -> FixedType {
