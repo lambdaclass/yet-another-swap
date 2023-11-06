@@ -1,0 +1,1 @@
+This Readme explains the structure and process of passing the pool test cases from .sol to .cairo
