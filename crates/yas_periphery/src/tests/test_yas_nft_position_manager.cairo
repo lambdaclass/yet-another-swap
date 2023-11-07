@@ -34,12 +34,12 @@ mod YASNFTPositionManagerTests {
         let nft_position_manager = deploy_nft_position_manager(yas_factory.contract_address); // 0x2
 
         // Deploy ERC20 tokens with factory address
-        let token_0 = deploy_erc20('YAS0', '$YAS0', 4000000000000000000, OWNER()); // 0x3
-        let token_1 = deploy_erc20('YAS1', '$YAS1', 4000000000000000000, OWNER()); // 0x4
+        let token_0 = deploy_erc20('YAS0', '$YAS0', BoundedInt::max(), OWNER()); // 0x3
+        let token_1 = deploy_erc20('YAS1', '$YAS1', BoundedInt::max(), OWNER()); // 0x4
 
         set_contract_address(OWNER());
-        token_0.transfer(WALLET(), 4000000000000000000);
-        token_1.transfer(WALLET(), 4000000000000000000);
+        token_0.transfer(WALLET(), BoundedInt::max());
+        token_1.transfer(WALLET(), BoundedInt::max());
 
         // Give permissions to expend WALLET() tokens
         set_contract_address(WALLET());
