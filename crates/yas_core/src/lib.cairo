@@ -63,6 +63,6 @@ mod tests {
     mod utils {
         mod constants;
         mod swap_cases;
-        mod pool_2;
+        mod pool_1;
     }
 }

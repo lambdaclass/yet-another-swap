@@ -600,11 +600,7 @@ mod YASPoolTests {
 
         use yas_core::tests::utils::swap_cases::{
             SwapTestHelper, SwapTestHelper::PoolTestCase, SwapTestHelper::SwapTestCase,
-            SwapTestHelper::SwapExpectedResults,
-            SwapTestHelper::{
-                POOL_CASES, SWAP_CASES, SWAP_CASES_POOL_1_SHOULD_PANIC,
-                SWAP_EXPECTED_RESULTS_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1_SHOULD_PANIC
-            }
+            SwapTestHelper::SwapExpectedResults, SwapTestHelper::{POOL_CASES, SWAP_CASES,}
         };
         use integer::BoundedInt;
 
@@ -722,54 +718,55 @@ mod YASPoolTests {
             );
         }
 
-        mod Pool2 {
+        mod PoolCase1 {
             use super::test_pool;
-            use yas_core::tests::utils::pool_2::{
-                POOL_CASE, SWAP_CASES_POOL_2, SWAP_EXPECTED_RESULTS_POOL_2
-            };
+            use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{
-                PoolTestCase, SwapExpectedResults
+                PoolTestCase, SwapExpectedResults, obtain_swap_cases, POOL_CASES
             };
 
             use debug::PrintTrait;
 
             #[test]
             #[available_gas(200000000000)]
-            fn test_pool_success_cases() {
-                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_2();
-                let (success_swap_cases, _) = SWAP_CASES_POOL_2();
-                test_pool(POOL_CASE(), expected_cases, success_swap_cases);
-                'ITS DONE'.print();
+            fn test_pool_1_success_cases() {
+                let pool_case = POOL_CASES()[1];
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
+                let (success_swap_cases, _) = SWAP_CASES_POOL_1();
+                test_pool(pool_case, expected_cases, success_swap_cases);
             }
-        }
 
-        // #[test]
-        // #[available_gas(200000000000)]
-        // fn test_pool_1() {
-        //     let pool_case: @PoolTestCase = POOL_CASES()[1];
-        //     let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
-        //     let swap_cases = SWAP_CASES();
-        //     test_pool(pool_case, expected_cases, swap_cases);
-        // }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_1_panics_0() {
+                let PANIC_CASE = 0;
+                let pool_case = POOL_CASES()[1];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_1();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_1(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
 
-        #[test]
-        #[available_gas(200000000000)]
-        #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        fn test_pool_1_panics_1() {
-            let pool_case: @PoolTestCase = POOL_CASES()[1];
-            let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1_SHOULD_PANIC();
-            let swap_cases = array![*SWAP_CASES_POOL_1_SHOULD_PANIC()[0]];
-            test_pool(pool_case, expected_cases, swap_cases);
-        }
-
-        #[test]
-        #[available_gas(200000000000)]
-        #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        fn test_pool_1_panics_2() {
-            let pool_case: @PoolTestCase = POOL_CASES()[1];
-            let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1_SHOULD_PANIC();
-            let swap_cases = array![*SWAP_CASES_POOL_1_SHOULD_PANIC()[1]];
-            test_pool(pool_case, expected_cases, swap_cases);
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_1_panics_1() {
+                let PANIC_CASE = 1;
+                let pool_case = POOL_CASES()[1];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_1();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_1(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
         }
 
         fn test_pool(
@@ -778,7 +775,6 @@ mod YASPoolTests {
             swap_cases: Array<SwapTestCase>
         ) {
             let mut i = 0;
-            //let swap_cases = SWAP_CASES(); //same swap cases for all pools
             assert(expected_cases.len() == swap_cases.len(), 'wrong amount of expected cases');
             loop {
                 if i == expected_cases.len() {
@@ -883,47 +879,6 @@ mod YASPoolTests {
             };
         }
 
-        //#[test]
-        //#[available_gas(200000000000)]
-        //#[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        //fn test_pool_1_panic_case_1() {
-        //    let pool_case: @PoolTestCase = POOL_CASES()[1];
-        //    let swap_case: @SwapTestCase = SWAP_CASES_SHOULD_PANIC()[0];
-        //    let expected: @SwapExpectedResults = SWAP_EXPECTED_RESULTS_POOL_1_SHOULD_PANIC()[0];
-
-        //    let (yas_pool, yas_router, token_0, token_1) = setup_pool_for_swap_test(
-        //        initial_price: *pool_case.starting_price,
-        //        fee_amount: *pool_case.fee_amount,
-        //        mint_positions: pool_case.mint_positions
-        //    );
-
-        //    let mut amount_to_swap = IntegerTrait::<i256>::new(0, false);//Zeroable::zero();
-        //    if *swap_case.has_exact_out {
-        //        if *swap_case.exact_out {           //exact OUT
-        //            if *swap_case.zero_for_one {    //so i check how much i should put swap IN in order to get those OUT tokens, the Asserts will still verify everything else
-        //                amount_to_swap = *expected.amount_0_delta;
-        //            } else {
-        //                amount_to_swap = *expected.amount_1_delta;
-        //            }
-        //        } else {                            //exact IN, normal swap.
-        //            amount_to_swap = *swap_case.amount_specified;
-        //        }
-        //    } else {
-        //        amount_to_swap = IntegerTrait::<i256>::new( (BoundedInt::max()/2) -1 , false);
-        //    }
-
-        //    // Execute swap, SHOULD PANIC
-        //    let (token_0_swapped_amount, token_1_swapped_amount) = swap_test_case(
-        //        yas_router,
-        //        yas_pool,
-        //        token_0,
-        //        token_1,
-        //        *swap_case.zero_for_one,
-        //        amount_to_swap,
-        //        *swap_case.sqrt_price_limit
-        //    );
-        //}
-
         fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults) {
             'amount_0_delta'.print();
             actual.amount_0_delta.mag.print();
@@ -995,10 +950,6 @@ mod YASPoolTests {
     use yas_core::utils::math_utils::pow;
 
     use yas_core::tests::utils::swap_cases::SwapTestHelper;
-
-
-    use debug::PrintTrait;
-
 
     fn setup() -> (IYASPoolDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let mint_callback = deploy_mint_callback(); // 0x1
@@ -1145,7 +1096,6 @@ mod YASPoolTests {
         let user_token_0_balance_bf = token_0.balanceOf(WALLET());
         let user_token_1_balance_bf = token_1.balanceOf(WALLET());
 
-        //TODO: make yas_pool.swap()
         yas_router
             .swap(
                 yas_pool.contract_address,
@@ -1171,10 +1121,6 @@ mod YASPoolTests {
             )
         };
 
-        //'swapped token_0:'.print();
-        //swapped_token_0.print();
-        //'swapped token_1:'.print();
-        //swapped_token_1.print();
         (token_0_swapped_amount, token_1_swapped_amount)
     }
 
