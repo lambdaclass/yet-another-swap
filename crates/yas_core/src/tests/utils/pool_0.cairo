@@ -9,7 +9,7 @@ fn SWAP_CASES_POOL_0() -> (Array<SwapTestCase>, Array<SwapTestCase>) {
     obtain_swap_cases(array![0,1,2,3,4,5,6,7,8,9,10,11,12,13]) //list succes cases indexes
 }
 
-fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> { //get pool-0 expected
+fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
     array![
         SwapExpectedResults { 
             amount_0_before: 2000000000000000000,
@@ -32,7 +32,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> { //get pool-0 e
             execution_price: 150050,
             fee_growth_global_0_X128_delta: 0,
             fee_growth_global_1_X128_delta: 85070591730234956148210572796405515,
-            pool_price_after: 224930, //should be 224925
+            pool_price_after: 224930,
             pool_price_before: 100000,
             tick_after: IntegerTrait::<i32>::new(8106, false),
             tick_before: IntegerTrait::<i32>::new(0, false),

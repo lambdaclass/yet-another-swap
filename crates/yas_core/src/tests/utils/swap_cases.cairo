@@ -12,6 +12,9 @@ mod SwapTestHelper {
 
     use integer::BoundedInt;
 
+    use debug::PrintTrait;
+
+
     #[derive(Copy, Drop, Serde)]
     struct SwapTestCase {
         zero_for_one: bool,
@@ -58,6 +61,7 @@ mod SwapTestHelper {
         tick_before: i32,
     }
 
+
     fn obtain_swap_cases(idxs: Array<u32>) -> (Array<SwapTestCase>, Array<SwapTestCase>) {
         let mut success_cases = array![];
         let mut error_cases = array![];
@@ -67,17 +71,22 @@ mod SwapTestHelper {
             if i == SWAP_CASES().len() {
                 break;
             }
-            if i < idxs.len() {
-                if contains(@idxs, i) {
-                    success_cases.append(*SWAP_CASES()[i]);
-                } else {
-                    error_cases.append(*SWAP_CASES()[i]);
-                }
-            } else {
+            if contains(@idxs, i) {
                 error_cases.append(*SWAP_CASES()[i]);
+            } else {
+                success_cases.append(*SWAP_CASES()[i]);
             }
             i += 1;
         };
+        //let case: SwapTestCase = *error_cases[2];
+        //case.zero_for_one.print();
+        //case.has_exact_out.print();
+        //case.exact_out.print();
+        //case.amount_specified.mag.print();
+        //case.sqrt_price_limit.mag.print();
+
+
+        assert(success_cases.len() + error_cases.len() == SWAP_CASES().len(), 'error dividing error cases');
         (success_cases, error_cases)
     }
 
@@ -309,28 +318,28 @@ mod SwapTestHelper {
 
     fn SWAP_CASES() -> Array<SwapTestCase> {
         array![ //16 SWAPS
-            SwapTestCase {
+            SwapTestCase { //done
                 zero_for_one: true,
                 has_exact_out: true,
                 exact_out: false,
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
-            SwapTestCase {
+            SwapTestCase {//done
                 zero_for_one: false,
                 has_exact_out: true,
                 exact_out: false,
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
-            SwapTestCase {
+            SwapTestCase { //bugged
                 zero_for_one: true,
                 has_exact_out: true,
                 exact_out: true,
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
-            SwapTestCase {
+            SwapTestCase { //bugged
                 zero_for_one: false,
                 has_exact_out: true,
                 exact_out: true,
@@ -338,28 +347,28 @@ mod SwapTestHelper {
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
             //swap large amounts in/out with a price limit
-            SwapTestCase {
+            SwapTestCase { //should panic case? univ3 panicked here
                 zero_for_one: true,
                 has_exact_out: true,
                 exact_out: false,
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: encode_price_sqrt_50_100(),
             },
-            SwapTestCase {
+            SwapTestCase {//done
                 zero_for_one: false,
                 has_exact_out: true,
                 exact_out: false,
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: encode_price_sqrt_200_100(),
             },
-            SwapTestCase {
+            SwapTestCase { //should panic case? univ3 panicks here?
                 zero_for_one: true,
                 has_exact_out: true,
                 exact_out: true,
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: encode_price_sqrt_50_100(),
             },
-            SwapTestCase {
+            SwapTestCase { //bugged
                 zero_for_one: false,
                 has_exact_out: true,
                 exact_out: true,
@@ -367,28 +376,28 @@ mod SwapTestHelper {
                 sqrt_price_limit: encode_price_sqrt_200_100(),
             },
             // swap small amounts in/out
-            SwapTestCase {
+            SwapTestCase { //done
                 zero_for_one: true,
                 has_exact_out: true,
                 exact_out: false,
                 amount_specified: IntegerTrait::<i256>::new(1000, false),
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
-            SwapTestCase {
+            SwapTestCase {//done
                 zero_for_one: false,
                 has_exact_out: true,
                 exact_out: false,
                 amount_specified: IntegerTrait::<i256>::new(1000, false),
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
-            SwapTestCase {
+            SwapTestCase {//done
                 zero_for_one: true,
                 has_exact_out: true,
                 exact_out: true,
                 amount_specified: IntegerTrait::<i256>::new(1000, false),
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
-            SwapTestCase {
+            SwapTestCase {//bugged
                 zero_for_one: false,
                 has_exact_out: true,
                 exact_out: true,
@@ -396,28 +405,28 @@ mod SwapTestHelper {
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
             // swap arbitrary input to price
-            SwapTestCase {
+            SwapTestCase {//done
                 has_exact_out: false,
                 exact_out: false, // non specified
                 amount_specified: Zeroable::zero(), // non specified
                 sqrt_price_limit: encode_price_sqrt_5_2(),
                 zero_for_one: false,
             },
-            SwapTestCase {
+            SwapTestCase { //THIS PANICKEDDD
                 has_exact_out: false,
                 exact_out: false, // non specified
                 amount_specified: Zeroable::zero(), // non specified
                 sqrt_price_limit: encode_price_sqrt_2_5(),
                 zero_for_one: true,
             },
-            SwapTestCase {
+            SwapTestCase { //THIS PANICKEDDD
                 has_exact_out: false,
                 exact_out: false, // non specified
                 amount_specified: Zeroable::zero(), // non specified
                 sqrt_price_limit: encode_price_sqrt_5_2(),
                 zero_for_one: true,
             },
-            SwapTestCase {
+            SwapTestCase {//done
                 has_exact_out: false,
                 exact_out: false, // non specified
                 amount_specified: Zeroable::zero(), // non specified
