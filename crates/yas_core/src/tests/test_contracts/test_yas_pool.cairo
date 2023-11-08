@@ -1953,7 +1953,7 @@ mod YASPoolTests {
     fn setup_pool_for_swap_test(
         initial_price: FixedType, fee_amount: u32, mint_positions: @Array<SwapTestHelper::Position>
     ) -> (IYASPoolDispatcher, IYASRouterDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
-        let yas_router = deploy_mint_callback(); // 0x1
+        let yas_router = deploy_yas_router(); // 0x1
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
 
         // Deploy ERC20 tokens with factory address
