@@ -1542,6 +1542,58 @@ mod YASPoolTests {
             );
         }
 
+        mod PoolCase0 {
+            use super::test_pool;
+            use yas_core::tests::utils::pool_0::{SWAP_CASES_POOL_0, SWAP_EXPECTED_RESULTS_POOL_0};
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{
+                POOL_CASES
+            };
+            use debug::PrintTrait;
+
+            #[test]
+            #[available_gas(200000000000)]
+            fn test_pool_0_success_cases() {
+                let pool_case = POOL_CASES()[0];
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_0();
+                let (success_swap_cases, _) = SWAP_CASES_POOL_0();
+                test_pool(pool_case, expected_cases, success_swap_cases);
+            }
+
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_0_panics_0() {
+                let PANIC_CASE = 0;
+                let pool_case = POOL_CASES()[0];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_0();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_0(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_0_panics_1() {
+                let PANIC_CASE = 1;
+                let pool_case = POOL_CASES()[0];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_0();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_0(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
+
+        }
+
         mod PoolCase1 {
             use super::test_pool;
             use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
@@ -1593,6 +1645,8 @@ mod YASPoolTests {
             }
         }
 
+
+
         fn test_pool(
             pool_case: @PoolTestCase,
             expected_cases: Array<SwapExpectedResults>,
@@ -1604,6 +1658,7 @@ mod YASPoolTests {
                 if i == expected_cases.len() {
                     break;
                 }
+                'case'.print();
                 // restart Pool
                 let (yas_pool, yas_router, token_0, token_1) = setup_pool_for_swap_test(
                     initial_price: *pool_case.starting_price,
@@ -1776,6 +1831,8 @@ mod YASPoolTests {
 
     use yas_core::tests::utils::swap_cases::SwapTestHelper;
 
+    use debug::PrintTrait;
+
 
     fn setup() -> (
         IYASPoolDispatcher, IERC20Dispatcher, IERC20Dispatcher, IYASRouterDispatcher, i32, i32
@@ -1878,10 +1935,15 @@ mod YASPoolTests {
         let square = (sqrt_price_X96 * sqrt_price_X96) / pow(2, 96);
         let move_decimal_point = square * pow(10, 6);
         let mut in_decimal = move_decimal_point / pow(2, 96);
-        let round_decider = in_decimal % 10;
-        if round_decider > 4 {
+        let (rounder, half) = if in_decimal > 999999 {
+            (100, 49)
+        } else {
+            (10, 4)
+        };
+        let round_decider = in_decimal % rounder;
+        if round_decider > half {
             //round up
-            in_decimal = in_decimal + (10 - round_decider);
+            in_decimal = in_decimal + (rounder - round_decider);
         } else {
             //round down
             in_decimal = in_decimal - round_decider;

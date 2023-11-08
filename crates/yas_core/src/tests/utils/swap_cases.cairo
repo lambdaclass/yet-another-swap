@@ -98,7 +98,7 @@ mod SwapTestHelper {
     }
 
     fn POOL_CASES() -> Array<PoolTestCase> {
-        array![
+        array![ //15 POOLS
             PoolTestCase {
                 // description: 'low fee, 1:1 price, 2e18 max range liquidity',
                 fee_amount: fee_amount(FeeAmount::LOW),
@@ -308,7 +308,7 @@ mod SwapTestHelper {
     }
 
     fn SWAP_CASES() -> Array<SwapTestCase> {
-        array![
+        array![ //16 SWAPS
             SwapTestCase {
                 zero_for_one: true,
                 has_exact_out: true,
