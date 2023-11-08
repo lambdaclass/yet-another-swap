@@ -34,7 +34,7 @@ def sign_to_text(sign):
     if sign :
         return "true"
     else:
-        return"false"
+        return "false"
 
 def format_amount_delta(amount_delta):
     # convert to integer
@@ -79,7 +79,6 @@ def format_pool_price(pool_price):
     # convert to integer
     pool_price = int(pool_price)
     # return the formatted pool_price
-    #return f'FixedTrait::new({pool_price}, false)' #CHECK is it always false? negative price shouldnt make sense
     return f'{pool_price}'
 
 def format_tick(tick):
@@ -141,15 +140,12 @@ def parse_object(object):
     object.pop()
     # for each key-value pair
     for key_value in object:
-        #print(key_value)
         # split by ":"
         key_value = key_value.split(":")
-        # print(key_value)
         # the key is the first element
         key = key_value[0]
         # the value is the second element
         value = key_value[1]
-        
         # save the key-value pair in the dictionary
         values[keys_in_cairo[key]] = value
     
@@ -159,8 +155,6 @@ def parse_object(object):
         if key in functions_to_apply:
             # apply the function
             values[key] = functions_to_apply[key](value)
-    
-    #print(values)
     return values
 
 #main
@@ -182,7 +176,6 @@ if __name__ == "__main__":
         object = object[start+1:end]
         # parse the object
         parsed_objects.append(parse_object(object))
-
 
     to_print = ""
     for i, object in enumerate(parsed_objects):
