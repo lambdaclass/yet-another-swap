@@ -225,8 +225,8 @@ mod YASPool {
         fn get_fee_growth_globals(self: @ContractState) -> (u256, u256) {
             (self.fee_growth_global_0_X128.read(), self.fee_growth_global_1_X128.read())
         }
-        
-        
+
+
         /// @notice Sets the initial price for the pool
         /// @dev price is represented as a sqrt(amount_token_1/amount_token_0) Q64.96 value
         /// @param sqrt_price_X96 the initial sqrt price of the pool as a Q64.96
