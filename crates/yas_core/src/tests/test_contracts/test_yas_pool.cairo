@@ -1857,8 +1857,6 @@ mod YASPoolTests {
         token_0_swapped_amount: u256, token_1_swapped_amount: u256
     ) -> u256 {
         let unrounded = token_1_swapped_amount * pow(10, 6) / token_0_swapped_amount;
-        //'unrounded'.print(); 
-        //unrounded.print();
         let (rounder, half) = if unrounded > 999999 {
             (100, 49)
         } else {
@@ -1872,11 +1870,7 @@ mod YASPoolTests {
             //round down
             unrounded - round_decider
         };
-        //'rounded'.print();
-        //rounded.print();
         rounded = rounded / 10;
-
-        //rounded.print();
         rounded // this == round(token_1_swapped_amount * pow(10, 5) / token_0_swapped_amount);
     }
 
@@ -1892,10 +1886,7 @@ mod YASPoolTests {
             //round down
             in_decimal = in_decimal - round_decider;
         }
-        //'in_decimal'.print();
-        //in_decimal.print();
-        //FixedTrait::new(in_decimal, false)
-        in_decimal / 10 //price * 10**5
+        in_decimal / 10
     }
 
     fn swap_test_case(
@@ -1934,7 +1925,6 @@ mod YASPoolTests {
         let user_token_0_balance_af = token_0.balanceOf(WALLET());
         let user_token_1_balance_af = token_1.balanceOf(WALLET());
 
-        //TODO make them integers with sign
         let (token_0_swapped_amount, token_1_swapped_amount) = if zero_for_one {
             (
                 user_token_0_balance_bf - user_token_0_balance_af,
