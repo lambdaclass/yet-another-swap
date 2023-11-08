@@ -81,7 +81,6 @@ mod SwapTestHelper {
         (success_cases, error_cases)
     }
 
-    //this function checks if number is in array
     fn contains(arr: @Array<u32>, value: u32) -> bool {
         let mut i = 0;
         let mut result = false;
@@ -173,7 +172,7 @@ mod SwapTestHelper {
                     Position {
                         tick_lower: IntegerTrait::<i32>::new(
                             tick_spacing(FeeAmount::MEDIUM), false
-                        ), //tick_spacing(FeeAmount::MEDIUM),
+                        ),
                         tick_upper: get_max_tick(FeeAmount::MEDIUM),
                         liquidity: 2000000000000000000,
                     },
@@ -324,7 +323,6 @@ mod SwapTestHelper {
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
-            //had to swap amounts
             SwapTestCase {
                 zero_for_one: true,
                 has_exact_out: true,

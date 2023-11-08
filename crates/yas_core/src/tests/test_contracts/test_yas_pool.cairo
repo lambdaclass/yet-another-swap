@@ -780,7 +780,6 @@ mod YASPoolTests {
                 if i == expected_cases.len() {
                     break;
                 }
-                'case'.print();
                 // restart Pool
                 let (yas_pool, yas_router, token_0, token_1) = setup_pool_for_swap_test(
                     initial_price: *pool_case.starting_price,
@@ -880,25 +879,25 @@ mod YASPoolTests {
         }
 
         fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults) {
-            'amount_0_delta'.print();
-            actual.amount_0_delta.mag.print();
-            'amount_1_delta'.print();
-            actual.amount_1_delta.mag.print();
-            'execution_price'.print();
-            actual.execution_price.print();
-            'fee_growth_global_0_X128_delta'.print();
-            actual.fee_growth_global_0_X128_delta.print();
-            'fee_growth_global_1_X128_delta'.print();
-            actual.fee_growth_global_1_X128_delta.print();
-            'pool_price_after'.print();
-            actual.pool_price_after.print();
-            'EXPamount_0_delta'.print();
-            (*expected.amount_0_delta).mag.print();
-            'EXee_growth_global_0_X128_delta'.print();
-            (*expected.fee_growth_global_0_X128_delta).print();
-            'EXee_growth_global_1_X128_delta'.print();
-            (*expected.fee_growth_global_1_X128_delta).print();
-            '-'.print();
+            //very useful for debugging, don't delete until all pools are finished:
+            //'amount_0_delta'.print();
+            //actual.amount_0_delta.mag.print();
+
+            //'amount_1_delta'.print();
+            //actual.amount_1_delta.mag.print();
+
+            //'execution_price'.print();
+            //actual.execution_price.print();
+
+            //'fee_growth_global_0_X128_delta'.print();
+            //actual.fee_growth_global_0_X128_delta.print();
+
+            //'fee_growth_global_1_X128_delta'.print();
+            //actual.fee_growth_global_1_X128_delta.print();
+
+            //'pool_price_after'.print();
+            //actual.pool_price_after.print();
+            //'-'.print();
 
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
             assert(actual.amount_0_delta == *expected.amount_0_delta, 'wrong amount_0_delta');
