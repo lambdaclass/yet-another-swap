@@ -57,7 +57,7 @@ mod SwapTestHelper {
         pool_price_before: FixedType,
         tick_before: i32,
     }
-
+    
     fn obtain_swap_cases(idxs: Array<u32>) -> (Array<SwapTestCase>, Array<SwapTestCase>) {
         let mut success_cases = array![];
         let mut error_cases = array![];
@@ -67,17 +67,15 @@ mod SwapTestHelper {
             if i == SWAP_CASES().len() {
                 break;
             }
-            if i < idxs.len() {
-                if contains(@idxs, i) {
-                    success_cases.append(*SWAP_CASES()[i]);
-                } else {
-                    error_cases.append(*SWAP_CASES()[i]);
-                }
-            } else {
+            if contains(@idxs, i) {
                 error_cases.append(*SWAP_CASES()[i]);
+            } else {
+                success_cases.append(*SWAP_CASES()[i]);
             }
             i += 1;
         };
+
+        assert(success_cases.len() + error_cases.len() == SWAP_CASES().len(), 'error dividing error cases');
         (success_cases, error_cases)
     }
 
@@ -366,7 +364,7 @@ mod SwapTestHelper {
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: encode_price_sqrt_200_100(),
             },
-            // swap small amounts in/out
+            //// swap small amounts in/out
             SwapTestCase {
                 zero_for_one: true,
                 has_exact_out: true,

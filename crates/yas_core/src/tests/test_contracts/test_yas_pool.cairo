@@ -1625,8 +1625,22 @@ mod YASPoolTests {
                     array![*panic_swap_cases[PANIC_CASE]]
                 );
             }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_5_panics_1() { //WIP
+                let PANIC_CASE = 1;
+                let pool_case = POOL_CASES()[5];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_5();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_5(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
         }
-
 
 
         fn test_pool(
