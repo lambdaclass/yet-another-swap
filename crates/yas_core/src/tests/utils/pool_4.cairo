@@ -66,7 +66,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_4() -> Array<SwapExpectedResults> {
 
         //panic case here
 
-        SwapExpectedResults {//done
+        SwapExpectedResults {
             amount_0_before: 6324555320336758664,
             amount_0_delta: IntegerTrait::<i256>::new(3869747612262812753, true),
             amount_1_before: 632455532033675867,
@@ -95,7 +95,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_4() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(19585, true),
             tick_before: IntegerTrait::<i32>::new(23028, true),
         },
-        SwapExpectedResults {//done
+        SwapExpectedResults {
             amount_0_before: 6324555320336758664,
             amount_0_delta: IntegerTrait::<i256>::new(1000, false),
             amount_1_before: 632455532033675867,
@@ -108,7 +108,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_4() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(23028, true),
             tick_before: IntegerTrait::<i32>::new(23028, true),
         },
-        SwapExpectedResults {//done
+        SwapExpectedResults {
             amount_0_before: 6324555320336758664,
             amount_0_delta: IntegerTrait::<i256>::new(9969, true),
             amount_1_before: 632455532033675867,
@@ -121,7 +121,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_4() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(23028, true),
             tick_before: IntegerTrait::<i32>::new(23028, true),
         },
-        SwapExpectedResults {//done
+        SwapExpectedResults {
             amount_0_before: 6324555320336758664,
             amount_0_delta: IntegerTrait::<i256>::new(10032, false),
             amount_1_before: 632455532033675867,
@@ -147,7 +147,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_4() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(23028, true),
             tick_before: IntegerTrait::<i32>::new(23028, true),
         },
-        SwapExpectedResults {//done
+        SwapExpectedResults {
             amount_0_before: 6324555320336758664,
             amount_0_delta: IntegerTrait::<i256>::new(5059644256269406930, true),
             amount_1_before: 632455532033675867,
@@ -165,7 +165,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_4() -> Array<SwapExpectedResults> {
 
         //panic case here
 
-        SwapExpectedResults {//done
+        SwapExpectedResults {
             amount_0_before: 6324555320336758664,
             amount_0_delta: IntegerTrait::<i256>::new(3162277660168379331, true),
             amount_1_before: 632455532033675867,
