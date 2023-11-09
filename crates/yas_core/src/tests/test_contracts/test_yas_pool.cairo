@@ -1645,6 +1645,85 @@ mod YASPoolTests {
             }
         }
 
+        mod PoolCase4 {
+            use super::test_pool;
+            use yas_core::tests::utils::pool_4::{SWAP_CASES_POOL_4, SWAP_EXPECTED_RESULTS_POOL_4};
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{
+                POOL_CASES
+            };
+            use debug::PrintTrait;
+
+            #[test]
+            #[available_gas(200000000000)]
+            fn test_pool_4_success_cases() { //has bugged cases
+                let pool_case = POOL_CASES()[4];
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_4();
+                let (success_swap_cases, _) = SWAP_CASES_POOL_4();
+                test_pool(pool_case, expected_cases, success_swap_cases);
+            }
+            
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_4_panics_0() { //done
+                let PANIC_CASE = 0;
+                let pool_case = POOL_CASES()[4];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_4();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_4(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_4_panics_1() { //done
+                let PANIC_CASE = 1;
+                let pool_case = POOL_CASES()[4];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_4();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_4(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_4_panics_2() { //done
+                let PANIC_CASE = 2;
+                let pool_case = POOL_CASES()[4];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_4();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_4(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_4_panics_3() { //done
+                let PANIC_CASE = 3;
+                let pool_case = POOL_CASES()[4];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_4();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_4(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
+        }
+
 
 
         fn test_pool(
