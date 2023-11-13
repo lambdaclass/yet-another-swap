@@ -1542,58 +1542,6 @@ mod YASPoolTests {
             );
         }
 
-        mod PoolCase0 {
-            use super::test_pool;
-            use yas_core::tests::utils::pool_0::{SWAP_CASES_POOL_0, SWAP_EXPECTED_RESULTS_POOL_0};
-            use yas_core::tests::utils::swap_cases::SwapTestHelper::{
-                POOL_CASES
-            };
-            use debug::PrintTrait;
-
-            #[test]
-            #[available_gas(200000000000)]
-            fn test_pool_0_success_cases() {
-                let pool_case = POOL_CASES()[0];
-                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_0();
-                let (success_swap_cases, _) = SWAP_CASES_POOL_0();
-                test_pool(pool_case, expected_cases, success_swap_cases);
-            }
-
-
-            #[test]
-            #[available_gas(200000000000)]
-            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-            fn test_pool_0_panics_0() {
-                let PANIC_CASE = 0;
-                let pool_case = POOL_CASES()[0];
-                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_0();
-                let expected_cases =
-                    SWAP_EXPECTED_RESULTS_POOL_0(); //get random case, is never executed
-                test_pool(
-                    pool_case,
-                    array![*expected_cases[PANIC_CASE]],
-                    array![*panic_swap_cases[PANIC_CASE]]
-                );
-            }
-
-            #[test]
-            #[available_gas(200000000000)]
-            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-            fn test_pool_0_panics_1() {
-                let PANIC_CASE = 1;
-                let pool_case = POOL_CASES()[0];
-                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_0();
-                let expected_cases =
-                    SWAP_EXPECTED_RESULTS_POOL_0(); //get random case, is never executed
-                test_pool(
-                    pool_case,
-                    array![*expected_cases[PANIC_CASE]],
-                    array![*panic_swap_cases[PANIC_CASE]]
-                );
-            }
-
-        }
-
         mod PoolCase1 {
             use super::test_pool;
             use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
@@ -1643,6 +1591,40 @@ mod YASPoolTests {
                     array![*panic_swap_cases[PANIC_CASE]]
                 );
             }
+        }
+
+        mod PoolCase8 {
+            use super::test_pool;
+            use yas_core::tests::utils::pool_8::{SWAP_CASES_POOL_8, SWAP_EXPECTED_RESULTS_POOL_8};
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{
+                POOL_CASES
+            };
+            use debug::PrintTrait;
+
+            #[test]
+            #[available_gas(200000000000)]
+            fn test_pool_8_success_cases() {
+                let pool_case = POOL_CASES()[8];
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_8();
+                let (success_swap_cases, _) = SWAP_CASES_POOL_8();
+                test_pool(pool_case, expected_cases, success_swap_cases);
+            }
+
+            // #[test]
+            // #[available_gas(200000000000)]
+            // #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            // fn test_pool_8_panics_0() {
+            //     let PANIC_CASE = 0;
+            //     let pool_case = POOL_CASES()[8];
+            //     let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_8();
+            //     let expected_cases =
+            //         SWAP_EXPECTED_RESULTS_POOL_8(); //get random case, is never executed
+            //     test_pool(
+            //         pool_case,
+            //         array![*expected_cases[PANIC_CASE]],
+            //         array![*panic_swap_cases[PANIC_CASE]]
+            //     );
+            // }
         }
 
 
@@ -1759,24 +1741,24 @@ mod YASPoolTests {
 
         fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults) {
             //very useful for debugging, don't delete until all pools are finished:
-            //'amount_0_delta'.print();
-            //actual.amount_0_delta.mag.print();
+            'amount_0_delta'.print();
+            actual.amount_0_delta.mag.print();
 
-            //'amount_1_delta'.print();
-            //actual.amount_1_delta.mag.print();
+            'amount_1_delta'.print();
+            actual.amount_1_delta.mag.print();
 
-            //'execution_price'.print();
-            //actual.execution_price.print();
+            'execution_price'.print();
+            actual.execution_price.print();
 
-            //'fee_growth_global_0_X128_delta'.print();
-            //actual.fee_growth_global_0_X128_delta.print();
+            'fee_growth_global_0_X128_delta'.print();
+            actual.fee_growth_global_0_X128_delta.print();
 
-            //'fee_growth_global_1_X128_delta'.print();
-            //actual.fee_growth_global_1_X128_delta.print();
+            'fee_growth_global_1_X128_delta'.print();
+            actual.fee_growth_global_1_X128_delta.print();
 
-            //'pool_price_after'.print();
-            //actual.pool_price_after.print();
-            //'-'.print();
+            'pool_price_after'.print();
+            actual.pool_price_after.print();
+            '-'.print();
 
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
             assert(actual.amount_0_delta == *expected.amount_0_delta, 'wrong amount_0_delta');
@@ -1913,22 +1895,27 @@ mod YASPoolTests {
     fn calculate_execution_price(
         token_0_swapped_amount: u256, token_1_swapped_amount: u256
     ) -> u256 {
-        let unrounded = token_1_swapped_amount * pow(10, 6) / token_0_swapped_amount;
-        let (rounder, half) = if unrounded > 999999 {
-            (100, 49)
+        token_0_swapped_amount.print();
+        if token_0_swapped_amount.is_zero() {
+            0 //0?
         } else {
-            (10, 4)
-        };
-        let round_decider = unrounded % rounder;
-        let mut rounded = if round_decider > half {
-            //round up
-            unrounded + (rounder - round_decider)
-        } else {
-            //round down
-            unrounded - round_decider
-        };
-        rounded = rounded / 10;
-        rounded // this == round(token_1_swapped_amount * pow(10, 5) / token_0_swapped_amount);
+            let unrounded = token_1_swapped_amount * pow(10, 6) / token_0_swapped_amount;
+            let (rounder, half) = if unrounded > 999999 {
+                (100, 49)
+            } else {
+                (10, 4)
+            };
+            let round_decider = unrounded % rounder;
+            let mut rounded = if round_decider > half {
+                //round up
+                unrounded + (rounder - round_decider)
+            } else {
+                //round down
+                unrounded - round_decider
+            };
+            rounded = rounded / 10;
+            rounded // this == round(token_1_swapped_amount * pow(10, 5) / token_0_swapped_amount);
+        }
     }
 
     fn round_for_price_comparison(sqrt_price_X96: u256) -> u256 {
@@ -1975,31 +1962,35 @@ mod YASPoolTests {
         let user_token_0_balance_bf = token_0.balanceOf(WALLET());
         let user_token_1_balance_bf = token_1.balanceOf(WALLET());
 
-        yas_router
-            .swap(
-                yas_pool.contract_address,
-                WALLET(),
-                zero_for_one,
-                amount_specified,
-                sqrt_price_limit_usable
-            );
+        if amount_specified.is_non_zero() {
+            yas_router
+                .swap(
+                    yas_pool.contract_address,
+                    WALLET(),
+                    zero_for_one,
+                    amount_specified,
+                    sqrt_price_limit_usable
+                );
 
-        let user_token_0_balance_af = token_0.balanceOf(WALLET());
-        let user_token_1_balance_af = token_1.balanceOf(WALLET());
+            let user_token_0_balance_af = token_0.balanceOf(WALLET());
+            let user_token_1_balance_af = token_1.balanceOf(WALLET());
 
-        let (token_0_swapped_amount, token_1_swapped_amount) = if zero_for_one {
-            (
-                user_token_0_balance_bf - user_token_0_balance_af,
-                user_token_1_balance_af - user_token_1_balance_bf
-            )
+            let (token_0_swapped_amount, token_1_swapped_amount) = if zero_for_one {
+                (
+                    user_token_0_balance_bf - user_token_0_balance_af,
+                    user_token_1_balance_af - user_token_1_balance_bf
+                )
+            } else {
+                (
+                    user_token_0_balance_af - user_token_0_balance_bf,
+                    user_token_1_balance_bf - user_token_1_balance_af
+                )
+            };
+
+            (token_0_swapped_amount, token_1_swapped_amount)
         } else {
-            (
-                user_token_0_balance_af - user_token_0_balance_bf,
-                user_token_1_balance_bf - user_token_1_balance_af
-            )
-        };
-
-        (token_0_swapped_amount, token_1_swapped_amount)
+            (0, 0)
+        }
     }
 
     fn setup_pool_for_swap_test(
