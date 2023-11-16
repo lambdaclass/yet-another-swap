@@ -1391,12 +1391,11 @@ mod YASPoolTests {
     mod Swap {
         use super::{
             setup_with, setup_pool_for_swap_test, mint_positions, swap_test_case,
-            round_for_price_comparison, calculate_execution_price,
-            get_min_tick_and_max_tick_with_fee
+            round_for_price_comparison, calculate_execution_price
         };
 
         use yas_core::numbers::fixed_point::implementations::impl_64x96::{
-            FP64x96Impl, FP64x96Sub, FP64x96PartialEq, FixedType, FixedTrait, FP64x96Zeroable
+            FP64x96Impl, FP64x96Sub, FP64x96PartialEq, FP64x96Zeroable, FixedType, FixedTrait
         };
         use yas_core::numbers::signed_integer::{i32::i32, i256::i256, integer_trait::IntegerTrait};
         use yas_core::contracts::yas_erc20::{
@@ -1409,26 +1408,18 @@ mod YASPoolTests {
             YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
         };
         use yas_core::tests::utils::constants::PoolConstants::{
-            TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET, encode_price_sqrt_1_1, encode_price_sqrt_1_2
+            TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET
         };
 
         use yas_core::tests::utils::constants::FactoryConstants::{fee_amount, FeeAmount};
-
-        use yas_core::libraries::tick_math::TickMath::{
-            MIN_TICK, MAX_TICK, get_sqrt_ratio_at_tick, MIN_SQRT_RATIO, MAX_SQRT_RATIO
-        };
-
-        use yas_core::utils::math_utils::pow;
 
         use yas_core::contracts::yas_pool::{IYASPoolDispatcherTrait};
 
         use yas_core::tests::utils::swap_cases::{
             SwapTestHelper, SwapTestHelper::PoolTestCase, SwapTestHelper::SwapTestCase,
-            SwapTestHelper::SwapExpectedResults, SwapTestHelper::{POOL_CASES, SWAP_CASES,}
+            SwapTestHelper::SwapExpectedResults, SwapTestHelper::{POOL_CASES, SWAP_CASES}
         };
         use integer::BoundedInt;
-
-        use debug::PrintTrait;
 
         #[test]
         #[available_gas(200000000000)]
