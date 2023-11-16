@@ -5,9 +5,10 @@ KATANA_PRIVATE_KEY=0x1800000000300000180000000000030000000000003006001800006600
 KATANA_ACCOUNT_ADDRESS=0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973
 KATANA_URL=http://0.0.0.0:5050
 
-KATANA_ACCOUNT_SRC="~/.starkli-wallets/account_katana.json"
 
 U128_MAX=340282366920938463463374607431768211455
+
+KATANA_ACCOUNT_SRC=~/.starkli-wallets/account_katana.json
 
 export STARKNET_ACCOUNT=$KATANA_ACCOUNT_SRC
 export STARKNET_RPC=$KATANA_URL
@@ -15,6 +16,27 @@ export STARKNET_RPC=$KATANA_URL
 # ANSI format
 GREEN='\e[32m'
 RESET='\e[0m'
+
+# Check if the JSON file exists
+if [ ! -f "$KATANA_ACCOUNT_SRC" ]; then
+    echo '{
+  "version": 1,
+  "variant": {
+    "type": "open_zeppelin",
+    "version": 1,
+    "public_key": "0x16c7fee544271684656647512868f00e27ba3ac0fcc257ecdde56af3b297bd9"
+  },
+  "deployment": {
+    "status": "deployed",
+    "class_hash": "0x48dd59fabc729a5db3afdf649ecaf388e931647ab2f53ca3c6183fa480aa292",
+    "address": "0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973"
+  }
+}' > "$KATANA_ACCOUNT_SRC"
+
+    echo -e "$GREEN\n==> Katana JSON account file created at: $KATANA_ACCOUNT_SRC$RESET"
+else
+    echo -e "$GREEN\n==> Katana JSON account file already exists at: $KATANA_ACCOUNT_SRC$RESET"
+fi
 
 # Declare all contracts
 echo -e "$GREEN\n==> Declaring ERC20$RESET"
