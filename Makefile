@@ -43,6 +43,7 @@ endif
 %::
 	@true
 
+# TODO: In the future, when the NFTManager contract is finished, it is necessary to add it to these scripts
 declare-testnet:
 	@./scripts/check_env_vars.sh
 	@echo "\n==> Declaring Router"
