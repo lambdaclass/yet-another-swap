@@ -729,8 +729,7 @@ mod YASPool {
         /// @return amount1 the amount of token1 owed to the pool, negative if the pool should pay the recipient
         fn modify_position(
             ref self: ContractState, params: ModifyPositionParams
-        ) -> (PositionInfo, i256, i256)
-        {
+        ) -> (PositionInfo, i256, i256) {
             match check_ticks(params.position_key.tick_lower, params.position_key.tick_upper) {
                 Result::Ok(()) => {},
                 Result::Err(err) => {
