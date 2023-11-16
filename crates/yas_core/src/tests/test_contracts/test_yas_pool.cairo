@@ -769,6 +769,26 @@ mod YASPoolTests {
             }
         }
 
+        mod PoolCase2 {
+            use super::test_pool;
+            use yas_core::tests::utils::pool_2::{SWAP_CASES_POOL_2, SWAP_EXPECTED_RESULTS_POOL_2};
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{
+                PoolTestCase, SwapExpectedResults, obtain_swap_cases, POOL_CASES
+            };
+
+            use debug::PrintTrait;
+
+            #[test]
+            #[available_gas(200000000000)]
+            fn test_pool_1_success_cases() {
+                let pool_case = POOL_CASES()[1];
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_2();
+                let (success_swap_cases, _) = SWAP_CASES_POOL_2();
+                test_pool(pool_case, expected_cases, success_swap_cases);
+            }
+        }
+
+
         fn test_pool(
             pool_case: @PoolTestCase,
             expected_cases: Array<SwapExpectedResults>,
