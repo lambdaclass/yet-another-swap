@@ -581,8 +581,6 @@ mod YASPool {
             (amount_0, amount_1)
         }
 
-        /// @inheritdoc IUniswapV3PoolActions
-        /// @dev noDelegateCall is applied indirectly via _modifyPosition
         fn burn(
             ref self: ContractState, tick_lower: i32, tick_upper: i32, amount: u128
         ) -> (u256, u256) {
@@ -730,7 +728,7 @@ mod YASPool {
         /// @return amount1 the amount of token1 owed to the pool, negative if the pool should pay the recipient
         fn modify_position(
             ref self: ContractState, params: ModifyPositionParams
-        ) -> (PositionInfo, i256, i256) // TODO: noDelegateCall
+        ) -> (PositionInfo, i256, i256)
         {
             match check_ticks(params.position_key.tick_lower, params.position_key.tick_upper) {
                 Result::Ok(()) => {},
