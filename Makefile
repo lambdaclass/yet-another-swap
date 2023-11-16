@@ -30,7 +30,7 @@ demo-local: build
 	cargo run --bin local
 
 demo-local-cli:
-	@./scripts/demo_local_cli.sh
+	@./scripts/run_local_demo.sh
 
 Command := $(firstword $(MAKECMDGOALS))
 FILTER := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
