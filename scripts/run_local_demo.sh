@@ -19,28 +19,11 @@ RESET='\e[0m'
 
 # Check if the JSON file exists
 if [ ! -f "$KATANA_ACCOUNT_SRC" ]; then
-    echo '{
-  "version": 1,
-  "variant": {
-    "type": "open_zeppelin",
-    "version": 1,
-    "public_key": "0x2b191c2f3ecf685a91af7cf72a43e7b90e2e41220175de5c4f7498981b10053",
-    "legacy": true
-  },
-  "deployment": {
-    "status": "deployed",
-    "class_hash": "0x4d07e40e93398ed3c76981e72dd1fd22557a78ce36c0515f679e27f0bb5bc5f",
-    "address": "0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973"
-  }
-}' > "$KATANA_ACCOUNT_SRC"
-
+    $(starkli account fetch --output $KATANA_ACCOUNT_SRC $KATANA_ACCOUNT_ADDRESS)
     echo -e "$GREEN\n==> Katana JSON account file created at: $KATANA_ACCOUNT_SRC$RESET"
 else
     echo -e "$GREEN\n==> Katana JSON account file already exists at: $KATANA_ACCOUNT_SRC$RESET"
 fi
-
-# echo -e "HEY! $STARKNET_ACCOUNT, $"
-# $(starkli account fetch --output ~/.starkli-wallets/katana_acc.json --rpc $STARKNET_RPC 0x0517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973)
 
 # Declare all contracts
 echo -e "$GREEN\n==> Declaring ERC20$RESET"
