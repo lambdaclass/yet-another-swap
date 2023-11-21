@@ -16,6 +16,14 @@ jobs:
         with:
           scarb-version: "0.7.0"
 
+      - name: Install starkliup
+        run: curl https://get.starkli.sh | sh
+
+      - name: Install Starkli
+        run: |-
+          /home/runner/.config/.starkli/bin/starkliup
+          sudo mv /home/runner/.config/.starkli/bin/starkli /usr/local/bin/
+
       - name: Setup Katana .env
         run: |
           cp .github/workflows/katana/katana.env .env
