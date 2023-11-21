@@ -1536,11 +1536,7 @@ mod YASPoolTests {
         mod PoolCase1 {
             use super::test_pool;
             use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
-            use yas_core::tests::utils::swap_cases::SwapTestHelper::{
-                PoolTestCase, SwapExpectedResults, obtain_swap_cases, POOL_CASES
-            };
-
-            use debug::PrintTrait;
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
             #[test]
             #[available_gas(200000000000)]
@@ -1694,26 +1690,6 @@ mod YASPoolTests {
         }
 
         fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults) {
-            //very useful for debugging, don't delete until all pools are finished:
-            //'amount_0_delta'.print();
-            //actual.amount_0_delta.mag.print();
-
-            //'amount_1_delta'.print();
-            //actual.amount_1_delta.mag.print();
-
-            //'execution_price'.print();
-            //actual.execution_price.print();
-
-            //'fee_growth_global_0_X128_delta'.print();
-            //actual.fee_growth_global_0_X128_delta.print();
-
-            //'fee_growth_global_1_X128_delta'.print();
-            //actual.fee_growth_global_1_X128_delta.print();
-
-            //'pool_price_after'.print();
-            //actual.pool_price_after.print();
-            //'-'.print();
-
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
             assert(actual.amount_0_delta == *expected.amount_0_delta, 'wrong amount_0_delta');
             assert(actual.amount_1_before == *expected.amount_1_before, 'wrong amount_1_before');
@@ -1827,9 +1803,7 @@ mod YASPoolTests {
 
         let yas_pool_address = yas_factory // 0x5
             .create_pool(
-                token_0.contract_address,
-                token_1.contract_address,
-                fee_amount(FeeAmount::LOW)
+                token_0.contract_address, token_1.contract_address, fee_amount(FeeAmount::LOW)
             );
         let yas_pool = IYASPoolDispatcher { contract_address: yas_pool_address };
 
