@@ -78,13 +78,6 @@ mod SwapTestHelper {
             }
             i += 1;
         };
-        //let case: SwapTestCase = *error_cases[2];
-        //case.zero_for_one.print();
-        //case.has_exact_out.print();
-        //case.exact_out.print();
-        //case.amount_specified.mag.print();
-        //case.sqrt_price_limit.mag.print();
-
 
         assert(success_cases.len() + error_cases.len() == SWAP_CASES().len(), 'error dividing error cases');
         (success_cases, error_cases)
@@ -318,20 +311,20 @@ mod SwapTestHelper {
 
     fn SWAP_CASES() -> Array<SwapTestCase> {
         array![ //16 SWAPS
-            // SwapTestCase {
-            //     zero_for_one: true,
-            //     has_exact_out: true,
-            //     exact_out: false,
-            //     amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-            //     sqrt_price_limit: FP64x96Impl::new(0, false)
-            // },
-            // SwapTestCase {
-            //     zero_for_one: false,
-            //     has_exact_out: true,
-            //     exact_out: false,
-            //     amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-            //     sqrt_price_limit: FP64x96Impl::new(0, false)
-            // },
+            SwapTestCase {
+                zero_for_one: true,
+                has_exact_out: true,
+                exact_out: false,
+                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+                sqrt_price_limit: FP64x96Impl::new(0, false)
+            },
+            SwapTestCase {
+                zero_for_one: false,
+                has_exact_out: true,
+                exact_out: false,
+                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+                sqrt_price_limit: FP64x96Impl::new(0, false)
+            },
             SwapTestCase { //bugged
                 zero_for_one: true,
                 has_exact_out: true,
@@ -347,92 +340,92 @@ mod SwapTestHelper {
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
             //swap large amounts in/out with a price limit
-            // SwapTestCase {
-            //     zero_for_one: true,
-            //     has_exact_out: true,
-            //     exact_out: false,
-            //     amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-            //     sqrt_price_limit: encode_price_sqrt_50_100(),
-            // },
-            // SwapTestCase {
-            //     zero_for_one: false,
-            //     has_exact_out: true,
-            //     exact_out: false,
-            //     amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-            //     sqrt_price_limit: encode_price_sqrt_200_100(),
-            // },
-            // SwapTestCase {
-            //     zero_for_one: true,
-            //     has_exact_out: true,
-            //     exact_out: true,
-            //     amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-            //     sqrt_price_limit: encode_price_sqrt_50_100(),
-            // },
-            // SwapTestCase { //bugged
-            //     zero_for_one: false,
-            //     has_exact_out: true,
-            //     exact_out: true,
-            //     amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-            //     sqrt_price_limit: encode_price_sqrt_200_100(),
-            // },
-            // // swap small amounts in/out
-            // SwapTestCase {
-            //     zero_for_one: true,
-            //     has_exact_out: true,
-            //     exact_out: false,
-            //     amount_specified: IntegerTrait::<i256>::new(1000, false),
-            //     sqrt_price_limit: FP64x96Impl::new(0, false)
-            // },
-            // SwapTestCase {
-            //     zero_for_one: false,
-            //     has_exact_out: true,
-            //     exact_out: false,
-            //     amount_specified: IntegerTrait::<i256>::new(1000, false),
-            //     sqrt_price_limit: FP64x96Impl::new(0, false)
-            // },
-            // SwapTestCase {
-            //     zero_for_one: true,
-            //     has_exact_out: true,
-            //     exact_out: true,
-            //     amount_specified: IntegerTrait::<i256>::new(1000, false),
-            //     sqrt_price_limit: FP64x96Impl::new(0, false)
-            // },
-            // SwapTestCase { //bugged
-            //     zero_for_one: false,
-            //     has_exact_out: true,
-            //     exact_out: true,
-            //     amount_specified: IntegerTrait::<i256>::new(1000, false),
-            //     sqrt_price_limit: FP64x96Impl::new(0, false)
-            // },
-            // // swap arbitrary input to price
-            // SwapTestCase {
-            //     has_exact_out: false,
-            //     exact_out: false, // non specified
-            //     amount_specified: Zeroable::zero(), // non specified
-            //     sqrt_price_limit: encode_price_sqrt_5_2(),
-            //     zero_for_one: false,
-            // },
-            // SwapTestCase {
-            //     has_exact_out: false,
-            //     exact_out: false, // non specified
-            //     amount_specified: Zeroable::zero(), // non specified
-            //     sqrt_price_limit: encode_price_sqrt_2_5(),
-            //     zero_for_one: true,
-            // },
-            // SwapTestCase {
-            //     has_exact_out: false,
-            //     exact_out: false, // non specified
-            //     amount_specified: Zeroable::zero(), // non specified
-            //     sqrt_price_limit: encode_price_sqrt_5_2(),
-            //     zero_for_one: true,
-            // },
-            // SwapTestCase {
-            //     has_exact_out: false,
-            //     exact_out: false, // non specified
-            //     amount_specified: Zeroable::zero(), // non specified
-            //     sqrt_price_limit: encode_price_sqrt_2_5(),
-            //     zero_for_one: false,
-            // }
+            SwapTestCase {
+                zero_for_one: true,
+                has_exact_out: true,
+                exact_out: false,
+                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+                sqrt_price_limit: encode_price_sqrt_50_100(),
+            },
+            SwapTestCase {
+                zero_for_one: false,
+                has_exact_out: true,
+                exact_out: false,
+                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+                sqrt_price_limit: encode_price_sqrt_200_100(),
+            },
+            SwapTestCase {
+                zero_for_one: true,
+                has_exact_out: true,
+                exact_out: true,
+                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+                sqrt_price_limit: encode_price_sqrt_50_100(),
+            },
+            SwapTestCase { //bugged
+                zero_for_one: false,
+                has_exact_out: true,
+                exact_out: true,
+                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+                sqrt_price_limit: encode_price_sqrt_200_100(),
+            },
+            // swap small amounts in/out
+            SwapTestCase {
+                zero_for_one: true,
+                has_exact_out: true,
+                exact_out: false,
+                amount_specified: IntegerTrait::<i256>::new(1000, false),
+                sqrt_price_limit: FP64x96Impl::new(0, false)
+            },
+            SwapTestCase {
+                zero_for_one: false,
+                has_exact_out: true,
+                exact_out: false,
+                amount_specified: IntegerTrait::<i256>::new(1000, false),
+                sqrt_price_limit: FP64x96Impl::new(0, false)
+            },
+            SwapTestCase {
+                zero_for_one: true,
+                has_exact_out: true,
+                exact_out: true,
+                amount_specified: IntegerTrait::<i256>::new(1000, false),
+                sqrt_price_limit: FP64x96Impl::new(0, false)
+            },
+            SwapTestCase { //bugged
+                zero_for_one: false,
+                has_exact_out: true,
+                exact_out: true,
+                amount_specified: IntegerTrait::<i256>::new(1000, false),
+                sqrt_price_limit: FP64x96Impl::new(0, false)
+            },
+            // swap arbitrary input to price
+            SwapTestCase {
+                has_exact_out: false,
+                exact_out: false, // non specified
+                amount_specified: Zeroable::zero(), // non specified
+                sqrt_price_limit: encode_price_sqrt_5_2(),
+                zero_for_one: false,
+            },
+            SwapTestCase {
+                has_exact_out: false,
+                exact_out: false, // non specified
+                amount_specified: Zeroable::zero(), // non specified
+                sqrt_price_limit: encode_price_sqrt_2_5(),
+                zero_for_one: true,
+            },
+            SwapTestCase {
+                has_exact_out: false,
+                exact_out: false, // non specified
+                amount_specified: Zeroable::zero(), // non specified
+                sqrt_price_limit: encode_price_sqrt_5_2(),
+                zero_for_one: true,
+            },
+            SwapTestCase {
+                has_exact_out: false,
+                exact_out: false, // non specified
+                amount_specified: Zeroable::zero(), // non specified
+                sqrt_price_limit: encode_price_sqrt_2_5(),
+                zero_for_one: false,
+            }
         ]
     }
 

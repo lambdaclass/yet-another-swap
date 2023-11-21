@@ -6,7 +6,7 @@ use yas_core::tests::utils::swap_cases::SwapTestHelper::{
 };
 
 fn SWAP_CASES_POOL_1() -> (Array<SwapTestCase>, Array<SwapTestCase>) {
-    obtain_swap_cases(array![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+    obtain_swap_cases(array![14, 15])
 }
 
 fn SWAP_EXPECTED_RESULTS_POOL_1() -> Array<SwapExpectedResults> {
