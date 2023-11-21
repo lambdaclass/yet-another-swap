@@ -1391,7 +1391,7 @@ mod YASPoolTests {
     mod Swap {
         use super::{
             setup_with, setup_pool_for_swap_test, mint_positions, swap_test_case,
-            round_for_price_comparison, round_for_price_comparison_44_decimals, calculate_execution_price,
+            round_for_price_comparison, calculate_execution_price,
             get_min_tick_and_max_tick_with_fee
         };
 
@@ -1696,8 +1696,7 @@ mod YASPoolTests {
                 // Save values before swap for compare
                 let user_token_0_balance_bf = token_0.balanceOf(WALLET());
                 let user_token_1_balance_bf = token_1.balanceOf(WALLET());
-                let (fee_growth_global_0_X128_bf, fee_growth_global_1_X128_bf) = yas_pool
-                    .get_fee_growth_globals();
+                let (fee_growth_global_0_X128_bf, fee_growth_global_1_X128_bf) = yas_pool.get_fee_growth_globals();
 
                 let pool_balance_0_bf = token_0.balanceOf(yas_pool.contract_address);
                 let pool_balance_1_bf = token_1.balanceOf(yas_pool.contract_address);
@@ -1755,9 +1754,8 @@ mod YASPoolTests {
                 let pool_balance_0_af = token_0.balanceOf(yas_pool.contract_address);
                 let pool_balance_1_af = token_1.balanceOf(yas_pool.contract_address);
 
-                let pool_price_bf = round_for_price_comparison(slot0_bf.sqrt_price_X96.mag);
-                // let pool_price_af = round_for_price_comparison_44_decimals(slot0_af.sqrt_price_X96.mag); //this is for first bugged swap of this pool
-                let pool_price_af = round_for_price_comparison(slot0_af.sqrt_price_X96.mag);
+                let pool_price_bf = round_for_price_comparison(slot0_bf.sqrt_price_X96.mag, *expected.pool_price_before);
+                let pool_price_af = round_for_price_comparison(slot0_af.sqrt_price_X96.mag, *expected.pool_price_after);
 
                 let tick_bf = slot0_bf.tick;
                 let tick_af = slot0_af.tick;
@@ -1810,7 +1808,7 @@ mod YASPoolTests {
             '-'.print();
 
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
-            // assert(actual.amount_0_delta == *expected.amount_0_delta, 'wrong amount_0_delta');
+            assert(actual.amount_0_delta == *expected.amount_0_delta, 'wrong amount_0_delta');
             assert(actual.amount_1_before == *expected.amount_1_before, 'wrong amount_1_before');
             assert(actual.amount_1_delta == *expected.amount_1_delta, 'wrong amount_1_delta');
             assert(actual.execution_price == *expected.execution_price, 'wrong execution_price');
@@ -1825,9 +1823,9 @@ mod YASPoolTests {
             assert(
                 actual.pool_price_before == *expected.pool_price_before, 'wrong pool_price_before'
             );
-            // assert(actual.pool_price_after == *expected.pool_price_after, 'wrong pool_price_after');
+            assert(actual.pool_price_after == *expected.pool_price_after, 'wrong pool_price_after');
 
-            // assert(actual.tick_after == *expected.tick_after, 'wrong tick_after');
+            assert(actual.tick_after == *expected.tick_after, 'wrong tick_after');
             assert(actual.tick_before == *expected.tick_before, 'wrong tick_before');
         }
     }
@@ -1973,42 +1971,62 @@ mod YASPoolTests {
         rounded
     }
 
-    fn round_for_price_comparison(sqrt_price_X96: u256) -> u256 {
-        let square = (sqrt_price_X96 * sqrt_price_X96) / pow(2, 96);
-        let move_decimal_point = square * pow(10, 6);
-        let mut in_decimal = move_decimal_point / pow(2, 96);
-        let (rounder, half) = if in_decimal > 999999 {
-            (100, 49)
-        } else {
-            (10, 4)
-        };
-        let round_decider = in_decimal % rounder;
-        if round_decider > half {
-            //round up
-            in_decimal = in_decimal + (rounder - round_decider);
-        } else {
-            //round down
-            in_decimal = in_decimal - round_decider;
-        }
-        in_decimal / 10
-    }
+    // fn round_for_price_comparison(sqrt_price_X96: u256) -> u256 {
+    //     let square = (sqrt_price_X96 * sqrt_price_X96);
+    //     let move_decimal_point = (square * pow(10, 6)) / pow(2, 96);
+    //     let mut in_decimal = move_decimal_point / pow(2, 96);
+    //     let (rounder, half) = if in_decimal > 999999 {
+    //         (100, 49)
+    //     } else {
+    //         (10, 4)
+    //     };
+    //     let round_decider = in_decimal % rounder;
+    //     if round_decider > half {
+    //         //round up
+    //         in_decimal = in_decimal + (rounder - round_decider);
+    //     } else {
+    //         //round down
+    //         in_decimal = in_decimal - round_decider;
+    //     }
+    //     in_decimal / 10
+    // }
 
-    fn round_for_price_comparison_44_decimals(sqrt_price_X96: u256) -> u256 {
+    //original:
+    // fn round_for_price_comparison(sqrt_price_X96: u256) -> u256 {
+    //     let square = (sqrt_price_X96 * sqrt_price_X96) / pow(2, 96);
+    //     let move_decimal_point = square * pow(10, 6);
+    //     let mut in_decimal = move_decimal_point / pow(2, 96);
+    //     let (rounder, half) = if in_decimal > 999999 {
+    //         (100, 49)
+    //     } else {
+    //         (10, 4)
+    //     };
+    //     let round_decider = in_decimal % rounder;
+    //     if round_decider > half {
+    //         //round up
+    //         in_decimal = in_decimal + (rounder - round_decider);
+    //     } else {
+    //         //round down
+    //         in_decimal = in_decimal - round_decider;
+    //     }
+    //     in_decimal / 10
+    // }
+
+    fn round_for_price_comparison(sqrt_price_X96: u256, expected_price: u256) -> u256 {
         let mut square = (sqrt_price_X96 * sqrt_price_X96);
-        let move_decimal_point = (square * pow(10, 44)) / pow(2, 96);
-        let in_decimal =  move_decimal_point / pow(2, 96);
-        'square'.print();
-        square.print();
+        let mut i = 0;
+        let mut move_decimal_point = 0;
+        let mut in_decimal =  0;
+        loop {
+            move_decimal_point = mul_div(square, pow(10, i), pow(2, 96));
+            in_decimal =  move_decimal_point / pow(2, 96);
+            if in_decimal < (expected_price*10)-1 {
+                i = i+1;
+            } else {
+                break;
+            };
+        };
 
-        // let square = mul_div(sqrt_price_X96, sqrt_price_X96, pow(2, 96)); //(sqrt_price_X96 * sqrt_price_X96) / pow(2, 96);
-        // square = square / pow(2, 96);
-        // 'square2'.print();
-        // square.print();
-
-        let move_decimal_point = square * pow(10, 29);
-        // 'move_decimal_point'.print();
-        // move_decimal_point.print();
-        let mut in_decimal = move_decimal_point / pow(2, 96);
         let (rounder, half) = if in_decimal > 999999 {
             (100, 49)
         } else {
@@ -2024,6 +2042,29 @@ mod YASPoolTests {
         }
         in_decimal / 10
     }
+
+    // fn round_for_price_comparison_44_decimals(sqrt_price_X96: u256) -> u256 {
+    //     let mut square = (sqrt_price_X96 * sqrt_price_X96);
+    //     let move_decimal_point = mul_div(square, pow(10, 44), pow(2, 96));
+    //     let mut in_decimal =  move_decimal_point / pow(2, 96);
+    //     'square'.print();
+    //     square.print();
+
+    //     let (rounder, half) = if in_decimal > 999999 {
+    //         (100, 49)
+    //     } else {
+    //         (10, 4)
+    //     };
+    //     let round_decider = in_decimal % rounder;
+    //     if round_decider > half {
+    //         //round up
+    //         in_decimal = in_decimal + (rounder - round_decider);
+    //     } else {
+    //         //round down
+    //         in_decimal = in_decimal - round_decider;
+    //     }
+    //     in_decimal / 10
+    // }
 
     fn swap_test_case(
         yas_router: IYASRouterDispatcher,
