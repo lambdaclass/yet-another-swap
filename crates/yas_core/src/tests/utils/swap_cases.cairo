@@ -57,7 +57,7 @@ mod SwapTestHelper {
         pool_price_before: FixedType,
         tick_before: i32,
     }
-    
+
     fn obtain_swap_cases(idxs: Array<u32>) -> (Array<SwapTestCase>, Array<SwapTestCase>) {
         let mut success_cases = array![];
         let mut error_cases = array![];
@@ -75,7 +75,10 @@ mod SwapTestHelper {
             i += 1;
         };
 
-        assert(success_cases.len() + error_cases.len() == SWAP_CASES().len(), 'error dividing error cases');
+        assert(
+            success_cases.len() + error_cases.len() == SWAP_CASES().len(),
+            'error dividing error cases'
+        );
         (success_cases, error_cases)
     }
 

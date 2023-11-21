@@ -1596,9 +1596,7 @@ mod YASPoolTests {
         mod PoolCase5 {
             use super::test_pool;
             use yas_core::tests::utils::pool_5::{SWAP_CASES_POOL_5, SWAP_EXPECTED_RESULTS_POOL_5};
-            use yas_core::tests::utils::swap_cases::SwapTestHelper::{
-                POOL_CASES
-            };
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
             #[test]
             #[available_gas(200000000000)]
