@@ -28,7 +28,7 @@ deploy: build
 	
 demo-local: build
 	@./scripts/run_local_demo.sh
-
+	
 Command := $(firstword $(MAKECMDGOALS))
 FILTER := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 test:

@@ -30,4 +30,3 @@ if [ -z "${STARKNET_RPC}" ]; then
     echo ""
     exit 2
 fi
-
