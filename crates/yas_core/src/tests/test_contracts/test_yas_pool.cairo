@@ -1391,12 +1391,11 @@ mod YASPoolTests {
     mod Swap {
         use super::{
             setup_with, setup_pool_for_swap_test, mint_positions, swap_test_case,
-            round_for_price_comparison, calculate_execution_price,
-            get_min_tick_and_max_tick_with_fee
+            round_for_price_comparison, calculate_execution_price
         };
 
         use yas_core::numbers::fixed_point::implementations::impl_64x96::{
-            FP64x96Impl, FP64x96Sub, FP64x96PartialEq, FixedType, FixedTrait, FP64x96Zeroable
+            FP64x96Impl, FP64x96Sub, FP64x96PartialEq, FP64x96Zeroable, FixedType, FixedTrait
         };
         use yas_core::numbers::signed_integer::{i32::i32, i256::i256, integer_trait::IntegerTrait};
         use yas_core::contracts::yas_erc20::{
@@ -1409,26 +1408,18 @@ mod YASPoolTests {
             YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
         };
         use yas_core::tests::utils::constants::PoolConstants::{
-            TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET, encode_price_sqrt_1_1, encode_price_sqrt_1_2
+            TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET
         };
 
         use yas_core::tests::utils::constants::FactoryConstants::{fee_amount, FeeAmount};
-
-        use yas_core::libraries::tick_math::TickMath::{
-            MIN_TICK, MAX_TICK, get_sqrt_ratio_at_tick, MIN_SQRT_RATIO, MAX_SQRT_RATIO
-        };
-
-        use yas_core::utils::math_utils::pow;
 
         use yas_core::contracts::yas_pool::{IYASPoolDispatcherTrait};
 
         use yas_core::tests::utils::swap_cases::{
             SwapTestHelper, SwapTestHelper::PoolTestCase, SwapTestHelper::SwapTestCase,
-            SwapTestHelper::SwapExpectedResults, SwapTestHelper::{POOL_CASES, SWAP_CASES,}
+            SwapTestHelper::SwapExpectedResults, SwapTestHelper::{POOL_CASES, SWAP_CASES}
         };
         use integer::BoundedInt;
-
-        use debug::PrintTrait;
 
         #[test]
         #[available_gas(200000000000)]
@@ -1597,11 +1588,7 @@ mod YASPoolTests {
         mod PoolCase1 {
             use super::test_pool;
             use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
-            use yas_core::tests::utils::swap_cases::SwapTestHelper::{
-                PoolTestCase, SwapExpectedResults, obtain_swap_cases, POOL_CASES
-            };
-
-            use debug::PrintTrait;
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
             #[test]
             #[available_gas(200000000000)]
@@ -1760,26 +1747,23 @@ mod YASPoolTests {
 
         fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults) {
             //very useful for debugging, don't delete until all pools are finished:
-            'amount_0_delta'.print();
-            actual.amount_0_delta.mag.print();
+            //'amount_0_delta'.print();
+            //actual.amount_0_delta.mag.print();
 
-            'amount_1_delta'.print();
-            actual.amount_1_delta.mag.print();
+            //'amount_1_delta'.print();
+            //actual.amount_1_delta.mag.print();
 
-            'execution_price'.print();
-            actual.execution_price.print();
+            //'execution_price'.print();
+            //actual.execution_price.print();
 
-            'fee_growth_global_0_X128_delta'.print();
-            actual.fee_growth_global_0_X128_delta.print();
+            //'fee_growth_global_0_X128_delta'.print();
+            //actual.fee_growth_global_0_X128_delta.print();
 
-            'fee_growth_global_1_X128_delta'.print();
-            actual.fee_growth_global_1_X128_delta.print();
+            //'fee_growth_global_1_X128_delta'.print();
+            //actual.fee_growth_global_1_X128_delta.print();
 
-            'pool_price_after'.print();
-            actual.pool_price_after.print();
-
-            'tick_after'.print();
-            actual.tick_after.mag.print();
+            //'pool_price_after'.print();
+            //actual.pool_price_after.print();
             //'-'.print();
 
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
@@ -1897,9 +1881,7 @@ mod YASPoolTests {
 
         let yas_pool_address = yas_factory // 0x5
             .create_pool(
-                token_0.contract_address,
-                token_1.contract_address,
-                fee_amount(FeeAmount::LOW) // why LOW ?
+                token_0.contract_address, token_1.contract_address, fee_amount(FeeAmount::LOW)
             );
         let yas_pool = IYASPoolDispatcher { contract_address: yas_pool_address };
 
