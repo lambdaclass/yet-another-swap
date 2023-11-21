@@ -1536,9 +1536,7 @@ mod YASPoolTests {
         mod PoolCase0 {
             use super::test_pool;
             use yas_core::tests::utils::pool_0::{SWAP_CASES_POOL_0, SWAP_EXPECTED_RESULTS_POOL_0};
-            use yas_core::tests::utils::swap_cases::SwapTestHelper::{
-                POOL_CASES
-            };
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
             use debug::PrintTrait;
 
             #[test]
@@ -1582,7 +1580,6 @@ mod YASPoolTests {
                     array![*panic_swap_cases[PANIC_CASE]]
                 );
             }
-
         }
 
         mod PoolCase1 {

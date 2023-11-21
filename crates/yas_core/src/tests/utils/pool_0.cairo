@@ -6,12 +6,12 @@ use yas_core::tests::utils::swap_cases::SwapTestHelper::{
 };
 
 fn SWAP_CASES_POOL_0() -> (Array<SwapTestCase>, Array<SwapTestCase>) {
-    obtain_swap_cases(array![14,15])
+    obtain_swap_cases(array![14, 15])
 }
 
 fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
     array![
-        SwapExpectedResults { 
+        SwapExpectedResults {
             amount_0_before: 2000000000000000000,
             amount_0_delta: IntegerTrait::<i256>::new(1000000000000000000, false),
             amount_1_before: 2000000000000000000,
@@ -24,7 +24,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(8107, true),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
-        SwapExpectedResults { 
+        SwapExpectedResults {
             amount_0_before: 2000000000000000000,
             amount_0_delta: IntegerTrait::<i256>::new(666444407401233536, true),
             amount_1_before: 2000000000000000000,
@@ -37,7 +37,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(8106, false),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
-        SwapExpectedResults { 
+        SwapExpectedResults {
             amount_0_before: 2000000000000000000,
             amount_0_delta: IntegerTrait::<i256>::new(2001000500250125077, false),
             amount_1_before: 2000000000000000000,
@@ -50,7 +50,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(13864, true),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
-        SwapExpectedResults { 
+        SwapExpectedResults {
             amount_0_before: 2000000000000000000,
             amount_0_delta: IntegerTrait::<i256>::new(1000000000000000000, true),
             amount_1_before: 2000000000000000000,
@@ -63,7 +63,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(13863, false),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
-        SwapExpectedResults { 
+        SwapExpectedResults {
             amount_0_before: 2000000000000000000,
             amount_0_delta: IntegerTrait::<i256>::new(828841545518949575, false),
             amount_1_before: 2000000000000000000,
@@ -76,7 +76,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(6932, true),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
-        SwapExpectedResults { 
+        SwapExpectedResults {
             amount_0_before: 2000000000000000000,
             amount_0_delta: IntegerTrait::<i256>::new(585786437626904950, true),
             amount_1_before: 2000000000000000000,
@@ -89,7 +89,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(6931, false),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
-        SwapExpectedResults { 
+        SwapExpectedResults {
             amount_0_before: 2000000000000000000,
             amount_0_delta: IntegerTrait::<i256>::new(828841545518949575, false),
             amount_1_before: 2000000000000000000,
@@ -101,8 +101,8 @@ fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
             pool_price_before: 100000,
             tick_after: IntegerTrait::<i32>::new(6932, true),
             tick_before: IntegerTrait::<i32>::new(0, false),
-        }, 
-        SwapExpectedResults { 
+        },
+        SwapExpectedResults {
             amount_0_before: 2000000000000000000,
             amount_0_delta: IntegerTrait::<i256>::new(585786437626904950, true),
             amount_1_before: 2000000000000000000,
@@ -115,7 +115,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(6931, false),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
-        SwapExpectedResults { 
+        SwapExpectedResults {
             amount_0_before: 2000000000000000000,
             amount_0_delta: IntegerTrait::<i256>::new(1000, false),
             amount_1_before: 2000000000000000000,
@@ -128,7 +128,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(1, true),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
-        SwapExpectedResults { 
+        SwapExpectedResults {
             amount_0_before: 2000000000000000000,
             amount_0_delta: IntegerTrait::<i256>::new(998, true),
             amount_1_before: 2000000000000000000,
@@ -141,7 +141,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(0, false),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
-        SwapExpectedResults { 
+        SwapExpectedResults {
             amount_0_before: 2000000000000000000,
             amount_0_delta: IntegerTrait::<i256>::new(1002, false),
             amount_1_before: 2000000000000000000,
@@ -154,7 +154,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(1, true),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
-        SwapExpectedResults { 
+        SwapExpectedResults {
             amount_0_before: 2000000000000000000,
             amount_0_delta: IntegerTrait::<i256>::new(1000, true),
             amount_1_before: 2000000000000000000,
@@ -167,7 +167,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(0, false),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
-        SwapExpectedResults { 
+        SwapExpectedResults {
             amount_0_before: 2000000000000000000,
             amount_0_delta: IntegerTrait::<i256>::new(735088935932648266, true),
             amount_1_before: 2000000000000000000,
@@ -180,7 +180,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_0() -> Array<SwapExpectedResults> {
             tick_after: IntegerTrait::<i32>::new(9163, false),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
-        SwapExpectedResults { 
+        SwapExpectedResults {
             amount_0_before: 2000000000000000000,
             amount_0_delta: IntegerTrait::<i256>::new(1162859089713235953, false),
             amount_1_before: 2000000000000000000,
