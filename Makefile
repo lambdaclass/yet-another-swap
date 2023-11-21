@@ -23,7 +23,7 @@ clean:
 build: clean
 	scarb build
 
-deploy: clean
+deploy: build
 	@./scripts/deploy.sh
 	
 demo-local: build
