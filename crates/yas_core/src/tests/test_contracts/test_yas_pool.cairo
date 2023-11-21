@@ -1644,7 +1644,6 @@ mod YASPoolTests {
                 if i == expected_cases.len() {
                     break;
                 }
-                'case'.print();
                 // restart Pool
                 let (yas_pool, yas_router, token_0, token_1) = setup_pool_for_swap_test(
                     initial_price: *pool_case.starting_price,
@@ -1679,8 +1678,6 @@ mod YASPoolTests {
                 } else {
                     amount_to_swap = IntegerTrait::<i256>::new((BoundedInt::max() / 2) - 1, false);
                 }
-                'amt'.print();
-                amount_to_swap.mag.print();
                 // Execute swap
                 let (token_0_swapped_amount, token_1_swapped_amount) = swap_test_case(
                     yas_router,

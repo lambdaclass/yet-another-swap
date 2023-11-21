@@ -78,13 +78,6 @@ mod SwapTestHelper {
             }
             i += 1;
         };
-        //let case: SwapTestCase = *error_cases[2];
-        //case.zero_for_one.print();
-        //case.has_exact_out.print();
-        //case.exact_out.print();
-        //case.amount_specified.mag.print();
-        //case.sqrt_price_limit.mag.print();
-
 
         assert(success_cases.len() + error_cases.len() == SWAP_CASES().len(), 'error dividing error cases');
         (success_cases, error_cases)
