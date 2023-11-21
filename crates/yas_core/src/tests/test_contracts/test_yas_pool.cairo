@@ -1829,7 +1829,7 @@ mod YASPoolTests {
             .create_pool(
                 token_0.contract_address,
                 token_1.contract_address,
-                fee_amount(FeeAmount::LOW) // why LOW ?
+                fee_amount(FeeAmount::LOW)
             );
         let yas_pool = IYASPoolDispatcher { contract_address: yas_pool_address };
 
