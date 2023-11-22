@@ -34,7 +34,12 @@ jobs:
           tar -xzvf dojo_v0.3.1_linux_amd64.tar.gz
           rm sozo torii dojo-language-server
 
-      - name: Run Tests
+      - name: Run Tests Demo
         run: |
           ./katana &
           make demo-local
+
+      - name: Run Tests Deploy
+        run: |
+          ./katana &
+          make deploy
