@@ -29,6 +29,8 @@
 #   tick_before: IntegerTrait::<i32>::new(0, false),
 # }
 
+import math
+
 # pass "True" to "true"
 def sign_to_text(sign):
     if sign :
@@ -68,18 +70,15 @@ def format_pool_price(pool_price):
     pool_price = pool_price.replace(',', '')
     # convert to float
     pool_price = float(pool_price)
-    # dislpace comma
-    pool_price = pool_price * 10**5
-    rounded = '%s' % float('%.5g' % pool_price)
-    pool_price = float(rounded)
-    ## take the square root
-    #pool_price = pool_price ** (1/2)
-    ## multiply by 2**96
-    #pool_price = pool_price * 2**96
-    # convert to integer
-    pool_price = int(pool_price)
-    # return the formatted pool_price
-    return f'{pool_price}'
+    # rounded = '%s' % float('%.5g' % pool_price) #a chequiar
+    # sqrt_pool_price = math.sqrt(float(rounded)) #a chequiar
+
+    # # cast to x96 type
+    # pool_price_x96 = pool_price * (2**96)
+    # # get sqrt of price
+    # sqrt_pool_price_x96 = math.sqrt(pool_price_x96)
+    # # return the formatted pool_price
+    return("{:.0f}".format(pool_price))
 
 def format_tick(tick):
     # remove the quotes
@@ -160,7 +159,7 @@ def parse_object(object):
 #main
 if __name__ == "__main__":
     # read from 'pool2_swap1.txt'
-    file = open('./pool2_swaps_torober.txt', 'r')
+    file = open('./uni_values.txt', 'r')
     objects = file.read()
     # each object is separated by a ;\n from the next object
     objects = objects.split(';\n')
