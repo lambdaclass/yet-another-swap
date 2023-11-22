@@ -345,7 +345,6 @@ mod SwapTestHelper {
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: encode_price_sqrt_50_100(),
             },
-            // ->
             SwapTestCase {
                 zero_for_one: false,
                 has_exact_out: true,
