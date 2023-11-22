@@ -75,6 +75,10 @@ mod PoolConstants {
         contract_address_const::<'WALLET'>()
     }
 
+    fn OTHER() -> ContractAddress {
+        contract_address_const::<'OTHER'>()
+    }
+
     fn POOL_ADDRESS() -> ContractAddress {
         contract_address_const::<'POOL_ADDRESS'>()
     }
@@ -117,5 +121,10 @@ mod PoolConstants {
     // sqrt_price_X96 is the result of encode_price_sqrt(1, 2) on v3-core typescript impl. 
     fn encode_price_sqrt_1_2() -> FixedType {
         FP64x96Impl::new(56022770974786139918731938227, false)
+    }
+
+    // returns result of encode_price_sqrt(1, 10) on v3-core typescript impl. 
+    fn encode_price_sqrt_1_10() -> FixedType {
+        FP64x96Impl::new(25054144837504793118641380156, false)
     }
 }

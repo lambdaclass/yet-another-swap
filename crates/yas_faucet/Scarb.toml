@@ -1,5 +1,5 @@
 [package]
-name = "yas_periphery"
+name = "yas_faucet"
 version = "0.1.0"
 
 [dependencies]
