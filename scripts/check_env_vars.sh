@@ -21,3 +21,12 @@ if [ -z "${STARKNET_ACCOUNT}" ]; then
     exit 2
 fi
 
+if [ -z "${STARKNET_RPC}" ]; then
+    echo "Error: STARKNET_RPC environment variable is not defined."
+    echo "Did you declare the STARKNET_RPC environment variable?"
+    echo "It should look something like this:"
+    echo '   export STARKNET_RPC="<RPC_URL>"'
+    echo "Declare it and try again! :)"
+    echo ""
+    exit 2
+fi
