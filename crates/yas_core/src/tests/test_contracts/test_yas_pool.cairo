@@ -1743,26 +1743,6 @@ mod YASPoolTests {
         }
 
         fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults) {
-            // 'amount_0_delta'.print();
-            // actual.amount_0_delta.mag.print();
-            // 'amount_1_delta'.print();
-            // actual.amount_1_delta.mag.print();
-            // 'execution_price'.print();
-            // actual.execution_price.print();
-            // 'fee_growth_global_0_X128_delta'.print();
-            // actual.fee_growth_global_0_X128_delta.print();
-            // 'fee_growth_global_1_X128_delta'.print();
-            // actual.fee_growth_global_1_X128_delta.print();
-            // 'pool_price_after'.print();
-            // actual.pool_price_after.print();
-            // 'EXPamount_0_delta'.print();
-            // (*expected.amount_0_delta).mag.print();
-            // 'EXee_growth_global_0_X128_delta'.print();
-            // (*expected.fee_growth_global_0_X128_delta).print();
-            // 'EXee_growth_global_1_X128_delta'.print();
-            // (*expected.fee_growth_global_1_X128_delta).print();
-            // '-'.print();
-
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
             assert(actual.amount_0_delta == *expected.amount_0_delta, 'wrong amount_0_delta');
             assert(actual.amount_1_before == *expected.amount_1_before, 'wrong amount_1_before');
