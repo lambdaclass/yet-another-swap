@@ -155,7 +155,9 @@ fn test_new_small_add_decimal() {
     let a = FixedTrait::from_felt(
         (ONE_u128 / 10000000000000000000).into()
     ); // 0.00000000000000000001
-    let b = FixedTrait::from_felt((ONE_u128 / 1000000000000000000).into()); // 0.0000000000000000001
+    let b = FixedTrait::from_felt(
+        (ONE_u128 / 1000000000000000000).into()
+    ); // 0.0000000000000000001
 
     let actual = a + b;
     // calculator = 0.00000000000000000011 = 8,715,097,876.56907713528983453696

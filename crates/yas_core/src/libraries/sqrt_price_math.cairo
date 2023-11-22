@@ -268,7 +268,9 @@ mod SqrtPriceMath {
         }
     }
 
-    fn check_product_overflow(product: u256, amount: u256, sign: bool, value_2: FixedType) -> Result<(), felt252> {
+    fn check_product_overflow(
+        product: u256, amount: u256, sign: bool, value_2: FixedType
+    ) -> Result<(), felt252> {
         if FP64x96Impl::new(product / amount, sign) == value_2 {
             Result::Ok(())
         } else {

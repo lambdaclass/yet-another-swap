@@ -31,7 +31,9 @@ mod YASNFTPositionManagerTests {
 
     fn setup() -> (IYASNFTPositionManagerDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x1
-        let nft_position_manager = deploy_nft_position_manager(yas_factory.contract_address); // 0x2
+        let nft_position_manager = deploy_nft_position_manager(
+            yas_factory.contract_address
+        ); // 0x2
 
         // Deploy ERC20 tokens with factory address
         let token_0 = deploy_erc20('YAS0', '$YAS0', BoundedInt::max(), OWNER()); // 0x3
