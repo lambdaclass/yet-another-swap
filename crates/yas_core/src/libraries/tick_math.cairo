@@ -35,12 +35,12 @@ mod TickMath {
     ///     at the given tick
     fn get_sqrt_ratio_at_tick(tick: i32) -> FixedType {
         let abs_tick = tick.abs();
-        match check_abs_tick(abs_tick) {
+        match check_tick(abs_tick) {
             Result::Ok(()) => {},
             Result::Err(err) => {
                 panic_with_felt252(err)
             }
-        }; // TODO: review this error in the future. This is the original error from UniswapV3.
+        };
 
         // Initialize ratio with a base value
         let abs_tick_u256: u256 = abs_tick.mag.into();
@@ -313,7 +313,8 @@ mod TickMath {
         }
     }
 
-    fn check_abs_tick(tick: i32) -> Result<(), felt252> {
+    // T: The given tick must be less than, or equal to, the maximum tick
+    fn check_tick(tick: i32) -> Result<(), felt252> {
         if tick <= MAX_TICK() {
             Result::Ok(())
         } else {

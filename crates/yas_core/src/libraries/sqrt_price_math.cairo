@@ -49,7 +49,7 @@ mod SqrtPriceMath {
         } else {
             // if the product overflows, we know the denominator underflows
             // in addition, we must check that the denominator does not underflow
-            match check_product_overflow(FP64x96Impl::new(product / amount, false), sqrtPX96) {
+            match check_product_overflow(product, amount, false, sqrtPX96) {
                 Result::Ok(()) => {},
                 Result::Err(err) => {
                     panic_with_felt252(err)
@@ -244,10 +244,10 @@ mod SqrtPriceMath {
     }
 
     fn check_sqrtPX96_sign(sign: bool) -> Result<(), felt252> {
-        if sign == false {
-            Result::Ok(())
-        } else {
+        if sign {
             Result::Err('sqrt_ratio_AX96 cannot be neg')
+        } else {
+            Result::Ok(())
         }
     }
     fn check_sqrtPX96_sign_and_liquidity(sign: bool, liquidity: u128) -> Result<(), felt252> {
@@ -268,8 +268,8 @@ mod SqrtPriceMath {
         }
     }
 
-    fn check_product_overflow(value_1: FixedType, value_2: FixedType) -> Result<(), felt252> {
-        if value_1 == value_2 {
+    fn check_product_overflow(product: u256, amount: u256, sign: bool, value_2: FixedType) -> Result<(), felt252> {
+        if FP64x96Impl::new(product / amount, sign) == value_2 {
             Result::Ok(())
         } else {
             Result::Err('product overflow')

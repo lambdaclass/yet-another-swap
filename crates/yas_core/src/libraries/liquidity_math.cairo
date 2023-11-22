@@ -15,7 +15,7 @@ mod LiquidityMath {
             let y_abs_i128: i128 = y.abs();
             let y_felt252: felt252 = y_abs_i128.into();
             let y_u128: u128 = y_felt252.try_into().unwrap();
-            match check_value(x, y_u128) {
+            match check_liquidity_sub(x, y_u128) {
                 Result::Ok(()) => {},
                 Result::Err(err) => {
                     panic_with_felt252(err)
@@ -26,7 +26,7 @@ mod LiquidityMath {
             // require((z = x + uint128(y)) >= x, 'LA');
             let y_felt252: felt252 = y.into();
             let y_u128: u128 = y_felt252.try_into().unwrap();
-            match check_overflowing_add(x, y_u128) {
+            match check_liquidity_add(x, y_u128) {
                 Result::Ok(()) => {},
                 Result::Err(err) => {
                     panic_with_felt252(err)
@@ -36,14 +36,14 @@ mod LiquidityMath {
         }
     }
 
-    fn check_value(x: u128, y: u128) -> Result<(), felt252> {
+    fn check_liquidity_sub(x: u128, y: u128) -> Result<(), felt252> {
         if x >= y {
             Result::Ok(())
         } else {
             Result::Err('LS')
         }
     }
-    fn check_overflowing_add(x: u128, y: u128) -> Result<(), felt252> {
+    fn check_liquidity_add(x: u128, y: u128) -> Result<(), felt252> {
         if u128_overflowing_add(x, y).is_ok() {
             Result::Ok(())
         } else {
