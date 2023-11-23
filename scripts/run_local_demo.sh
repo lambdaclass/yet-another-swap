@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source .env
+set -e
 
 # This values are from Katana, just for testing
 KATANA_PRIVATE_KEY=0x1800000000300000180000000000030000000000003006001800006600

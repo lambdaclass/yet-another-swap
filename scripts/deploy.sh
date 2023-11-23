@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source .env
+set -e
 
 export STARKNET_ACCOUNT=$ACCOUNT_SRC
 export STARKNET_RPC=$RPC_URL
