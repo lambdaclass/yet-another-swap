@@ -36,10 +36,12 @@ jobs:
 
       - name: Run Tests Demo
         run: |
+          set -e
           ./katana &
           make demo-local
 
       - name: Run Tests Deploy
         run: |
+          set -e
           ./katana &
           make deploy
