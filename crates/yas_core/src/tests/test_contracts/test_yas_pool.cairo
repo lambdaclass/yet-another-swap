@@ -7,6 +7,7 @@ mod YASPoolTests {
         YASPool, YASPool::ContractState, YASPool::InternalImpl, IYASPool, IYASPoolDispatcher,
         IYASPoolDispatcherTrait
     };
+
     use yas_core::numbers::signed_integer::{
         i32::i32, i32::i32_div_no_round, i64::i64, i128::i128, integer_trait::IntegerTrait
     };
@@ -1388,12 +1389,15 @@ mod YASPoolTests {
     }
 
     mod Swap {
-        use super::setup_with;
+        use super::{
+            setup_with, setup_pool_for_swap_test, mint_positions, swap_test_case,
+            round_for_price_comparison, calculate_execution_price
+        };
 
         use yas_core::numbers::fixed_point::implementations::impl_64x96::{
-            FP64x96Impl, FP64x96Sub, FP64x96PartialEq, FixedType, FixedTrait
+            FP64x96Impl, FP64x96Sub, FP64x96PartialEq, FP64x96Zeroable, FixedType, FixedTrait
         };
-        use yas_core::numbers::signed_integer::{i256::i256, integer_trait::IntegerTrait};
+        use yas_core::numbers::signed_integer::{i32::i32, i256::i256, integer_trait::IntegerTrait};
         use yas_core::contracts::yas_erc20::{
             ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
         };
@@ -1406,6 +1410,16 @@ mod YASPoolTests {
         use yas_core::tests::utils::constants::PoolConstants::{
             TOKEN_A, TOKEN_B, POOL_ADDRESS, WALLET
         };
+
+        use yas_core::tests::utils::constants::FactoryConstants::{fee_amount, FeeAmount};
+
+        use yas_core::contracts::yas_pool::{IYASPoolDispatcherTrait};
+
+        use yas_core::tests::utils::swap_cases::{
+            SwapTestHelper, SwapTestHelper::PoolTestCase, SwapTestHelper::SwapTestCase,
+            SwapTestHelper::SwapExpectedResults, SwapTestHelper::{POOL_CASES, SWAP_CASES}
+        };
+        use integer::BoundedInt;
 
         #[test]
         #[available_gas(200000000000)]
@@ -1517,6 +1531,185 @@ mod YASPoolTests {
                 eth_swapped_expected == user_token_1_balance_af - user_token_1_balance_bf,
                 'wrong ETH swap amount'
             );
+        }
+
+        mod PoolCase1 {
+            use super::test_pool;
+            use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
+
+            #[test]
+            #[available_gas(200000000000)]
+            fn test_pool_1_success_cases() {
+                let pool_case = POOL_CASES()[1];
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
+                let (success_swap_cases, _) = SWAP_CASES_POOL_1();
+                test_pool(pool_case, expected_cases, success_swap_cases);
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_1_panics_0() {
+                let PANIC_CASE = 0;
+                let pool_case = POOL_CASES()[1];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_1();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_1(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_1_panics_1() {
+                let PANIC_CASE = 1;
+                let pool_case = POOL_CASES()[1];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_1();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_1(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
+        }
+
+        fn test_pool(
+            pool_case: @PoolTestCase,
+            expected_cases: Array<SwapExpectedResults>,
+            swap_cases: Array<SwapTestCase>
+        ) {
+            let mut i = 0;
+            assert(expected_cases.len() == swap_cases.len(), 'wrong amount of expected cases');
+            loop {
+                if i == expected_cases.len() {
+                    break;
+                }
+                // restart Pool
+                let (yas_pool, yas_router, token_0, token_1) = setup_pool_for_swap_test(
+                    initial_price: *pool_case.starting_price,
+                    fee_amount: *pool_case.fee_amount,
+                    mint_positions: pool_case.mint_positions
+                );
+                let swap_case = swap_cases[i];
+                let expected = expected_cases[i];
+
+                // Save values before swap for compare
+                let user_token_0_balance_bf = token_0.balanceOf(WALLET());
+                let user_token_1_balance_bf = token_1.balanceOf(WALLET());
+                let (fee_growth_global_0_X128_bf, fee_growth_global_1_X128_bf) = yas_pool
+                    .get_fee_growth_globals();
+
+                let pool_balance_0_bf = token_0.balanceOf(yas_pool.contract_address);
+                let pool_balance_1_bf = token_1.balanceOf(yas_pool.contract_address);
+                let slot0_bf = yas_pool.get_slot_0();
+
+                let mut amount_to_swap = IntegerTrait::<i256>::new(0, false); //Zeroable::zero();
+                if *swap_case.has_exact_out {
+                    if *swap_case.exact_out { //exact OUT
+                        if *swap_case
+                            .zero_for_one { //so i check how much i should put swap IN in order to get those OUT tokens, the Asserts will still verify everything else
+                            amount_to_swap = *expected.amount_0_delta;
+                        } else {
+                            amount_to_swap = *expected.amount_1_delta;
+                        }
+                    } else { //exact IN, normal swap.
+                        amount_to_swap = *swap_case.amount_specified;
+                    }
+                } else {
+                    amount_to_swap = IntegerTrait::<i256>::new((BoundedInt::max() / 2) - 1, false);
+                }
+                // Execute swap
+                let (token_0_swapped_amount, token_1_swapped_amount) = swap_test_case(
+                    yas_router,
+                    yas_pool,
+                    token_0,
+                    token_1,
+                    *swap_case.zero_for_one,
+                    amount_to_swap,
+                    *swap_case.sqrt_price_limit
+                );
+
+                // Save values after swap to get deltas
+                let (fee_growth_global_0_X128_af, fee_growth_global_1_X128_af) = yas_pool
+                    .get_fee_growth_globals();
+
+                let user_token_0_balance_af = token_0.balanceOf(WALLET());
+                let user_token_1_balance_af = token_1.balanceOf(WALLET());
+                let (fee_growth_global_0_X128_af, fee_growth_global_1_X128_af) = yas_pool
+                    .get_fee_growth_globals();
+                let (fee_growth_global_0_X128_delta, fee_growth_global_1_X128_delta) = (
+                    fee_growth_global_0_X128_af - fee_growth_global_0_X128_bf,
+                    fee_growth_global_1_X128_af - fee_growth_global_1_X128_bf
+                );
+                let slot0_af = yas_pool.get_slot_0();
+
+                // Generate swap result values to compare with expected
+                let (fee_growth_global_0_X128_delta, fee_growth_global_1_X128_delta) = (
+                    fee_growth_global_0_X128_af - fee_growth_global_0_X128_bf,
+                    fee_growth_global_1_X128_af - fee_growth_global_1_X128_bf
+                );
+                let execution_price = calculate_execution_price(
+                    token_0_swapped_amount, token_1_swapped_amount
+                );
+
+                let pool_balance_0_af = token_0.balanceOf(yas_pool.contract_address);
+                let pool_balance_1_af = token_1.balanceOf(yas_pool.contract_address);
+
+                let pool_price_bf = round_for_price_comparison(slot0_bf.sqrt_price_X96.mag);
+                let pool_price_af = round_for_price_comparison(slot0_af.sqrt_price_X96.mag);
+
+                let tick_bf = slot0_bf.tick;
+                let tick_af = slot0_af.tick;
+
+                let actual = SwapExpectedResults {
+                    amount_0_before: pool_balance_0_bf,
+                    amount_0_delta: IntegerTrait::<i256>::new(pool_balance_0_af, false)
+                        - IntegerTrait::<i256>::new(pool_balance_0_bf, false),
+                    amount_1_before: pool_balance_1_bf,
+                    amount_1_delta: IntegerTrait::<i256>::new(pool_balance_1_af, false)
+                        - IntegerTrait::<i256>::new(pool_balance_1_bf, false),
+                    execution_price: execution_price,
+                    fee_growth_global_0_X128_delta: fee_growth_global_0_X128_delta,
+                    fee_growth_global_1_X128_delta: fee_growth_global_1_X128_delta,
+                    pool_price_after: pool_price_af,
+                    pool_price_before: pool_price_bf,
+                    tick_after: tick_af,
+                    tick_before: tick_bf,
+                };
+
+                assert_swap_result_equals(actual, expected);
+                i += 1;
+            };
+        }
+
+        fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults) {
+            assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
+            assert(actual.amount_0_delta == *expected.amount_0_delta, 'wrong amount_0_delta');
+            assert(actual.amount_1_before == *expected.amount_1_before, 'wrong amount_1_before');
+            assert(actual.amount_1_delta == *expected.amount_1_delta, 'wrong amount_1_delta');
+            assert(actual.execution_price == *expected.execution_price, 'wrong execution_price');
+            assert(
+                actual.fee_growth_global_0_X128_delta == *expected.fee_growth_global_0_X128_delta,
+                'wrong fee_growth_global_0_X128'
+            );
+            assert(
+                actual.fee_growth_global_1_X128_delta == *expected.fee_growth_global_1_X128_delta,
+                'wrong fee_growth_global_1_X128'
+            );
+            assert(
+                actual.pool_price_before == *expected.pool_price_before, 'wrong pool_price_before'
+            );
+            assert(actual.pool_price_after == *expected.pool_price_after, 'wrong pool_price_after');
+
+            assert(actual.tick_after == *expected.tick_after, 'wrong tick_after');
+            assert(actual.tick_before == *expected.tick_before, 'wrong tick_before');
         }
     }
 
@@ -1699,8 +1892,9 @@ mod YASPoolTests {
     };
     use yas_core::libraries::tick_math::{TickMath::MIN_TICK, TickMath::MAX_TICK};
     use yas_core::numbers::fixed_point::implementations::impl_64x96::{
-        FP64x96Impl, FixedType, FixedTrait
+        FP64x96Impl, FixedType, FixedTrait, FP64x96Zeroable
     };
+
     use yas_core::contracts::yas_router::{
         YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
     };
@@ -1713,6 +1907,11 @@ mod YASPoolTests {
     use yas_core::contracts::yas_erc20::{
         ERC20, ERC20::ERC20Impl, IERC20Dispatcher, IERC20DispatcherTrait
     };
+    use yas_core::numbers::signed_integer::{i256::i256};
+    use yas_core::libraries::tick_math::TickMath::{MAX_SQRT_RATIO, MIN_SQRT_RATIO};
+    use yas_core::utils::math_utils::pow;
+
+    use yas_core::tests::utils::swap_cases::SwapTestHelper;
 
 
     fn setup() -> (
@@ -1789,6 +1988,150 @@ mod YASPoolTests {
         (yas_pool, yas_router, token_0, token_1)
     }
 
+    fn calculate_execution_price(
+        token_0_swapped_amount: u256, token_1_swapped_amount: u256
+    ) -> u256 {
+        let unrounded = token_1_swapped_amount * pow(10, 6) / token_0_swapped_amount;
+        let (rounder, half) = if unrounded > 999999 {
+            (100, 49)
+        } else {
+            (10, 4)
+        };
+        let round_decider = unrounded % rounder;
+        let mut rounded = if round_decider > half {
+            //round up
+            unrounded + (rounder - round_decider)
+        } else {
+            //round down
+            unrounded - round_decider
+        };
+        rounded = rounded / 10;
+        rounded // this == round(token_1_swapped_amount * pow(10, 5) / token_0_swapped_amount);
+    }
+
+    fn round_for_price_comparison(sqrt_price_X96: u256) -> u256 {
+        let square = (sqrt_price_X96 * sqrt_price_X96) / pow(2, 96);
+        let move_decimal_point = square * pow(10, 6);
+        let mut in_decimal = move_decimal_point / pow(2, 96);
+        let round_decider = in_decimal % 10;
+        if round_decider > 4 {
+            //round up
+            in_decimal = in_decimal + (10 - round_decider);
+        } else {
+            //round down
+            in_decimal = in_decimal - round_decider;
+        }
+        in_decimal / 10
+    }
+
+    fn swap_test_case(
+        yas_router: IYASRouterDispatcher,
+        yas_pool: IYASPoolDispatcher,
+        token_0: IERC20Dispatcher,
+        token_1: IERC20Dispatcher,
+        zero_for_one: bool,
+        amount_specified: i256,
+        sqrt_price_limit: FixedType
+    ) -> (u256, u256) {
+        let NEGATIVE = true;
+        let POSITIVE = false;
+        let sqrt_price_limit_usable = if !sqrt_price_limit.is_zero() {
+            sqrt_price_limit
+        } else {
+            if zero_for_one {
+                FP64x96Impl::new(MIN_SQRT_RATIO + 1, POSITIVE)
+            } else {
+                FP64x96Impl::new(MAX_SQRT_RATIO - 1, POSITIVE)
+            }
+        };
+
+        let user_token_0_balance_bf = token_0.balanceOf(WALLET());
+        let user_token_1_balance_bf = token_1.balanceOf(WALLET());
+
+        yas_router
+            .swap(
+                yas_pool.contract_address,
+                WALLET(),
+                zero_for_one,
+                amount_specified,
+                sqrt_price_limit_usable
+            );
+
+        let user_token_0_balance_af = token_0.balanceOf(WALLET());
+        let user_token_1_balance_af = token_1.balanceOf(WALLET());
+
+        let (token_0_swapped_amount, token_1_swapped_amount) = if zero_for_one {
+            (
+                user_token_0_balance_bf - user_token_0_balance_af,
+                user_token_1_balance_af - user_token_1_balance_bf
+            )
+        } else {
+            (
+                user_token_0_balance_af - user_token_0_balance_bf,
+                user_token_1_balance_bf - user_token_1_balance_af
+            )
+        };
+
+        (token_0_swapped_amount, token_1_swapped_amount)
+    }
+
+    fn setup_pool_for_swap_test(
+        initial_price: FixedType, fee_amount: u32, mint_positions: @Array<SwapTestHelper::Position>
+    ) -> (IYASPoolDispatcher, IYASRouterDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
+        let yas_router = deploy_yas_router(); // 0x1
+        let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
+
+        // Deploy ERC20 tokens with factory address
+        // in testnet TOKEN0 is USDC and TOKEN1 is ETH
+        let token_0 = deploy_erc20('USDC', 'USDC', BoundedInt::max(), OWNER()); // 0x3
+        let token_1 = deploy_erc20('ETH', 'ETH', BoundedInt::max(), OWNER()); // 0x4
+
+        set_contract_address(OWNER());
+        token_0.transfer(WALLET(), BoundedInt::max());
+        token_1.transfer(WALLET(), BoundedInt::max());
+
+        // Give permissions to expend WALLET() tokens
+        set_contract_address(WALLET());
+        token_1.approve(yas_router.contract_address, BoundedInt::max());
+        token_0.approve(yas_router.contract_address, BoundedInt::max());
+
+        let yas_pool_address = yas_factory // 0x5
+            .create_pool(token_0.contract_address, token_1.contract_address, fee_amount);
+        let yas_pool = IYASPoolDispatcher { contract_address: yas_pool_address };
+
+        set_contract_address(OWNER());
+        yas_pool.initialize(initial_price);
+
+        set_contract_address(WALLET());
+
+        mint_positions(yas_router, yas_pool_address, mint_positions);
+
+        (yas_pool, yas_router, token_0, token_1)
+    }
+
+    fn mint_positions(
+        yas_router: IYASRouterDispatcher,
+        yas_pool_address: ContractAddress,
+        mint_positions: @Array<SwapTestHelper::Position>
+    ) {
+        let mut i = 0;
+        loop {
+            if i == mint_positions.len() {
+                break;
+            }
+            let position = *mint_positions[i];
+            yas_router
+                .mint(
+                    yas_pool_address,
+                    WALLET(),
+                    position.tick_lower,
+                    position.tick_upper,
+                    position.liquidity
+                );
+            i += 1;
+        };
+    }
+
     fn deploy_erc20(
         name: felt252, symbol: felt252, initial_supply: u256, recipent: ContractAddress
     ) -> IERC20Dispatcher {
@@ -1829,6 +2172,13 @@ mod YASPoolTests {
 
     fn get_min_tick_and_max_tick() -> (i32, i32) {
         let tick_spacing = IntegerTrait::<i32>::new(tick_spacing(FeeAmount::MEDIUM), false);
+        let min_tick = i32_div_no_round(MIN_TICK(), tick_spacing) * tick_spacing;
+        let max_tick = i32_div_no_round(MAX_TICK(), tick_spacing) * tick_spacing;
+        (min_tick, max_tick)
+    }
+
+    fn get_min_tick_and_max_tick_with_fee(fee_amount: u32) -> (i32, i32) {
+        let tick_spacing = IntegerTrait::<i32>::new(fee_amount, false);
         let min_tick = i32_div_no_round(MIN_TICK(), tick_spacing) * tick_spacing;
         let max_tick = i32_div_no_round(MAX_TICK(), tick_spacing) * tick_spacing;
         (min_tick, max_tick)
