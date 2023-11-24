@@ -79,7 +79,10 @@ mod SwapTestHelper {
             i += 1;
         };
 
-        assert(success_cases.len() + error_cases.len() == SWAP_CASES().len(), 'error dividing error cases');
+        assert(
+            success_cases.len() + error_cases.len() == SWAP_CASES().len(),
+            'error dividing error cases'
+        );
         (success_cases, error_cases)
     }
 

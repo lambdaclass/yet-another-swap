@@ -194,4 +194,3 @@ if __name__ == "__main__":
     file = open('swap_expected_result.txt', 'w')
     file.write(to_print)
 
-
