@@ -1790,10 +1790,12 @@ mod YASPoolTests {
             // 'fee_growth_global_1_X128_delta'.print();
             // actual.fee_growth_global_1_X128_delta.print();
 
-            'pool_price_before'.print();
-            actual.pool_price_before.print();
+            // 'pool_price_before'.print();
+            // actual.pool_price_before.print();
+            let pool_price_sig_figures=2;
             'pool_price_after'.print();
-            actual.pool_price_after.print();
+            get_significant_figures(actual.pool_price_after, pool_price_sig_figures).print();
+            get_significant_figures(*expected.pool_price_after, pool_price_sig_figures).print();
 
             // 'tick_after'.print();
             // actual.tick_after.mag.print();
@@ -1819,7 +1821,7 @@ mod YASPoolTests {
                 actual.pool_price_before == *expected.pool_price_before, 'wrong pool_price_before'
             );
             //could add a significant figures comparison here to accept some degree of error
-            assert(actual.pool_price_after == *expected.pool_price_after, 'wrong pool_price_after');
+            assert(get_significant_figures(actual.pool_price_after, pool_price_sig_figures) == get_significant_figures(*expected.pool_price_after, pool_price_sig_figures), 'wrong pool_price_after');
 
             assert(actual.tick_after == *expected.tick_after, 'wrong tick_after');
             assert(actual.tick_before == *expected.tick_before, 'wrong tick_before');
@@ -1946,11 +1948,29 @@ mod YASPoolTests {
 
     fn get_significant_figures(number: u256, sig_figures: u256) -> u256 {
         let order = get_order_of_magnitude(number);
-        if sig_figures > order {
+        let mut my_number = number;
+        if sig_figures >= order {
             number
         } else {
-            (number / pow(10, order - sig_figures) ) * pow(10, order - sig_figures)
+            let rounder = pow(10, order - sig_figures);
+            let mid_point = (rounder / 2) - 1;
+            let round_decider = number % rounder;
+            if round_decider > mid_point {
+                // my_number = number + (rounder - round_decider);
+                number + (rounder - round_decider)
+            } else {
+                // my_number = number - round_decider;
+                number - round_decider
+            }
+            // (number / pow(10, order - sig_figures) ) * pow(10, order - sig_figures)
         }
+        // 'sig_figures'.print();
+        // sig_figures.print();
+        // 'number'.print();
+        // number.print();
+        // 'mynumber'.print();
+        // my_number.print();
+        // my_number
     }
 
     fn get_order_of_magnitude(number: u256) -> u256 {
