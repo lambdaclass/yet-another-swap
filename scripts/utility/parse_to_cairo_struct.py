@@ -54,13 +54,13 @@ def format_execution_price(execution_price):
     # remove the comma
     execution_price = execution_price.replace(',', '')
     # convert to float
-    execution_price = float(execution_price)
-    # multiply by 10**5
-    execution_price = execution_price * 10**5
-    # convert to integer
-    execution_price = int(round(execution_price))
+    # execution_price = float(execution_price)
+    # # multiply by 10**5
+    # execution_price = execution_price * 10**5
+    # # convert to integer
+    # execution_price = int(round(execution_price))
     # return the formatted execution_price
-    return f'{execution_price}'
+    return execution_price
 
 # end format is * 10**5
 def format_pool_price(pool_price):
@@ -69,7 +69,8 @@ def format_pool_price(pool_price):
     # remove the comma
     pool_price = pool_price.replace(',', '')
     # convert to float
-    pool_price = float(pool_price)
+    # pool_price = float(pool_price)
+    # print(pool_price)
     # rounded = '%s' % float('%.5g' % pool_price) #a chequiar
     # sqrt_pool_price = math.sqrt(float(rounded)) #a chequiar
 
@@ -78,7 +79,7 @@ def format_pool_price(pool_price):
     # # get sqrt of price
     # sqrt_pool_price_x96 = math.sqrt(pool_price_x96)
     # # return the formatted pool_price
-    return("{:.0f}".format(pool_price))
+    return pool_price
 
 def format_tick(tick):
     # remove the quotes
@@ -192,5 +193,4 @@ if __name__ == "__main__":
     # save the result in 'swap_expected_result.txt'
     file = open('swap_expected_result.txt', 'w')
     file.write(to_print)
-
 
