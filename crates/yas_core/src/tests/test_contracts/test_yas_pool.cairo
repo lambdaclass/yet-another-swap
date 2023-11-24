@@ -1391,7 +1391,7 @@ mod YASPoolTests {
     mod Swap {
         use super::{
             setup_with, setup_pool_for_swap_test, mint_positions, swap_test_case,
-            round_for_price_comparison, calculate_execution_price
+            round_for_price_comparison, calculate_execution_price, get_significant_figures
         };
 
         use yas_core::numbers::fixed_point::implementations::impl_64x96::{
@@ -1535,52 +1535,52 @@ mod YASPoolTests {
             );
         }
 
-        // mod PoolCase1 {
-        //     use super::test_pool;
-        //     use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
-        //     use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
+        mod PoolCase1 {
+            use super::test_pool;
+            use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
-        //     #[test]
-        //     #[available_gas(200000000000)]
-        //     fn test_pool_1_success_cases() {
-        //         let pool_case = POOL_CASES()[1];
-        //         let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
-        //         let (success_swap_cases, _) = SWAP_CASES_POOL_1();
-        //         test_pool(pool_case, expected_cases, success_swap_cases);
-        //     }
+            #[test]
+            #[available_gas(200000000000)]
+            fn test_pool_1_success_cases() {
+                let pool_case = POOL_CASES()[1];
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
+                let (success_swap_cases, _) = SWAP_CASES_POOL_1();
+                test_pool(pool_case, expected_cases, success_swap_cases);
+            }
 
-        //     #[test]
-        //     #[available_gas(200000000000)]
-        //     #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        //     fn test_pool_1_panics_0() {
-        //         let PANIC_CASE = 0;
-        //         let pool_case = POOL_CASES()[1];
-        //         let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_1();
-        //         let expected_cases =
-        //             SWAP_EXPECTED_RESULTS_POOL_1(); //get random case, is never executed
-        //         test_pool(
-        //             pool_case,
-        //             array![*expected_cases[PANIC_CASE]],
-        //             array![*panic_swap_cases[PANIC_CASE]]
-        //         );
-        //     }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_1_panics_0() {
+                let PANIC_CASE = 0;
+                let pool_case = POOL_CASES()[1];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_1();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_1(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
 
-        //     #[test]
-        //     #[available_gas(200000000000)]
-        //     #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        //     fn test_pool_1_panics_1() {
-        //         let PANIC_CASE = 1;
-        //         let pool_case = POOL_CASES()[1];
-        //         let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_1();
-        //         let expected_cases =
-        //             SWAP_EXPECTED_RESULTS_POOL_1(); //get random case, is never executed
-        //         test_pool(
-        //             pool_case,
-        //             array![*expected_cases[PANIC_CASE]],
-        //             array![*panic_swap_cases[PANIC_CASE]]
-        //         );
-        //     }
-        // }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_1_panics_1() {
+                let PANIC_CASE = 1;
+                let pool_case = POOL_CASES()[1];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_1();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_1(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
+        }
 
         mod PoolCase2 {
             use super::test_pool;
@@ -1599,37 +1599,37 @@ mod YASPoolTests {
                 let (success_swap_cases, _) = SWAP_CASES_POOL_2();
                 test_pool(pool_case, expected_cases, success_swap_cases);
             }
-        // #[test]
-        // #[available_gas(200000000000)]
-        // #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        // fn test_pool_2_panics_0() {
-        //     let PANIC_CASE = 0;
-        //     let pool_case = POOL_CASES()[2];
-        //     let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_2();
-        //     let expected_cases =
-        //         SWAP_EXPECTED_RESULTS_POOL_2(); //get random case, is never executed
-        //     test_pool(
-        //         pool_case,
-        //         array![*expected_cases[PANIC_CASE]],
-        //         array![*panic_swap_cases[PANIC_CASE]]
-        //     );
-        // }
 
-        // #[test]
-        // #[available_gas(200000000000)]
-        // #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        // fn test_pool_2_panics_1() {
-        //     let PANIC_CASE = 1;
-        //     let pool_case = POOL_CASES()[2];
-        //     let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_2();
-        //     let expected_cases =
-        //         SWAP_EXPECTED_RESULTS_POOL_2(); //get random case, is never executed
-        //     test_pool(
-        //         pool_case,
-        //         array![*expected_cases[PANIC_CASE]],
-        //         array![*panic_swap_cases[PANIC_CASE]]
-        //     );
-        // }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_2_panics_0() {
+                let PANIC_CASE = 0;
+                let pool_case = POOL_CASES()[2];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_2();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_2(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_2_panics_1() {
+                let PANIC_CASE = 1;
+                let pool_case = POOL_CASES()[2];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_2();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_2(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]]
+                );
+            }
         }
 
         fn test_pool(
@@ -1638,7 +1638,7 @@ mod YASPoolTests {
             swap_cases: Array<SwapTestCase>
         ) {
             let mut i = 0;
-            // assert(expected_cases.len() == swap_cases.len(), 'wrong amount of expected cases');
+            assert(expected_cases.len() == swap_cases.len(), 'wrong amount of expected cases');
             loop {
                 if i == expected_cases.len() {
                     break;
@@ -1656,8 +1656,7 @@ mod YASPoolTests {
                 // Save values before swap for compare
                 let user_token_0_balance_bf = token_0.balanceOf(WALLET());
                 let user_token_1_balance_bf = token_1.balanceOf(WALLET());
-                let (fee_growth_global_0_X128_bf, fee_growth_global_1_X128_bf) = yas_pool
-                    .get_fee_growth_globals();
+                let (fee_growth_global_0_X128_bf, fee_growth_global_1_X128_bf) = yas_pool.get_fee_growth_globals();
 
                 let pool_balance_0_bf = token_0.balanceOf(yas_pool.contract_address);
                 let pool_balance_1_bf = token_1.balanceOf(yas_pool.contract_address);
@@ -1709,14 +1708,14 @@ mod YASPoolTests {
                     fee_growth_global_1_X128_af - fee_growth_global_1_X128_bf
                 );
                 let execution_price = calculate_execution_price(
-                    token_0_swapped_amount, token_1_swapped_amount
+                    token_0_swapped_amount, token_1_swapped_amount, *expected.execution_price
                 );
 
                 let pool_balance_0_af = token_0.balanceOf(yas_pool.contract_address);
                 let pool_balance_1_af = token_1.balanceOf(yas_pool.contract_address);
 
-                // let pool_price_bf = round_for_price_comparison(slot0_bf.sqrt_price_X96.mag);
-                // let pool_price_af = round_for_price_comparison(slot0_af.sqrt_price_X96.mag);
+                // let pool_price_bf = round_for_price_comparison(slot0_bf.sqrt_price_X96.mag, *expected.pool_price_before);
+                // let pool_price_af = round_for_price_comparison(slot0_af.sqrt_price_X96.mag, *expected.pool_price_after);
 
                 let pool_price_bf = slot0_bf.sqrt_price_X96.mag;
                 let pool_price_af = slot0_af.sqrt_price_X96.mag;
@@ -1747,35 +1746,39 @@ mod YASPoolTests {
 
         fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults) {
             //very useful for debugging, don't delete until all pools are finished:
-            'amount_0_delta'.print();
-            actual.amount_0_delta.mag.print();
+            // 'amount_0_delta'.print();
+            // actual.amount_0_delta.mag.print();
 
-            'amount_1_delta'.print();
-            actual.amount_1_delta.mag.print();
+            // 'amount_1_delta'.print();
+            // actual.amount_1_delta.mag.print();
 
             'execution_price'.print();
-            actual.execution_price.print();
+            get_significant_figures(actual.execution_price, 10).print();
+            get_significant_figures(*expected.execution_price, 10).print();
+            // 'fee_growth_global_0_X128_delta'.print();
+            // actual.fee_growth_global_0_X128_delta.print();
+            // 'fee_growth_global_1_X128_delta'.print();
+            // actual.fee_growth_global_1_X128_delta.print();
 
-            'fee_growth_global_0_X128_delta'.print();
-            actual.fee_growth_global_0_X128_delta.print();
+            // 'pool_price_before'.print();
+            // actual.pool_price_before.print();
+            let pool_price_sig_figures=2;
+            // 'pool_price_after'.print();
+            // get_significant_figures(actual.pool_price_after, pool_price_sig_figures).print();
+            // get_significant_figures(*expected.pool_price_after, pool_price_sig_figures).print();
 
-            'fee_growth_global_1_X128_delta'.print();
-            actual.fee_growth_global_1_X128_delta.print();
-            'pool_price_before'.print();
-            actual.pool_price_before.print();
-
-            'pool_price_after'.print();
-            actual.pool_price_after.print();
-
-            'tick_after'.print();
-            actual.tick_after.mag.print();
-            '-'.print();
+            // 'tick_after'.print();
+            // actual.tick_after.mag.print();
+            // '-'.print();
 
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
             assert(actual.amount_0_delta == *expected.amount_0_delta, 'wrong amount_0_delta');
             assert(actual.amount_1_before == *expected.amount_1_before, 'wrong amount_1_before');
             assert(actual.amount_1_delta == *expected.amount_1_delta, 'wrong amount_1_delta');
-            assert(actual.execution_price == *expected.execution_price, 'wrong execution_price');
+
+            //13 SF in x96 is way more accurate than uniswap precision
+            assert(get_significant_figures(actual.execution_price, 10) == get_significant_figures(*expected.execution_price, 10), 'wrong execution_price');
+
             assert(
                 actual.fee_growth_global_0_X128_delta == *expected.fee_growth_global_0_X128_delta,
                 'wrong fee_growth_global_0_X128'
@@ -1787,7 +1790,8 @@ mod YASPoolTests {
             assert(
                 actual.pool_price_before == *expected.pool_price_before, 'wrong pool_price_before'
             );
-            assert(actual.pool_price_after == *expected.pool_price_after, 'wrong pool_price_after');
+            //could add a significant figures comparison here to accept some degree of error
+            assert(get_significant_figures(actual.pool_price_after, pool_price_sig_figures) == get_significant_figures(*expected.pool_price_after, pool_price_sig_figures), 'wrong pool_price_after');
 
             assert(actual.tick_after == *expected.tick_after, 'wrong tick_after');
             assert(actual.tick_before == *expected.tick_before, 'wrong tick_before');
@@ -1820,9 +1824,13 @@ mod YASPoolTests {
     };
     use yas_core::numbers::signed_integer::{i256::i256};
     use yas_core::libraries::tick_math::TickMath::{MAX_SQRT_RATIO, MIN_SQRT_RATIO};
-    use yas_core::utils::math_utils::pow;
+    use yas_core::utils::math_utils::{
+        FullMath::{div_rounding_up, mul_div, mul_div_rounding_up}, pow
+    };
 
     use yas_core::tests::utils::swap_cases::SwapTestHelper;
+
+    use debug::PrintTrait;
 
 
     fn setup() -> (
@@ -1900,40 +1908,179 @@ mod YASPoolTests {
     }
 
     fn calculate_execution_price(
-        token_0_swapped_amount: u256, token_1_swapped_amount: u256
+        token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
     ) -> u256 {
-        let unrounded = token_1_swapped_amount * pow(10, 6) / token_0_swapped_amount;
-        let (rounder, half) = if unrounded > 999999 {
+        let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
+        // let sig_figures = get_significant_figures(unrounded, 13);
+        unrounded
+        // sig_figures
+    }
+
+    fn get_significant_figures(number: u256, sig_figures: u256) -> u256 {
+        let order = get_order_of_magnitude(number);
+        let mut my_number = number;
+        if sig_figures >= order {
+            number
+        } else {
+            let rounder = pow(10, order - sig_figures);
+            let mid_point = (rounder / 2) - 1;
+            let round_decider = number % rounder;
+            if round_decider > mid_point {
+                // my_number = number + (rounder - round_decider);
+                number + (rounder - round_decider)
+            } else {
+                // my_number = number - round_decider;
+                number - round_decider
+            }
+            // (number / pow(10, order - sig_figures) ) * pow(10, order - sig_figures)
+        }
+        // 'sig_figures'.print();
+        // sig_figures.print();
+        // 'number'.print();
+        // number.print();
+        // 'mynumber'.print();
+        // my_number.print();
+        // my_number
+    }
+
+    fn get_order_of_magnitude(number: u256) -> u256 {
+        let mut order = 0;
+        let mut my_number = number;
+        loop {
+            if my_number >= 1 {
+                my_number = my_number / 10;
+                order = order + 1;
+            } else {
+                break;
+            };
+        };
+        order
+    }
+
+    // fn calculate_execution_price(
+    //     token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
+    // ) -> u256 {
+    //     let mut unrounded = token_1_swapped_amount * pow(10, 25) / token_0_swapped_amount;
+    //     loop {
+    //         if unrounded == 0 {
+    //             break;
+    //         } else if unrounded > (expected * 10)+99 {//1000000 {
+    //             unrounded = unrounded / 10;
+    //         } else {
+    //             break;
+    //         };
+    //     };
+    //     let (rounder, half) = if unrounded > 999999 {
+    //         (100, 49)
+    //     } else {
+    //         (10, 4)
+    //     };
+    //     let round_decider = unrounded % rounder;
+    //     let mut rounded = if round_decider > half {
+    //         //round up
+    //         unrounded + (rounder - round_decider)
+    //     } else {
+    //         //round down
+    //         unrounded - round_decider
+    //     };
+    //     rounded = rounded / 10;
+    //     rounded
+    // }
+
+    // fn round_for_price_comparison(sqrt_price_X96: u256) -> u256 {
+    //     let square = (sqrt_price_X96 * sqrt_price_X96);
+    //     let move_decimal_point = (square * pow(10, 6)) / pow(2, 96);
+    //     let mut in_decimal = move_decimal_point / pow(2, 96);
+    //     let (rounder, half) = if in_decimal > 999999 {
+    //         (100, 49)
+    //     } else {
+    //         (10, 4)
+    //     };
+    //     let round_decider = in_decimal % rounder;
+    //     if round_decider > half {
+    //         //round up
+    //         in_decimal = in_decimal + (rounder - round_decider);
+    //     } else {
+    //         //round down
+    //         in_decimal = in_decimal - round_decider;
+    //     }
+    //     in_decimal / 10
+    // }
+
+    //original:
+    // fn round_for_price_comparison(sqrt_price_X96: u256) -> u256 {
+    //     let square = (sqrt_price_X96 * sqrt_price_X96) / pow(2, 96);
+    //     let move_decimal_point = square * pow(10, 6);
+    //     let mut in_decimal = move_decimal_point / pow(2, 96);
+    //     let (rounder, half) = if in_decimal > 999999 {
+    //         (100, 49)
+    //     } else {
+    //         (10, 4)
+    //     };
+    //     let round_decider = in_decimal % rounder;
+    //     if round_decider > half {
+    //         //round up
+    //         in_decimal = in_decimal + (rounder - round_decider);
+    //     } else {
+    //         //round down
+    //         in_decimal = in_decimal - round_decider;
+    //     }
+    //     in_decimal / 10
+    // }
+
+    fn round_for_price_comparison(sqrt_price_X96: u256, expected_price: u256) -> u256 {
+        let mut square = (sqrt_price_X96 * sqrt_price_X96);
+        let mut i = 0;
+        let mut move_decimal_point = 0;
+        let mut in_decimal =  0;
+        loop {
+            move_decimal_point = mul_div(square, pow(10, i), pow(2, 96));
+            in_decimal =  move_decimal_point / pow(2, 96);
+            if in_decimal < (expected_price*10)-1 {
+                i = i+1;
+            } else {
+                break;
+            };
+        };
+
+        let (rounder, half) = if in_decimal > 999999 {
             (100, 49)
         } else {
             (10, 4)
         };
-        let round_decider = unrounded % rounder;
-        let mut rounded = if round_decider > half {
+        let round_decider = in_decimal % rounder;
+        if round_decider > half {
             //round up
-            unrounded + (rounder - round_decider)
-        } else {
-            //round down
-            unrounded - round_decider
-        };
-        rounded = rounded / 10;
-        rounded // this == round(token_1_swapped_amount * pow(10, 5) / token_0_swapped_amount);
-    }
-
-    fn round_for_price_comparison(sqrt_price_X96: u256) -> u256 {
-        let square = (sqrt_price_X96 * sqrt_price_X96) / pow(2, 96);
-        let move_decimal_point = square * pow(10, 6);
-        let mut in_decimal = move_decimal_point / pow(2, 96);
-        let round_decider = in_decimal % 10;
-        if round_decider > 4 {
-            //round up
-            in_decimal = in_decimal + (10 - round_decider);
+            in_decimal = in_decimal + (rounder - round_decider);
         } else {
             //round down
             in_decimal = in_decimal - round_decider;
         }
         in_decimal / 10
     }
+
+    // fn round_for_price_comparison_44_decimals(sqrt_price_X96: u256) -> u256 {
+    //     let mut square = (sqrt_price_X96 * sqrt_price_X96);
+    //     let move_decimal_point = mul_div(square, pow(10, 44), pow(2, 96));
+    //     let mut in_decimal =  move_decimal_point / pow(2, 96);
+    //     'square'.print();
+    //     square.print();
+
+    //     let (rounder, half) = if in_decimal > 999999 {
+    //         (100, 49)
+    //     } else {
+    //         (10, 4)
+    //     };
+    //     let round_decider = in_decimal % rounder;
+    //     if round_decider > half {
+    //         //round up
+    //         in_decimal = in_decimal + (rounder - round_decider);
+    //     } else {
+    //         //round down
+    //         in_decimal = in_decimal - round_decider;
+    //     }
+    //     in_decimal / 10
+    // }
 
     fn swap_test_case(
         yas_router: IYASRouterDispatcher,
