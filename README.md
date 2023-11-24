@@ -199,12 +199,19 @@ Follow the steps below to set up a testnet smart wallet using `starkli`:
    export STARKNET_KEYSTORE=~/.starkli-wallets/keystore.json
    ```
 
-## Declare and Deploy Contracts
+> **Note:**
+> If you want to declare and deploy the contracts on Testnet, you will need the private key of your account. We obtain it in the following way:
+>
+> ```bash
+> starkli signer keystore inspect-private ~/.starkli-wallets/account.json
+> ```
+
+## Declare and Deploy Contracts in Testnet
 
 By following the previous two steps, you should now have a account funded on the
 Goerli testnet.
 
-Now we have to deploy the simple YASFactory and YASPool contract to the Testnet.
+Now we are going to declare the contracts YASRouter, YASFactory, and YASPool. We are also going to deploy the contracts YASRouter and YASFactory on Testnet.
 
 On Starknet, the deployment process is in two steps:
 
@@ -213,23 +220,58 @@ On Starknet, the deployment process is in two steps:
 - Deploying a contract or creating an instance of the previously declared code
   with the necessary parameters
 
+0. Updated `.env` file: Please modify the variables with your Testnet account and your Alchemy RPC provider.
+
+   ```bash
+   ACCOUNT_ADDRESS=0x
+   ACCOUNT_PRIVATE_KEY=0x
+   ACCOUNT_SRC=~/.starkli-wallets/account.json
+   RPC_URL=https://starknet-goerli.g.alchemy.com/v2/XXXXXXXXXXXXX
+   ```
+
 1. Build the project
 
    ```bash
    make build
    ```
 
-2. Start Local Testnet
+2. Declare and Deploy: We sequentially declare and deploy the contracts.
+
+   ```bash
+   make deploy
+   ```
+
+## Declare and Deploy Contracts in Katana
+
+Katana provides us with pre-funded accounts. We will use one of them for deployment. Katana generates the same accounts, and since we know the port it's running on, we can now complete the `.env` file.
+
+1. Updated `.env` file:
+
+   ```bash
+   # Katana Prefunded Account
+   ACCOUNT_ADDRESS=0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973
+   ACCOUNT_PRIVATE_KEY=0x1800000000300000180000000000030000000000003006001800006600
+   ACCOUNT_SRC=~/.starkli-wallets/account_katana.json
+   RPC_URL=http://0.0.0.0:5050
+   ```
+
+1. Build the project
+
+   ```bash
+   make build
+   ```
+
+1. Start Local Testnet
 
    ```bash
    make start-katana
    ```
 
-3. Declare and Deploy: We sequentially declare and deploy the contracts. Local deployment needs `katana` running. The account used for deployment is a pre-funded one.
+1. Declare and Deploy: We sequentially declare and deploy the contracts. Local deployment needs `katana` running. The account used for deployment is a pre-funded one.
 
-```bash
-make deploy
-```
+   ```bash
+   make deploy
+   ```
 
 ## Run local demo in Katana
 
@@ -242,6 +284,16 @@ This demo will perform the following steps:
 - Execute mint() within the range [-887220, 887220] with 2000000000000000000 tokens.
 - Execute swap() exchanging 500000000000000000 of token 0 for token 1.
 - Display current balances of both the pool and the user.
+
+1. Updated `.env` file:
+
+```bash
+# Katana Prefunded Account
+ACCOUNT_ADDRESS=0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973
+ACCOUNT_PRIVATE_KEY=0x1800000000300000180000000000030000000000003006001800006600
+ACCOUNT_SRC=~/.starkli-wallets/account_katana.json
+RPC_URL=http://0.0.0.0:5050
+```
 
 1. Build the project
 
@@ -261,51 +313,11 @@ This demo will perform the following steps:
    make demo-local
    ```
 
-## Run demo in Testnet
-
-0. Make sure you have the STARKNET_ACCOUNT and STARKNET_KEYSTORE environment variables declared, you won't be able to deploy on testnet otherwise:
-
-   ```bash
-   STARKNET_KEYSTORE="~/.starkli-wallets/keystore.json"
-   STARKNET_ACCOUNT="~/.starkli-wallets/account.json"
-   ```
-
-1. Build the project
-
-   ```bash
-   make build
-   ```
-
-2. Declare contracts on testnet
-
-   ```bash
-   make declare-testnet
-   ```
-
-3. Deploy those contracts on testnet
-
-   ```bash
-   Work In Progress
-   ```
-
-## Override `.env` file
-
-To override environment variables in the `.env` file, you may pass them before
-calling `make` command
-
-```bash
-OWNER_ADDRESS=0x586364c42cf7f6c968172ba0806b7403c567544266821c8cd28c292a08b2346 \
-ACCOUNT_ADDRESS=0x586364c42cf7f6c968172ba0806b7403c567544266821c8cd28c292a08b2346 \
-PRIVATE_KEY=0x2bbf4f9fd0bbb2e60b0316c1fe0b76cf7a4d0198bd493ced9b8df2a3a24d68a \
-STARKNET_RPC="https://rpc-goerli-1.starknet.rs/rpc/v0.4" \
-make deploy
-```
-
 ## Contracts Starknet Testnet
 
-- Router: 0x06c3b1076e09b1d16642808b0bfef750a683ad06724f9e4f1aaaca17bc44fad5
-- Factory: 0x0490c81e19516eba9eb531b48e58f9876259ac9396444dc759a84e4a8aefa628
-- Pool (USDC-ETH): 0x016648670892a29b68b66c98892f408ab2e174ffb827c023ad9f4ca0eff816eb
+- Router: `0x06c3b1076e09b1d16642808b0bfef750a683ad06724f9e4f1aaaca17bc44fad5`
+- Factory: `0x0490c81e19516eba9eb531b48e58f9876259ac9396444dc759a84e4a8aefa628`
+- Pool (USDC-ETH): `0x016648670892a29b68b66c98892f408ab2e174ffb827c023ad9f4ca0eff816eb`
 
 ## Version Specifications
 
