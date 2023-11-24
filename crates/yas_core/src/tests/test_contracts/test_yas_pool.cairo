@@ -1775,29 +1775,29 @@ mod YASPoolTests {
 
         fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults) {
             //very useful for debugging, don't delete until all pools are finished:
-            'amount_0_delta'.print();
-            actual.amount_0_delta.mag.print();
+            // 'amount_0_delta'.print();
+            // actual.amount_0_delta.mag.print();
 
-            'amount_1_delta'.print();
-            actual.amount_1_delta.mag.print();
+            // 'amount_1_delta'.print();
+            // actual.amount_1_delta.mag.print();
 
             'execution_price'.print();
             actual.execution_price.print();
 
-            'fee_growth_global_0_X128_delta'.print();
-            actual.fee_growth_global_0_X128_delta.print();
+            // 'fee_growth_global_0_X128_delta'.print();
+            // actual.fee_growth_global_0_X128_delta.print();
 
-            'fee_growth_global_1_X128_delta'.print();
-            actual.fee_growth_global_1_X128_delta.print();
-            'pool_price_before'.print();
-            actual.pool_price_before.print();
+            // 'fee_growth_global_1_X128_delta'.print();
+            // actual.fee_growth_global_1_X128_delta.print();
+            // 'pool_price_before'.print();
+            // actual.pool_price_before.print();
 
-            'pool_price_after'.print();
-            actual.pool_price_after.print();
+            // 'pool_price_after'.print();
+            // actual.pool_price_after.print();
 
-            'tick_after'.print();
-            actual.tick_after.mag.print();
-            '-'.print();
+            // 'tick_after'.print();
+            // actual.tick_after.mag.print();
+            // '-'.print();
 
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
             assert(actual.amount_0_delta == *expected.amount_0_delta, 'wrong amount_0_delta');
@@ -1934,32 +1934,39 @@ mod YASPoolTests {
     fn calculate_execution_price(
         token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
     ) -> u256 {
-        let mut unrounded = token_1_swapped_amount * pow(10, 25) / token_0_swapped_amount;
-        loop {
-            if unrounded == 0 {
-                break;
-            } else if unrounded > (expected * 10)+99 {//1000000 {
-                unrounded = unrounded / 10;
-            } else {
-                break;
-            };
-        };
-        let (rounder, half) = if unrounded > 999999 {
-            (100, 49)
-        } else {
-            (10, 4)
-        };
-        let round_decider = unrounded % rounder;
-        let mut rounded = if round_decider > half {
-            //round up
-            unrounded + (rounder - round_decider)
-        } else {
-            //round down
-            unrounded - round_decider
-        };
-        rounded = rounded / 10;
-        rounded
+        let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
+        unrounded
     }
+
+    // fn calculate_execution_price(
+    //     token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
+    // ) -> u256 {
+    //     let mut unrounded = token_1_swapped_amount * pow(10, 25) / token_0_swapped_amount;
+    //     loop {
+    //         if unrounded == 0 {
+    //             break;
+    //         } else if unrounded > (expected * 10)+99 {//1000000 {
+    //             unrounded = unrounded / 10;
+    //         } else {
+    //             break;
+    //         };
+    //     };
+    //     let (rounder, half) = if unrounded > 999999 {
+    //         (100, 49)
+    //     } else {
+    //         (10, 4)
+    //     };
+    //     let round_decider = unrounded % rounder;
+    //     let mut rounded = if round_decider > half {
+    //         //round up
+    //         unrounded + (rounder - round_decider)
+    //     } else {
+    //         //round down
+    //         unrounded - round_decider
+    //     };
+    //     rounded = rounded / 10;
+    //     rounded
+    // }
 
     // fn round_for_price_comparison(sqrt_price_X96: u256) -> u256 {
     //     let square = (sqrt_price_X96 * sqrt_price_X96);
