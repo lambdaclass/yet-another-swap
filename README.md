@@ -200,7 +200,7 @@ Follow the steps below to set up a testnet smart wallet using `starkli`:
    ```
 
 > **Note:**
-> If you want to declare and deploy the contracts on Testnet, you will need the private key of your account. We obtain it in the following way:
+> If you want to declare and deploy the contracts on Testnet using the `make deploy` command (explained in the next section), you will need the private key of your account. We obtain it in the following way:
 >
 > ```bash
 > starkli signer keystore inspect-private ~/.starkli-wallets/account.json
@@ -287,13 +287,13 @@ This demo will perform the following steps:
 
 1. Updated `.env` file:
 
-```bash
-# Katana Prefunded Account
-ACCOUNT_ADDRESS=0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973
-ACCOUNT_PRIVATE_KEY=0x1800000000300000180000000000030000000000003006001800006600
-ACCOUNT_SRC=~/.starkli-wallets/account_katana.json
-RPC_URL=http://0.0.0.0:5050
-```
+   ```bash
+   # Katana Prefunded Account
+   ACCOUNT_ADDRESS=0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973
+   ACCOUNT_PRIVATE_KEY=0x1800000000300000180000000000030000000000003006001800006600
+   ACCOUNT_SRC=~/.starkli-wallets/account_katana.json
+   RPC_URL=http://0.0.0.0:5050
+   ```
 
 1. Build the project
 
@@ -301,13 +301,13 @@ RPC_URL=http://0.0.0.0:5050
    make build
    ```
 
-2. Start Local Testnet
+1. Start Local Testnet
 
    ```bash
    make start-katana
    ```
 
-3. Run Local Demo
+1. Run Local Demo
 
    ```bash
    make demo-local
