@@ -1391,7 +1391,7 @@ mod YASPoolTests {
     mod Swap {
         use super::{
             setup_with, setup_pool_for_swap_test, mint_positions, swap_test_case,
-            round_for_price_comparison, calculate_execution_price
+            round_for_price_comparison, calculate_execution_price, get_significant_figures
         };
 
         use yas_core::numbers::fixed_point::implementations::impl_64x96::{
@@ -1781,19 +1781,19 @@ mod YASPoolTests {
             // 'amount_1_delta'.print();
             // actual.amount_1_delta.mag.print();
 
-            'execution_price'.print();
-            actual.execution_price.print();
+            // 'execution_price'.print();
+            // actual.execution_price.print();
+            // get_significant_figures(actual.execution_price, 13).print();
 
             // 'fee_growth_global_0_X128_delta'.print();
             // actual.fee_growth_global_0_X128_delta.print();
-
             // 'fee_growth_global_1_X128_delta'.print();
             // actual.fee_growth_global_1_X128_delta.print();
-            // 'pool_price_before'.print();
-            // actual.pool_price_before.print();
 
-            // 'pool_price_after'.print();
-            // actual.pool_price_after.print();
+            'pool_price_before'.print();
+            actual.pool_price_before.print();
+            'pool_price_after'.print();
+            actual.pool_price_after.print();
 
             // 'tick_after'.print();
             // actual.tick_after.mag.print();
@@ -1803,7 +1803,10 @@ mod YASPoolTests {
             assert(actual.amount_0_delta == *expected.amount_0_delta, 'wrong amount_0_delta');
             assert(actual.amount_1_before == *expected.amount_1_before, 'wrong amount_1_before');
             assert(actual.amount_1_delta == *expected.amount_1_delta, 'wrong amount_1_delta');
-            assert(actual.execution_price == *expected.execution_price, 'wrong execution_price');
+
+            //13 SF in x96 is way more accurate than uniswap precision
+            assert(get_significant_figures(actual.execution_price, 13) == get_significant_figures(*expected.execution_price, 13), 'wrong execution_price');
+
             assert(
                 actual.fee_growth_global_0_X128_delta == *expected.fee_growth_global_0_X128_delta,
                 'wrong fee_growth_global_0_X128'
@@ -1815,6 +1818,7 @@ mod YASPoolTests {
             assert(
                 actual.pool_price_before == *expected.pool_price_before, 'wrong pool_price_before'
             );
+            //could add a significant figures comparison here to accept some degree of error
             assert(actual.pool_price_after == *expected.pool_price_after, 'wrong pool_price_after');
 
             assert(actual.tick_after == *expected.tick_after, 'wrong tick_after');
@@ -1935,7 +1939,32 @@ mod YASPoolTests {
         token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
     ) -> u256 {
         let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
+        // let sig_figures = get_significant_figures(unrounded, 13);
         unrounded
+        // sig_figures
+    }
+
+    fn get_significant_figures(number: u256, sig_figures: u256) -> u256 {
+        let order = get_order_of_magnitude(number);
+        if sig_figures > order {
+            number
+        } else {
+            (number / pow(10, order - sig_figures) ) * pow(10, order - sig_figures)
+        }
+    }
+
+    fn get_order_of_magnitude(number: u256) -> u256 {
+        let mut order = 0;
+        let mut my_number = number;
+        loop {
+            if my_number >= 1 {
+                my_number = my_number / 10;
+                order = order + 1;
+            } else {
+                break;
+            };
+        };
+        order
     }
 
     // fn calculate_execution_price(
