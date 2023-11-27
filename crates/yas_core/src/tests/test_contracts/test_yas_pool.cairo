@@ -1586,6 +1586,93 @@ mod YASPoolTests {
             }
         }
 
+        mod PoolCase3 {
+            use super::test_pool;
+            use yas_core::tests::utils::pool_3::{SWAP_CASES_POOL_3, SWAP_EXPECTED_RESULTS_POOL_3};
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
+
+            const PRESICION: u128 = 5;
+
+            #[test]
+            #[available_gas(200000000000)]
+            fn test_pool_3_success_cases() {
+                let pool_case = POOL_CASES()[3];
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_3();
+                let (success_swap_cases, _) = SWAP_CASES_POOL_3();
+
+                test_pool(pool_case, expected_cases, success_swap_cases, PRESICION);
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_3_panics_0() {
+                let PANIC_CASE = 0;
+                let pool_case = POOL_CASES()[3];
+                let (_, panic_swap_cases) = SWAP_CASES_POOL_3();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_3(); //get random case, is never executed
+
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_3_panics_1() {
+                let PANIC_CASE = 1;
+                let pool_case = POOL_CASES()[3];
+                let (_, panic_swap_cases) = SWAP_CASES_POOL_3();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_3(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_3_panics_2() {
+                let PANIC_CASE = 2;
+                let pool_case = POOL_CASES()[3];
+                let (_, panic_swap_cases) = SWAP_CASES_POOL_3();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_3(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_3_panics_3() {
+                let PANIC_CASE = 3;
+                let pool_case = POOL_CASES()[3];
+                let (_, panic_swap_cases) = SWAP_CASES_POOL_3();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_3(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
+        }
+
         fn test_pool(
             pool_case: @PoolTestCase,
             expected_cases: Array<SwapExpectedResults>,
@@ -1707,9 +1794,9 @@ mod YASPoolTests {
             // 'amount_1_delta'.print();
             // actual.amount_1_delta.mag.print();
 
-            'execution_price'.print();
-            get_significant_figures(actual.execution_price, 10).print();
-            get_significant_figures(*expected.execution_price, 10).print();
+            // 'execution_price'.print();
+            // get_significant_figures(actual.pool_price_after, presicion * 2).print();
+            // get_significant_figures(*expected.pool_price_after, presicion * 2).print();
             // 'fee_growth_global_0_X128_delta'.print();
             // actual.fee_growth_global_0_X128_delta.print();
             // 'fee_growth_global_1_X128_delta'.print();
@@ -1718,12 +1805,15 @@ mod YASPoolTests {
             // 'pool_price_before'.print();
             // actual.pool_price_before.print();
             // 'pool_price_after'.print();
-            // get_significant_figures(actual.pool_price_after, pool_price_sig_figures).print();
-            // get_significant_figures(*expected.pool_price_after, pool_price_sig_figures).print();
+            // actual.pool_price_after.print();
+            // get_significant_figures(*expected.pool_price_after, presicion * 2).print();
 
             // 'tick_after'.print();
             // actual.tick_after.mag.print();
-            // '-'.print();
+            // // '-'.print();
+
+            // 'execution_price'.print();
+            // actual.execution_price.print();
 
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
             assert(actual.amount_0_delta == *expected.amount_0_delta, 'wrong amount_0_delta');
@@ -1731,7 +1821,7 @@ mod YASPoolTests {
             assert(actual.amount_1_delta == *expected.amount_1_delta, 'wrong amount_1_delta');
 
             //13 SF in x96 is way more accurate than uniswap precision
-            assert(get_significant_figures(actual.execution_price, 10) == get_significant_figures(*expected.execution_price, 10), 'wrong execution_price');
+            assert(get_significant_figures(actual.execution_price, presicion * 2) == get_significant_figures(*expected.execution_price, presicion * 2), 'wrong execution_price');
 
             assert(
                 actual.fee_growth_global_0_X128_delta == *expected.fee_growth_global_0_X128_delta,
