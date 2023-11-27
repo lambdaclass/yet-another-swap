@@ -1540,13 +1540,15 @@ mod YASPoolTests {
             use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
+            const PRESICION: u128 = 5;
+
             #[test]
             #[available_gas(200000000000)]
             fn test_pool_1_success_cases() {
                 let pool_case = POOL_CASES()[1];
                 let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
                 let (success_swap_cases, _) = SWAP_CASES_POOL_1();
-                test_pool(pool_case, expected_cases, success_swap_cases);
+                test_pool(pool_case, expected_cases, success_swap_cases, PRESICION);
             }
 
             #[test]
@@ -1561,7 +1563,8 @@ mod YASPoolTests {
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
-                    array![*panic_swap_cases[PANIC_CASE]]
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
                 );
             }
 
@@ -1577,7 +1580,8 @@ mod YASPoolTests {
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
-                    array![*panic_swap_cases[PANIC_CASE]]
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
                 );
             }
         }
@@ -1585,7 +1589,8 @@ mod YASPoolTests {
         fn test_pool(
             pool_case: @PoolTestCase,
             expected_cases: Array<SwapExpectedResults>,
-            swap_cases: Array<SwapTestCase>
+            swap_cases: Array<SwapTestCase>,
+            presicion_required: u128
         ) {
             let mut i = 0;
             assert(expected_cases.len() == swap_cases.len(), 'wrong amount of expected cases');
@@ -1689,12 +1694,12 @@ mod YASPoolTests {
                     tick_before: tick_bf,
                 };
 
-                assert_swap_result_equals(actual, expected);
+                assert_swap_result_equals(actual, expected, presicion_required);
                 i += 1;
             };
         }
 
-        fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults) {
+        fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults, presicion: u128) {
             //very useful for debugging, don't delete until all pools are finished:
             // 'amount_0_delta'.print();
             // actual.amount_0_delta.mag.print();
@@ -1712,7 +1717,6 @@ mod YASPoolTests {
 
             // 'pool_price_before'.print();
             // actual.pool_price_before.print();
-            let pool_price_sig_figures=2;
             // 'pool_price_after'.print();
             // get_significant_figures(actual.pool_price_after, pool_price_sig_figures).print();
             // get_significant_figures(*expected.pool_price_after, pool_price_sig_figures).print();
@@ -1741,7 +1745,7 @@ mod YASPoolTests {
                 actual.pool_price_before == *expected.pool_price_before, 'wrong pool_price_before'
             );
             //could add a significant figures comparison here to accept some degree of error
-            assert(get_significant_figures(actual.pool_price_after, pool_price_sig_figures) == get_significant_figures(*expected.pool_price_after, pool_price_sig_figures), 'wrong pool_price_after');
+            assert(get_significant_figures(actual.pool_price_after, presicion) == get_significant_figures(*expected.pool_price_after, presicion), 'wrong pool_price_after');
 
             assert(actual.tick_after == *expected.tick_after, 'wrong tick_after');
             assert(actual.tick_before == *expected.tick_before, 'wrong tick_before');
@@ -1866,13 +1870,13 @@ mod YASPoolTests {
         // sig_figures
     }
 
-    fn get_significant_figures(number: u256, sig_figures: u256) -> u256 {
+    fn get_significant_figures(number: u256, sig_figures: u128) -> u256 {
         let order = get_order_of_magnitude(number);
         let mut my_number = number;
-        if sig_figures >= order {
+        if sig_figures.into() >= order {
             number
         } else {
-            let rounder = pow(10, order - sig_figures);
+            let rounder = pow(10, order - sig_figures.into());
             let mid_point = (rounder / 2) - 1;
             let round_decider = number % rounder;
             if round_decider > mid_point {
