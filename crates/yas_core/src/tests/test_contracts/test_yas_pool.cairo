@@ -377,9 +377,7 @@ mod YASPoolTests {
             let tick_upper = IntegerTrait::<i32>::new(100, false);
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => {
-                    panic_with_felt252(err)
-                },
+                Result::Err(err) => { panic_with_felt252(err) },
             }
         }
 
@@ -390,9 +388,7 @@ mod YASPoolTests {
             let tick_upper = IntegerTrait::<i32>::new(100, false);
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => {
-                    panic_with_felt252(err)
-                },
+                Result::Err(err) => { panic_with_felt252(err) },
             }
         }
 
@@ -403,9 +399,7 @@ mod YASPoolTests {
             let tick_upper = TickMath::MAX_TICK();
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => {
-                    panic_with_felt252(err)
-                },
+                Result::Err(err) => { panic_with_felt252(err) },
             }
         }
 
@@ -417,9 +411,7 @@ mod YASPoolTests {
             let tick_upper = IntegerTrait::<i32>::new(100, true);
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => {
-                    panic_with_felt252(err)
-                },
+                Result::Err(err) => { panic_with_felt252(err) },
             }
         }
 
@@ -431,9 +423,7 @@ mod YASPoolTests {
             let tick_upper = TickMath::MIN_TICK();
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => {
-                    panic_with_felt252(err)
-                },
+                Result::Err(err) => { panic_with_felt252(err) },
             }
         }
 
@@ -445,9 +435,7 @@ mod YASPoolTests {
             let tick_upper = TickMath::MAX_TICK() + IntegerTrait::<i32>::new(1, false);
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => {
-                    panic_with_felt252(err)
-                },
+                Result::Err(err) => { panic_with_felt252(err) },
             }
         }
 
@@ -458,9 +446,7 @@ mod YASPoolTests {
             let tick_upper = TickMath::MAX_TICK();
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => {
-                    panic_with_felt252(err)
-                },
+                Result::Err(err) => { panic_with_felt252(err) },
             }
         }
     }
@@ -1586,6 +1572,161 @@ mod YASPoolTests {
             }
         }
 
+        mod PoolCase14 {
+            use super::test_pool;
+            use yas_core::tests::utils::pool_14::{
+                SWAP_CASES_POOL_14, SWAP_EXPECTED_RESULTS_POOL_14
+            };
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
+
+            const PRESICION: u128 = 43;
+
+            #[test]
+            #[available_gas(200000000000)]
+            fn test_pool_14_success_cases() {
+                let pool_case = POOL_CASES()[14];
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_14();
+                let (success_swap_cases, _) = SWAP_CASES_POOL_14();
+                test_pool(pool_case, expected_cases, success_swap_cases, PRESICION);
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_14_panics_0() {
+                let PANIC_CASE = 0;
+                let pool_case = POOL_CASES()[14];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_14();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_14(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[0]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_14_panics_1() {
+                let PANIC_CASE = 1;
+                let pool_case = POOL_CASES()[14];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_14();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_14(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[0]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_14_panics_2() {
+                let PANIC_CASE = 2;
+                let pool_case = POOL_CASES()[14];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_14();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_14(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[0]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_14_panics_3() {
+                let PANIC_CASE = 3;
+                let pool_case = POOL_CASES()[14];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_14();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_14(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[0]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_14_panics_4() {
+                let PANIC_CASE = 4;
+                let pool_case = POOL_CASES()[14];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_14();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_14(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[0]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_14_panics_5() {
+                let PANIC_CASE = 5;
+                let pool_case = POOL_CASES()[14];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_14();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_14(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[0]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_14_panics_6() {
+                let PANIC_CASE = 6;
+                let pool_case = POOL_CASES()[14];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_14();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_14(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[0]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_14_panics_7() {
+                let PANIC_CASE = 7;
+                let pool_case = POOL_CASES()[14];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_14();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_14(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[0]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
+        }
+
         fn test_pool(
             pool_case: @PoolTestCase,
             expected_cases: Array<SwapExpectedResults>,
@@ -1611,7 +1752,8 @@ mod YASPoolTests {
                 // Save values before swap for compare
                 let user_token_0_balance_bf = token_0.balanceOf(WALLET());
                 let user_token_1_balance_bf = token_1.balanceOf(WALLET());
-                let (fee_growth_global_0_X128_bf, fee_growth_global_1_X128_bf) = yas_pool.get_fee_growth_globals();
+                let (fee_growth_global_0_X128_bf, fee_growth_global_1_X128_bf) = yas_pool
+                    .get_fee_growth_globals();
 
                 let pool_balance_0_bf = token_0.balanceOf(yas_pool.contract_address);
                 let pool_balance_1_bf = token_1.balanceOf(yas_pool.contract_address);
@@ -1699,7 +1841,9 @@ mod YASPoolTests {
             };
         }
 
-        fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults, presicion: u128) {
+        fn assert_swap_result_equals(
+            actual: SwapExpectedResults, expected: @SwapExpectedResults, presicion: u128
+        ) {
             //very useful for debugging, don't delete until all pools are finished:
             // 'amount_0_delta'.print();
             // actual.amount_0_delta.mag.print();
@@ -1731,7 +1875,12 @@ mod YASPoolTests {
             assert(actual.amount_1_delta == *expected.amount_1_delta, 'wrong amount_1_delta');
 
             //13 SF in x96 is way more accurate than uniswap precision
-            assert(get_significant_figures(actual.execution_price, 10) == get_significant_figures(*expected.execution_price, 10), 'wrong execution_price');
+            assert(
+                get_significant_figures(
+                    actual.execution_price, 10
+                ) == get_significant_figures(*expected.execution_price, 10),
+                'wrong execution_price'
+            );
 
             assert(
                 actual.fee_growth_global_0_X128_delta == *expected.fee_growth_global_0_X128_delta,
@@ -1745,7 +1894,12 @@ mod YASPoolTests {
                 actual.pool_price_before == *expected.pool_price_before, 'wrong pool_price_before'
             );
             //could add a significant figures comparison here to accept some degree of error
-            assert(get_significant_figures(actual.pool_price_after, presicion) == get_significant_figures(*expected.pool_price_after, presicion), 'wrong pool_price_after');
+            assert(
+                get_significant_figures(
+                    actual.pool_price_after, presicion
+                ) == get_significant_figures(*expected.pool_price_after, presicion),
+                'wrong pool_price_after'
+            );
 
             assert(actual.tick_after == *expected.tick_after, 'wrong tick_after');
             assert(actual.tick_before == *expected.tick_before, 'wrong tick_before');
@@ -1867,7 +2021,7 @@ mod YASPoolTests {
         let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
         // let sig_figures = get_significant_figures(unrounded, 13);
         unrounded
-        // sig_figures
+    // sig_figures
     }
 
     fn get_significant_figures(number: u256, sig_figures: u128) -> u256 {
@@ -1886,15 +2040,15 @@ mod YASPoolTests {
                 // my_number = number - round_decider;
                 number - round_decider
             }
-            // (number / pow(10, order - sig_figures) ) * pow(10, order - sig_figures)
+        // (number / pow(10, order - sig_figures) ) * pow(10, order - sig_figures)
         }
-        // 'sig_figures'.print();
-        // sig_figures.print();
-        // 'number'.print();
-        // number.print();
-        // 'mynumber'.print();
-        // my_number.print();
-        // my_number
+    // 'sig_figures'.print();
+    // sig_figures.print();
+    // 'number'.print();
+    // number.print();
+    // 'mynumber'.print();
+    // my_number.print();
+    // my_number
     }
 
     fn get_order_of_magnitude(number: u256) -> u256 {
@@ -1986,12 +2140,12 @@ mod YASPoolTests {
         let mut square = (sqrt_price_X96 * sqrt_price_X96);
         let mut i = 0;
         let mut move_decimal_point = 0;
-        let mut in_decimal =  0;
+        let mut in_decimal = 0;
         loop {
             move_decimal_point = mul_div(square, pow(10, i), pow(2, 96));
-            in_decimal =  move_decimal_point / pow(2, 96);
-            if in_decimal < (expected_price*10)-1 {
-                i = i+1;
+            in_decimal = move_decimal_point / pow(2, 96);
+            if in_decimal < (expected_price * 10) - 1 {
+                i = i + 1;
             } else {
                 break;
             };
