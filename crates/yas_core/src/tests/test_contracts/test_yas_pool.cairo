@@ -1753,7 +1753,12 @@ mod YASPoolTests {
                 actual.pool_price_before == *expected.pool_price_before, 'wrong pool_price_before'
             );
             //could add a significant figures comparison here to accept some degree of error
-            assert(get_significant_figures(actual.pool_price_after, presicion.into()) == get_significant_figures(*expected.pool_price_after, presicion.into()), 'wrong pool_price_after');
+            assert(
+                get_significant_figures(
+                    actual.pool_price_after, presicion.into()
+                ) == get_significant_figures(*expected.pool_price_after, presicion.into()),
+                'wrong pool_price_after'
+            );
 
             assert(actual.tick_after == *expected.tick_after, 'wrong tick_after');
             assert(actual.tick_before == *expected.tick_before, 'wrong tick_before');
@@ -1996,9 +2001,7 @@ mod YASPoolTests {
     }
 
     fn setup_pool_for_swap_test(
-        initial_price: FixedType,
-        fee_amount: u32,
-        mint_positions: @Array<SwapTestHelper::Position>,
+        initial_price: FixedType, fee_amount: u32, mint_positions: @Array<SwapTestHelper::Position>,
     ) -> (IYASPoolDispatcher, IYASRouterDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let yas_router = deploy_yas_router(); // 0x1
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
