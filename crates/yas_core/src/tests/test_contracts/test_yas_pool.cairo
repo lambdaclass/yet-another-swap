@@ -1598,7 +1598,7 @@ mod YASPoolTests {
             #[test]
             #[available_gas(200000000000)]
             fn test_pool_13_success_cases() {
-                let pool_case = POOL_CASES()[1];
+                let pool_case = POOL_CASES()[13];
                 let expected_cases = SWAP_EXPECTED_RESULTS_POOL_13();
                 let (success_swap_cases, _) = SWAP_CASES_POOL_13();
                 test_pool(
@@ -1606,146 +1606,144 @@ mod YASPoolTests {
                     expected_cases,
                     success_swap_cases,
                     PRESICION,
-                    // In this pool we need amount_0 always in zero and amount_1 in 36796311329002736532545403775337522448
-                    Zeroable::zero(),
-                    36796311329002736532545403775337522448
                 );
             }
-        // #[test]
-        // #[available_gas(200000000000)]
-        // #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        // fn test_pool_13_panics_0() {
-        //     let PANIC_CASE = 0;
-        //     let pool_case = POOL_CASES()[1];
-        //     let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
-        //     let expected_cases =
-        //         SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
-        //     test_pool(
-        //         pool_case,
-        //         array![*expected_cases[PANIC_CASE]],
-        //         array![*panic_swap_cases[PANIC_CASE]],
-        //         Zeroable::zero()
-        //     );
-        // }
 
-        // #[test]
-        // #[available_gas(200000000000)]
-        // #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        // fn test_pool_13_panics_1() {
-        //     let PANIC_CASE = 1;
-        //     let pool_case = POOL_CASES()[1];
-        //     let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
-        //     let expected_cases =
-        //         SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
-        //     test_pool(
-        //         pool_case,
-        //         array![*expected_cases[PANIC_CASE]],
-        //         array![*panic_swap_cases[PANIC_CASE]],
-        //         Zeroable::zero()
-        //     );
-        // }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_13_panics_0() {
+                let PANIC_CASE = 0;
+                let pool_case = POOL_CASES()[13];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
 
-        // #[test]
-        // #[available_gas(200000000000)]
-        // #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        // fn test_pool_13_panics_2() {
-        //     let PANIC_CASE = 2;
-        //     let pool_case = POOL_CASES()[1];
-        //     let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
-        //     let expected_cases =
-        //         SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
-        //     test_pool(
-        //         pool_case,
-        //         array![*expected_cases[PANIC_CASE]],
-        //         array![*panic_swap_cases[PANIC_CASE]],
-        //         Zeroable::zero()
-        //     );
-        // }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_13_panics_1() {
+                let PANIC_CASE = 1;
+                let pool_case = POOL_CASES()[13];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
 
-        // #[test]
-        // #[available_gas(200000000000)]
-        // #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        // fn test_pool_13_panics_3() {
-        //     let PANIC_CASE = 3;
-        //     let pool_case = POOL_CASES()[1];
-        //     let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
-        //     let expected_cases =
-        //         SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
-        //     test_pool(
-        //         pool_case,
-        //         array![*expected_cases[PANIC_CASE]],
-        //         array![*panic_swap_cases[PANIC_CASE]],
-        //         Zeroable::zero()
-        //     );
-        // }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_13_panics_2() {
+                let PANIC_CASE = 2;
+                let pool_case = POOL_CASES()[13];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
 
-        // #[test]
-        // #[available_gas(200000000000)]
-        // #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        // fn test_pool_13_panics_4() {
-        //     let PANIC_CASE = 4;
-        //     let pool_case = POOL_CASES()[1];
-        //     let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
-        //     let expected_cases =
-        //         SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
-        //     test_pool(
-        //         pool_case,
-        //         array![*expected_cases[PANIC_CASE]],
-        //         array![*panic_swap_cases[PANIC_CASE]],
-        //         Zeroable::zero()
-        //     );
-        // }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_13_panics_3() {
+                let PANIC_CASE = 3;
+                let pool_case = POOL_CASES()[13];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
 
-        // #[test]
-        // #[available_gas(200000000000)]
-        // #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        // fn test_pool_13_panics_5() {
-        //     let PANIC_CASE = 5;
-        //     let pool_case = POOL_CASES()[1];
-        //     let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
-        //     let expected_cases =
-        //         SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
-        //     test_pool(
-        //         pool_case,
-        //         array![*expected_cases[PANIC_CASE]],
-        //         array![*panic_swap_cases[PANIC_CASE]],
-        //         Zeroable::zero()
-        //     );
-        // }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_13_panics_4() {
+                let PANIC_CASE = 4;
+                let pool_case = POOL_CASES()[13];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
 
-        // #[test]
-        // #[available_gas(200000000000)]
-        // #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        // fn test_pool_13_panics_6() {
-        //     let PANIC_CASE = 6;
-        //     let pool_case = POOL_CASES()[1];
-        //     let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
-        //     let expected_cases =
-        //         SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
-        //     test_pool(
-        //         pool_case,
-        //         array![*expected_cases[PANIC_CASE]],
-        //         array![*panic_swap_cases[PANIC_CASE]],
-        //         Zeroable::zero()
-        //     );
-        // }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_13_panics_5() {
+                let PANIC_CASE = 5;
+                let pool_case = POOL_CASES()[13];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
 
-        // #[test]
-        // #[available_gas(200000000000)]
-        // #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-        // fn test_pool_13_panics_7() {
-        //     let PANIC_CASE = 7;
-        //     let pool_case = POOL_CASES()[1];
-        //     let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
-        //     let expected_cases =
-        //         SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
-        //     test_pool(
-        //         pool_case,
-        //         array![*expected_cases[PANIC_CASE]],
-        //         array![*panic_swap_cases[PANIC_CASE]],
-        //         Zeroable::zero()
-        //     );
-        // }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_13_panics_6() {
+                let PANIC_CASE = 6;
+                let pool_case = POOL_CASES()[13];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_13_panics_7() {
+                let PANIC_CASE = 7;
+                let pool_case = POOL_CASES()[13];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_13();
+                let expected_cases =
+                    SWAP_EXPECTED_RESULTS_POOL_13(); //get random case, is never executed
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    Zeroable::zero()
+                );
+            }
         }
 
         fn test_pool(
@@ -1753,8 +1751,6 @@ mod YASPoolTests {
             expected_cases: Array<SwapExpectedResults>,
             swap_cases: Array<SwapTestCase>,
             presicion_required: u128,
-            initial_amount_0: u256,
-            initial_amount_1: u256
         ) {
             let mut i = 0;
             assert(expected_cases.len() == swap_cases.len(), 'wrong amount of expected cases');
@@ -1767,9 +1763,7 @@ mod YASPoolTests {
                 let (yas_pool, yas_router, token_0, token_1) = setup_pool_for_swap_test(
                     initial_price: *pool_case.starting_price,
                     fee_amount: *pool_case.fee_amount,
-                    mint_positions: pool_case.mint_positions,
-                    amount_0: initial_amount_0,
-                    amount_1: initial_amount_1
+                    mint_positions: pool_case.mint_positions
                 );
                 let swap_case = swap_cases[i];
                 let expected = expected_cases[i];
@@ -1870,14 +1864,20 @@ mod YASPoolTests {
             actual: SwapExpectedResults, expected: @SwapExpectedResults, presicion: u128
         ) {
             //very useful for debugging, don't delete until all pools are finished:
-            'amount_0_bf '.print();
-            actual.amount_0_delta.mag.print();
+            // 'amount_0_bf '.print();
+            // actual.amount_0_delta.mag.print();
 
             // 'amount_1_delta'.print();
             // actual.amount_1_delta.mag.print();
 
+            'amount_0_delta'.print();
+            actual.amount_0_delta.mag.print();
+
+            'amount_1_delta'.print();
+            actual.amount_1_delta.mag.print();
+
             'execution_price'.print();
-            get_significant_figures(actual.execution_price, 10).print();
+            actual.execution_price.print();
             get_significant_figures(*expected.execution_price, 10).print();
             // 'fee_growth_global_0_X128_delta'.print();
             // actual.fee_growth_global_0_X128_delta.print();
@@ -1886,12 +1886,14 @@ mod YASPoolTests {
 
             // 'pool_price_before'.print();
             // actual.pool_price_before.print();
-            // 'pool_price_after'.print();
+            'pool_price_after'.print();
+            actual.pool_price_after.print();
+
             // get_significant_figures(actual.pool_price_after, pool_price_sig_figures).print();
             // get_significant_figures(*expected.pool_price_after, pool_price_sig_figures).print();
 
-            // 'tick_after'.print();
-            // actual.tick_after.mag.print();
+            'tick_after'.print();
+            actual.tick_after.mag.print();
             // '-'.print();
 
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
@@ -2166,25 +2168,23 @@ mod YASPoolTests {
         initial_price: FixedType,
         fee_amount: u32,
         mint_positions: @Array<SwapTestHelper::Position>,
-        amount_0: u256,
-        amount_1: u256
     ) -> (IYASPoolDispatcher, IYASRouterDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let yas_router = deploy_yas_router(); // 0x1
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
 
         // Deploy ERC20 tokens with factory address
         // in testnet TOKEN0 is USDC and TOKEN1 is ETH
-        let token_0 = deploy_erc20('USDC', 'USDC', amount_0, OWNER()); // 0x3
-        let token_1 = deploy_erc20('ETH', 'ETH', amount_1, OWNER()); // 0x4
+        let token_0 = deploy_erc20('USDC', 'USDC', BoundedInt::max(), OWNER()); // 0x3
+        let token_1 = deploy_erc20('ETH', 'ETH', BoundedInt::max(), OWNER()); // 0x4
 
         set_contract_address(OWNER());
-        token_0.transfer(WALLET(), amount_0);
-        token_1.transfer(WALLET(), amount_1);
+        token_0.transfer(WALLET(), BoundedInt::max());
+        token_1.transfer(WALLET(), BoundedInt::max());
 
         // Give permissions to expend WALLET() tokens
         set_contract_address(WALLET());
-        token_1.approve(yas_router.contract_address, amount_0);
-        token_0.approve(yas_router.contract_address, amount_1);
+        token_1.approve(yas_router.contract_address, BoundedInt::max());
+        token_0.approve(yas_router.contract_address, BoundedInt::max());
 
         let yas_pool_address = yas_factory // 0x5
             .create_pool(token_0.contract_address, token_1.contract_address, fee_amount);
