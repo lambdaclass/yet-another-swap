@@ -108,19 +108,17 @@ fn SWAP_EXPECTED_RESULTS_POOL_11() -> Array<SwapExpectedResults> {
 		// 	tick_after: IntegerTrait::<i32>::new(880303, true),
 		// 	tick_before: IntegerTrait::<i32>::new(880303, true),
 		// },
-
-		// //uncharted case here, lets put a dummy case:
-		// SwapExpectedResults { //this is a dummy case, it should be instead something from uniswap but couldnt read its variables
+		// SwapExpectedResults {//ok
 		// 	amount_0_before: 26037782196502120275425782622539039026,
-		// 	amount_0_delta: IntegerTrait::<i256>::new(10790901831095468191587263901270792610, false),
+		// 	amount_0_delta: IntegerTrait::<i256>::new(26033697540846965126433148994127431276, true),
 		// 	amount_1_before: 1,
-		// 	amount_1_delta: IntegerTrait::<i256>::new(0, false),
+		// 	amount_1_delta: IntegerTrait::<i256>::new(1000, false),
 		// 	execution_price: 0,
-		// 	fee_growth_global_0_X128_delta: 5507930424444982259736347157352787128931407551935325049,
-		// 	fee_growth_global_1_X128_delta: 0,
-		// 	pool_price_after: 4295128740,
+		// 	fee_growth_global_0_X128_delta: 0,
+		// 	fee_growth_global_1_X128_delta: 2381976568446569244235,
+		// 	pool_price_after: 38793068108090,
 		// 	pool_price_before: 6085630636,
-		// 	tick_after: IntegerTrait::<i32>::new(887272, true),
+		// 	tick_after: IntegerTrait::<i32>::new(705093, true),
 		// 	tick_before: IntegerTrait::<i32>::new(880303, true),
 		// },
 
