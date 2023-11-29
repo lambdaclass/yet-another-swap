@@ -1601,12 +1601,7 @@ mod YASPoolTests {
                 let pool_case = POOL_CASES()[13];
                 let expected_cases = SWAP_EXPECTED_RESULTS_POOL_13();
                 let (success_swap_cases, _) = SWAP_CASES_POOL_13();
-                test_pool(
-                    pool_case,
-                    expected_cases,
-                    success_swap_cases,
-                    PRESICION,
-                );
+                test_pool(pool_case, expected_cases, success_swap_cases, PRESICION,);
             }
 
             #[test]
@@ -2165,9 +2160,7 @@ mod YASPoolTests {
     }
 
     fn setup_pool_for_swap_test(
-        initial_price: FixedType,
-        fee_amount: u32,
-        mint_positions: @Array<SwapTestHelper::Position>,
+        initial_price: FixedType, fee_amount: u32, mint_positions: @Array<SwapTestHelper::Position>,
     ) -> (IYASPoolDispatcher, IYASRouterDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let yas_router = deploy_yas_router(); // 0x1
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
