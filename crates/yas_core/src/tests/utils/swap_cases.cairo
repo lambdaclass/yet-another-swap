@@ -310,20 +310,20 @@ mod SwapTestHelper {
 
     fn SWAP_CASES() -> Array<SwapTestCase> {
         array![ //16 SWAPS
-            // SwapTestCase { //OK
-            //     zero_for_one: true,
-            //     has_exact_out: true,
-            //     exact_out: false,
-            //     amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-            //     sqrt_price_limit: FP64x96Impl::new(0, false)
-            // },
-            // SwapTestCase { //OK
-            //     zero_for_one: false,
-            //     has_exact_out: true,
-            //     exact_out: false,
-            //     amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-            //     sqrt_price_limit: FP64x96Impl::new(0, false)
-            // },
+            SwapTestCase {
+                zero_for_one: true,
+                has_exact_out: true,
+                exact_out: false,
+                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+                sqrt_price_limit: FP64x96Impl::new(0, false)
+            },
+            SwapTestCase {
+                zero_for_one: false,
+                has_exact_out: true,
+                exact_out: false,
+                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+                sqrt_price_limit: FP64x96Impl::new(0, false)
+            },
             SwapTestCase {
                 zero_for_one: true,
                 has_exact_out: true,

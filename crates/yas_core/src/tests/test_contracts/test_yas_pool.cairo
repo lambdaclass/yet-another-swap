@@ -1732,29 +1732,28 @@ mod YASPoolTests {
 
         fn assert_swap_result_equals(actual: SwapExpectedResults, expected: @SwapExpectedResults) {
             //very useful for debugging, don't delete until all pools are finished:
-            // 'amount_0_delta'.print();
-            // actual.amount_0_delta.mag.print();
+            'amount_0_delta'.print();
+            actual.amount_0_delta.mag.print();
 
-            // 'amount_1_delta'.print();
-            // actual.amount_1_delta.mag.print();
+            'amount_1_delta'.print();
+            actual.amount_1_delta.mag.print();
 
             'execution_price'.print();
             get_significant_figures(actual.execution_price, 10).print();
-            get_significant_figures(*expected.execution_price, 10).print();
-            // 'fee_growth_global_0_X128_delta'.print();
-            // actual.fee_growth_global_0_X128_delta.print();
-            // 'fee_growth_global_1_X128_delta'.print();
-            // actual.fee_growth_global_1_X128_delta.print();
 
-            // 'pool_price_before'.print();
-            // actual.pool_price_before.print();
+            'fee_growth_global_0_X128_delta'.print();
+            actual.fee_growth_global_0_X128_delta.print();
+            'fee_growth_global_1_X128_delta'.print();
+            actual.fee_growth_global_1_X128_delta.print();
+
+            'pool_price_before'.print();
+            actual.pool_price_before.print();
             let pool_price_sig_figures=2;
-            // 'pool_price_after'.print();
-            // get_significant_figures(actual.pool_price_after, pool_price_sig_figures).print();
-            // get_significant_figures(*expected.pool_price_after, pool_price_sig_figures).print();
+            'pool_price_after'.print();
+            get_significant_figures(actual.pool_price_after, pool_price_sig_figures).print();
 
-            // 'tick_after'.print();
-            // actual.tick_after.mag.print();
+            'tick_after'.print();
+            actual.tick_after.mag.print();
             // '-'.print();
 
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
@@ -1896,10 +1895,12 @@ mod YASPoolTests {
     fn calculate_execution_price(
         token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
     ) -> u256 {
-        let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
-        // let sig_figures = get_significant_figures(unrounded, 13);
-        unrounded
-        // sig_figures
+        if token_0_swapped_amount == 0 && token_1_swapped_amount == 0 { //this avoids 0/0 , no tokens swapped = exec_price: 0
+            0
+        } else {
+            let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
+            unrounded
+        }
     }
 
     fn get_significant_figures(number: u256, sig_figures: u256) -> u256 {
