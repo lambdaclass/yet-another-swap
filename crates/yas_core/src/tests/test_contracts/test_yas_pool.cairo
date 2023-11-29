@@ -1540,8 +1540,6 @@ mod YASPoolTests {
             use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
-            use integer::BoundedInt;
-
             const PRESICION: u128 = 5;
 
             #[test]
@@ -1550,14 +1548,7 @@ mod YASPoolTests {
                 let pool_case = POOL_CASES()[1];
                 let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
                 let (success_swap_cases, _) = SWAP_CASES_POOL_1();
-                test_pool(
-                    pool_case,
-                    expected_cases,
-                    success_swap_cases,
-                    PRESICION,
-                    BoundedInt::max(),
-                    BoundedInt::max()
-                );
+                test_pool(pool_case, expected_cases, success_swap_cases, PRESICION);
             }
 
             #[test]
@@ -1573,9 +1564,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    Zeroable::zero(),
-                    BoundedInt::max(),
-                    BoundedInt::max()
+                    PRESICION
                 );
             }
 
@@ -1592,9 +1581,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    Zeroable::zero(),
-                    BoundedInt::max(),
-                    BoundedInt::max()
+                    PRESICION
                 );
             }
         }
@@ -1604,8 +1591,6 @@ mod YASPoolTests {
             expected_cases: Array<SwapExpectedResults>,
             swap_cases: Array<SwapTestCase>,
             presicion_required: u128,
-            initial_amount_0: u256,
-            initial_amount_1: u256
         ) {
             let mut i = 0;
             assert(expected_cases.len() == swap_cases.len(), 'wrong amount of expected cases');
@@ -1619,8 +1604,6 @@ mod YASPoolTests {
                     initial_price: *pool_case.starting_price,
                     fee_amount: *pool_case.fee_amount,
                     mint_positions: pool_case.mint_positions,
-                    amount_0: initial_amount_0,
-                    amount_1: initial_amount_1
                 );
                 let swap_case = swap_cases[i];
                 let expected = expected_cases[i];
@@ -1770,12 +1753,7 @@ mod YASPoolTests {
                 actual.pool_price_before == *expected.pool_price_before, 'wrong pool_price_before'
             );
             //could add a significant figures comparison here to accept some degree of error
-            assert(
-                get_significant_figures(
-                    actual.pool_price_after, presicion
-                ) == get_significant_figures(*expected.pool_price_after, presicion),
-                'wrong pool_price_after'
-            );
+            assert(get_significant_figures(actual.pool_price_after, presicion.into()) == get_significant_figures(*expected.pool_price_after, presicion.into()), 'wrong pool_price_after');
 
             assert(actual.tick_after == *expected.tick_after, 'wrong tick_after');
             assert(actual.tick_before == *expected.tick_before, 'wrong tick_before');
@@ -1898,13 +1876,13 @@ mod YASPoolTests {
         unrounded
     }
 
-    fn get_significant_figures(number: u256, sig_figures: u128) -> u256 {
+    fn get_significant_figures(number: u256, sig_figures: u256) -> u256 {
         let order = get_order_of_magnitude(number);
         let mut my_number = number;
-        if sig_figures.into() >= order {
+        if sig_figures >= order {
             number
         } else {
-            let rounder = pow(10, order - sig_figures.into());
+            let rounder = pow(10, order - sig_figures);
             let mid_point = (rounder / 2) - 1;
             let round_decider = number % rounder;
             if round_decider > mid_point {
@@ -2017,25 +1995,23 @@ mod YASPoolTests {
         initial_price: FixedType,
         fee_amount: u32,
         mint_positions: @Array<SwapTestHelper::Position>,
-        amount_0: u256,
-        amount_1: u256
     ) -> (IYASPoolDispatcher, IYASRouterDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let yas_router = deploy_yas_router(); // 0x1
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
 
         // Deploy ERC20 tokens with factory address
         // in testnet TOKEN0 is USDC and TOKEN1 is ETH
-        let token_0 = deploy_erc20('USDC', 'USDC', amount_0, OWNER()); // 0x3
-        let token_1 = deploy_erc20('ETH', 'ETH', amount_1, OWNER()); // 0x4
+        let token_0 = deploy_erc20('USDC', 'USDC', BoundedInt::max(), OWNER()); // 0x3
+        let token_1 = deploy_erc20('ETH', 'ETH', BoundedInt::max(), OWNER()); // 0x4
 
         set_contract_address(OWNER());
-        token_0.transfer(WALLET(), amount_0);
-        token_1.transfer(WALLET(), amount_1);
+        token_0.transfer(WALLET(), BoundedInt::max());
+        token_1.transfer(WALLET(), BoundedInt::max());
 
         // Give permissions to expend WALLET() tokens
         set_contract_address(WALLET());
-        token_1.approve(yas_router.contract_address, amount_0);
-        token_0.approve(yas_router.contract_address, amount_1);
+        token_1.approve(yas_router.contract_address, BoundedInt::max());
+        token_0.approve(yas_router.contract_address, BoundedInt::max());
 
         let yas_pool_address = yas_factory // 0x5
             .create_pool(token_0.contract_address, token_1.contract_address, fee_amount);
