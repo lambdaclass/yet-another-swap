@@ -1872,8 +1872,12 @@ mod YASPoolTests {
     fn calculate_execution_price(
         token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
     ) -> u256 {
-        let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
-        unrounded
+        if token_0_swapped_amount == 0 { //this avoids dividing by 0
+            0
+        } else {
+            let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
+            unrounded
+        }
     }
 
     fn get_significant_figures(number: u256, sig_figures: u256) -> u256 {
