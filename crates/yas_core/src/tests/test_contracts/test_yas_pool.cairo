@@ -1895,9 +1895,7 @@ mod YASPoolTests {
         token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
     ) -> u256 {
         let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
-        // let sig_figures = get_significant_figures(unrounded, 13);
         unrounded
-    // sig_figures
     }
 
     fn get_significant_figures(number: u256, sig_figures: u128) -> u256 {
@@ -1916,15 +1914,7 @@ mod YASPoolTests {
                 // my_number = number - round_decider;
                 number - round_decider
             }
-        // (number / pow(10, order - sig_figures) ) * pow(10, order - sig_figures)
         }
-    // 'sig_figures'.print();
-    // sig_figures.print();
-    // 'number'.print();
-    // number.print();
-    // 'mynumber'.print();
-    // my_number.print();
-    // my_number
     }
 
     fn get_order_of_magnitude(number: u256) -> u256 {
@@ -1940,77 +1930,6 @@ mod YASPoolTests {
         };
         order
     }
-
-    // fn calculate_execution_price(
-    //     token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
-    // ) -> u256 {
-    //     let mut unrounded = token_1_swapped_amount * pow(10, 25) / token_0_swapped_amount;
-    //     loop {
-    //         if unrounded == 0 {
-    //             break;
-    //         } else if unrounded > (expected * 10)+99 {//1000000 {
-    //             unrounded = unrounded / 10;
-    //         } else {
-    //             break;
-    //         };
-    //     };
-    //     let (rounder, half) = if unrounded > 999999 {
-    //         (100, 49)
-    //     } else {
-    //         (10, 4)
-    //     };
-    //     let round_decider = unrounded % rounder;
-    //     let mut rounded = if round_decider > half {
-    //         //round up
-    //         unrounded + (rounder - round_decider)
-    //     } else {
-    //         //round down
-    //         unrounded - round_decider
-    //     };
-    //     rounded = rounded / 10;
-    //     rounded
-    // }
-
-    // fn round_for_price_comparison(sqrt_price_X96: u256) -> u256 {
-    //     let square = (sqrt_price_X96 * sqrt_price_X96);
-    //     let move_decimal_point = (square * pow(10, 6)) / pow(2, 96);
-    //     let mut in_decimal = move_decimal_point / pow(2, 96);
-    //     let (rounder, half) = if in_decimal > 999999 {
-    //         (100, 49)
-    //     } else {
-    //         (10, 4)
-    //     };
-    //     let round_decider = in_decimal % rounder;
-    //     if round_decider > half {
-    //         //round up
-    //         in_decimal = in_decimal + (rounder - round_decider);
-    //     } else {
-    //         //round down
-    //         in_decimal = in_decimal - round_decider;
-    //     }
-    //     in_decimal / 10
-    // }
-
-    //original:
-    // fn round_for_price_comparison(sqrt_price_X96: u256) -> u256 {
-    //     let square = (sqrt_price_X96 * sqrt_price_X96) / pow(2, 96);
-    //     let move_decimal_point = square * pow(10, 6);
-    //     let mut in_decimal = move_decimal_point / pow(2, 96);
-    //     let (rounder, half) = if in_decimal > 999999 {
-    //         (100, 49)
-    //     } else {
-    //         (10, 4)
-    //     };
-    //     let round_decider = in_decimal % rounder;
-    //     if round_decider > half {
-    //         //round up
-    //         in_decimal = in_decimal + (rounder - round_decider);
-    //     } else {
-    //         //round down
-    //         in_decimal = in_decimal - round_decider;
-    //     }
-    //     in_decimal / 10
-    // }
 
     fn round_for_price_comparison(sqrt_price_X96: u256, expected_price: u256) -> u256 {
         let mut square = (sqrt_price_X96 * sqrt_price_X96);
@@ -2042,29 +1961,6 @@ mod YASPoolTests {
         }
         in_decimal / 10
     }
-
-    // fn round_for_price_comparison_44_decimals(sqrt_price_X96: u256) -> u256 {
-    //     let mut square = (sqrt_price_X96 * sqrt_price_X96);
-    //     let move_decimal_point = mul_div(square, pow(10, 44), pow(2, 96));
-    //     let mut in_decimal =  move_decimal_point / pow(2, 96);
-    //     'square'.print();
-    //     square.print();
-
-    //     let (rounder, half) = if in_decimal > 999999 {
-    //         (100, 49)
-    //     } else {
-    //         (10, 4)
-    //     };
-    //     let round_decider = in_decimal % rounder;
-    //     if round_decider > half {
-    //         //round up
-    //         in_decimal = in_decimal + (rounder - round_decider);
-    //     } else {
-    //         //round down
-    //         in_decimal = in_decimal - round_decider;
-    //     }
-    //     in_decimal / 10
-    // }
 
     fn swap_test_case(
         yas_router: IYASRouterDispatcher,
@@ -2138,8 +2034,8 @@ mod YASPoolTests {
 
         // Give permissions to expend WALLET() tokens
         set_contract_address(WALLET());
-        token_1.approve(yas_router.contract_address, BoundedInt::max());
-        token_0.approve(yas_router.contract_address, BoundedInt::max());
+        token_1.approve(yas_router.contract_address, amount_0);
+        token_0.approve(yas_router.contract_address, amount_1);
 
         let yas_pool_address = yas_factory // 0x5
             .create_pool(token_0.contract_address, token_1.contract_address, fee_amount);
