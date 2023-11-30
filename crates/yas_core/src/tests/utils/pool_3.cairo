@@ -55,7 +55,9 @@ fn SWAP_EXPECTED_RESULTS_POOL_3() -> Array<SwapExpectedResults> {
             amount_0_before: 632455532033675867,
             amount_0_delta: IntegerTrait::<i256>::new(632455532033675838, true),
             amount_1_before: 6324555320336758664,
-            amount_1_delta: IntegerTrait::<i256>::new(36907032426281581270030941278837275671, false),
+            amount_1_delta: IntegerTrait::<i256>::new(
+                36907032426281581270030941278837275671, false
+            ),
             execution_price: 4623370679652723600004998355562925450542729658368,
             fee_growth_global_0_X128_delta: 0,
             fee_growth_global_1_X128_delta: 18838218525064384185660173270402201838945341643205005201,
