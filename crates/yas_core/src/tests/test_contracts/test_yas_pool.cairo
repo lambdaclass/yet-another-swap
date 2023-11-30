@@ -1540,7 +1540,7 @@ mod YASPoolTests {
             use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
-            const PRESICION: u128 = 5;
+            const PRESICION: u256 = 5;
 
             #[test]
             #[available_gas(200000000000)]
@@ -1591,7 +1591,7 @@ mod YASPoolTests {
             use yas_core::tests::utils::pool_3::{SWAP_CASES_POOL_3, SWAP_EXPECTED_RESULTS_POOL_3};
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
-            const PRESICION: u128 = 5;
+            const PRESICION: u256 = 5;
 
             #[test]
             #[available_gas(200000000000)]
@@ -1677,7 +1677,7 @@ mod YASPoolTests {
             pool_case: @PoolTestCase,
             expected_cases: Array<SwapExpectedResults>,
             swap_cases: Array<SwapTestCase>,
-            presicion_required: u128,
+            presicion_required: u256,
         ) {
             let mut i = 0;
             assert(expected_cases.len() == swap_cases.len(), 'wrong amount of expected cases');
@@ -1788,7 +1788,7 @@ mod YASPoolTests {
         }
 
         fn assert_swap_result_equals(
-            actual: SwapExpectedResults, expected: @SwapExpectedResults, presicion: u128
+            actual: SwapExpectedResults, expected: @SwapExpectedResults, presicion: u256
         ) {
             //very useful for debugging, don't delete until all pools are finished:
             // 'amount_0_delta'.print();
