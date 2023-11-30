@@ -1673,6 +1673,12 @@ mod YASPoolTests {
                 } else {
                     amount_to_swap = IntegerTrait::<i256>::new((BoundedInt::max() / 2) - 1, false);
                 }
+                if amount_to_swap == Zeroable::zero() {
+                    amount_to_swap = *swap_case.amount_specified; //maybe same in negative?
+                    // amount_to_swap = IntegerTrait::<i256>::new(1, true);
+                }
+
+
                 // Execute swap
                 let (token_0_swapped_amount, token_1_swapped_amount) = swap_test_case(
                     yas_router,
