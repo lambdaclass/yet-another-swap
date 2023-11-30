@@ -1541,13 +1541,15 @@ mod YASPoolTests {
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
             use debug::PrintTrait;
 
+            const PRESICION: u256 = 5;
+
             #[test]
             #[available_gas(200000000000)]
             fn test_pool_0_success_cases() {
                 let pool_case = POOL_CASES()[0];
                 let expected_cases = SWAP_EXPECTED_RESULTS_POOL_0();
                 let (success_swap_cases, _) = SWAP_CASES_POOL_0();
-                test_pool(pool_case, expected_cases, success_swap_cases);
+                test_pool(pool_case, expected_cases, success_swap_cases, PRESICION);
             }
 
 
@@ -1563,7 +1565,8 @@ mod YASPoolTests {
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
-                    array![*panic_swap_cases[PANIC_CASE]]
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    PRESICION
                 );
             }
 
@@ -1579,7 +1582,8 @@ mod YASPoolTests {
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
-                    array![*panic_swap_cases[PANIC_CASE]]
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    PRESICION
                 );
             }
         }
@@ -1640,7 +1644,7 @@ mod YASPoolTests {
             pool_case: @PoolTestCase,
             expected_cases: Array<SwapExpectedResults>,
             swap_cases: Array<SwapTestCase>,
-            presicion_required: u128,
+            presicion_required: u256,
         ) {
             let mut i = 0;
             assert(expected_cases.len() == swap_cases.len(), 'wrong amount of expected cases');
@@ -1751,7 +1755,7 @@ mod YASPoolTests {
         }
 
         fn assert_swap_result_equals(
-            actual: SwapExpectedResults, expected: @SwapExpectedResults, presicion: u128
+            actual: SwapExpectedResults, expected: @SwapExpectedResults, presicion: u256
         ) {
             //very useful for debugging, don't delete until all pools are finished:
             // 'amount_0_delta'.print();
@@ -1927,7 +1931,8 @@ mod YASPoolTests {
     fn calculate_execution_price(
         token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
     ) -> u256 {
-        if token_0_swapped_amount == 0 && token_1_swapped_amount == 0 { //this avoids 0/0 , no tokens swapped = exec_price: 0
+        if token_0_swapped_amount == 0
+            && token_1_swapped_amount == 0 { //this avoids 0/0 , no tokens swapped = exec_price: 0
             0
         } else {
             let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
