@@ -1588,6 +1588,8 @@ mod YASPoolTests {
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
             use debug::PrintTrait;
 
+            const PRECISION: u256 = 5;
+
             #[test]
             #[available_gas(200000000000)]
             fn test_pool_4_success_cases() { //has bugged cases
