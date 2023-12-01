@@ -99,7 +99,7 @@ mod SwapTestHelper {
     }
 
     fn POOL_CASES() -> Array<PoolTestCase> {
-        array![ //15 POOLS
+        array![
             PoolTestCase {
                 // description: 'low fee, 1:1 price, 2e18 max range liquidity',
                 fee_amount: fee_amount(FeeAmount::LOW),
@@ -310,12 +310,12 @@ mod SwapTestHelper {
 
     fn SWAP_CASES() -> Array<SwapTestCase> {
         array![ //16 SWAPS
-            SwapTestCase { //done
-               zero_for_one: true,
-               has_exact_out: true,
-               exact_out: false,
-               amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
-               sqrt_price_limit: FP64x96Impl::new(0, false)
+            SwapTestCase {
+                zero_for_one: true,
+                has_exact_out: true,
+                exact_out: false,
+                amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
+                sqrt_price_limit: FP64x96Impl::new(0, false)
             },
             SwapTestCase { //u256 sub overflow
                zero_for_one: false,
