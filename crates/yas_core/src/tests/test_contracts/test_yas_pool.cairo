@@ -1594,13 +1594,15 @@ mod YASPoolTests {
             };
             use debug::PrintTrait;
 
+            const PRESICION: u128 = 5;
+
             #[test]
             #[available_gas(200000000000)]
             fn test_pool_7_success_cases() { //has errors
                 let pool_case = POOL_CASES()[7];
                 let expected_cases = SWAP_EXPECTED_RESULTS_POOL_7();
                 let (success_swap_cases, _) = SWAP_CASES_POOL_7();
-                test_pool(pool_case, expected_cases, success_swap_cases);
+                test_pool(pool_case, expected_cases, success_swap_cases, PRESICION);
             }
 
             #[test]
@@ -1615,7 +1617,8 @@ mod YASPoolTests {
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
-                    array![*panic_swap_cases[PANIC_CASE]]
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    PRESICION
                 );
             }
             #[test]
@@ -1630,7 +1633,8 @@ mod YASPoolTests {
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
-                    array![*panic_swap_cases[PANIC_CASE]]
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    PRESICION
                 );
             }
         }
