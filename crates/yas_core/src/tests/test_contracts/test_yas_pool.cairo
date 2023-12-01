@@ -1634,7 +1634,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    Zeroable::zero()
+                    PRESICION
                 );
             }
 
@@ -1651,7 +1651,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    Zeroable::zero()
+                    PRESICION
                 );
             }
 
@@ -1758,7 +1758,7 @@ mod YASPoolTests {
                 let (yas_pool, yas_router, token_0, token_1) = setup_pool_for_swap_test(
                     initial_price: *pool_case.starting_price,
                     fee_amount: *pool_case.fee_amount,
-                    mint_positions: pool_case.mint_positions
+                    mint_positions: pool_case.mint_positions,
                 );
                 let swap_case = swap_cases[i];
                 let expected = expected_cases[i];
@@ -1918,8 +1918,8 @@ mod YASPoolTests {
             //could add a significant figures comparison here to accept some degree of error
             assert(
                 get_significant_figures(
-                    actual.pool_price_after, presicion
-                ) == get_significant_figures(*expected.pool_price_after, presicion),
+                    actual.pool_price_after, presicion.into()
+                ) == get_significant_figures(*expected.pool_price_after, presicion.into()),
                 'wrong pool_price_after'
             );
 
@@ -2040,17 +2040,22 @@ mod YASPoolTests {
     fn calculate_execution_price(
         token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
     ) -> u256 {
-        let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
-        unrounded
+        if token_0_swapped_amount == 0
+            && token_1_swapped_amount == 0 { //this avoids 0/0 , no tokens swapped = exec_price: 0
+            0
+        } else {
+            let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
+            unrounded
+        }
     }
 
-    fn get_significant_figures(number: u256, sig_figures: u128) -> u256 {
+    fn get_significant_figures(number: u256, sig_figures: u256) -> u256 {
         let order = get_order_of_magnitude(number);
         let mut my_number = number;
-        if sig_figures.into() >= order {
+        if sig_figures >= order {
             number
         } else {
-            let rounder = pow(10, order - sig_figures.into());
+            let rounder = pow(10, order - sig_figures);
             let mid_point = (rounder / 2) - 1;
             let round_decider = number % rounder;
             if round_decider > mid_point {
