@@ -1,5 +1,3 @@
-#
-
 This Readme explains the structure and process of passing the pool test cases from the original Uniswap Protocol to a compatible and more readable cairo structure.
 
 To test the swap() functionality, Uniswap does the following:

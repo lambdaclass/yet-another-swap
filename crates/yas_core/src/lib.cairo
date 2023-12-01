@@ -65,5 +65,6 @@ mod tests {
         mod swap_cases;
         mod pool_0;
         mod pool_1;
+        mod pool_2;
     }
 }
