@@ -1586,6 +1586,46 @@ mod YASPoolTests {
             }
         }
 
+
+        mod PoolCase9 {
+            use super::test_pool;
+            use yas_core::tests::utils::pool_9::{SWAP_CASES_POOL_9, SWAP_EXPECTED_RESULTS_POOL_9};
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{
+                POOL_CASES
+            };
+            use debug::PrintTrait;
+
+            const PRESICION: u128 = 5;
+
+            #[test]
+            #[available_gas(200000000000)]
+            fn test_pool_9_success_cases() {
+                let pool_case = POOL_CASES()[9];
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_9();
+                let (success_swap_cases, _) = SWAP_CASES_POOL_9();
+                test_pool(pool_case, expected_cases, success_swap_cases, PRESICION);
+            }
+
+            // #[test]
+            // #[available_gas(200000000000)]
+            // #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            // fn test_pool_9_panics_0() {
+            //     let PANIC_CASE = 0;
+            //     let pool_case = POOL_CASES()[9];
+            //     let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_9();
+            //     let expected_cases =
+            //         SWAP_EXPECTED_RESULTS_POOL_9(); //get random case, is never executed
+            //     test_pool(
+            //         pool_case,
+            //         array![*expected_cases[PANIC_CASE]],
+            //         array![*panic_swap_cases[PANIC_CASE]]
+            //     );
+            // }
+
+        }
+
+
+
         fn test_pool(
             pool_case: @PoolTestCase,
             expected_cases: Array<SwapExpectedResults>,
@@ -1633,6 +1673,12 @@ mod YASPoolTests {
                 } else {
                     amount_to_swap = IntegerTrait::<i256>::new((BoundedInt::max() / 2) - 1, false);
                 }
+                if amount_to_swap == Zeroable::zero() {
+                    amount_to_swap = *swap_case.amount_specified; //maybe same in negative?
+                    // amount_to_swap = IntegerTrait::<i256>::new(1, true);
+                }
+
+
                 // Execute swap
                 let (token_0_swapped_amount, token_1_swapped_amount) = swap_test_case(
                     yas_router,
