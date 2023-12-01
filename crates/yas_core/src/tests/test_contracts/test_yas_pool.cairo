@@ -1541,7 +1541,7 @@ mod YASPoolTests {
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
             use debug::PrintTrait;
 
-            const PRESICION: u256 = 5;
+            const PRECISION: u256 = 5;
 
             #[test]
             #[available_gas(200000000000)]
@@ -1549,7 +1549,7 @@ mod YASPoolTests {
                 let pool_case = POOL_CASES()[0];
                 let expected_cases = SWAP_EXPECTED_RESULTS_POOL_0();
                 let (success_swap_cases, _) = SWAP_CASES_POOL_0();
-                test_pool(pool_case, expected_cases, success_swap_cases, PRESICION);
+                test_pool(pool_case, expected_cases, success_swap_cases, PRECISION);
             }
 
 
@@ -1566,7 +1566,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRESICION
+                    PRECISION
                 );
             }
 
@@ -1583,7 +1583,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRESICION
+                    PRECISION
                 );
             }
         }
@@ -1593,7 +1593,7 @@ mod YASPoolTests {
             use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
-            const PRESICION: u256 = 5;
+            const PRECISION: u256 = 5;
 
             #[test]
             #[available_gas(200000000000)]
@@ -1617,7 +1617,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRESICION
+                    PRECISION
                 );
             }
 
@@ -1634,7 +1634,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRESICION
+                    PRECISION
                 );
             }
         }
@@ -1644,7 +1644,7 @@ mod YASPoolTests {
             pool_case: @PoolTestCase,
             expected_cases: Array<SwapExpectedResults>,
             swap_cases: Array<SwapTestCase>,
-            presicion_required: u256,
+            precision_required: u256,
         ) {
             let mut i = 0;
             assert(expected_cases.len() == swap_cases.len(), 'wrong amount of expected cases');
@@ -1749,13 +1749,13 @@ mod YASPoolTests {
                     tick_before: tick_bf,
                 };
 
-                assert_swap_result_equals(actual, expected, presicion_required);
+                assert_swap_result_equals(actual, expected, precision_required);
                 i += 1;
             };
         }
 
         fn assert_swap_result_equals(
-            actual: SwapExpectedResults, expected: @SwapExpectedResults, presicion: u256
+            actual: SwapExpectedResults, expected: @SwapExpectedResults, precision: u256
         ) {
             //very useful for debugging, don't delete until all pools are finished:
             // 'amount_0_delta'.print();
@@ -1809,8 +1809,8 @@ mod YASPoolTests {
             //could add a significant figures comparison here to accept some degree of error
             assert(
                 get_significant_figures(
-                    actual.pool_price_after, presicion.into()
-                ) == get_significant_figures(*expected.pool_price_after, presicion),
+                    actual.pool_price_after, precision
+                ) == get_significant_figures(*expected.pool_price_after, precision),
                 'wrong pool_price_after'
             );
 
