@@ -1845,8 +1845,8 @@ mod YASPoolTests {
             //could add a significant figures comparison here to accept some degree of error
             assert(
                 get_significant_figures(
-                    actual.pool_price_after, presicion
-                ) == get_significant_figures(*expected.pool_price_after, presicion),
+                    actual.pool_price_after, presicion.into()
+                ) == get_significant_figures(*expected.pool_price_after, presicion.into()),
                 'wrong pool_price_after'
             );
 
@@ -1967,8 +1967,13 @@ mod YASPoolTests {
     fn calculate_execution_price(
         token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
     ) -> u256 {
-        let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
-        unrounded
+        if token_0_swapped_amount == 0
+            && token_1_swapped_amount == 0 { //this avoids 0/0 , no tokens swapped = exec_price: 0
+            0
+        } else {
+            let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
+            unrounded
+        }
     }
 
     fn get_significant_figures(number: u256, sig_figures: u256) -> u256 {
@@ -2087,9 +2092,7 @@ mod YASPoolTests {
     }
 
     fn setup_pool_for_swap_test(
-        initial_price: FixedType,
-        fee_amount: u32,
-        mint_positions: @Array<SwapTestHelper::Position>,
+        initial_price: FixedType, fee_amount: u32, mint_positions: @Array<SwapTestHelper::Position>,
     ) -> (IYASPoolDispatcher, IYASRouterDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let yas_router = deploy_yas_router(); // 0x1
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
