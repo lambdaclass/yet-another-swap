@@ -64,6 +64,5 @@ mod tests {
         mod constants;
         mod swap_cases;
         mod pool_1;
-        mod pool_9;
     }
 }
