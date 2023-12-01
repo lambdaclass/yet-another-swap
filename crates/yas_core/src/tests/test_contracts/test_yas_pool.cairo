@@ -1540,7 +1540,7 @@ mod YASPoolTests {
             use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
-            const PRESICION: u256 = 5;
+            const PRECISION: u256 = 5;
 
             #[test]
             #[available_gas(200000000000)]
@@ -1548,7 +1548,7 @@ mod YASPoolTests {
                 let pool_case = POOL_CASES()[1];
                 let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
                 let (success_swap_cases, _) = SWAP_CASES_POOL_1();
-                test_pool(pool_case, expected_cases, success_swap_cases, PRESICION);
+                test_pool(pool_case, expected_cases, success_swap_cases, PRECISION);
             }
 
             #[test]
@@ -1564,7 +1564,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRESICION
+                    PRECISION
                 );
             }
 
@@ -1581,7 +1581,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRESICION
+                    PRECISION
                 );
             }
         }
@@ -1751,7 +1751,7 @@ mod YASPoolTests {
         }
 
         fn assert_swap_result_equals(
-            actual: SwapExpectedResults, expected: @SwapExpectedResults, presicion: u256
+            actual: SwapExpectedResults, expected: @SwapExpectedResults, precision: u256
         ) {
             //very useful for debugging, don't delete until all pools are finished:
             // 'amount_0_delta'.print();
@@ -1805,8 +1805,8 @@ mod YASPoolTests {
             //could add a significant figures comparison here to accept some degree of error
             assert(
                 get_significant_figures(
-                    actual.pool_price_after, presicion
-                ) == get_significant_figures(*expected.pool_price_after, presicion),
+                    actual.pool_price_after, precision
+                ) == get_significant_figures(*expected.pool_price_after, precision),
                 'wrong pool_price_after'
             );
 
