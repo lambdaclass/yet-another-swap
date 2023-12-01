@@ -1807,6 +1807,7 @@ mod YASPoolTests {
                 get_significant_figures(
                     actual.pool_price_after, presicion
                 ) == get_significant_figures(*expected.pool_price_after, presicion),
+                'wrong pool_price_after'
             );
 
             assert(actual.tick_after == *expected.tick_after, 'wrong tick_after');
