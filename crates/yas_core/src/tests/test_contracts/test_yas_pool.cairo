@@ -1540,7 +1540,7 @@ mod YASPoolTests {
             use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
-            const PRESICION: u128 = 5;
+            const PRESICION: u256 = 5;
 
             #[test]
             #[available_gas(200000000000)]
@@ -1591,19 +1591,21 @@ mod YASPoolTests {
             use yas_core::tests::utils::pool_5::{SWAP_CASES_POOL_5, SWAP_EXPECTED_RESULTS_POOL_5};
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
+            const PRECISION: u256 = 5;
+
             #[test]
             #[available_gas(200000000000)]
             fn test_pool_5_success_cases() {
                 let pool_case = POOL_CASES()[5];
                 let expected_cases = SWAP_EXPECTED_RESULTS_POOL_5();
                 let (success_swap_cases, _) = SWAP_CASES_POOL_5();
-                test_pool(pool_case, expected_cases, success_swap_cases);
+                test_pool(pool_case, expected_cases, success_swap_cases, PRECISION);
             }
 
             #[test]
             #[available_gas(200000000000)]
             #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-            fn test_pool_5_panics_0() { //WIP
+            fn test_pool_5_panics_0() {
                 let PANIC_CASE = 0;
                 let pool_case = POOL_CASES()[5];
                 let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_5();
@@ -1612,13 +1614,14 @@ mod YASPoolTests {
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
-                    array![*panic_swap_cases[PANIC_CASE]]
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    PRECISION
                 );
             }
             #[test]
             #[available_gas(200000000000)]
             #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-            fn test_pool_5_panics_1() { //WIP
+            fn test_pool_5_panics_1() {
                 let PANIC_CASE = 1;
                 let pool_case = POOL_CASES()[5];
                 let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_5();
@@ -1627,17 +1630,17 @@ mod YASPoolTests {
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
-                    array![*panic_swap_cases[PANIC_CASE]]
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    PRECISION
                 );
             }
         }
-
 
         fn test_pool(
             pool_case: @PoolTestCase,
             expected_cases: Array<SwapExpectedResults>,
             swap_cases: Array<SwapTestCase>,
-            presicion_required: u128,
+            presicion_required: u256,
         ) {
             let mut i = 0;
             assert(expected_cases.len() == swap_cases.len(), 'wrong amount of expected cases');
@@ -1748,7 +1751,7 @@ mod YASPoolTests {
         }
 
         fn assert_swap_result_equals(
-            actual: SwapExpectedResults, expected: @SwapExpectedResults, presicion: u128
+            actual: SwapExpectedResults, expected: @SwapExpectedResults, presicion: u256
         ) {
             //very useful for debugging, don't delete until all pools are finished:
             // 'amount_0_delta'.print();
@@ -1800,7 +1803,12 @@ mod YASPoolTests {
                 actual.pool_price_before == *expected.pool_price_before, 'wrong pool_price_before'
             );
             //could add a significant figures comparison here to accept some degree of error
-            assert(get_significant_figures(actual.pool_price_after, presicion.into()) == get_significant_figures(*expected.pool_price_after, presicion.into()), 'wrong pool_price_after');
+            assert(
+                get_significant_figures(
+                    actual.pool_price_after, presicion
+                ) == get_significant_figures(*expected.pool_price_after, presicion),
+                'wrong pool_price_after'
+            );
 
             assert(actual.tick_after == *expected.tick_after, 'wrong tick_after');
             assert(actual.tick_before == *expected.tick_before, 'wrong tick_before');
@@ -2039,9 +2047,7 @@ mod YASPoolTests {
     }
 
     fn setup_pool_for_swap_test(
-        initial_price: FixedType,
-        fee_amount: u32,
-        mint_positions: @Array<SwapTestHelper::Position>,
+        initial_price: FixedType, fee_amount: u32, mint_positions: @Array<SwapTestHelper::Position>,
     ) -> (IYASPoolDispatcher, IYASRouterDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let yas_router = deploy_yas_router(); // 0x1
         let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
