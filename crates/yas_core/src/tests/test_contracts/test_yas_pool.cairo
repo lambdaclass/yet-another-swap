@@ -1593,7 +1593,7 @@ mod YASPoolTests {
             use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
-            const PRESICION: u128 = 5;
+            const PRESICION: u256 = 5;
 
             #[test]
             #[available_gas(200000000000)]
