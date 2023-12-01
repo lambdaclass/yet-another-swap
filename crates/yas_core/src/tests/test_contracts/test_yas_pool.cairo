@@ -377,7 +377,9 @@ mod YASPoolTests {
             let tick_upper = IntegerTrait::<i32>::new(100, false);
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) },
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
             }
         }
 
@@ -388,7 +390,9 @@ mod YASPoolTests {
             let tick_upper = IntegerTrait::<i32>::new(100, false);
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) },
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
             }
         }
 
@@ -399,7 +403,9 @@ mod YASPoolTests {
             let tick_upper = TickMath::MAX_TICK();
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) },
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
             }
         }
 
@@ -411,7 +417,9 @@ mod YASPoolTests {
             let tick_upper = IntegerTrait::<i32>::new(100, true);
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) },
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
             }
         }
 
@@ -423,7 +431,9 @@ mod YASPoolTests {
             let tick_upper = TickMath::MIN_TICK();
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) },
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
             }
         }
 
@@ -435,7 +445,9 @@ mod YASPoolTests {
             let tick_upper = TickMath::MAX_TICK() + IntegerTrait::<i32>::new(1, false);
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) },
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
             }
         }
 
@@ -446,7 +458,9 @@ mod YASPoolTests {
             let tick_upper = TickMath::MAX_TICK();
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) },
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
             }
         }
     }
@@ -1526,7 +1540,7 @@ mod YASPoolTests {
             use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
-            const PRESICION: u128 = 5;
+            const PRECISION: u128 = 5;
 
             #[test]
             #[available_gas(200000000000)]
@@ -1534,7 +1548,7 @@ mod YASPoolTests {
                 let pool_case = POOL_CASES()[1];
                 let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
                 let (success_swap_cases, _) = SWAP_CASES_POOL_1();
-                test_pool(pool_case, expected_cases, success_swap_cases, PRESICION);
+                test_pool(pool_case, expected_cases, success_swap_cases, PRECISION);
             }
 
             #[test]
@@ -1550,7 +1564,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRESICION
+                    PRECISION
                 );
             }
 
@@ -1567,7 +1581,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRESICION
+                    PRECISION
                 );
             }
         }
@@ -1579,7 +1593,7 @@ mod YASPoolTests {
             };
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
-            const PRESICION: u128 = 43;
+            const PRECISION: u128 = 43;
 
             #[test]
             #[available_gas(200000000000)]
@@ -1587,7 +1601,7 @@ mod YASPoolTests {
                 let pool_case = POOL_CASES()[14];
                 let expected_cases = SWAP_EXPECTED_RESULTS_POOL_14();
                 let (success_swap_cases, _) = SWAP_CASES_POOL_14();
-                test_pool(pool_case, expected_cases, success_swap_cases, PRESICION);
+                test_pool(pool_case, expected_cases, success_swap_cases, PRECISION);
             }
 
             #[test]
@@ -1842,7 +1856,7 @@ mod YASPoolTests {
         }
 
         fn assert_swap_result_equals(
-            actual: SwapExpectedResults, expected: @SwapExpectedResults, presicion: u128
+            actual: SwapExpectedResults, expected: @SwapExpectedResults, precision: u128
         ) {
             //very useful for debugging, don't delete until all pools are finished:
             // 'amount_0_delta'.print();
@@ -1896,8 +1910,8 @@ mod YASPoolTests {
             //could add a significant figures comparison here to accept some degree of error
             assert(
                 get_significant_figures(
-                    actual.pool_price_after, presicion.into()
-                ) == get_significant_figures(*expected.pool_price_after, presicion.into()),
+                    actual.pool_price_after, precision.into()
+                ) == get_significant_figures(*expected.pool_price_after, precision.into()),
                 'wrong pool_price_after'
             );
 
