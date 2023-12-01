@@ -1957,7 +1957,8 @@ mod YASPoolTests {
     fn calculate_execution_price(
         token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
     ) -> u256 {
-        if token_0_swapped_amount == 0 && token_1_swapped_amount == 0 { //this avoids 0/0 , no tokens swapped = exec_price: 0
+        if token_0_swapped_amount == 0
+            && token_1_swapped_amount == 0 { //this avoids 0/0 , no tokens swapped = exec_price: 0
             0
         } else {
             let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
