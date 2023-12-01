@@ -67,17 +67,18 @@ mod SwapTestHelper {
             if i == SWAP_CASES().len() {
                 break;
             }
-            if i < idxs.len() {
-                if contains(@idxs, i) {
-                    success_cases.append(*SWAP_CASES()[i]);
-                } else {
-                    error_cases.append(*SWAP_CASES()[i]);
-                }
-            } else {
+            if contains(@idxs, i) {
                 error_cases.append(*SWAP_CASES()[i]);
+            } else {
+                success_cases.append(*SWAP_CASES()[i]);
             }
             i += 1;
         };
+
+        assert(
+            success_cases.len() + error_cases.len() == SWAP_CASES().len(),
+            'error dividing error cases'
+        );
         (success_cases, error_cases)
     }
 
