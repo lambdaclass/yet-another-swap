@@ -1601,7 +1601,7 @@ mod YASPoolTests {
                 let pool_case = POOL_CASES()[1];
                 let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
                 let (success_swap_cases, _) = SWAP_CASES_POOL_1();
-                test_pool(pool_case, expected_cases, success_swap_cases, PRESICION);
+                test_pool(pool_case, expected_cases, success_swap_cases, PRECISION);
             }
 
             #[test]
