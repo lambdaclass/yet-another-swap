@@ -1639,7 +1639,6 @@ mod YASPoolTests {
             }
         }
 
-
         fn test_pool(
             pool_case: @PoolTestCase,
             expected_cases: Array<SwapExpectedResults>,
