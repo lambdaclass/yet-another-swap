@@ -75,7 +75,10 @@ mod SwapTestHelper {
             i += 1;
         };
 
-        assert(success_cases.len() + error_cases.len() == SWAP_CASES().len(), 'error dividing error cases');
+        assert(
+            success_cases.len() + error_cases.len() == SWAP_CASES().len(),
+            'error dividing error cases'
+        );
         (success_cases, error_cases)
     }
 
@@ -96,7 +99,7 @@ mod SwapTestHelper {
     }
 
     fn POOL_CASES() -> Array<PoolTestCase> {
-        array![ //15 POOLS
+        array![
             PoolTestCase {
                 // description: 'low fee, 1:1 price, 2e18 max range liquidity',
                 fee_amount: fee_amount(FeeAmount::LOW),
@@ -306,7 +309,7 @@ mod SwapTestHelper {
     }
 
     fn SWAP_CASES() -> Array<SwapTestCase> {
-        array![ //16 SWAPS
+        array![
             SwapTestCase {
                 zero_for_one: true,
                 has_exact_out: true,
