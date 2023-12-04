@@ -1589,16 +1589,14 @@ mod YASPoolTests {
         mod PoolCase7 {
             use super::test_pool;
             use yas_core::tests::utils::pool_7::{SWAP_CASES_POOL_7, SWAP_EXPECTED_RESULTS_POOL_7};
-            use yas_core::tests::utils::swap_cases::SwapTestHelper::{
-                POOL_CASES
-            };
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
             use debug::PrintTrait;
 
             const PRESICION: u128 = 5;
 
             #[test]
             #[available_gas(200000000000)]
-            fn test_pool_7_success_cases() { //has errors
+            fn test_pool_7_success_cases() {
                 let pool_case = POOL_CASES()[7];
                 let expected_cases = SWAP_EXPECTED_RESULTS_POOL_7();
                 let (success_swap_cases, _) = SWAP_CASES_POOL_7();
@@ -1608,7 +1606,7 @@ mod YASPoolTests {
             #[test]
             #[available_gas(200000000000)]
             #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-            fn test_pool_7_panics_0() { //OK
+            fn test_pool_7_panics_0() {
                 let PANIC_CASE = 0;
                 let pool_case = POOL_CASES()[7];
                 let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_7();
@@ -1624,7 +1622,7 @@ mod YASPoolTests {
             #[test]
             #[available_gas(200000000000)]
             #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-            fn test_pool_7_panics_1() { //OK
+            fn test_pool_7_panics_1() {
                 let PANIC_CASE = 1;
                 let pool_case = POOL_CASES()[7];
                 let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_7();
@@ -1772,12 +1770,13 @@ mod YASPoolTests {
 
             // 'pool_price_before'.print();
             // actual.pool_price_before.print();
-            // 'pool_price_after'.print();
+            'pool_price_after'.print();
+            actual.pool_price_after.print();
             // get_significant_figures(actual.pool_price_after, pool_price_sig_figures).print();
             // get_significant_figures(*expected.pool_price_after, pool_price_sig_figures).print();
 
-            // 'tick_after'.print();
-            // actual.tick_after.mag.print();
+            'tick_after'.print();
+            actual.tick_after.mag.print();
             // '-'.print();
 
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
