@@ -1728,9 +1728,12 @@ mod YASPoolTests {
                 if *swap_case.has_exact_out {
                     if *swap_case.exact_out { //exact OUT
                         amount_to_swap =
-                            IntegerTrait::<i256>::new(*swap_case.amount_specified.mag, true);
+                            IntegerTrait::<i256>::new(
+                                *swap_case.amount_specified.mag, true
+                            ); //swap(-x) when amount=amount_out
                     } else { //exact IN, normal swap.
-                        amount_to_swap = *swap_case.amount_specified;
+                        amount_to_swap = *swap_case
+                            .amount_specified; //swap(x) when amount=amount_in
                     }
                 } else {
                     amount_to_swap = IntegerTrait::<i256>::new((BoundedInt::max() / 2) - 1, false);
@@ -1766,7 +1769,7 @@ mod YASPoolTests {
                     fee_growth_global_1_X128_af - fee_growth_global_1_X128_bf
                 );
                 let execution_price = calculate_execution_price(
-                    token_0_swapped_amount, token_1_swapped_amount, *expected.execution_price
+                    token_0_swapped_amount, token_1_swapped_amount
                 );
 
                 let pool_balance_0_af = token_0.balanceOf(yas_pool.contract_address);
@@ -1977,10 +1980,10 @@ mod YASPoolTests {
     }
 
     fn calculate_execution_price(
-        token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
+        token_0_swapped_amount: u256, token_1_swapped_amount: u256
     ) -> u256 {
         if token_0_swapped_amount == 0
-            && token_1_swapped_amount == 0 { //this avoids 0/0 , no tokens swapped = exec_price: 0
+            && token_1_swapped_amount == 0 { //this avoids 0/0 , if no tokens swapped: exec_price = 0
             0
         } else {
             let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
