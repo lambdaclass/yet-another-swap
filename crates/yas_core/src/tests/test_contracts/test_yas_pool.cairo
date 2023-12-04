@@ -1727,7 +1727,8 @@ mod YASPoolTests {
                 let mut amount_to_swap = IntegerTrait::<i256>::new(0, false); //Zeroable::zero();
                 if *swap_case.has_exact_out {
                     if *swap_case.exact_out { //exact OUT
-                        amount_to_swap = IntegerTrait::<i256>::new(*swap_case.amount_specified.mag, true);
+                        amount_to_swap =
+                            IntegerTrait::<i256>::new(*swap_case.amount_specified.mag, true);
                     } else { //exact IN, normal swap.
                         amount_to_swap = *swap_case.amount_specified;
                     }
