@@ -253,7 +253,7 @@ If this is the first time you are running make deploy or make demo-local in Kata
 
 2. Setup Katana Account
    ```bash
-   starkli account fetch 0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973 --output ~/.starkli-wallets/account_katana.json 
+   starkli account fetch 0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973 --output ~/.starkli-wallets/account_katana.json
    ```
 
 The contract address we see in the above command belongs to one of Katana's pre-funded accounts.
