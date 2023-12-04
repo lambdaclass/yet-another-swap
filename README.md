@@ -199,13 +199,6 @@ Follow the steps below to set up a testnet smart wallet using `starkli`:
    export STARKNET_KEYSTORE=~/.starkli-wallets/keystore.json
    ```
 
-> **Note:**
-> If you want to declare and deploy the contracts on Testnet using the `make deploy` command (explained in the next section), you will need the private key of your account. We obtain it in the following way:
->
-> ```bash
-> starkli signer keystore inspect-private ~/.starkli-wallets/account.json
-> ```
-
 ## Declare and Deploy Contracts in Testnet
 
 By following the previous two steps, you should now have a account funded on the
@@ -220,26 +213,33 @@ On Starknet, the deployment process is in two steps:
 - Deploying a contract or creating an instance of the previously declared code
   with the necessary parameters
 
-0. Updated `.env` file: Please modify the variables with your Testnet account and your Alchemy RPC provider.
+1. Updated `.env` file: Please modify the variables with your Testnet account and your RPC provider.
 
    ```bash
-   ACCOUNT_ADDRESS=0x
-   ACCOUNT_PRIVATE_KEY=0x
+   ACCOUNT_ADDRESS=<ACCOUNT_ADDRESS>
+   ACCOUNT_PRIVATE_KEY=<ACCOUNT_PRIVATE_KEY>
    ACCOUNT_SRC=~/.starkli-wallets/account.json
-   RPC_URL=https://starknet-goerli.g.alchemy.com/v2/XXXXXXXXXXXXX
+   RPC_URL=<STARKNET_RPC_HTTPS_URL>
    ```
 
-1. Build the project
+2. Build the project
 
    ```bash
    make build
    ```
 
-2. Declare and Deploy: We sequentially declare and deploy the contracts.
+3. Declare and Deploy: We sequentially declare and deploy the contracts.
 
    ```bash
    make deploy
    ```
+
+> **Note:**
+> To obtain your private key, you need to execute the following command:
+>
+> ```bash
+> starkli signer keystore inspect-private ~/.starkli-wallets/account.json
+> ```
 
 ## Declare and Deploy Contracts in Katana
 
@@ -255,19 +255,19 @@ Katana provides us with pre-funded accounts. We will use one of them for deploym
    RPC_URL=http://0.0.0.0:5050
    ```
 
-1. Build the project
+2. Build the project
 
    ```bash
    make build
    ```
 
-1. Start Local Testnet
+3. Start Local Testnet
 
    ```bash
    make start-katana
    ```
 
-1. Declare and Deploy: We sequentially declare and deploy the contracts. Local deployment needs `katana` running. The account used for deployment is a pre-funded one.
+4. Declare and Deploy: We sequentially declare and deploy the contracts. Local deployment needs `katana` running. The account used for deployment is a pre-funded one.
 
    ```bash
    make deploy
