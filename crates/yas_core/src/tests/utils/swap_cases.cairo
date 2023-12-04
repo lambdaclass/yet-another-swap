@@ -12,6 +12,7 @@ mod SwapTestHelper {
 
     use integer::BoundedInt;
 
+
     #[derive(Copy, Drop, Serde)]
     struct SwapTestCase {
         zero_for_one: bool,
@@ -58,6 +59,7 @@ mod SwapTestHelper {
         tick_before: i32,
     }
 
+
     fn obtain_swap_cases(idxs: Array<u32>) -> (Array<SwapTestCase>, Array<SwapTestCase>) {
         let mut success_cases = array![];
         let mut error_cases = array![];
@@ -99,7 +101,7 @@ mod SwapTestHelper {
     }
 
     fn POOL_CASES() -> Array<PoolTestCase> {
-        array![
+        array![ //15 POOLS
             PoolTestCase {
                 // description: 'low fee, 1:1 price, 2e18 max range liquidity',
                 fee_amount: fee_amount(FeeAmount::LOW),
