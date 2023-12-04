@@ -1727,12 +1727,7 @@ mod YASPoolTests {
                 let mut amount_to_swap = IntegerTrait::<i256>::new(0, false); //Zeroable::zero();
                 if *swap_case.has_exact_out {
                     if *swap_case.exact_out { //exact OUT
-                        if *swap_case
-                            .zero_for_one { //so i check how much i should put swap IN in order to get those OUT tokens, the Asserts will still verify everything else
-                            amount_to_swap = *expected.amount_0_delta;
-                        } else {
-                            amount_to_swap = *expected.amount_1_delta;
-                        }
+                        amount_to_swap = IntegerTrait::<i256>::new(*swap_case.amount_specified.mag, true);
                     } else { //exact IN, normal swap.
                         amount_to_swap = *swap_case.amount_specified;
                     }
