@@ -48,7 +48,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_7() -> Array<SwapExpectedResults> {
             // TODO: Original pool_price_after 4295128740
             pool_price_after: 79188560314459151373725315960,
             pool_price_before: 79228162514264337593543950336,
-            // TODO: Original tick_afeter -887272
+            // TODO: Original tick_after -887272
             tick_after: IntegerTrait::<i32>::new(11, true),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
@@ -63,7 +63,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_7() -> Array<SwapExpectedResults> {
             // TODO: Original pool_price_after 1461446703485210103287273052203988822378723970341
             pool_price_after: 79267784519130042428790663799,
             pool_price_before: 79228162514264337593543950336,
-            // TODO: Original tick_afeter 887271
+            // TODO: Original tick_after 887271
             tick_after: IntegerTrait::<i32>::new(10, false),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
@@ -104,7 +104,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_7() -> Array<SwapExpectedResults> {
             // TODO: Original pool_price_after 56022770974786139918731938227
             pool_price_after: 79188560314459151373725315960,
             pool_price_before: 79228162514264337593543950336,
-            // TODO: Original tick_afeter -6932
+            // TODO: Original tick_after -6932
             tick_after: IntegerTrait::<i32>::new(11, true),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
@@ -119,7 +119,7 @@ fn SWAP_EXPECTED_RESULTS_POOL_7() -> Array<SwapExpectedResults> {
             // TODO: Original pool_price_after 112045541949572279837463876454
             pool_price_after: 79267784519130042428790663799,
             pool_price_before: 79228162514264337593543950336,
-            // TODO: Original tick_afeter 6931
+            // TODO: Original tick_after 6931
             tick_after: IntegerTrait::<i32>::new(10, false),
             tick_before: IntegerTrait::<i32>::new(0, false),
         },
