@@ -1652,6 +1652,7 @@ mod YASPoolTests {
                     break;
                 }
                 'case'.print();
+                i.print();
                 // restart Pool
                 let (yas_pool, yas_router, token_0, token_1) = setup_pool_for_swap_test(
                     initial_price: *pool_case.starting_price,
@@ -1763,7 +1764,7 @@ mod YASPoolTests {
             // 'amount_1_delta'.print();
             // actual.amount_1_delta.mag.print();
 
-            'execution_price'.print();
+            // 'execution_price'.print();
             get_significant_figures(actual.execution_price, 10).print();
             get_significant_figures(*expected.execution_price, 10).print();
             // 'fee_growth_global_0_X128_delta'.print();
@@ -1780,6 +1781,12 @@ mod YASPoolTests {
             // 'tick_after'.print();
             // actual.tick_after.mag.print();
             // '-'.print();
+            'actual'.print();
+            actual.execution_price.print();
+
+            'expected'.print();
+            let e = *expected.execution_price;
+            e.print();
 
             assert(actual.amount_0_before == *expected.amount_0_before, 'wrong amount_0_before');
             assert(actual.amount_0_delta == *expected.amount_0_delta, 'wrong amount_0_delta');
@@ -1933,6 +1940,8 @@ mod YASPoolTests {
         if token_0_swapped_amount == 0
             && token_1_swapped_amount == 0 { //this avoids 0/0 , no tokens swapped = exec_price: 0
             0
+        } else if token_0_swapped_amount == 0 {
+            '-Infinity'.into()
         } else {
             let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
             unrounded
