@@ -1538,7 +1538,7 @@ mod YASPoolTests {
         mod PoolCase0 {
             use super::test_pool;
             use yas_core::tests::utils::pool_0::{SWAP_CASES_POOL_0, SWAP_EXPECTED_RESULTS_POOL_0};
-            use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::POOL_CASES;
             use debug::PrintTrait;
 
             const PRECISION: u256 = 5;
@@ -1591,7 +1591,7 @@ mod YASPoolTests {
         mod PoolCase1 {
             use super::test_pool;
             use yas_core::tests::utils::pool_1::{SWAP_CASES_POOL_1, SWAP_EXPECTED_RESULTS_POOL_1};
-            use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::POOL_CASES;
 
             const PRECISION: u256 = 5;
 
@@ -1611,8 +1611,7 @@ mod YASPoolTests {
                 let PANIC_CASE = 0;
                 let pool_case = POOL_CASES()[1];
                 let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_1();
-                let expected_cases =
-                    SWAP_EXPECTED_RESULTS_POOL_1(); //get random case, is never executed
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
@@ -1628,8 +1627,7 @@ mod YASPoolTests {
                 let PANIC_CASE = 1;
                 let pool_case = POOL_CASES()[1];
                 let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_1();
-                let expected_cases =
-                    SWAP_EXPECTED_RESULTS_POOL_1(); //get random case, is never executed
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_1();
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
@@ -1642,12 +1640,9 @@ mod YASPoolTests {
         mod PoolCase2 {
             use super::test_pool;
             use yas_core::tests::utils::pool_2::{SWAP_CASES_POOL_2, SWAP_EXPECTED_RESULTS_POOL_2};
-            use yas_core::tests::utils::swap_cases::SwapTestHelper::{
-                PoolTestCase, SwapExpectedResults, obtain_swap_cases, POOL_CASES
-            };
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::POOL_CASES;
 
             const PRECISION: u256 = 5;
-            use debug::PrintTrait;
 
             #[test]
             #[available_gas(200000000000)]
@@ -1665,15 +1660,15 @@ mod YASPoolTests {
                 let PANIC_CASE = 0;
                 let pool_case = POOL_CASES()[2];
                 let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_2();
-                let expected_cases =
-                    SWAP_EXPECTED_RESULTS_POOL_2(); //get random case, is never executed
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_2();
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    Zeroable::zero()
+                    PRECISION
                 );
             }
+
             #[test]
             #[available_gas(200000000000)]
             #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
@@ -1681,13 +1676,60 @@ mod YASPoolTests {
                 let PANIC_CASE = 1;
                 let pool_case = POOL_CASES()[2];
                 let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_2();
-                let expected_cases =
-                    SWAP_EXPECTED_RESULTS_POOL_2(); //get random case, is never executed
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_2();
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    Zeroable::zero()
+                    PRECISION
+                );
+            }
+        }
+
+        mod PoolCase5 {
+            use super::test_pool;
+            use yas_core::tests::utils::pool_5::{SWAP_CASES_POOL_5, SWAP_EXPECTED_RESULTS_POOL_5};
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::POOL_CASES;
+
+            const PRECISION: u256 = 5;
+
+            #[test]
+            #[available_gas(200000000000)]
+            fn test_pool_5_success_cases() {
+                let pool_case = POOL_CASES()[5];
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_5();
+                let (success_swap_cases, _) = SWAP_CASES_POOL_5();
+                test_pool(pool_case, expected_cases, success_swap_cases, PRECISION);
+            }
+
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_5_panics_0() {
+                let PANIC_CASE = 0;
+                let pool_case = POOL_CASES()[5];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_5();
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_5();
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    PRECISION
+                );
+            }
+            #[test]
+            #[available_gas(200000000000)]
+            #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
+            fn test_pool_5_panics_1() {
+                let PANIC_CASE = 1;
+                let pool_case = POOL_CASES()[5];
+                let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_5();
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_5();
+                test_pool(
+                    pool_case,
+                    array![*expected_cases[PANIC_CASE]],
+                    array![*panic_swap_cases[PANIC_CASE]],
+                    PRECISION
                 );
             }
         }
@@ -1948,8 +1990,8 @@ mod YASPoolTests {
             //could add a significant figures comparison here to accept some degree of error
             assert(
                 get_significant_figures(
-                    actual.pool_price_after, precision.into()
-                ) == get_significant_figures(*expected.pool_price_after, precision.into()),
+                    actual.pool_price_after, precision
+                ) == get_significant_figures(*expected.pool_price_after, precision),
                 'wrong pool_price_after'
             );
 
