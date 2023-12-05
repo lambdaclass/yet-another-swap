@@ -1694,10 +1694,10 @@ mod YASPoolTests {
 
         mod PoolCase10 {
             use super::test_pool;
-            use yas_core::tests::utils::pool_10::{SWAP_CASES_POOL_10, SWAP_EXPECTED_RESULTS_POOL_10};
-            use yas_core::tests::utils::swap_cases::SwapTestHelper::{
-                POOL_CASES
+            use yas_core::tests::utils::pool_10::{
+                SWAP_CASES_POOL_10, SWAP_EXPECTED_RESULTS_POOL_10
             };
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
             const PRECISION: u256 = 5;
 
@@ -1717,8 +1717,7 @@ mod YASPoolTests {
                 let PANIC_CASE = 0;
                 let pool_case = POOL_CASES()[10];
                 let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_10();
-                let expected_cases =
-                    SWAP_EXPECTED_RESULTS_POOL_10();
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_10();
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
@@ -1734,8 +1733,7 @@ mod YASPoolTests {
                 let PANIC_CASE = 1;
                 let pool_case = POOL_CASES()[10];
                 let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_10();
-                let expected_cases =
-                    SWAP_EXPECTED_RESULTS_POOL_10();
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_10();
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
@@ -1751,8 +1749,7 @@ mod YASPoolTests {
                 let PANIC_CASE = 2;
                 let pool_case = POOL_CASES()[10];
                 let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_10();
-                let expected_cases =
-                    SWAP_EXPECTED_RESULTS_POOL_10();
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_10();
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
@@ -1768,8 +1765,7 @@ mod YASPoolTests {
                 let PANIC_CASE = 3;
                 let pool_case = POOL_CASES()[10];
                 let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_10();
-                let expected_cases =
-                    SWAP_EXPECTED_RESULTS_POOL_10();
+                let expected_cases = SWAP_EXPECTED_RESULTS_POOL_10();
                 test_pool(
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
