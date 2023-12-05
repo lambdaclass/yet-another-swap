@@ -1737,9 +1737,7 @@ mod YASPoolTests {
         mod PoolCase8 {
             use super::test_pool;
             use yas_core::tests::utils::pool_8::{SWAP_CASES_POOL_8, SWAP_EXPECTED_RESULTS_POOL_8};
-            use yas_core::tests::utils::swap_cases::SwapTestHelper::{
-                POOL_CASES
-            };
+            use yas_core::tests::utils::swap_cases::SwapTestHelper::POOL_CASES;
             use debug::PrintTrait;
 
             const PRECISION: u256 = 5;
@@ -1788,7 +1786,6 @@ mod YASPoolTests {
         }
 
 
-
         fn test_pool(
             pool_case: @PoolTestCase,
             expected_cases: Array<SwapExpectedResults>,
@@ -1814,7 +1811,8 @@ mod YASPoolTests {
                 // Save values before swap for compare
                 let user_token_0_balance_bf = token_0.balanceOf(WALLET());
                 let user_token_1_balance_bf = token_1.balanceOf(WALLET());
-                let (fee_growth_global_0_X128_bf, fee_growth_global_1_X128_bf) = yas_pool.get_fee_growth_globals();
+                let (fee_growth_global_0_X128_bf, fee_growth_global_1_X128_bf) = yas_pool
+                    .get_fee_growth_globals();
 
                 let pool_balance_0_bf = token_0.balanceOf(yas_pool.contract_address);
                 let pool_balance_1_bf = token_1.balanceOf(yas_pool.contract_address);
