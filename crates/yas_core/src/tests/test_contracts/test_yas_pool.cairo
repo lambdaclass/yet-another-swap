@@ -1741,7 +1741,7 @@ mod YASPoolTests {
             };
             use yas_core::tests::utils::swap_cases::SwapTestHelper::{POOL_CASES};
 
-            const PRESICION: u128 = 5;
+            const PRECISION: u256 = 5;
 
             #[test]
             #[available_gas(200000000000)]
@@ -1749,7 +1749,7 @@ mod YASPoolTests {
                 let pool_case = POOL_CASES()[12];
                 let expected_cases = SWAP_EXPECTED_RESULTS_POOL_12();
                 let (success_swap_cases, _) = SWAP_CASES_POOL_12();
-                test_pool(pool_case, expected_cases, success_swap_cases, PRESICION);
+                test_pool(pool_case, expected_cases, success_swap_cases, PRECISION);
             }
 
             #[test]
@@ -1765,7 +1765,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRESICION
+                    PRECISION
                 );
             }
 
@@ -1782,7 +1782,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRESICION
+                    PRECISION
                 );
             }
         }
