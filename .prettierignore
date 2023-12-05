@@ -1,0 +1,5 @@
+.starkli-wallets/**
+target
+.env
+.idea
+
