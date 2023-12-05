@@ -66,5 +66,6 @@ mod tests {
         mod pool_0;
         mod pool_1;
         mod pool_2;
+        mod pool_5;
     }
 }
