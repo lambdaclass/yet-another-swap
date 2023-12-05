@@ -2028,6 +2028,8 @@ mod YASPoolTests {
         if token_0_swapped_amount == 0
             && token_1_swapped_amount == 0 { //this avoids 0/0 , no tokens swapped = exec_price: 0
             0
+        } else if token_0_swapped_amount == 0 {
+            '-Infinity'.into()
         } else {
             let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
             unrounded
