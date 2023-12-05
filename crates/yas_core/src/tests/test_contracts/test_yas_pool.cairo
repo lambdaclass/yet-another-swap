@@ -1694,7 +1694,9 @@ mod YASPoolTests {
 
         mod PoolCase11 {
             use super::test_pool;
-            use yas_core::tests::utils::pool_11::{SWAP_CASES_POOL_11, SWAP_EXPECTED_RESULTS_POOL_11};
+            use yas_core::tests::utils::pool_11::{
+                SWAP_CASES_POOL_11, SWAP_EXPECTED_RESULTS_POOL_11
+            };
             use yas_core::tests::utils::swap_cases::SwapTestHelper::POOL_CASES;
 
             const PRECISION: u256 = 5;
