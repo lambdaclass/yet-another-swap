@@ -35,14 +35,17 @@ trait IYASPool<TContractState> {
         amount: u128,
         data: Array<felt252>
     ) -> (u256, u256);
+    fn burn(
+        ref self: TContractState, tick_lower: i32, tick_upper: i32, amount: u128
+    ) -> (u256, u256);
     fn token_0(self: @TContractState) -> ContractAddress;
     fn token_1(self: @TContractState) -> ContractAddress;
     fn get_fee_growth_globals(self: @TContractState) -> (u256, u256);
     fn get_slot_0(self: @TContractState) -> Slot0;
     fn get_max_liquidity_per_tick(self: @TContractState) -> u128;
+    fn get_position(self: @TContractState, position_key: PositionKey) -> PositionInfo;
     fn get_tick_spacing(self: @TContractState) -> i32;
     fn get_tick(self: @TContractState, tick: i32) -> TickInfo;
-    fn positions(self: @TContractState, position_key: PositionKey) -> PositionInfo;
 }
 
 #[starknet::contract]
@@ -86,6 +89,7 @@ mod YASPool {
         Initialize: Initialize,
         SwapExecuted: SwapExecuted,
         Mint: Mint,
+        Burn: Burn
     }
 
     /// @notice Emitted exactly once by a pool when #initialize is first called on the pool
@@ -113,6 +117,16 @@ mod YASPool {
     struct Mint {
         sender: ContractAddress,
         recipient: ContractAddress,
+        tick_lower: i32,
+        tick_upper: i32,
+        amount: u128,
+        amount_0: u256,
+        amount_1: u256
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct Burn {
+        sender: ContractAddress,
         tick_lower: i32,
         tick_upper: i32,
         amount: u128,
@@ -231,8 +245,8 @@ mod YASPool {
         }
 
 
-        fn positions(self: @ContractState, position_key: PositionKey) -> PositionInfo {
-            let mut position_state = Position::unsafe_new_contract_state();
+        fn get_position(self: @ContractState, position_key: PositionKey) -> PositionInfo {
+            let position_state = Position::unsafe_new_contract_state();
             PositionImpl::get(@position_state, position_key)
         }
 
@@ -572,6 +586,49 @@ mod YASPool {
             self.unlock();
             (amount_0, amount_1)
         }
+
+        fn burn(
+            ref self: ContractState, tick_lower: i32, tick_upper: i32, amount: u128
+        ) -> (u256, u256) {
+            self.check_and_lock();
+
+            let (position, amount_0, amount_1) = self
+                .modify_position(
+                    ModifyPositionParams {
+                        position_key: PositionKey {
+                            owner: get_caller_address(), tick_lower, tick_upper
+                        },
+                        liquidity_delta: -amount.into()
+                    }
+                );
+
+            let amount_0: u256 = amount_0.mag;
+            let amount_1: u256 = amount_1.mag;
+
+            if amount_0 > 0 || amount_1 > 0 {
+                let mut position_state = Position::unsafe_new_contract_state();
+                PositionImpl::update_tokens_owed(
+                    ref position_state,
+                    PositionKey { owner: get_caller_address(), tick_lower, tick_upper },
+                    position.tokens_owed_0 + amount_0.try_into().unwrap(),
+                    position.tokens_owed_1 + amount_1.try_into().unwrap()
+                );
+            }
+
+            self
+                .emit(
+                    Burn {
+                        sender: get_caller_address(),
+                        tick_lower,
+                        tick_upper,
+                        amount,
+                        amount_0,
+                        amount_1
+                    }
+                );
+            self.unlock();
+            (amount_0, amount_1)
+        }
     }
 
     #[generate_trait]
@@ -677,8 +734,7 @@ mod YASPool {
         /// @return amount1 the amount of token1 owed to the pool, negative if the pool should pay the recipient
         fn modify_position(
             ref self: ContractState, params: ModifyPositionParams
-        ) -> (PositionInfo, i256, i256) // TODO: noDelegateCall
-        {
+        ) -> (PositionInfo, i256, i256) {
             match check_ticks(params.position_key.tick_lower, params.position_key.tick_upper) {
                 Result::Ok(()) => {},
                 Result::Err(err) => { panic_with_felt252(err) },

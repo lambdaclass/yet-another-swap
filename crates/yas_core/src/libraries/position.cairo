@@ -43,6 +43,13 @@ trait IPosition<TContractState> {
         fee_growth_inside_0_X128: u256,
         fee_growth_inside_1_X128: u256
     );
+
+    fn update_tokens_owed(
+        ref self: TContractState,
+        position_key: PositionKey,
+        tokens_owed_0: u128,
+        tokens_owed_1: u128
+    );
 }
 
 #[starknet::contract]
@@ -118,6 +125,19 @@ mod Position {
                 position.tokens_owed_0 += tokens_owed_0;
                 position.tokens_owed_1 += tokens_owed_1;
             }
+            self.positions.write(hashed_key, position);
+        }
+
+        fn update_tokens_owed(
+            ref self: ContractState,
+            position_key: PositionKey,
+            tokens_owed_0: u128,
+            tokens_owed_1: u128
+        ) {
+            let hashed_key = PoseidonTrait::new().update_with(position_key).finalize();
+            let mut position = self.positions.read(hashed_key);
+            position.tokens_owed_0 = tokens_owed_0;
+            position.tokens_owed_1 = tokens_owed_1;
             self.positions.write(hashed_key, position);
         }
     }
