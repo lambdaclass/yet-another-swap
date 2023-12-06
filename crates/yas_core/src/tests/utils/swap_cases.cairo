@@ -170,9 +170,9 @@ mod SwapTestHelper {
                         liquidity: 2000000000000000000,
                     },
                     Position {
-                        tick_lower: IntegerTrait::<
-                            i32
-                        >::new(tick_spacing(FeeAmount::MEDIUM), false),
+                        tick_lower: IntegerTrait::<i32>::new(
+                            tick_spacing(FeeAmount::MEDIUM), false
+                        ),
                         tick_upper: get_max_tick(FeeAmount::MEDIUM),
                         liquidity: 2000000000000000000,
                     },
@@ -194,9 +194,9 @@ mod SwapTestHelper {
                         liquidity: 2000000000000000000,
                     },
                     Position {
-                        tick_lower: IntegerTrait::<
-                            i32
-                        >::new(tick_spacing(FeeAmount::MEDIUM), false),
+                        tick_lower: IntegerTrait::<i32>::new(
+                            tick_spacing(FeeAmount::MEDIUM), false
+                        ),
                         tick_upper: get_max_tick(FeeAmount::MEDIUM),
                         liquidity: 2000000000000000000,
                     },
@@ -221,9 +221,9 @@ mod SwapTestHelper {
                 mint_positions: array![
                     Position {
                         tick_lower: Zeroable::zero(),
-                        tick_upper: IntegerTrait::<
-                            i32
-                        >::new(2000 * tick_spacing(FeeAmount::MEDIUM), false),
+                        tick_upper: IntegerTrait::<i32>::new(
+                            2000 * tick_spacing(FeeAmount::MEDIUM), false
+                        ),
                         liquidity: 2000000000000000000,
                     },
                 ],
@@ -234,9 +234,9 @@ mod SwapTestHelper {
                 starting_price: encode_price_sqrt_1_1(),
                 mint_positions: array![
                     Position {
-                        tick_lower: IntegerTrait::<
-                            i32
-                        >::new(2000 * tick_spacing(FeeAmount::MEDIUM), true),
+                        tick_lower: IntegerTrait::<i32>::new(
+                            2000 * tick_spacing(FeeAmount::MEDIUM), true
+                        ),
                         tick_upper: Zeroable::zero(),
                         liquidity: 2000000000000000000,
                     },

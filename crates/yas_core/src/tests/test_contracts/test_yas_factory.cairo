@@ -72,9 +72,9 @@ mod YASFactoryTests {
             let fee_amount_custom = yas_factory
                 .fee_amount_tick_spacing(fee_amount(FeeAmount::CUSTOM));
             assert(
-                fee_amount_custom == IntegerTrait::<
-                    i32
-                >::new(tick_spacing(FeeAmount::CUSTOM), false),
+                fee_amount_custom == IntegerTrait::<i32>::new(
+                    tick_spacing(FeeAmount::CUSTOM), false
+                ),
                 'fee custom doesnt set correctly'
             );
 

@@ -377,7 +377,9 @@ mod YASPoolTests {
             let tick_upper = IntegerTrait::<i32>::new(100, false);
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) },
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
             }
         }
 
@@ -388,7 +390,9 @@ mod YASPoolTests {
             let tick_upper = IntegerTrait::<i32>::new(100, false);
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) },
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
             }
         }
 
@@ -399,7 +403,9 @@ mod YASPoolTests {
             let tick_upper = TickMath::MAX_TICK();
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) },
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
             }
         }
 
@@ -411,7 +417,9 @@ mod YASPoolTests {
             let tick_upper = IntegerTrait::<i32>::new(100, true);
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) },
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
             }
         }
 
@@ -423,7 +431,9 @@ mod YASPoolTests {
             let tick_upper = TickMath::MIN_TICK();
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) },
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
             }
         }
 
@@ -435,7 +445,9 @@ mod YASPoolTests {
             let tick_upper = TickMath::MAX_TICK() + IntegerTrait::<i32>::new(1, false);
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) },
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
             }
         }
 
@@ -446,7 +458,9 @@ mod YASPoolTests {
             let tick_upper = TickMath::MAX_TICK();
             match YASPool::check_ticks(tick_lower, tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) },
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
             }
         }
     }

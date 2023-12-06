@@ -37,7 +37,9 @@ mod TickMath {
         let abs_tick = tick.abs();
         match check_tick(abs_tick) {
             Result::Ok(()) => {},
-            Result::Err(err) => { panic_with_felt252(err) }
+            Result::Err(err) => {
+                panic_with_felt252(err)
+            }
         };
 
         // Initialize ratio with a base value
@@ -145,7 +147,9 @@ mod TickMath {
         // second inequality must be < because the price can never reach the price at the max tick
         match check_sqrt_priceX96(sqrt_priceX96) {
             Result::Ok(()) => {},
-            Result::Err(err) => { panic_with_felt252(err) }
+            Result::Err(err) => {
+                panic_with_felt252(err)
+            }
         }; // TODO: review this error in the future. This is the original error from UniswapV3.
         let ratio = sqrt_priceX96.mag.shl(32);
         let mut r = ratio.clone();

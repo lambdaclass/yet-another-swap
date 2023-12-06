@@ -17,7 +17,9 @@ mod LiquidityMath {
             let y_u128: u128 = y_felt252.try_into().unwrap();
             match check_liquidity_sub(x, y_u128) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) }
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                }
             };
             x - y_u128
         } else {
@@ -26,7 +28,9 @@ mod LiquidityMath {
             let y_u128: u128 = y_felt252.try_into().unwrap();
             match check_liquidity_add(x, y_u128) {
                 Result::Ok(()) => {},
-                Result::Err(err) => { panic_with_felt252(err) }
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                }
             };
             x + y_u128
         }
