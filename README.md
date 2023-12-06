@@ -241,21 +241,6 @@ On Starknet, the deployment process is in two steps:
 > starkli signer keystore inspect-private ~/.starkli-wallets/account.json
 > ```
 
-## Setup Katana Account for Starkli
-
-If this is the first time you are running make deploy or make demo-local in Katana, you need to generate the account file so that Starkli can use it. This is responsible for declaring and deploying contracts.
-
-1. Start Local Testnet
-
-   ```bash
-   make start-katana
-   ```
-
-2. Setup Katana Account
-   ```bash
-   starkli account fetch 0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973 --output ~/.starkli-wallets/account_katana.json
-   ```
-
 The contract address we see in the above command belongs to one of Katana's pre-funded accounts.
 Now we are ready to declare and deploy our contracts in Katana.
 
@@ -285,7 +270,13 @@ Katana provides us with pre-funded accounts. We will use one of them for deploym
    make start-katana
    ```
 
-4. Declare and Deploy: We sequentially declare and deploy the contracts. Local deployment needs `katana` running. The account used for deployment is a pre-funded one.
+4. Setup Katana Account: This step, which involves setting up the Katana account, only needs to be done the first time.
+
+   ```bash
+   make setup-katana-account
+   ```
+
+5. Declare and Deploy: We sequentially declare and deploy the contracts. Local deployment needs `katana` running. The account used for deployment is a pre-funded one.
 
    ```bash
    make deploy
