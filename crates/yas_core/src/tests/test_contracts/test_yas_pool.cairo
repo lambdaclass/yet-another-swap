@@ -1717,6 +1717,7 @@ mod YASPoolTests {
                     PRECISION
                 );
             }
+            
             #[test]
             #[available_gas(200000000000)]
             #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
