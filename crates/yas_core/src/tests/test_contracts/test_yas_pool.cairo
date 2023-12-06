@@ -1701,7 +1701,6 @@ mod YASPoolTests {
                 test_pool(pool_case, expected_cases, success_swap_cases, PRECISION);
             }
 
-
             #[test]
             #[available_gas(200000000000)]
             #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
