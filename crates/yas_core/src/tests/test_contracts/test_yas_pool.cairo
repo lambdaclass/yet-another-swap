@@ -1566,7 +1566,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRECISION
+                    Zeroable::zero()
                 );
             }
 
@@ -1583,7 +1583,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRECISION
+                    Zeroable::zero()
                 );
             }
         }
@@ -1616,7 +1616,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRECISION
+                    Zeroable::zero()
                 );
             }
 
@@ -1632,7 +1632,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRECISION
+                    Zeroable::zero()
                 );
             }
         }
@@ -1665,7 +1665,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRECISION
+                    Zeroable::zero()
                 );
             }
 
@@ -1681,7 +1681,7 @@ mod YASPoolTests {
                     pool_case,
                     array![*expected_cases[PANIC_CASE]],
                     array![*panic_swap_cases[PANIC_CASE]],
-                    PRECISION
+                    Zeroable::zero()
                 );
             }
         }
