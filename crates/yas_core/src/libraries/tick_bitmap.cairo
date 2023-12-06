@@ -61,8 +61,7 @@ mod TickBitmap {
             let mut compressed: i32 = tick / tick_spacing;
             if (tick < IntegerTrait::<i32>::new(0, false)
                 && tick % tick_spacing != IntegerTrait::<i32>::new(0, false)) {
-                compressed -=
-                    IntegerTrait::<i32>::new(1, false); // round towards negative infinity
+                compressed -= IntegerTrait::<i32>::new(1, false); // round towards negative infinity
             };
 
             if lte {

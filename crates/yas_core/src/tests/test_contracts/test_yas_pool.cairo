@@ -1959,9 +1959,7 @@ mod YASPoolTests {
         // in testnet TOKEN0 is USDC and TOKEN1 is ETH
         let USDC = 1000000 * usdc_amount;
         let ETH = 1000000000000000000 * eth_amount;
-        let token_0 = deploy_erc20(
-            'USDC', 'USDC', USDC, OWNER()
-        ); // 0x3 // 100k usdc (100k * 10^6)
+        let token_0 = deploy_erc20('USDC', 'USDC', USDC, OWNER()); // 0x3 // 100k usdc (100k * 10^6)
         let token_1 = deploy_erc20('ETH', 'ETH', ETH, OWNER()); // 0x4 // 50 ETH (50 * 10^18)
 
         set_contract_address(OWNER());
