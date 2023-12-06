@@ -11,9 +11,7 @@ mod BitMath {
     fn most_significant_bit(x: u256) -> u8 {
         match check_gt_zero(x) {
             Result::Ok(()) => {},
-            Result::Err(err) => {
-                panic_with_felt252(err)
-            }
+            Result::Err(err) => { panic_with_felt252(err) }
         }
         let mut x: u256 = x;
         let mut r: u8 = 0;
@@ -61,9 +59,7 @@ mod BitMath {
     fn least_significant_bit(x: u256) -> u8 {
         match check_gt_zero(x) {
             Result::Ok(()) => {},
-            Result::Err(err) => {
-                panic_with_felt252(err)
-            }
+            Result::Err(err) => { panic_with_felt252(err) }
         }
         let mut x = x;
         let mut r: u8 = 255;

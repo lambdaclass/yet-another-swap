@@ -226,15 +226,17 @@ mod BitShift {
 
         let n = IntegerTrait::<i256>::new(128, false);
         let expected_result_right = IntegerTrait::<i256>::new(0, false);
-        let expected_result_left = IntegerTrait::<i256>::new(
-            340282366920938463463374607431768211456, false
-        );
+        let expected_result_left = IntegerTrait::<
+            i256
+        >::new(340282366920938463463374607431768211456, false);
         assert(x.shr(n) == expected_result_right, '1 >> 128 == 0');
         assert(x.shl(n) == expected_result_left, '1 << 128');
 
         let n = IntegerTrait::<i256>::new(254, false);
         let expected_result_right = IntegerTrait::<i256>::new(0, false);
-        let expected_result_left = IntegerTrait::<i256>::new(
+        let expected_result_left = IntegerTrait::<
+            i256
+        >::new(
             28948022309329048855892746252171976963317496166410141009864396001978282409984, false
         );
         assert(x.shr(n) == expected_result_right, '1 >> 254 == 0');
@@ -260,17 +262,17 @@ mod BitShift {
 
         let n = IntegerTrait::<i256>::new(128, false);
         let expected_result_right = IntegerTrait::<i256>::new(1, true);
-        let expected_result_left = IntegerTrait::<i256>::new(
-            340282366920938463463374607431768211456, true
-        );
+        let expected_result_left = IntegerTrait::<
+            i256
+        >::new(340282366920938463463374607431768211456, true);
         assert(x.shr(n) == expected_result_right, '-1 >> 128');
         // assert(x.shl(n) == expected_result_left, '-1 << 128');
 
         let n = IntegerTrait::<i256>::new(254, false);
         let expected_result_right = IntegerTrait::<i256>::new(1, true);
-        let expected_result_left = IntegerTrait::<i256>::new(
-            28948022309329048855892746252171976963317496166410141009864396001978282409984, true
-        );
+        let expected_result_left = IntegerTrait::<
+            i256
+        >::new(28948022309329048855892746252171976963317496166410141009864396001978282409984, true);
         assert(x.shr(n) == expected_result_right, '-1 >> 254');
         assert(x.shl(n) == expected_result_left, '-1 << 254');
     }
@@ -317,10 +319,14 @@ mod BitShift {
         let x = IntegerTrait::<i256>::new((BoundedInt::max() / 2) - 1, false);
 
         let n = IntegerTrait::<i256>::new(1, false);
-        let expected_result_right = IntegerTrait::<i256>::new(
+        let expected_result_right = IntegerTrait::<
+            i256
+        >::new(
             28948022309329048855892746252171976963317496166410141009864396001978282409983, false
         );
-        let expected_result_left = IntegerTrait::<i256>::new(
+        let expected_result_left = IntegerTrait::<
+            i256
+        >::new(
             57896044618658097711785492504343953926634992332820282019728792003956564819964, false
         );
         assert(x.shr(n) == expected_result_right, 'MAX >> 1');
@@ -362,25 +368,25 @@ mod BitShift {
         let x = IntegerTrait::<i256>::new(BoundedInt::max() / 2, true);
 
         let n = IntegerTrait::<i256>::new(1, false);
-        let expected_result_right = IntegerTrait::<i256>::new(
-            28948022309329048855892746252171976963317496166410141009864396001978282409984, true
-        );
+        let expected_result_right = IntegerTrait::<
+            i256
+        >::new(28948022309329048855892746252171976963317496166410141009864396001978282409984, true);
         // assert(x.shr(n) == expected_result_right, 'MIN >> 1');
         // let expected_result_left = IntegerTrait::<i256>::new(115792089237316195423570985008687907853269984665640564039457584007913129639934, true);
         // assert(x.shl(n) == expected_result_left, 'MIN << 1');
 
         let n = IntegerTrait::<i256>::new(2, false);
-        let expected_result_right = IntegerTrait::<i256>::new(
-            14474011154664524427946373126085988481658748083205070504932198000989141204992, true
-        );
+        let expected_result_right = IntegerTrait::<
+            i256
+        >::new(14474011154664524427946373126085988481658748083205070504932198000989141204992, true);
         // assert(x.shr(n) == expected_result_right, 'MIN >> 2');
         // let expected_result_left = IntegerTrait::<i256>::new(0, true);
         // assert(x.shl(n) == expected_result_left, 'MIN << 2');
 
         let n = IntegerTrait::<i256>::new(128, false);
-        let expected_result_right = IntegerTrait::<i256>::new(
-            170141183460469231731687303715884105728, true
-        );
+        let expected_result_right = IntegerTrait::<
+            i256
+        >::new(170141183460469231731687303715884105728, true);
         // assert(x.shr(n) == expected_result_right, 'MIN >> 128');
         // let expected_result_left = IntegerTrait::<i256>::new(0, true);
         // assert(x.shl(n) == expected_result_left, 'MIN << 128');

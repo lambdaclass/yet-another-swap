@@ -27,9 +27,7 @@ mod SqrtPriceMath {
         }
         match check_sqrtPX96_sign(sqrtPX96.sign) {
             Result::Ok(()) => {},
-            Result::Err(err) => {
-                panic_with_felt252(err)
-            }
+            Result::Err(err) => { panic_with_felt252(err) }
         };
         let numerator = liquidity.into() * pow(2, Q96_RESOLUTION.into());
         let (product, product_has_overflow) = u256_overflow_mul(amount, sqrtPX96.mag);
@@ -51,15 +49,11 @@ mod SqrtPriceMath {
             // in addition, we must check that the denominator does not underflow
             match check_product_overflow(product, amount, false, sqrtPX96) {
                 Result::Ok(()) => {},
-                Result::Err(err) => {
-                    panic_with_felt252(err)
-                }
+                Result::Err(err) => { panic_with_felt252(err) }
             };
             match check_denominator_underflow(numerator, product) {
                 Result::Ok(()) => {},
-                Result::Err(err) => {
-                    panic_with_felt252(err)
-                }
+                Result::Err(err) => { panic_with_felt252(err) }
             };
             let denominator = numerator - product;
             FP64x96Impl::new(mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false)
@@ -77,9 +71,7 @@ mod SqrtPriceMath {
     ) -> FixedType {
         match check_sqrtPX96_sign(sqrtPX96.sign) {
             Result::Ok(()) => {},
-            Result::Err(err) => {
-                panic_with_felt252(err)
-            }
+            Result::Err(err) => { panic_with_felt252(err) }
         };
         // if we're adding (subtracting), rounding down requires rounding the quotient down (up)
         // in both cases, avoid a mulDiv for most inputs
@@ -98,9 +90,7 @@ mod SqrtPriceMath {
             };
             match check_sqrtPX96_and_quotient(sqrtPX96, FP64x96Impl::new(quotient, false)) {
                 Result::Ok(()) => {},
-                Result::Err(err) => {
-                    panic_with_felt252(err)
-                }
+                Result::Err(err) => { panic_with_felt252(err) }
             };
             (sqrtPX96 - FP64x96Impl::new(quotient, false))
         }
@@ -118,9 +108,7 @@ mod SqrtPriceMath {
     ) -> FixedType {
         match check_sqrtPX96_sign_and_liquidity(sqrtPX96.sign, liquidity) {
             Result::Ok(()) => {},
-            Result::Err(err) => {
-                panic_with_felt252(err)
-            }
+            Result::Err(err) => { panic_with_felt252(err) }
         };
 
         if zero_for_one {
@@ -142,9 +130,7 @@ mod SqrtPriceMath {
     ) -> FixedType {
         match check_sqrtPX96_sign_and_liquidity(sqrtPX96.sign, liquidity) {
             Result::Ok(()) => {},
-            Result::Err(err) => {
-                panic_with_felt252(err)
-            }
+            Result::Err(err) => { panic_with_felt252(err) }
         };
         if zero_for_one {
             get_next_sqrt_price_from_amount1_rounding_down(sqrtPX96, liquidity, amount_out, false)
@@ -175,9 +161,7 @@ mod SqrtPriceMath {
 
         match check_sqrtPX96_sign(sqrt_ratio_AX96_1.sign) {
             Result::Ok(()) => {},
-            Result::Err(err) => {
-                panic_with_felt252(err)
-            }
+            Result::Err(err) => { panic_with_felt252(err) }
         };
 
         if round_up {
@@ -217,14 +201,16 @@ mod SqrtPriceMath {
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128
     ) -> i256 {
         if liquidity < IntegerTrait::<i128>::new(0, false) {
-            IntegerTrait::<i256>::new(
+            IntegerTrait::<
+                i256
+            >::new(
                 get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false),
                 true
             )
         } else {
-            IntegerTrait::<i256>::new(
-                get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false
-            )
+            IntegerTrait::<
+                i256
+            >::new(get_amount_0_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false)
         }
     }
 
@@ -232,14 +218,16 @@ mod SqrtPriceMath {
         sqrt_ratio_AX96: FixedType, sqrt_ratio_BX96: FixedType, liquidity: i128
     ) -> i256 {
         if liquidity < IntegerTrait::<i128>::new(0, false) {
-            IntegerTrait::<i256>::new(
+            IntegerTrait::<
+                i256
+            >::new(
                 get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.abs().mag, false),
                 true
             )
         } else {
-            IntegerTrait::<i256>::new(
-                get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false
-            )
+            IntegerTrait::<
+                i256
+            >::new(get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false)
         }
     }
 

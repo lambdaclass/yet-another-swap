@@ -681,9 +681,7 @@ mod YASPool {
         {
             match check_ticks(params.position_key.tick_lower, params.position_key.tick_upper) {
                 Result::Ok(()) => {},
-                Result::Err(err) => {
-                    panic_with_felt252(err)
-                },
+                Result::Err(err) => { panic_with_felt252(err) },
             }
 
             let slot_0 = self.slot_0.read();

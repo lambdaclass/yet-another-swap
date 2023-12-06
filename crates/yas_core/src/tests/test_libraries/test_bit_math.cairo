@@ -52,9 +52,7 @@ mod BitMathTests {
         fn test_check_gt_zero() {
             match check_gt_zero(0) {
                 Result::Ok(()) => {},
-                Result::Err(err) => {
-                    panic_with_felt252(err)
-                },
+                Result::Err(err) => { panic_with_felt252(err) },
             }
         }
         #[test]
