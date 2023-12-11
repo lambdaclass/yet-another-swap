@@ -305,18 +305,12 @@ mod SwapTestHelper {
         initial_price: FixedType, fee_amount: u32, mint_positions: @Array<SwapTestHelper::Position>,
     ) -> (IYASPoolDispatcher, IYASRouterDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let yas_router = deploy_yas_router(); // 0x1
-        let yas_factory = deploy_yas_factory(
-            OWNER(), POOL_CLASS_HASH()
-        ); // 0x2
+        let yas_factory = deploy_yas_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
 
         // Deploy ERC20 tokens with factory address
         // in testnet TOKEN0 is USDC and TOKEN1 is ETH
-        let token_0 = deploy_yas_erc20(
-            'USDC', 'USDC', BoundedInt::max(), OWNER()
-        ); // 0x3
-        let token_1 = deploy_yas_erc20(
-            'ETH', 'ETH', BoundedInt::max(), OWNER()
-        ); // 0x4
+        let token_0 = deploy_yas_erc20('USDC', 'USDC', BoundedInt::max(), OWNER()); // 0x3
+        let token_1 = deploy_yas_erc20('ETH', 'ETH', BoundedInt::max(), OWNER()); // 0x4
 
         set_contract_address(OWNER());
         token_0.transfer(WALLET(), BoundedInt::max());
