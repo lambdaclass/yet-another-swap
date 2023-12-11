@@ -28,19 +28,17 @@ mod SwapTestHelper {
     use starknet::testing::{set_contract_address, set_caller_address};
 
     fn test_pool(
-        pool_case: @PoolTestCase,
-        expected_cases: Array<SwapExpectedResults>,
-        swap_cases: Array<SwapTestCase>,
-        precision_required: u256,
-    ) {
+            pool_case: @PoolTestCase,
+            expected_cases: Array<SwapExpectedResults>,
+            swap_cases: Array<SwapTestCase>,
+            precision_required: u256,
+        ) {
         let mut i = 0;
         assert(expected_cases.len() == swap_cases.len(), 'wrong amount of expected cases');
         loop {
             if i == expected_cases.len() {
                 break;
             }
-
-            // restart Pool
             let (yas_pool, yas_router, token_0, token_1) = setup_pool_for_swap_test(
                 initial_price: *pool_case.starting_price,
                 fee_amount: *pool_case.fee_amount,
@@ -62,14 +60,13 @@ mod SwapTestHelper {
             let mut amount_to_swap = IntegerTrait::<i256>::new(0, false); //Zeroable::zero();
             if *swap_case.has_exact_out {
                 if *swap_case.exact_out { //exact OUT
-                    if *swap_case
-                        .zero_for_one { //so i check how much i should put swap IN in order to get those OUT tokens, the Asserts will still verify everything else
-                        amount_to_swap = *expected.amount_0_delta;
-                    } else {
-                        amount_to_swap = *expected.amount_1_delta;
-                    }
+                    amount_to_swap =
+                        IntegerTrait::<i256>::new(
+                            *swap_case.amount_specified.mag, true
+                        ); //swap(-x) when amount=amount_out
                 } else { //exact IN, normal swap.
-                    amount_to_swap = *swap_case.amount_specified;
+                    amount_to_swap = *swap_case
+                        .amount_specified; //swap(x) when amount=amount_in
                 }
             } else {
                 amount_to_swap = IntegerTrait::<i256>::new((BoundedInt::max() / 2) - 1, false);
@@ -105,7 +102,7 @@ mod SwapTestHelper {
                 fee_growth_global_1_X128_af - fee_growth_global_1_X128_bf
             );
             let execution_price = calculate_execution_price(
-                token_0_swapped_amount, token_1_swapped_amount, *expected.execution_price
+                token_0_swapped_amount, token_1_swapped_amount
             );
 
             let pool_balance_0_af = token_0.balanceOf(yas_pool.contract_address);
@@ -177,12 +174,17 @@ mod SwapTestHelper {
     }
 
     fn calculate_execution_price(
-        token_0_swapped_amount: u256, token_1_swapped_amount: u256, expected: u256
+        token_0_swapped_amount: u256, token_1_swapped_amount: u256
     ) -> u256 {
         if token_0_swapped_amount == 0
-            && token_1_swapped_amount == 0 { //this avoids 0/0 , no tokens swapped = exec_price: 0
+            && token_1_swapped_amount == 0 { //this avoids 0/0 , if no tokens swapped: exec_price = 0
             0
-        } else {
+        } else if token_0_swapped_amount == 0 { //this avoids x/0 , case that makes price tend to Infinity
+            // Since uniswap divides deltas to calculate exec_price, all prices are multiplied by -1 so that all prices are > 0.
+            // Therefore, this value ends up as -Infinity
+            '-Infinity'
+                .into()
+        } else { //this is every other case, price = 0/x = 0, or price = x/y = z
             let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
             unrounded
         }
