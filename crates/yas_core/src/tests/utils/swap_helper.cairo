@@ -1,5 +1,4 @@
 mod SwapTestHelper {
-    // Contract imports
     use integer::BoundedInt;
     use yas_core::contracts::yas_factory::{
         YASFactory, IYASFactoryDispatcher, IYASFactoryDispatcherTrait
@@ -20,11 +19,12 @@ mod SwapTestHelper {
         SwapTestHelper, SwapTestHelper::PoolTestCase, SwapTestHelper::SwapTestCase,
         SwapTestHelper::SwapExpectedResults, SwapTestHelper::{POOL_CASES, SWAP_CASES}
     };
+    use yas_core::tests::utils::swap_helper::ContractDeployerHelper::{
+        deploy_yas_erc20, deploy_yas_factory, deploy_yas_router
+    };
     use yas_core::utils::math_utils::{FullMath::mul_div, pow};
 
-    // Starknet imports
     use starknet::{ContractAddress, ClassHash, SyscallResultTrait};
-    use starknet::syscalls::deploy_syscall;
     use starknet::testing::{set_contract_address, set_caller_address};
 
     fn test_pool(
@@ -305,12 +305,18 @@ mod SwapTestHelper {
         initial_price: FixedType, fee_amount: u32, mint_positions: @Array<SwapTestHelper::Position>,
     ) -> (IYASPoolDispatcher, IYASRouterDispatcher, IERC20Dispatcher, IERC20Dispatcher) {
         let yas_router = deploy_yas_router(); // 0x1
-        let yas_factory = deploy_factory(OWNER(), POOL_CLASS_HASH()); // 0x2
+        let yas_factory = deploy_yas_factory(
+            OWNER(), POOL_CLASS_HASH()
+        ); // 0x2
 
         // Deploy ERC20 tokens with factory address
         // in testnet TOKEN0 is USDC and TOKEN1 is ETH
-        let token_0 = deploy_erc20('USDC', 'USDC', BoundedInt::max(), OWNER()); // 0x3
-        let token_1 = deploy_erc20('ETH', 'ETH', BoundedInt::max(), OWNER()); // 0x4
+        let token_0 = deploy_yas_erc20(
+            'USDC', 'USDC', BoundedInt::max(), OWNER()
+        ); // 0x3
+        let token_1 = deploy_yas_erc20(
+            'ETH', 'ETH', BoundedInt::max(), OWNER()
+        ); // 0x4
 
         set_contract_address(OWNER());
         token_0.transfer(WALLET(), BoundedInt::max());
@@ -357,8 +363,22 @@ mod SwapTestHelper {
             i += 1;
         };
     }
+}
 
-    fn deploy_erc20(
+mod ContractDeployerHelper {
+    use yas_core::contracts::yas_erc20::{ERC20, IERC20Dispatcher, IERC20DispatcherTrait};
+    use yas_core::contracts::yas_factory::{
+        YASFactory, IYASFactoryDispatcher, IYASFactoryDispatcherTrait
+    };
+    use yas_core::contracts::yas_pool::{YASPool, IYASPoolDispatcher, IYASPoolDispatcherTrait};
+    use yas_core::contracts::yas_router::{
+        YASRouter, IYASRouterDispatcher, IYASRouterDispatcherTrait
+    };
+
+    use starknet::{ContractAddress, ClassHash, SyscallResultTrait};
+    use starknet::syscalls::deploy_syscall;
+
+    fn deploy_yas_erc20(
         name: felt252, symbol: felt252, initial_supply: u256, recipent: ContractAddress
     ) -> IERC20Dispatcher {
         let mut calldata = array![name, symbol];
@@ -382,7 +402,7 @@ mod SwapTestHelper {
         return IYASRouterDispatcher { contract_address: address };
     }
 
-    fn deploy_factory(
+    fn deploy_yas_factory(
         deployer: ContractAddress, pool_class_hash: ClassHash
     ) -> IYASFactoryDispatcher {
         let (address, _) = deploy_syscall(
