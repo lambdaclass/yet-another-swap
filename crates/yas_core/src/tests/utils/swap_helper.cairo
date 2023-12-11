@@ -28,11 +28,11 @@ mod SwapTestHelper {
     use starknet::testing::{set_contract_address, set_caller_address};
 
     fn test_pool(
-            pool_case: @PoolTestCase,
-            expected_cases: Array<SwapExpectedResults>,
-            swap_cases: Array<SwapTestCase>,
-            precision_required: u256,
-        ) {
+        pool_case: @PoolTestCase,
+        expected_cases: Array<SwapExpectedResults>,
+        swap_cases: Array<SwapTestCase>,
+        precision_required: u256,
+    ) {
         let mut i = 0;
         assert(expected_cases.len() == swap_cases.len(), 'wrong amount of expected cases');
         loop {
@@ -65,8 +65,7 @@ mod SwapTestHelper {
                             *swap_case.amount_specified.mag, true
                         ); //swap(-x) when amount=amount_out
                 } else { //exact IN, normal swap.
-                    amount_to_swap = *swap_case
-                        .amount_specified; //swap(x) when amount=amount_in
+                    amount_to_swap = *swap_case.amount_specified; //swap(x) when amount=amount_in
                 }
             } else {
                 amount_to_swap = IntegerTrait::<i256>::new((BoundedInt::max() / 2) - 1, false);
@@ -182,8 +181,7 @@ mod SwapTestHelper {
         } else if token_0_swapped_amount == 0 { //this avoids x/0 , case that makes price tend to Infinity
             // Since uniswap divides deltas to calculate exec_price, all prices are multiplied by -1 so that all prices are > 0.
             // Therefore, this value ends up as -Infinity
-            '-Infinity'
-                .into()
+            '-Infinity'.into()
         } else { //this is every other case, price = 0/x = 0, or price = x/y = z
             let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
             unrounded
