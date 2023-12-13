@@ -251,7 +251,7 @@ mod YASNFTPositionManager {
             ERC721::InternalImpl::_mint(ref state, params.recipient, token_id);
 
             let info = pool_dispatcher
-                .positions(
+                .get_position(
                     PositionKey {
                         owner: get_contract_address(),
                         tick_lower: params.tick_lower,
@@ -311,7 +311,7 @@ mod YASNFTPositionManager {
 
             // this is now updated to the current transaction
             let info = pool_dispatcher
-                .positions(
+                .get_position(
                     PositionKey {
                         owner: get_contract_address(),
                         tick_lower: position.tick_lower,
