@@ -12,8 +12,6 @@ mod SwapTestHelper {
 
     use integer::BoundedInt;
 
-    use debug::PrintTrait;
-
 
     #[derive(Copy, Drop, Serde)]
     struct SwapTestCase {
