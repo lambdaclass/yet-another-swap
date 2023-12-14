@@ -67,6 +67,8 @@ mod tests {
         mod pool_1;
         mod pool_2;
         mod pool_5;
+        mod pool_6;
         mod pool_8;
+        mod pool_9;
     }
 }
