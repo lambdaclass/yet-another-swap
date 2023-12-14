@@ -340,7 +340,7 @@ mod SwapTestHelper {
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
-            // swap large amounts in/out with a price limit
+            //swap large amounts in/out with a price limit
             SwapTestCase {
                 zero_for_one: true,
                 has_exact_out: true,

@@ -2353,7 +2353,7 @@ mod YASPoolTests {
             0
         } else if token_0_swapped_amount == 0 { //this avoids x/0 , case that makes price tend to Infinity
             '-Infinity'
-                .into() //Since uniswap divides deltas to calculate exec_price, all prices are multiplied by -1 so that all prices are > 0. Therefore, this value ends up as -Infinity
+                .into() //Since uniswap divides deltas to calculate exec_price, all prices are multiplied by -1 so that all prices are > 0. Therefore, this value ends up as -Infinity 
         } else { //this is every other case, price = 0/x = 0, or price = x/y = z
             let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
             unrounded
