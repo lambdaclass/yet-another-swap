@@ -26,19 +26,15 @@ fn SWAP_EXPECTED_RESULTS_POOL_14() -> Array<SwapExpectedResults> {
         },
         SwapExpectedResults {
             amount_0_before: 36796311322104302062438284732106019258,
-            // TODO: original amount_0_delta value 1000000000000000000
-            amount_0_delta: IntegerTrait::<i256>::new(16234681632814322917638833619776240791, true),
+            amount_0_delta: IntegerTrait::<i256>::new(1000000000000000000, true),
             amount_1_before: 0,
             amount_1_delta: IntegerTrait::<i256>::new(2, false),
-            // TODO: original execution_price value 158456325028
-            execution_price: 0,
+            execution_price: 158456325028,
             fee_growth_global_0_X128_delta: 0,
             fee_growth_global_1_X128_delta: 170141183460469231731,
-            // TODO: original pool_price_after value 4306310045
-            pool_price_after: 7706408851,
+            pool_price_after: 4306310045,
             pool_price_before: 4295128739,
-            // TODO: original tick_after value 887220
-            tick_after: IntegerTrait::<i32>::new(875580, true),
+            tick_after: IntegerTrait::<i32>::new(887220, true),
             tick_before: IntegerTrait::<i32>::new(887272, true),
         },
         SwapExpectedResults {
@@ -56,19 +52,15 @@ fn SWAP_EXPECTED_RESULTS_POOL_14() -> Array<SwapExpectedResults> {
         },
         SwapExpectedResults {
             amount_0_before: 36796311322104302062438284732106019258,
-            // TODO: original amount_0_delta value 1000000000000000000
-            amount_0_delta: IntegerTrait::<i256>::new(16234681632814322917638833619776240791, true),
+            amount_0_delta: IntegerTrait::<i256>::new(1000000000000000000, true),
             amount_1_before: 0,
             amount_1_delta: IntegerTrait::<i256>::new(2, false),
-            // TODO: original execution_price value 158456325028 
-            execution_price: 0,
+            execution_price: 158456325028,
             fee_growth_global_0_X128_delta: 0,
             fee_growth_global_1_X128_delta: 170141183460469231731,
-            // TODO: original pool_price_after value 4306310045
-            pool_price_after: 7706408851,
+            pool_price_after: 4306310045,
             pool_price_before: 4295128739,
-            // TODO: original tick_after value 887220
-            tick_after: IntegerTrait::<i32>::new(875580, true),
+            tick_after: IntegerTrait::<i32>::new(887220, true),
             tick_before: IntegerTrait::<i32>::new(887272, true),
         },
         SwapExpectedResults {
@@ -86,19 +78,15 @@ fn SWAP_EXPECTED_RESULTS_POOL_14() -> Array<SwapExpectedResults> {
         },
         SwapExpectedResults {
             amount_0_before: 36796311322104302062438284732106019258,
-            // TODO: original amount_0_delta value 1000 
-            amount_0_delta: IntegerTrait::<i256>::new(16234681632814322917638833619776240791, true),
+            amount_0_delta: IntegerTrait::<i256>::new(1000, true),
             amount_1_before: 0,
             amount_1_delta: IntegerTrait::<i256>::new(2, false),
-            // TODO: original execution_price value 158456325028528675187087900 
-            execution_price: 0,
+            execution_price: 158456325028528675187087900,
             fee_growth_global_0_X128_delta: 0,
             fee_growth_global_1_X128_delta: 170141183460469231731,
-            // TODO: original pool_price_after value 4306310045
-            pool_price_after: 7706408851,
+            pool_price_after: 4306310045,
             pool_price_before: 4295128739,
-            // TODO: original tick_after value 887220
-            tick_after: IntegerTrait::<i32>::new(875580, true),
+            tick_after: IntegerTrait::<i32>::new(887220, true),
             tick_before: IntegerTrait::<i32>::new(887272, true),
         },
         SwapExpectedResults {
