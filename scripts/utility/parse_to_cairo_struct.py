@@ -1,33 +1,33 @@
 # Input of the script
 # Object {
-#   "amount0Before": "2000000000000000000",
-#   "amount0Delta": "1000",
-#   "amount1Before": "2000000000000000000",
-#   "amount1Delta": "-998",
-#   "executionPrice": "0.99800",
-#   "feeGrowthGlobal0X128Delta": "170141183460469231731",
+#   "amount0Before": "1994009290088178439",
+#   "amount0Delta": "1000000000000000000",
+#   "amount1Before": "1994009290088178439",
+#   "amount1Delta": "-662011820624678025",
+#   "executionPrice": "0.66201",
+#   "feeGrowthGlobal0X128Delta": "510423550381407695195061911147652317",
 #   "feeGrowthGlobal1X128Delta": "0",
-#   "poolPriceAfter": "1.0000",
+#   "poolPriceAfter": "0.44355",
 #   "poolPriceBefore": "1.0000",
-#   "tickAfter": -1,
+#   "tickAfter": -8130,
 #   "tickBefore": 0,
 # }
 # `;
 
 # Output of the script
-# let swap_expected_result = SwapExpectedResults {
-#   amount_0_before: 2000000000000000000,
-#   amount_0_delta: IntegerTrait::<i256>::new(1000, false),
-#   amount_1_before: 2000000000000000000,
-#   amount_1_delta: IntegerTrait::<i256>::new(998, true),
-#   execution_price: 99800, // original executionPrice * 10**5
-#   fee_growth_global_0_X128_delta: 170141183460469231731,
-#   fee_growth_global_1_X128_delta: 0,
-#   pool_price_after: 79228162514264337593543950336, //  after applying parse_price from test_to_cairo
-#   pool_price_before: 79228162514264337593543950336, //  after applying parse_price from test_to_cairo
-#   tick_after: IntegerTrait::<i32>::new(1, true),
-#   tick_before: IntegerTrait::<i32>::new(0, false),
-# }
+# SwapExpectedResults {
+#     amount_0_before: 1994009290088178439,
+#     amount_0_delta: IntegerTrait::<i256>::new(1000000000000000000, false),
+#     amount_1_before: 1994009290088178439,
+#     amount_1_delta: IntegerTrait::<i256>::new(662011820624678025, true),
+#     execution_price: 52449980110816002175186131547,
+#     fee_growth_global_0_X128_delta: 510423550381407695195061911147652317,
+#     fee_growth_global_1_X128_delta: 0,
+#     pool_price_after: 52765855989621530048506654453,
+#     pool_price_before: 79228162514264337593543950336,
+#     tick_after: IntegerTrait::<i32>::new(8130, true),
+#     tick_before: IntegerTrait::<i32>::new(0, false),
+# },
 
 import math
 
@@ -54,31 +54,18 @@ def format_execution_price(execution_price):
     # remove the comma
     execution_price = execution_price.replace(',', '')
     # convert to float
-    # execution_price = float(execution_price)
-    # # multiply by 10**5
-    # execution_price = execution_price * 10**5
-    # # convert to integer
-    # execution_price = int(round(execution_price))
+    if execution_price == "-Infinity":
+        execution_price = "'-Infinity.into()'"
     # return the formatted execution_price
     return execution_price
 
-# end format is * 10**5
+# end format is x96
 def format_pool_price(pool_price):
     # remove the quotes
     pool_price = pool_price.replace('"', '')
     # remove the comma
     pool_price = pool_price.replace(',', '')
-    # convert to float
-    # pool_price = float(pool_price)
-    # print(pool_price)
-    # rounded = '%s' % float('%.5g' % pool_price) #a chequiar
-    # sqrt_pool_price = math.sqrt(float(rounded)) #a chequiar
-
-    # # cast to x96 type
-    # pool_price_x96 = pool_price * (2**96)
-    # # get sqrt of price
-    # sqrt_pool_price_x96 = math.sqrt(pool_price_x96)
-    # # return the formatted pool_price
+    # return the formatted pool_price
     return pool_price
 
 def format_tick(tick):
