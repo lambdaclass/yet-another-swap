@@ -2041,14 +2041,15 @@ mod YASPoolTests {
             actual: SwapExpectedResults, expected: @SwapExpectedResults, precision: u256
         ) {
             //very useful for debugging, don't delete until all pools are finished:
-            'amount_0_delta'.print();
-            actual.amount_0_delta.mag.print();
+            //'amount_0_delta'.print();
+            //actual.amount_0_delta.mag.print();
+
             // 'amount_1_delta'.print();
             // actual.amount_1_delta.mag.print();
 
             // 'execution_price'.print();
-            // actual.execution_price.print();
-
+            // get_significant_figures(actual.execution_price, 10).print();
+            // get_significant_figures(*expected.execution_price, 10).print();
             // 'fee_growth_global_0_X128_delta'.print();
             // actual.fee_growth_global_0_X128_delta.print();
             // 'fee_growth_global_1_X128_delta'.print();
@@ -2057,6 +2058,8 @@ mod YASPoolTests {
             // 'pool_price_before'.print();
             // actual.pool_price_before.print();
             // 'pool_price_after'.print();
+            // get_significant_figures(actual.pool_price_after, pool_price_sig_figures).print();
+            // get_significant_figures(*expected.pool_price_after, pool_price_sig_figures).print();
             // actual.pool_price_after.print();
 
             // 'tick_after'.print();
