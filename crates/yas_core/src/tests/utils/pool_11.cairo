@@ -39,11 +39,11 @@ fn SWAP_EXPECTED_RESULTS_POOL_11() -> Array<SwapExpectedResults> {
 		},
 		SwapExpectedResults {
 			amount_0_before: 26037782196502120275425782622539039026,
-			amount_0_delta: IntegerTrait::<i256>::new(10790901831095468191587263901270792610, false),
+			amount_0_delta: IntegerTrait::<i256>::new(10886980150093363085920138921614970011, false), //10790901831095468191587263901270792610
 			amount_1_before: 1,
 			amount_1_delta: IntegerTrait::<i256>::new(0, false),
 			execution_price: 0,
-			fee_growth_global_0_X128_delta: 5507930424444982259736347157352787128931407551935325049,
+			fee_growth_global_0_X128_delta: 5556971061142565224435811128966538109111571510674634382, // 5507930424444982259736347157352787128931407551935325049
 			fee_growth_global_1_X128_delta: 0,
 			pool_price_after: 4295128740,
 			pool_price_before: 6085630636,
@@ -117,11 +117,11 @@ fn SWAP_EXPECTED_RESULTS_POOL_11() -> Array<SwapExpectedResults> {
 		},
 		SwapExpectedResults {
 			amount_0_before: 26037782196502120275425782622539039026,
-			amount_0_delta: IntegerTrait::<i256>::new(10790901831095468191587263901270792610, false),
+			amount_0_delta: IntegerTrait::<i256>::new(10886980150093363085920138921614970011, false), // 10790901831095468191587263901270792610
 			amount_1_before: 1,
 			amount_1_delta: IntegerTrait::<i256>::new(0, false),
 			execution_price: 0,
-			fee_growth_global_0_X128_delta: 5507930424444982259736347157352787128931407551935325049,
+			fee_growth_global_0_X128_delta: 5556971061142565224435811128966538109111571510674634382, //5507930424444982259736347157352787128931407551935325049
 			fee_growth_global_1_X128_delta: 0,
 			pool_price_after: 4295128740,
 			pool_price_before: 6085630636,
@@ -167,179 +167,5 @@ fn SWAP_EXPECTED_RESULTS_POOL_11() -> Array<SwapExpectedResults> {
 			tick_after: IntegerTrait::<i32>::new(9164, true),
 			tick_before: IntegerTrait::<i32>::new(880303, true),
 		}
-        // SwapExpectedResults {
-        //     amount_0_before: 26037782196502120275425782622539039026,
-        //     amount_0_delta: IntegerTrait::<i256>::new(1000000000000000000, false),
-        //     amount_1_before: 1,
-        //     amount_1_delta: IntegerTrait::<i256>::new(0, false),
-        //     execution_price: 0,
-        //     fee_growth_global_0_X128_delta: 170141183460469231731687303715884105728,
-        //     fee_growth_global_1_X128_delta: 0,
-        //     pool_price_after: 6085630636,
-        //     pool_price_before: 6085630636,
-        //     tick_after: IntegerTrait::<i32>::new(880303, true),
-        //     tick_before: IntegerTrait::<i32>::new(880303, true),
-        // },
-        // SwapExpectedResults {
-        //     amount_0_before: 26037782196502120275425782622539039026,
-        //     amount_0_delta: IntegerTrait::<i256>::new(26037782196502120271413746514214063808, true),
-        //     amount_1_before: 1,
-        //     amount_1_delta: IntegerTrait::<i256>::new(1000000000000000000, false),
-        //     execution_price: 3042815318,
-        //     fee_growth_global_0_X128_delta: 0,
-        //     fee_growth_global_1_X128_delta: 510423550381413820277666488039994629,
-        //     pool_price_after: 39495239013360769732380381856,
-        //     pool_price_before: 6085630636,
-        //     tick_after: IntegerTrait::<i32>::new(13924, true),
-        //     tick_before: IntegerTrait::<i32>::new(880303, true),
-        // },
-        // SwapExpectedResults {
-        //     amount_0_before: 26037782196502120275425782622539039026,
-        //     amount_0_delta: IntegerTrait::<i256>::new(
-        //         10790901831095468191587263901270792610, false
-        //     ),
-        //     amount_1_before: 1,
-        //     amount_1_delta: IntegerTrait::<i256>::new(0, false),
-        //     execution_price: 0,
-        //     fee_growth_global_0_X128_delta: 5507930424444982259736347157352787128931407551935325049,
-        //     fee_growth_global_1_X128_delta: 0,
-        //     // TODO: Original pool_price_after 4295128740
-        //     pool_price_after: 4306310044,
-        //     pool_price_before: 6085630636,
-        //     // TODO: Original tick_after -887272
-        //     tick_after: IntegerTrait::<i32>::new(887220, true),
-        //     tick_before: IntegerTrait::<i32>::new(880303, true),
-        // },
-        // SwapExpectedResults {
-        //     amount_0_before: 26037782196502120275425782622539039026,
-        //     // TODO: Original amount_0_delta 1000000000000000000
-        //     amount_0_delta: IntegerTrait::<i256>::new(5476152507212141130626331510209260559, true),
-        //     amount_1_before: 1,
-        //     amount_1_delta: IntegerTrait::<i256>::new(2, false),
-        //     //TODO: Original execution_price 158456325028
-        //     execution_price: 0,
-        //     fee_growth_global_0_X128_delta: 0,
-        //     fee_growth_global_1_X128_delta: 170141183460469231731,
-        //     //TODO: Original pool_price_after 6085630637
-        //     pool_price_after: 7706408851,
-        //     pool_price_before: 6085630636,
-        //     // TODO: Original tick_after -880303
-        //     tick_after: IntegerTrait::<i32>::new(875580, true),
-        //     tick_before: IntegerTrait::<i32>::new(880303, true),
-        // },
-        // SwapExpectedResults {
-        //     amount_0_before: 26037782196502120275425782622539039026,
-        //     amount_0_delta: IntegerTrait::<i256>::new(26037782196502120271413746514214063808, true),
-        //     amount_1_before: 1,
-        //     amount_1_delta: IntegerTrait::<i256>::new(1000000000000000000, false),
-        //     execution_price: 3042815318,
-        //     fee_growth_global_0_X128_delta: 0,
-        //     fee_growth_global_1_X128_delta: 510423550381413820277666488039994629,
-        //     pool_price_after: 39495239013360769732380381856,
-        //     pool_price_before: 6085630636,
-        //     tick_after: IntegerTrait::<i32>::new(13924, true),
-        //     tick_before: IntegerTrait::<i32>::new(880303, true),
-        // },
-        // SwapExpectedResults {
-        //     amount_0_before: 26037782196502120275425782622539039026,
-        //     // TODO: Original amount_0_delta 1000000000000000000
-        //     amount_0_delta: IntegerTrait::<i256>::new(5476152507212141130626331510209260559, true),
-        //     amount_1_before: 1,
-        //     amount_1_delta: IntegerTrait::<i256>::new(2, false),
-        //     //TODO: Original execution_price 158456325028
-        //     execution_price: 0,
-        //     fee_growth_global_0_X128_delta: 0,
-        //     fee_growth_global_1_X128_delta: 170141183460469231731,
-        //     //TODO: Original pool_price_after 6085630637
-        //     pool_price_after: 7706408851,
-        //     pool_price_before: 6085630636,
-        //     // TODO: Original tick_after -880303
-        //     tick_after: IntegerTrait::<i32>::new(875580, true),
-        //     tick_before: IntegerTrait::<i32>::new(880303, true),
-        // },
-        // SwapExpectedResults {
-        //     amount_0_before: 26037782196502120275425782622539039026,
-        //     amount_0_delta: IntegerTrait::<i256>::new(1000, false),
-        //     amount_1_before: 1,
-        //     amount_1_delta: IntegerTrait::<i256>::new(0, false),
-        //     execution_price: 0,
-        //     fee_growth_global_0_X128_delta: 170141183460469231731687,
-        //     fee_growth_global_1_X128_delta: 0,
-        //     pool_price_after: 6085630636,
-        //     pool_price_before: 6085630636,
-        //     tick_after: IntegerTrait::<i32>::new(880303, true),
-        //     tick_before: IntegerTrait::<i32>::new(880303, true),
-        // },
-        // SwapExpectedResults {
-        //     amount_0_before: 26037782196502120275425782622539039026,
-        //     amount_0_delta: IntegerTrait::<i256>::new(26033697540846965126433148994127431276, true),
-        //     amount_1_before: 1,
-        //     amount_1_delta: IntegerTrait::<i256>::new(1000, false),
-        //     execution_price: 0,
-        //     fee_growth_global_0_X128_delta: 0,
-        //     fee_growth_global_1_X128_delta: 2381976568446569244235,
-        //     pool_price_after: 38793068108090,
-        //     pool_price_before: 6085630636,
-        //     tick_after: IntegerTrait::<i32>::new(705093, true),
-        //     tick_before: IntegerTrait::<i32>::new(880303, true),
-        // },
-        // SwapExpectedResults {
-        //     amount_0_before: 26037782196502120275425782622539039026,
-        //     amount_0_delta: IntegerTrait::<i256>::new(
-        //         10790901831095468191587263901270792610, false
-        //     ),
-        //     amount_1_before: 1,
-        //     amount_1_delta: IntegerTrait::<i256>::new(0, false),
-        //     execution_price: 0,
-        //     fee_growth_global_0_X128_delta: 5507930424444982259736347157352787128931407551935325049,
-        //     fee_growth_global_1_X128_delta: 0,
-        //     pool_price_after: 4306310044,
-        //     pool_price_before: 6085630636,
-        //     tick_after: IntegerTrait::<i32>::new(887220, true),
-        //     tick_before: IntegerTrait::<i32>::new(880303, true),
-        // },
-        // SwapExpectedResults {
-        //     amount_0_before: 26037782196502120275425782622539039026,
-        //     // TODO: Original amount_0_delta -1000
-        //     amount_0_delta: IntegerTrait::<i256>::new(5476152507212141130626331510209260559, true),
-        //     amount_1_before: 1,
-        //     amount_1_delta: IntegerTrait::<i256>::new(2, false),
-        //     //TODO: Original execution_price 158456325028528675187087900,
-        //     execution_price: 0,
-        //     fee_growth_global_0_X128_delta: 0,
-        //     fee_growth_global_1_X128_delta: 170141183460469231731,
-        //     // TODO: Original pool_price_after 6085630637
-        //     pool_price_after: 7706408851,
-        //     pool_price_before: 6085630636,
-        //     // TODO: Original tick_after -880303
-        //     tick_after: IntegerTrait::<i32>::new(875580, true),
-        //     tick_before: IntegerTrait::<i32>::new(880303, true),
-        // },
-        // SwapExpectedResults {
-        //     amount_0_before: 26037782196502120275425782622539039026,
-        //     amount_0_delta: IntegerTrait::<i256>::new(26037782196502120274160871558471687260, true),
-        //     amount_1_before: 1,
-        //     amount_1_delta: IntegerTrait::<i256>::new(3171793039286238112, false),
-        //     execution_price: 9651180445,
-        //     fee_growth_global_0_X128_delta: 0,
-        //     fee_growth_global_1_X128_delta: 1618957864187523634078592530170978294,
-        //     pool_price_after: 125270724187523965593206900784,
-        //     pool_price_before: 6085630636,
-        //     tick_after: IntegerTrait::<i32>::new(9163, false),
-        //     tick_before: IntegerTrait::<i32>::new(880303, true),
-        // },
-        // SwapExpectedResults {
-        //     amount_0_before: 26037782196502120275425782622539039026,
-        //     amount_0_delta: IntegerTrait::<i256>::new(26037782196502120272263504962370659661, true),
-        //     amount_1_before: 1,
-        //     amount_1_delta: IntegerTrait::<i256>::new(1268717215714495283, false),
-        //     execution_price: 3860472178,
-        //     fee_growth_global_0_X128_delta: 0,
-        //     fee_growth_global_1_X128_delta: 647583145675012958539816297734564973,
-        //     pool_price_after: 50108289675009586237282760313,
-        //     pool_price_before: 6085630636,
-        //     tick_after: IntegerTrait::<i32>::new(9164, true),
-        //     tick_before: IntegerTrait::<i32>::new(880303, true),
-        // },
     ]
 }
