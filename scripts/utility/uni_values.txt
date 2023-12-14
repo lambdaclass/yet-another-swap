@@ -1,0 +1,201 @@
+Object {
+  "amount0Before": "632455532033675867",
+  "amount0Delta": "1000000000000000000",
+  "amount1Before": "6324555320336758664",
+  "amount1Delta": "-3869747612262812754",
+  "executionPrice": "306592992713544507924111903276",
+  "feeGrowthGlobal0X128Delta": "510423550381407865336245371616884048",
+  "feeGrowthGlobal1X128Delta": "0",
+  "poolPriceAfter": "97244952018275677188403231914",
+  "poolPriceBefore": "250541448375047931186413801569",
+  "tickAfter": 4098,
+  "tickBefore": 23027,
+}
+`;
+
+
+
+Object {
+  "amount0Before": "632455532033675867",
+  "amount0Delta": "-86123526743846551",
+  "amount1Before": "6324555320336758664",
+  "amount1Delta": "1000000000000000000",
+  "executionPrice": "919936346196193353013622028779",
+  "feeGrowthGlobal0X128Delta": "0",
+  "feeGrowthGlobal1X128Delta": "510423550381407695195061911147652317",
+  "poolPriceAfter": "290036687388408703476795460811",
+  "poolPriceBefore": "250541448375047931186413801569",
+  "tickAfter": 25954,
+  "tickBefore": 23027,
+}
+`;
+
+
+
+Object {
+  "amount0Before": "632455532033675867",
+  "amount0Delta": "119138326055954425",
+  "amount1Before": "6324555320336758664",
+  "amount1Delta": "-1000000000000000000",
+  "executionPrice": "665009868252254046240513819058",
+  "feeGrowthGlobal0X128Delta": "60811007371978153949466126675899993",
+  "feeGrowthGlobal1X128Delta": "0",
+  "poolPriceAfter": "210927367117915762389641826401",
+  "poolPriceBefore": "250541448375047931186413801569",
+  "tickAfter": 19584,
+  "tickBefore": 23027,
+}
+`;
+
+
+
+Object {
+  "amount0Before": "632455532033675867",
+  "amount0Delta": "-632455532033675838",
+  "amount1Before": "6324555320336758664",
+  "amount1Delta": "36907032426281581270030941278837275671",
+  "executionPrice": "4623370679652723600004998355562925450542729658368",
+  "feeGrowthGlobal0X128Delta": "0",
+  "feeGrowthGlobal1X128Delta": "18838218525064384185660173270402201838945341643205005201",
+  "poolPriceAfter": "1461446703485210103287273052203988822378723970341",
+  "poolPriceBefore": "250541448375047931186413801569",
+  "tickAfter": 887271,
+  "tickBefore": 23027,
+}
+`;
+
+
+
+Object {
+  "amount0Before": "632455532033675867",
+  "amount0Delta": "1000000000000000000",
+  "amount1Before": "6324555320336758664",
+  "amount1Delta": "-3869747612262812754",
+  "executionPrice": "306592992713544507924111903276",
+  "feeGrowthGlobal0X128Delta": "510423550381407865336245371616884048",
+  "feeGrowthGlobal1X128Delta": "0",
+  "poolPriceAfter": "97244952018275677188403231914",
+  "poolPriceBefore": "250541448375047931186413801569",
+  "tickAfter": 4098,
+  "tickBefore": 23027,
+}
+`;
+
+
+
+Object {
+  "amount0Before": "632455532033675867",
+  "amount0Delta": "119138326055954425",
+  "amount1Before": "6324555320336758664",
+  "amount1Delta": "-1000000000000000000",
+  "executionPrice": "665009868252254046240513819058",
+  "feeGrowthGlobal0X128Delta": "60811007371978153949466126675899993",
+  "feeGrowthGlobal1X128Delta": "0",
+  "poolPriceAfter": "210927367117915762389641826401",
+  "poolPriceBefore": "250541448375047931186413801569",
+  "tickAfter": 19584,
+  "tickBefore": 23027,
+}
+`;
+
+
+
+Object {
+  "amount0Before": "632455532033675867",
+  "amount0Delta": "1000",
+  "amount1Before": "6324555320336758664",
+  "amount1Delta": "-9969",
+  "executionPrice": "789825552104701181470039640899",
+  "feeGrowthGlobal0X128Delta": "510423550381407695195",
+  "feeGrowthGlobal1X128Delta": "0",
+  "poolPriceAfter": "250541448375047536234023667962",
+  "poolPriceBefore": "250541448375047931186413801569",
+  "tickAfter": 23027,
+  "tickBefore": 23027,
+}
+`;
+
+
+
+Object {
+  "amount0Before": "632455532033675867",
+  "amount0Delta": "-99",
+  "amount1Before": "6324555320336758664",
+  "amount1Delta": "1000",
+  "executionPrice": "800284469841053915078299683948",
+  "feeGrowthGlobal0X128Delta": "0",
+  "feeGrowthGlobal1X128Delta": "510423550381407695195",
+  "poolPriceAfter": "250541448375047970681652814929",
+  "poolPriceBefore": "250541448375047931186413801569",
+  "tickAfter": 23027,
+  "tickBefore": 23027,
+}
+`;
+
+
+
+Object {
+  "amount0Before": "632455532033675867",
+  "amount0Delta": "102",
+  "amount1Before": "6324555320336758664",
+  "amount1Delta": "-1000",
+  "executionPrice": "776746691316317035231444439862",
+  "feeGrowthGlobal0X128Delta": "170141183460469231731",
+  "feeGrowthGlobal1X128Delta": "0",
+  "poolPriceAfter": "250541448375047891572332544436",
+  "poolPriceBefore": "250541448375047931186413801569",
+  "tickAfter": 23027,
+  "tickBefore": 23027,
+}
+`;
+
+
+
+Object {
+  "amount0Before": "632455532033675867",
+  "amount0Delta": "-1000",
+  "amount1Before": "6324555320336758664",
+  "amount1Delta": "10032",
+  "executionPrice": "794816926343099834738432909770",
+  "feeGrowthGlobal0X128Delta": "0",
+  "feeGrowthGlobal1X128Delta": "5274376687274546183682",
+  "poolPriceAfter": "250541448375048327327226372892",
+  "poolPriceBefore": "250541448375047931186413801569",
+  "tickAfter": 23027,
+  "tickBefore": 23027,
+}
+`;
+
+
+
+Object {
+  "amount0Before": "632455532033675867",
+  "amount0Delta": "2537434431428990438",
+  "amount1Before": "6324555320336758664",
+  "amount1Delta": "-5059644256269406930",
+  "executionPrice": "157980956053443089058530025701",
+  "feeGrowthGlobal0X128Delta": "1295166291350014007196790362622908786",
+  "feeGrowthGlobal1X128Delta": "0",
+  "poolPriceAfter": "50108289675009586237282760313",
+  "poolPriceBefore": "250541448375047931186413801569",
+  "tickAfter": -9164,
+  "tickBefore": 23027,
+}
+`;
+
+
+
+Object {
+  "amount0Before": "632455532033675867",
+  "amount0Delta": "634358607857247610",
+  "amount1Before": "6324555320336758664",
+  "amount1Delta": "-3162277660168379331",
+  "executionPrice": "394952390133607722301682557316",
+  "feeGrowthGlobal0X128Delta": "323791572837503501799197590655727196",
+  "feeGrowthGlobal1X128Delta": "0",
+  "poolPriceAfter": "125270724187523965593206900784",
+  "poolPriceBefore": "250541448375047931186413801569",
+  "tickAfter": 9163,
+  "tickBefore": 23027,
+}
+`;
