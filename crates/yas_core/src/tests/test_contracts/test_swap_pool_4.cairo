@@ -21,8 +21,7 @@ mod PoolCase4 {
         let PANIC_CASE = 0;
         let pool_case = POOL_CASES()[4];
         let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_4();
-        let expected_cases =
-            SWAP_EXPECTED_RESULTS_POOL_4(); //get random case, is never executed
+        let expected_cases = SWAP_EXPECTED_RESULTS_POOL_4();
         test_pool(
             pool_case,
             array![*expected_cases[PANIC_CASE]],
@@ -37,8 +36,7 @@ mod PoolCase4 {
         let PANIC_CASE = 1;
         let pool_case = POOL_CASES()[4];
         let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_4();
-        let expected_cases =
-            SWAP_EXPECTED_RESULTS_POOL_4(); //get random case, is never executed
+        let expected_cases = SWAP_EXPECTED_RESULTS_POOL_4();
         test_pool(
             pool_case,
             array![*expected_cases[PANIC_CASE]],
@@ -53,8 +51,7 @@ mod PoolCase4 {
         let PANIC_CASE = 2;
         let pool_case = POOL_CASES()[4];
         let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_4();
-        let expected_cases =
-            SWAP_EXPECTED_RESULTS_POOL_4(); //get random case, is never executed
+        let expected_cases = SWAP_EXPECTED_RESULTS_POOL_4();
         test_pool(
             pool_case,
             array![*expected_cases[PANIC_CASE]],
@@ -69,8 +66,7 @@ mod PoolCase4 {
         let PANIC_CASE = 3;
         let pool_case = POOL_CASES()[4];
         let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_4();
-        let expected_cases =
-            SWAP_EXPECTED_RESULTS_POOL_4(); //get random case, is never executed
+        let expected_cases = SWAP_EXPECTED_RESULTS_POOL_4();
         test_pool(
             pool_case,
             array![*expected_cases[PANIC_CASE]],
