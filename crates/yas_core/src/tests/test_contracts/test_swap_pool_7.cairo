@@ -21,8 +21,7 @@ mod PoolCase7 {
         let PANIC_CASE = 0;
         let pool_case = POOL_CASES()[7];
         let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_7();
-        let expected_cases =
-            SWAP_EXPECTED_RESULTS_POOL_7();
+        let expected_cases = SWAP_EXPECTED_RESULTS_POOL_7();
         test_pool(
             pool_case,
             array![*expected_cases[PANIC_CASE]],
@@ -37,8 +36,7 @@ mod PoolCase7 {
         let PANIC_CASE = 1;
         let pool_case = POOL_CASES()[7];
         let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_7();
-        let expected_cases =
-            SWAP_EXPECTED_RESULTS_POOL_7();
+        let expected_cases = SWAP_EXPECTED_RESULTS_POOL_7();
         test_pool(
             pool_case,
             array![*expected_cases[PANIC_CASE]],
