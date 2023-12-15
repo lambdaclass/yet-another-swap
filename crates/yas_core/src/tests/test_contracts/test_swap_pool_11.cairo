@@ -1,8 +1,6 @@
 mod PoolCase11 {
     use yas_core::tests::utils::swap_helper::SwapTestHelper::test_pool;
-        use yas_core::tests::utils::pool_11::{
-        SWAP_CASES_POOL_11, SWAP_EXPECTED_RESULTS_POOL_11
-    };
+    use yas_core::tests::utils::pool_11::{SWAP_CASES_POOL_11, SWAP_EXPECTED_RESULTS_POOL_11};
     use yas_core::tests::utils::swap_cases::SwapTestHelper::POOL_CASES;
 
     const PRECISION: u256 = 5;
@@ -23,8 +21,7 @@ mod PoolCase11 {
         let PANIC_CASE = 0;
         let pool_case = POOL_CASES()[11];
         let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_11();
-        let expected_cases =
-            SWAP_EXPECTED_RESULTS_POOL_11(); //get random case, is never executed
+        let expected_cases = SWAP_EXPECTED_RESULTS_POOL_11();
         test_pool(
             pool_case,
             array![*expected_cases[PANIC_CASE]],
@@ -40,8 +37,7 @@ mod PoolCase11 {
         let PANIC_CASE = 1;
         let pool_case = POOL_CASES()[11];
         let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_11();
-        let expected_cases =
-            SWAP_EXPECTED_RESULTS_POOL_11(); //get random case, is never executed
+        let expected_cases = SWAP_EXPECTED_RESULTS_POOL_11();
         test_pool(
             pool_case,
             array![*expected_cases[PANIC_CASE]],
@@ -57,8 +53,7 @@ mod PoolCase11 {
         let PANIC_CASE = 2;
         let pool_case = POOL_CASES()[11];
         let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_11();
-        let expected_cases =
-            SWAP_EXPECTED_RESULTS_POOL_11(); //get random case, is never executed
+        let expected_cases = SWAP_EXPECTED_RESULTS_POOL_11();
         test_pool(
             pool_case,
             array![*expected_cases[PANIC_CASE]],
@@ -74,8 +69,7 @@ mod PoolCase11 {
         let PANIC_CASE = 3;
         let pool_case = POOL_CASES()[11];
         let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_11();
-        let expected_cases =
-            SWAP_EXPECTED_RESULTS_POOL_11(); //get random case, is never executed
+        let expected_cases = SWAP_EXPECTED_RESULTS_POOL_11();
         test_pool(
             pool_case,
             array![*expected_cases[PANIC_CASE]],
