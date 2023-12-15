@@ -1,8 +1,6 @@
 mod PoolCase10 {
     use yas_core::tests::utils::swap_helper::SwapTestHelper::test_pool;
-    use yas_core::tests::utils::pool_10::{
-        SWAP_CASES_POOL_10, SWAP_EXPECTED_RESULTS_POOL_10
-    };
+    use yas_core::tests::utils::pool_10::{SWAP_CASES_POOL_10, SWAP_EXPECTED_RESULTS_POOL_10};
     use yas_core::tests::utils::swap_cases::SwapTestHelper::POOL_CASES;
 
     const PRECISION: u256 = 5;
