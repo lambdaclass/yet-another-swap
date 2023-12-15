@@ -195,4 +195,3 @@ fn SWAP_EXPECTED_RESULTS_POOL_6() -> Array<SwapExpectedResults> {
         },
     ]
 }
-
