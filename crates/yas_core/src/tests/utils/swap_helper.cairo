@@ -39,6 +39,8 @@ mod SwapTestHelper {
             if i == expected_cases.len() {
                 break;
             }
+
+            // Restart pool
             let (yas_pool, yas_router, token_0, token_1) = setup_pool_for_swap_test(
                 initial_price: *pool_case.starting_price,
                 fee_amount: *pool_case.fee_amount,
@@ -57,7 +59,7 @@ mod SwapTestHelper {
             let pool_balance_1_bf = token_1.balanceOf(yas_pool.contract_address);
             let slot0_bf = yas_pool.get_slot_0();
 
-            let mut amount_to_swap = IntegerTrait::<i256>::new(0, false); //Zeroable::zero();
+            let mut amount_to_swap = Zeroable::zero();
             if *swap_case.has_exact_out {
                 if *swap_case.exact_out { //exact OUT
                     amount_to_swap =
@@ -70,6 +72,7 @@ mod SwapTestHelper {
             } else {
                 amount_to_swap = IntegerTrait::<i256>::new((BoundedInt::max() / 2) - 1, false);
             }
+
             // Execute swap
             let (token_0_swapped_amount, token_1_swapped_amount) = swap_test_case(
                 yas_router,
@@ -95,7 +98,7 @@ mod SwapTestHelper {
             );
             let slot0_af = yas_pool.get_slot_0();
 
-            // Generate swap result values to compare with expected
+            // Generate swap result values to compare with expected values
             let (fee_growth_global_0_X128_delta, fee_growth_global_1_X128_delta) = (
                 fee_growth_global_0_X128_af - fee_growth_global_0_X128_bf,
                 fee_growth_global_1_X128_af - fee_growth_global_1_X128_bf
@@ -160,7 +163,7 @@ mod SwapTestHelper {
             'wrong fee_growth_global_1_X128'
         );
         assert(actual.pool_price_before == *expected.pool_price_before, 'wrong pool_price_before');
-        //could add a significant figures comparison here to accept some degree of error
+        // Significant figures comparison here to accept same degree of error as uniswap
         assert(
             get_significant_figures(
                 actual.pool_price_after, precision
@@ -183,8 +186,7 @@ mod SwapTestHelper {
             // Therefore, this value ends up as -Infinity
             '-Infinity'.into()
         } else { //this is every other case, price = 0/x = 0, or price = x/y = z
-            let mut unrounded = (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount;
-            unrounded
+            (token_1_swapped_amount * pow(2, 96)) / token_0_swapped_amount
         }
     }
 
@@ -217,37 +219,6 @@ mod SwapTestHelper {
             };
         };
         order
-    }
-
-    fn round_for_price_comparison(sqrt_price_X96: u256, expected_price: u256) -> u256 {
-        let mut square = (sqrt_price_X96 * sqrt_price_X96);
-        let mut i = 0;
-        let mut move_decimal_point = 0;
-        let mut in_decimal = 0;
-        loop {
-            move_decimal_point = mul_div(square, pow(10, i), pow(2, 96));
-            in_decimal = move_decimal_point / pow(2, 96);
-            if in_decimal < (expected_price * 10) - 1 {
-                i = i + 1;
-            } else {
-                break;
-            };
-        };
-
-        let (rounder, half) = if in_decimal > 999999 {
-            (100, 49)
-        } else {
-            (10, 4)
-        };
-        let round_decider = in_decimal % rounder;
-        if round_decider > half {
-            //round up
-            in_decimal = in_decimal + (rounder - round_decider);
-        } else {
-            //round down
-            in_decimal = in_decimal - round_decider;
-        }
-        in_decimal / 10
     }
 
     fn swap_test_case(
