@@ -43,6 +43,7 @@ mod tests {
         mod test_swap_pool_5;
         mod test_swap_pool_6;
         mod test_swap_pool_9;
+        mod test_swap_pool_11;
     }
 
     mod test_libraries {
