@@ -37,6 +37,12 @@ mod tests {
     mod test_contracts {
         mod test_yas_factory;
         mod test_yas_pool;
+        mod test_swap_pool_0;
+        mod test_swap_pool_1;
+        mod test_swap_pool_2;
+        mod test_swap_pool_5;
+        mod test_swap_pool_6;
+        mod test_swap_pool_9;
     }
 
     mod test_libraries {
@@ -62,6 +68,7 @@ mod tests {
 
     mod utils {
         mod constants;
+        mod swap_helper;
         mod swap_cases;
         mod pool_0;
         mod pool_1;
