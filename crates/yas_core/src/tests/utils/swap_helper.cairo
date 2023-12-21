@@ -180,7 +180,7 @@ mod SwapTestHelper {
     ) -> u256 {
         if token_0_swapped_amount == 0
             && token_1_swapped_amount == 0 { //this avoids 0/0 , if no tokens swapped: exec_price = 0
-            0
+            'NaN'.into()
         } else if token_0_swapped_amount == 0 { //this avoids x/0 , case that makes price tend to Infinity
             // Since uniswap divides deltas to calculate exec_price, all prices are multiplied by -1 so that all prices are > 0.
             // Therefore, this value ends up as -Infinity
