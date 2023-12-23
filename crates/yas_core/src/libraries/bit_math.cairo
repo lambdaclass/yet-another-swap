@@ -9,7 +9,12 @@ mod BitMath {
     /// @param x the value for which to compute the most significant bit, must be greater than 0
     /// @return r the index of the most significant bit
     fn most_significant_bit(x: u256) -> u8 {
-        assert(x > 0, 'x must be greater than 0');
+        match check_gt_zero(x) {
+            Result::Ok(()) => {},
+            Result::Err(err) => {
+                panic_with_felt252(err)
+            }
+        }
         let mut x: u256 = x;
         let mut r: u8 = 0;
 
@@ -54,7 +59,12 @@ mod BitMath {
     /// @param x the value for which to compute the least significant bit, must be greater than 0
     /// @return r the index of the least significant bit
     fn least_significant_bit(x: u256) -> u8 {
-        assert(x > 0, 'x must be greater than 0');
+        match check_gt_zero(x) {
+            Result::Ok(()) => {},
+            Result::Err(err) => {
+                panic_with_felt252(err)
+            }
+        }
         let mut x = x;
         let mut r: u8 = 255;
 
@@ -97,5 +107,13 @@ mod BitMath {
             r -= 1;
         }
         r
+    }
+
+    fn check_gt_zero(x: u256) -> Result<(), felt252> {
+        if x > 0 {
+            Result::Ok(())
+        } else {
+            Result::Err('x must be greater than 0')
+        }
     }
 }

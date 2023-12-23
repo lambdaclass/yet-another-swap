@@ -25,8 +25,12 @@ mod SqrtPriceMath {
         if amount == 0 {
             return sqrtPX96;
         }
-        assert(sqrtPX96.sign == false, 'sqrtPX96 cannot be negative');
-
+        match check_sqrtPX96_sign(sqrtPX96.sign) {
+            Result::Ok(()) => {},
+            Result::Err(err) => {
+                panic_with_felt252(err)
+            }
+        };
         let numerator = liquidity.into() * pow(2, Q96_RESOLUTION.into());
         let (product, product_has_overflow) = u256_overflow_mul(amount, sqrtPX96.mag);
 
@@ -45,8 +49,18 @@ mod SqrtPriceMath {
         } else {
             // if the product overflows, we know the denominator underflows
             // in addition, we must check that the denominator does not underflow
-            assert(FP64x96Impl::new(product / amount, false) == sqrtPX96, 'product overflow');
-            assert(numerator > product, 'denominator underflow');
+            match check_product_overflow(product, amount, false, sqrtPX96) {
+                Result::Ok(()) => {},
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                }
+            };
+            match check_denominator_underflow(numerator, product) {
+                Result::Ok(()) => {},
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                }
+            };
             let denominator = numerator - product;
             FP64x96Impl::new(mul_div_rounding_up(numerator, sqrtPX96.mag, denominator), false)
         }
@@ -61,8 +75,12 @@ mod SqrtPriceMath {
     fn get_next_sqrt_price_from_amount1_rounding_down(
         sqrtPX96: FixedType, liquidity: u128, amount: u256, add: bool
     ) -> FixedType {
-        assert(sqrtPX96.sign == false, 'sqrtPX96 cannot be negative');
-
+        match check_sqrtPX96_sign(sqrtPX96.sign) {
+            Result::Ok(()) => {},
+            Result::Err(err) => {
+                panic_with_felt252(err)
+            }
+        };
         // if we're adding (subtracting), rounding down requires rounding the quotient down (up)
         // in both cases, avoid a mulDiv for most inputs
         if add {
@@ -78,7 +96,12 @@ mod SqrtPriceMath {
             } else {
                 mul_div_rounding_up(amount, ONE, liquidity.into())
             };
-            assert(sqrtPX96 > FP64x96Impl::new(quotient, false), 'sqrtPX96_fp < quotient');
+            match check_sqrtPX96_and_quotient(sqrtPX96, FP64x96Impl::new(quotient, false)) {
+                Result::Ok(()) => {},
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                }
+            };
             (sqrtPX96 - FP64x96Impl::new(quotient, false))
         }
     }
@@ -93,7 +116,13 @@ mod SqrtPriceMath {
     fn get_next_sqrt_price_from_input(
         sqrtPX96: FixedType, liquidity: u128, amount_in: u256, zero_for_one: bool
     ) -> FixedType {
-        assert(sqrtPX96.sign == false && liquidity > 0, 'sqrtPX96 & liquidity must be >0');
+        match check_sqrtPX96_sign_and_liquidity(sqrtPX96.sign, liquidity) {
+            Result::Ok(()) => {},
+            Result::Err(err) => {
+                panic_with_felt252(err)
+            }
+        };
+
         if zero_for_one {
             get_next_sqrt_price_from_amount0_rounding_up(sqrtPX96, liquidity, amount_in, true)
         } else {
@@ -111,8 +140,12 @@ mod SqrtPriceMath {
     fn get_next_sqrt_price_from_output(
         sqrtPX96: FixedType, liquidity: u128, amount_out: u256, zero_for_one: bool
     ) -> FixedType {
-        assert(sqrtPX96.sign == false && liquidity > 0, 'sqrtPX96 & liquidity must be >0');
-
+        match check_sqrtPX96_sign_and_liquidity(sqrtPX96.sign, liquidity) {
+            Result::Ok(()) => {},
+            Result::Err(err) => {
+                panic_with_felt252(err)
+            }
+        };
         if zero_for_one {
             get_next_sqrt_price_from_amount1_rounding_down(sqrtPX96, liquidity, amount_out, false)
         } else {
@@ -139,7 +172,13 @@ mod SqrtPriceMath {
 
         let numerator1 = liquidity.into() * pow(2, Q96_RESOLUTION.into());
         let numerator2 = sqrt_ratio_BX96_1 - sqrt_ratio_AX96_1;
-        assert(sqrt_ratio_AX96_1.sign == false, 'sqrt_ratio_AX96 cannot be neg');
+
+        match check_sqrtPX96_sign(sqrt_ratio_AX96_1.sign) {
+            Result::Ok(()) => {},
+            Result::Err(err) => {
+                panic_with_felt252(err)
+            }
+        };
 
         if round_up {
             div_rounding_up(
@@ -201,6 +240,49 @@ mod SqrtPriceMath {
             IntegerTrait::<i256>::new(
                 get_amount_1_delta(sqrt_ratio_AX96, sqrt_ratio_BX96, liquidity.mag, true), false
             )
+        }
+    }
+
+    fn check_sqrtPX96_sign(sign: bool) -> Result<(), felt252> {
+        if sign {
+            Result::Err('sqrt_ratio_AX96 cannot be neg')
+        } else {
+            Result::Ok(())
+        }
+    }
+    fn check_sqrtPX96_sign_and_liquidity(sign: bool, liquidity: u128) -> Result<(), felt252> {
+        if sign == false && liquidity > 0 {
+            Result::Ok(())
+        } else {
+            Result::Err('sqrt_ratio_AX96 cannot be neg')
+        }
+    }
+
+    fn check_sqrtPX96_and_quotient(
+        sqrtPX96: FixedType, quotient: FixedType
+    ) -> Result<(), felt252> {
+        if sqrtPX96 > quotient {
+            Result::Ok(())
+        } else {
+            Result::Err('sqrtPX96_fp < quotient')
+        }
+    }
+
+    fn check_product_overflow(
+        product: u256, amount: u256, sign: bool, value_2: FixedType
+    ) -> Result<(), felt252> {
+        if FP64x96Impl::new(product / amount, sign) == value_2 {
+            Result::Ok(())
+        } else {
+            Result::Err('product overflow')
+        }
+    }
+
+    fn check_denominator_underflow(numerator: u256, product: u256) -> Result<(), felt252> {
+        if numerator > product {
+            Result::Ok(())
+        } else {
+            Result::Err('denominator underflow')
         }
     }
 }

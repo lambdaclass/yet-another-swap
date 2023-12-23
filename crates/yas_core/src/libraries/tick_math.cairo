@@ -35,9 +35,12 @@ mod TickMath {
     ///     at the given tick
     fn get_sqrt_ratio_at_tick(tick: i32) -> FixedType {
         let abs_tick = tick.abs();
-        assert(
-            abs_tick <= MAX_TICK(), 'T'
-        ); // TODO: review this error in the future. This is the original error from UniswapV3.
+        match check_tick(abs_tick) {
+            Result::Ok(()) => {},
+            Result::Err(err) => {
+                panic_with_felt252(err)
+            }
+        };
 
         // Initialize ratio with a base value
         let abs_tick_u256: u256 = abs_tick.mag.into();
@@ -142,11 +145,12 @@ mod TickMath {
     ///     - tick The greatest tick for which the ratio is less than or equal to the input ratio.
     fn get_tick_at_sqrt_ratio(sqrt_priceX96: FixedType) -> i32 {
         // second inequality must be < because the price can never reach the price at the max tick
-        assert(
-            sqrt_priceX96 >= FixedTrait::new(MIN_SQRT_RATIO, false)
-                && sqrt_priceX96 < FixedTrait::new(MAX_SQRT_RATIO, false),
-            'R' // TODO: review this error in the future. This is the original error from UniswapV3.
-        );
+        match check_sqrt_priceX96(sqrt_priceX96) {
+            Result::Ok(()) => {},
+            Result::Err(err) => {
+                panic_with_felt252(err)
+            }
+        }; // TODO: review this error in the future. This is the original error from UniswapV3.
         let ratio = sqrt_priceX96.mag.shl(32);
         let mut r = ratio.clone();
         let mut msb = 0;
@@ -298,5 +302,23 @@ mod TickMath {
     fn as_i24(x: i256) -> i32 {
         let mask: u256 = (1.shl(23)) - 1; // Mask for the least significant 23 bits
         IntegerTrait::<i32>::new((x.mag & mask).try_into().unwrap(), x.sign)
+    }
+
+    fn check_sqrt_priceX96(sqrt_priceX96: FixedType) -> Result<(), felt252> {
+        if sqrt_priceX96 >= FixedTrait::new(MIN_SQRT_RATIO, false)
+            && sqrt_priceX96 < FixedTrait::new(MAX_SQRT_RATIO, false) {
+            Result::Ok(())
+        } else {
+            Result::Err('R')
+        }
+    }
+
+    // T: The given tick must be less than, or equal to, the maximum tick
+    fn check_tick(tick: i32) -> Result<(), felt252> {
+        if tick <= MAX_TICK() {
+            Result::Ok(())
+        } else {
+            Result::Err('T')
+        }
     }
 }

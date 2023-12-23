@@ -41,14 +41,22 @@ mod BitMathTests {
 
     mod LeastSignificantBit {
         use integer::BoundedInt;
-        use yas_core::libraries::bit_math::BitMath::least_significant_bit;
-
+        use yas_core::libraries::bit_math::BitMath::{least_significant_bit, check_gt_zero};
         #[test]
         fn lsb_happy_path() {
             // 1
             assert(least_significant_bit(1) == 0, 'lsb should be 0');
         }
-
+        #[test]
+        #[should_panic(expected: ('x must be greater than 0',))]
+        fn test_check_gt_zero() {
+            match check_gt_zero(0) {
+                Result::Ok(()) => {},
+                Result::Err(err) => {
+                    panic_with_felt252(err)
+                },
+            }
+        }
         #[test]
         fn lsb_larger_number() {
             // 10000000

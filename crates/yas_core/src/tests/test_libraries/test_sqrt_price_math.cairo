@@ -18,7 +18,8 @@ mod TestSqrtPriceMath {
 
         // fails if price is zero
         #[test]
-        #[should_panic]
+        #[available_gas(20000000)]
+        #[should_panic(expected: ('sqrt_ratio_AX96 cannot be neg',))]
         fn test_fail_if_price_is_zero() {
             SqrtPriceMath::get_next_sqrt_price_from_input(
                 FixedTrait::from_felt(0), 0, expand_to_18_decimals(1) / 10, false
