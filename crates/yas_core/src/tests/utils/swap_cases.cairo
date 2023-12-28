@@ -311,7 +311,7 @@ mod SwapTestHelper {
     }
 
     fn SWAP_CASES() -> Array<SwapTestCase> {
-        array![ //16 SWAPS
+        array![
             SwapTestCase {
                 zero_for_one: true,
                 has_exact_out: true,
