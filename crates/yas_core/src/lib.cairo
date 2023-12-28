@@ -40,10 +40,16 @@ mod tests {
         mod test_swap_pool_0;
         mod test_swap_pool_1;
         mod test_swap_pool_2;
+        mod test_swap_pool_3;
         mod test_swap_pool_5;
         mod test_swap_pool_6;
+        mod test_swap_pool_7;
+        mod test_swap_pool_8;
         mod test_swap_pool_9;
+        mod test_swap_pool_10;
         mod test_swap_pool_12;
+        mod test_swap_pool_13;
+        mod test_swap_pool_14;
     }
 
     mod test_libraries {
@@ -74,9 +80,15 @@ mod tests {
         mod pool_0;
         mod pool_1;
         mod pool_2;
+        mod pool_3;
         mod pool_5;
         mod pool_6;
+        mod pool_7;
+        mod pool_8;
         mod pool_9;
+        mod pool_10;
         mod pool_12;
+        mod pool_13;
+        mod pool_14;
     }
 }
