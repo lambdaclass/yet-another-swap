@@ -153,7 +153,7 @@ mod TickBitmap {
         } else if tick >= negative_lower_bound {
             one_negative
         } else {
-            IntegerTrait::<i32>::new((tick.mag / divisor.mag) + 1, true)
+            tick / divisor + one_negative
         };
         result.try_into().expect('calculate_word')
     }
