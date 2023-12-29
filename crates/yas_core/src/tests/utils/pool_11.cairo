@@ -40,12 +40,12 @@ fn SWAP_EXPECTED_RESULTS_POOL_11() -> Array<SwapExpectedResults> {
         SwapExpectedResults {
             amount_0_before: 26037782196502120275425782622539039026,
             amount_0_delta: IntegerTrait::<i256>::new(
-                10886980150093363085920138921614970011, false
-            ), //10790901831095468191587263901270792610
+                10790901831095468191587263901270792610, false
+            ),
             amount_1_before: 1,
             amount_1_delta: IntegerTrait::<i256>::new(0, false),
             execution_price: 0,
-            fee_growth_global_0_X128_delta: 5556971061142565224435811128966538109111571510674634382, // 5507930424444982259736347157352787128931407551935325049
+            fee_growth_global_0_X128_delta: 5507930424444982259736347157352787128931407551935325049,
             fee_growth_global_1_X128_delta: 0,
             pool_price_after: 4295128740,
             pool_price_before: 6085630636,
@@ -120,12 +120,12 @@ fn SWAP_EXPECTED_RESULTS_POOL_11() -> Array<SwapExpectedResults> {
         SwapExpectedResults {
             amount_0_before: 26037782196502120275425782622539039026,
             amount_0_delta: IntegerTrait::<i256>::new(
-                10886980150093363085920138921614970011, false
-            ), // 10790901831095468191587263901270792610
+                10790901831095468191587263901270792610, false
+            ),
             amount_1_before: 1,
             amount_1_delta: IntegerTrait::<i256>::new(0, false),
             execution_price: 0,
-            fee_growth_global_0_X128_delta: 5556971061142565224435811128966538109111571510674634382, //5507930424444982259736347157352787128931407551935325049
+            fee_growth_global_0_X128_delta: 5507930424444982259736347157352787128931407551935325049,
             fee_growth_global_1_X128_delta: 0,
             pool_price_after: 4295128740,
             pool_price_before: 6085630636,
