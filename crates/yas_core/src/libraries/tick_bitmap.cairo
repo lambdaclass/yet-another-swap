@@ -152,7 +152,7 @@ mod TickBitmap {
             tick / divisor
         } else if tick >= negative_lower_bound { //tick: [-256, -1]
             one_negative
-        } else { //[-887272, -257]
+        } else { //tick: [-887272, -257]
             if (mod_i32(tick, divisor) != zero) {
                 IntegerTrait::<i32>::new((tick.mag / divisor.mag) + 1, true)
             } else {

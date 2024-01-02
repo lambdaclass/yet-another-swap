@@ -41,6 +41,7 @@ mod tests {
         mod test_swap_pool_1;
         mod test_swap_pool_2;
         mod test_swap_pool_3;
+        mod test_swap_pool_4;
         mod test_swap_pool_5;
         mod test_swap_pool_6;
         mod test_swap_pool_7;
@@ -81,6 +82,7 @@ mod tests {
         mod pool_1;
         mod pool_2;
         mod pool_3;
+        mod pool_4;
         mod pool_5;
         mod pool_6;
         mod pool_7;
