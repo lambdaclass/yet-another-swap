@@ -146,14 +146,18 @@ mod TickBitmap {
         let divisor = IntegerTrait::<i32>::new(256, false);
         let negative_lower_bound = IntegerTrait::<i32>::new(256, true);
 
-        let result = if tick >= zero && tick <= upper_bound {
+        let result = if tick >= zero && tick <= upper_bound { //tick: [0, 255]
             zero
-        } else if tick > upper_bound {
+        } else if tick > upper_bound { //tick: [256, 887272]
             tick / divisor
-        } else if tick >= negative_lower_bound {
+        } else if tick >= negative_lower_bound { //tick: [-256, -1]
             one_negative
-        } else {
-            tick / divisor + one_negative
+        } else { //[-887272, -257]
+            if (mod_i32(tick, divisor) != zero) {
+                IntegerTrait::<i32>::new((tick.mag / divisor.mag) + 1, true)
+            } else {
+                IntegerTrait::<i32>::new((tick.mag / divisor.mag), true)
+            }
         };
         result.try_into().expect('calculate_word')
     }
