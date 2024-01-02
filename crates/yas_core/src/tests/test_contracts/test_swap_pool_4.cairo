@@ -32,7 +32,7 @@ mod PoolCase4 {
     #[test]
     #[available_gas(200000000000)]
     #[should_panic(expected: ('SPL', 'ENTRYPOINT_FAILED', 'ENTRYPOINT_FAILED'))]
-    fn test_pool_4_panics_1() { //done
+    fn test_pool_4_panics_1() {
         let PANIC_CASE = 1;
         let pool_case = POOL_CASES()[4];
         let (success_swap_cases, panic_swap_cases) = SWAP_CASES_POOL_4();
