@@ -21,7 +21,7 @@ jobs:
 
       - name: Install Starkli
         run: |-
-          /home/runner/.config/.starkli/bin/starkliup
+          /home/runner/.config/.starkli/bin/starkliup --version 0.1.20
           sudo mv /home/runner/.config/.starkli/bin/starkli /usr/local/bin/
 
       - name: Setup Katana .env
