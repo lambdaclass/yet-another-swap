@@ -3,11 +3,6 @@ mod PoolCase0 {
     use yas_core::tests::utils::pool_0::{SWAP_CASES_POOL_0, SWAP_EXPECTED_RESULTS_POOL_0};
     use yas_core::tests::utils::swap_cases::SwapTestHelper::POOL_CASES;
 
-    use yas_core::numbers::fixed_point::implementations::impl_64x96::{
-        FixedType, FixedTrait, FP64x96PartialOrd, FP64x96PartialEq, FP64x96Impl, FP64x96Zeroable,
-        FP64x96Div, FP64x96Mul, FP64x96SubEq, FP64x96Sub, FP64x96Add, ONE
-    };
-
     use debug::PrintTrait;
 
     const PRECISION: u256 = 17;
