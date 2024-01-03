@@ -27,6 +27,8 @@ mod SwapTestHelper {
     use starknet::{ContractAddress, ClassHash, SyscallResultTrait};
     use starknet::testing::{set_contract_address, set_caller_address};
 
+    use debug::PrintTrait;
+
     fn test_pool(
         pool_case: @PoolTestCase,
         expected_cases: Array<SwapExpectedResults>,
@@ -146,13 +148,24 @@ mod SwapTestHelper {
         assert(actual.amount_1_delta == *expected.amount_1_delta, 'wrong amount_1_delta');
 
         // 10 significant_figures in x96 is way more accurate than uniswap precision
-        let SIGNIFICANT_FIGURES = 10;
+        // let SIGNIFICANT_FIGURES = 10;
+        'actual'.print();
+        let a = get_significant_figures(
+                actual.execution_price, precision
+            );
+        a.print();
+
+        'expected'.print();
+        let e = get_significant_figures(*expected.execution_price, precision);
+        e.print();
+
         assert(
             get_significant_figures(
-                actual.execution_price, SIGNIFICANT_FIGURES
-            ) == get_significant_figures(*expected.execution_price, SIGNIFICANT_FIGURES),
+                actual.execution_price, precision
+            ) == get_significant_figures(*expected.execution_price, precision),
             'wrong execution_price'
         );
+        'ok'.print();
 
         assert(
             actual.fee_growth_global_0_X128_delta == *expected.fee_growth_global_0_X128_delta,
