@@ -10,7 +10,7 @@ mod PoolCase0 {
 
     use debug::PrintTrait;
 
-    const PRECISION: u256 = 5;
+    const PRECISION: u256 = 45;
 
     #[test]
     #[available_gas(200000000000)]
