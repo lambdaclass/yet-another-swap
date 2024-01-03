@@ -150,9 +150,7 @@ mod SwapTestHelper {
         // 10 significant_figures in x96 is way more accurate than uniswap precision
         // let SIGNIFICANT_FIGURES = 10;
         'actual'.print();
-        let a = get_significant_figures(
-                actual.execution_price, precision
-            );
+        let a = get_significant_figures(actual.execution_price, precision);
         a.print();
 
         'expected'.print();
