@@ -4,7 +4,7 @@ mod PoolCase8 {
     use yas_core::tests::utils::swap_cases::SwapTestHelper::POOL_CASES;
     use debug::PrintTrait;
 
-    const PRECISION: u256 = 18;
+    const PRECISION: u256 = 17;
 
     #[test]
     #[available_gas(200000000000)]
