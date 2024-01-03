@@ -153,7 +153,6 @@ mod SwapTestHelper {
             ) == get_significant_figures(*expected.execution_price, precision),
             'wrong execution_price'
         );
-        'ok'.print();
 
         assert(
             actual.fee_growth_global_0_X128_delta == *expected.fee_growth_global_0_X128_delta,
