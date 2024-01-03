@@ -27,8 +27,6 @@ mod SwapTestHelper {
     use starknet::{ContractAddress, ClassHash, SyscallResultTrait};
     use starknet::testing::{set_contract_address, set_caller_address};
 
-    use debug::PrintTrait;
-
     fn test_pool(
         pool_case: @PoolTestCase,
         expected_cases: Array<SwapExpectedResults>,
@@ -149,14 +147,6 @@ mod SwapTestHelper {
 
         // 10 significant_figures in x96 is way more accurate than uniswap precision
         // let SIGNIFICANT_FIGURES = 10;
-        'actual'.print();
-        let a = get_significant_figures(actual.execution_price, precision);
-        a.print();
-
-        'expected'.print();
-        let e = get_significant_figures(*expected.execution_price, precision);
-        e.print();
-
         assert(
             get_significant_figures(
                 actual.execution_price, precision
