@@ -27,6 +27,8 @@ mod SwapTestHelper {
     use starknet::{ContractAddress, ClassHash, SyscallResultTrait};
     use starknet::testing::{set_contract_address, set_caller_address};
 
+    use yas_core::numbers::fixed_point::implementations::impl_64x96::ONE;
+
     fn test_pool(
         pool_case: @PoolTestCase,
         expected_cases: Array<SwapExpectedResults>,
@@ -146,11 +148,18 @@ mod SwapTestHelper {
         assert(actual.amount_1_delta == *expected.amount_1_delta, 'wrong amount_1_delta');
 
         // 10 significant_figures in x96 is way more accurate than uniswap precision
-        let SIGNIFICANT_FIGURES = 10;
+        // let SIGNIFICANT_FIGURES = 10;
         assert(
             get_significant_figures(
-                actual.execution_price, SIGNIFICANT_FIGURES
-            ) == get_significant_figures(*expected.execution_price, SIGNIFICANT_FIGURES),
+                actual.execution_price, precision
+            ) == get_significant_figures(*expected.execution_price, precision),
+            'wrong execution_price'
+        );
+
+        assert(
+            get_decimal_significant_figures(
+                actual.execution_price, 5
+            ) == get_decimal_significant_figures(*expected.execution_price, 5),
             'wrong execution_price'
         );
 
@@ -168,6 +177,13 @@ mod SwapTestHelper {
             get_significant_figures(
                 actual.pool_price_after, precision
             ) == get_significant_figures(*expected.pool_price_after, precision),
+            'wrong pool_price_after'
+        );
+
+        assert(
+            get_decimal_significant_figures(
+                actual.pool_price_after, 5
+            ) == get_decimal_significant_figures(*expected.pool_price_after, 5),
             'wrong pool_price_after'
         );
 
@@ -204,6 +220,26 @@ mod SwapTestHelper {
             } else {
                 number - round_decider
             }
+        }
+    }
+
+    fn get_decimal_significant_figures(number: u256, sig_figures: u256) -> u256 {
+        let mut number = number;
+        let mut ret = 0;
+        let mut founded_sig_figures = 0;
+        let mut FP_N = ONE;
+        loop {
+            if founded_sig_figures == sig_figures || FP_N < 10 {
+                // 792281625
+                break ret;
+            }
+            FP_N = FP_N / 10;
+            let decimal = number / FP_N;
+            if decimal != 0 {
+                founded_sig_figures += 1;
+            }
+            ret += decimal * FP_N;
+            number -= decimal * FP_N;
         }
     }
 

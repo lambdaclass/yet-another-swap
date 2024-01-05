@@ -3,7 +3,7 @@ mod PoolCase10 {
     use yas_core::tests::utils::pool_10::{SWAP_CASES_POOL_10, SWAP_EXPECTED_RESULTS_POOL_10};
     use yas_core::tests::utils::swap_cases::SwapTestHelper::POOL_CASES;
 
-    const PRECISION: u256 = 5;
+    const PRECISION: u256 = 17;
 
     #[test]
     #[available_gas(200000000000)]
