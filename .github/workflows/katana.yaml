@@ -1,10 +1,9 @@
 name: Run Katana
+
 on:
-  merge_group:
-  push:
-    branches: [main]
   pull_request:
-    branches: ["*"]
+    types: [opened, synchronize, reopened]
+
 jobs:
   katana:
     runs-on: ubuntu-latest

@@ -12,6 +12,7 @@ mod SwapTestHelper {
 
     use integer::BoundedInt;
 
+
     #[derive(Copy, Drop, Serde)]
     struct SwapTestCase {
         zero_for_one: bool,
@@ -58,6 +59,7 @@ mod SwapTestHelper {
         tick_before: i32,
     }
 
+
     fn obtain_swap_cases(idxs: Array<u32>) -> (Array<SwapTestCase>, Array<SwapTestCase>) {
         let mut success_cases = array![];
         let mut error_cases = array![];
@@ -67,17 +69,18 @@ mod SwapTestHelper {
             if i == SWAP_CASES().len() {
                 break;
             }
-            if i < idxs.len() {
-                if contains(@idxs, i) {
-                    success_cases.append(*SWAP_CASES()[i]);
-                } else {
-                    error_cases.append(*SWAP_CASES()[i]);
-                }
-            } else {
+            if contains(@idxs, i) {
                 error_cases.append(*SWAP_CASES()[i]);
+            } else {
+                success_cases.append(*SWAP_CASES()[i]);
             }
             i += 1;
         };
+
+        assert(
+            success_cases.len() + error_cases.len() == SWAP_CASES().len(),
+            'error dividing error cases'
+        );
         (success_cases, error_cases)
     }
 
@@ -98,7 +101,7 @@ mod SwapTestHelper {
     }
 
     fn POOL_CASES() -> Array<PoolTestCase> {
-        array![
+        array![ //15 POOLS
             PoolTestCase {
                 // description: 'low fee, 1:1 price, 2e18 max range liquidity',
                 fee_amount: fee_amount(FeeAmount::LOW),
@@ -337,7 +340,7 @@ mod SwapTestHelper {
                 amount_specified: IntegerTrait::<i256>::new(1000000000000000000, false),
                 sqrt_price_limit: FP64x96Impl::new(0, false)
             },
-            //swap large amounts in/out with a price limit
+            // swap large amounts in/out with a price limit
             SwapTestCase {
                 zero_for_one: true,
                 has_exact_out: true,
