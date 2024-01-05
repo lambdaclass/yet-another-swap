@@ -273,7 +273,7 @@ This demo will perform the following steps:
 
 ## Run demo in Testnet
 
-0. Make sure you have the STARKNET_ACCOUNT and STARKNET_KEYSTORE environment variables declared, otherwise, you won't be able to deploy on testnet:
+0. Make sure you have the STARKNET_ACCOUNT and STARKNET_KEYSTORE environment variables declared, you won't be able to deploy on testnet otherwise:
 
    ```bash
    STARKNET_KEYSTORE="~/.starkli-wallets/keystore.json"
